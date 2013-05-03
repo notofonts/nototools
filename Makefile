@@ -27,21 +27,21 @@ all: tarball zip
 tarball: hintedtarball unhintedtarball
 
 hintedtarball: $(HINTEDFONTDIR)/*.ttf cleanhintedtarball
-	$(TAR) zcvf $(TARBALLDIR)/NotoFonts-hinted-$(TODAY).tgz $(HINTEDFONTDIR)/Noto*.ttf COPYING
+	$(TAR) zcvf $(TARBALLDIR)/NotoFonts-hinted-$(TODAY).tgz $(HINTEDFONTDIR)/Noto*.ttf LICENSE
 	cd $(TARBALLDIR); ln -s NotoFonts-hinted-$(TODAY).tgz NotoFonts-hinted-latest.tgz
 
 unhintedtarball: $(UNHINTEDFONTDIR)/*.ttf cleanunhintedtarball
-	$(TAR) zcvf $(TARBALLDIR)/NotoFonts-unhinted-$(TODAY).tgz $(UNHINTEDFONTDIR)/Noto*.ttf COPYING
+	$(TAR) zcvf $(TARBALLDIR)/NotoFonts-unhinted-$(TODAY).tgz $(UNHINTEDFONTDIR)/Noto*.ttf LICENSE
 	cd $(TARBALLDIR); ln -s NotoFonts-unhinted-$(TODAY).tgz NotoFonts-unhinted-latest.tgz
 
 zip: hintedzip unhintedzip
 
 hintedzip: $(HINTEDFONTDIR)/*.ttf cleanhintedzip
-	$(ZIP) $(ZIPDIR)/NotoFonts-hinted-$(TODAY).zip $(HINTEDFONTDIR)/Noto*.ttf COPYING
+	$(ZIP) $(ZIPDIR)/NotoFonts-hinted-$(TODAY).zip $(HINTEDFONTDIR)/Noto*.ttf LICENSE
 	cd $(ZIPDIR); ln -s NotoFonts-hinted-$(TODAY).zip NotoFonts-hinted-latest.zip
 
 unhintedzip: $(UNHINTEDFONTDIR)/*.ttf cleanunhintedzip
-	$(ZIP) $(ZIPDIR)/NotoFonts-unhinted-$(TODAY).zip $(UNHINTEDFONTDIR)/Noto*.ttf COPYING
+	$(ZIP) $(ZIPDIR)/NotoFonts-unhinted-$(TODAY).zip $(UNHINTEDFONTDIR)/Noto*.ttf LICENSE
 	cd $(ZIPDIR); ln -s NotoFonts-unhinted-$(TODAY).zip NotoFonts-unhinted-latest.zip
 
 clean: cleantarball cleanzip
