@@ -4,6 +4,12 @@ import cairo
 
 _initialized = False
 def create_cairo_font_face_for_file (filename, faceindex=0, loadoptions=0):
+
+    class PycairoContext(ctypes.Structure):
+        _fields_ = [("PyObject_HEAD", ctypes.c_byte * object.__basicsize__),
+            ("ctx", ctypes.c_void_p),
+            ("base", ctypes.c_void_p)]
+
     global _initialized
     global _freetype_so
     global _cairo_so
@@ -29,11 +35,6 @@ def create_cairo_font_face_for_file (filename, faceindex=0, loadoptions=0):
         _ft_lib = ctypes.c_void_p ()
         if FT_Err_Ok != _freetype_so.FT_Init_FreeType (ctypes.byref (_ft_lib)):
           raise "Error initialising FreeType library."
-
-        class PycairoContext(ctypes.Structure):
-            _fields_ = [("PyObject_HEAD", ctypes.c_byte * object.__basicsize__),
-                ("ctx", ctypes.c_void_p),
-                ("base", ctypes.c_void_p)]
 
         _surface = cairo.ImageSurface (cairo.FORMAT_A8, 0, 0)
 
