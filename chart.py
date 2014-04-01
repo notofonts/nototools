@@ -43,10 +43,13 @@ def assign_colors(fonts):
 	import colorsys
 	n = len(fonts)
 	mult = (n-1) // 2
-	darkness = .5
+	darkness = .3
 	for i,font in enumerate(fonts):
 		pos = (i * mult / float(n)) % 1.
 		rgb = colorsys.hsv_to_rgb(pos, 1., darkness)
+		luma = .3*rgb[0] + .59*rgb[1] + .11*rgb[2]
+		adj = .3 - luma
+		rgb = [c+adj for c in rgb]
 		font.color = Color(rgb)
 
 outfile = sys.argv[1]
