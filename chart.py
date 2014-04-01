@@ -107,12 +107,13 @@ for stage in range(2):
 			cr.translate(PADDING, 0)
 			for font in coverage.get(char, []):
 				if stage == STAGE_BOXES:
-					cr.rectangle(-BOX_WIDTH*.5, -BOX_WIDTH*.5, FONT_SIZE+BOX_WIDTH, FONT_SIZE+BOX_WIDTH)
-					cr.set_source_rgba(*[c * .3 + .7 for c in font.color.rgb])
-					cr.stroke()
+					#cr.rectangle(-BOX_WIDTH*.5, -BOX_WIDTH*.5, FONT_SIZE+BOX_WIDTH, FONT_SIZE+BOX_WIDTH)
+					#cr.set_source_rgba(*[c * .1 + .9 for c in font.color.rgb])
+					#cr.stroke()
+					pass
 				elif stage == STAGE_GLYPHS:
-					#cr.set_source_rgb(*(font.color.rgb))
-					cr.set_source_rgb(0,0,0)
+					cr.set_source_rgb(*(font.color.rgb))
+					#cr.set_source_rgb(0,0,0)
 					cr.set_font_face(font.get_cairo_font_face())
 					ascent,descent,font_height,max_x_adv,max_y_adv = cr.font_extents()
 
