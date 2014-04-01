@@ -117,7 +117,7 @@ for stage in range(2):
 
 					cr.save()
 					# XXX cr.set_font_size (FONT_SIZE*FONT_SIZE / (ascent+descent))
-					cr.set_font_size (round(FONT_SIZE*FONT_SIZE / (ascent+descent)))
+					cr.set_font_size (round(1.2 * FONT_SIZE*FONT_SIZE / (ascent+descent)))
 
 					ascent,descent,font_height,max_x_adv,max_y_adv = cr.font_extents()
 					utf8 = unichr(char).encode('utf-8')
