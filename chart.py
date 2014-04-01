@@ -10,8 +10,8 @@ def clamp(x, Min, Max):
 
 class Color:
 
-	def __init__(self, r,g,b):
-		self.rgb = (r,g,b)
+	def __init__(self, rgb):
+		self.rgb = rgb
 
 	def __repr__(self):
 		return 'Color(%g,%g,%g)' % self.rgb
@@ -40,14 +40,14 @@ class Font:
 		return 'Font("%s")' % self.filename
 
 def assign_colors(fonts):
+	import colorsys
 	n = len(fonts)
 	mult = (n-1) // 2
+	darkness = .5
 	for i,font in enumerate(fonts):
-		pos = (i * mult / float(n)) % 1. * 3
-		r = clamp(1 - pos, 0, 1) + clamp(pos - 2, 0, 1)
-		g = clamp(1 - abs(pos - 1), 0, 1)
-		b = clamp(1 - abs(pos - 2), 0, 1)
-		font.color = Color(r,g,b)
+		pos = (i * mult / float(n)) % 1.
+		rgb = colorsys.hsv_to_rgb(pos, 1., darkness)
+		font.color = Color(rgb)
 
 fonts = [Font(fontfile) for fontfile in sys.argv[1:]]
 charset = set.union(*[f.charset for f in fonts])

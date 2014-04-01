@@ -1,6 +1,6 @@
 
-CHART_FONTS = unhinted/Noto*-Regular.ttf
+CHART_FONTS = `cat LIST`
 
-chart.pdf: chart.py $(CHART_FONTS)
+chart.pdf: chart.py LIST
 	@echo "Generating $@"
-	@python $^
+	@python $< $(CHART_FONTS)
