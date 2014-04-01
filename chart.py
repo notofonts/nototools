@@ -49,7 +49,8 @@ def assign_colors(fonts):
 		rgb = colorsys.hsv_to_rgb(pos, 1., darkness)
 		font.color = Color(rgb)
 
-fonts = [Font(fontfile) for fontfile in sys.argv[1:]]
+outfile = sys.argv[1]
+fonts = [Font(fontfile) for fontfile in sys.argv[2:]]
 charset = set.union(*[f.charset for f in fonts])
 assign_colors(fonts)
 
@@ -72,8 +73,13 @@ num_rows = len(rows)
 width  = NUM_COLS * CELL_SIZE + 2 * (2 * MARGIN + LABEL_WIDTH)
 height = num_rows * CELL_SIZE + 2 * MARGIN
 
-print "Generating chart.pdf at %.3gx%.3gin" % (width/72., height/72.)
-surface = cairo.PDFSurface("chart.pdf", width, height)
+print "Generating %s at %.3gx%.3gin" % (outfile, width/72., height/72.)
+if outfile.endswith(".pdf"):
+	surface = cairo.PDFSurface(outfile, width, height)
+elif outfile.endswith(".ps"):
+	surface = cairo.PSSurface(outfile, width, height)
+else:
+	assert 0
 cr = cairo.Context(surface)
 noto_sans_lgc = pycairoft.create_cairo_font_face_for_file ("unhinted/NotoSans-Regular.ttf")
 
@@ -81,49 +87,57 @@ noto_sans_lgc = pycairoft.create_cairo_font_face_for_file ("unhinted/NotoSans-Re
 
 cr.set_font_size(FONT_SIZE)
 cr.set_line_width(PADDING)
-cr.translate(MARGIN, MARGIN)
-cr.save()
-for row,row_start in enumerate(sorted(rows)):
-	cr.translate(0, PADDING)
+
+STAGE_BOXES = 0
+STAGE_GLYPHS = 1
+for stage in range(2):
 	cr.save()
+	cr.translate(MARGIN, MARGIN)
+	for row,row_start in enumerate(sorted(rows)):
+		cr.translate(0, PADDING)
+		cr.save()
 
-	cr.set_source_rgb(0,0,0)
-	cr.move_to(0,FONT_SIZE)
-	cr.set_font_face(noto_sans_lgc)
-	cr.show_text ("U+%04X" % row_start)
-	cr.translate(LABEL_WIDTH + MARGIN, 0)
-	for char in range(row_start, row_start + NUM_COLS):
-		cr.translate(PADDING, 0)
-		for font in coverage.get(char, []):
-			cr.rectangle(-BOX_WIDTH*.5, -BOX_WIDTH*.5, FONT_SIZE+BOX_WIDTH, FONT_SIZE+BOX_WIDTH)
-			cr.set_source_rgba(*(font.color.rgb+(.1,)))
-			cr.stroke()
-			cr.set_source_rgb(*(font.color.rgb))
-			cr.set_font_face(font.get_cairo_font_face())
-			ascent,descent,font_height,max_x_adv,max_y_adv = cr.font_extents()
+		cr.set_source_rgb(0,0,0)
+		cr.move_to(0,FONT_SIZE)
+		if stage == 0:
+			cr.set_font_face(noto_sans_lgc)
+			cr.show_text ("U+%04X" % row_start)
+		cr.translate(LABEL_WIDTH + MARGIN, 0)
+		for char in range(row_start, row_start + NUM_COLS):
+			cr.translate(PADDING, 0)
+			for font in coverage.get(char, []):
+				if stage == STAGE_BOXES:
+					cr.rectangle(-BOX_WIDTH*.5, -BOX_WIDTH*.5, FONT_SIZE+BOX_WIDTH, FONT_SIZE+BOX_WIDTH)
+					cr.set_source_rgba(*(font.color.rgb+(.1,)))
+					cr.stroke()
+				elif stage == STAGE_GLYPHS:
+					cr.set_source_rgb(*(font.color.rgb))
+					cr.set_font_face(font.get_cairo_font_face())
+					ascent,descent,font_height,max_x_adv,max_y_adv = cr.font_extents()
 
-			cr.save()
-			# XXX cr.set_font_size (FONT_SIZE*FONT_SIZE / (ascent+descent))
-			cr.set_font_size (round(FONT_SIZE*FONT_SIZE / (ascent+descent)))
+					cr.save()
+					# XXX cr.set_font_size (FONT_SIZE*FONT_SIZE / (ascent+descent))
+					cr.set_font_size (round(FONT_SIZE*FONT_SIZE / (ascent+descent)))
 
-			ascent,descent,font_height,max_x_adv,max_y_adv = cr.font_extents()
-			utf8 = unichr(char).encode('utf-8')
-			x1,y1,width,height,xadv,yadv = cr.text_extents(utf8)
-			cr.move_to(FONT_SIZE*.5 - (x1+.5*width),
-				   FONT_SIZE*.5 - (-ascent+descent)*.5)
-			cr.show_text(utf8)
+					ascent,descent,font_height,max_x_adv,max_y_adv = cr.font_extents()
+					utf8 = unichr(char).encode('utf-8')
+					x1,y1,width,height,xadv,yadv = cr.text_extents(utf8)
+					cr.move_to(FONT_SIZE*.5 - (x1+.5*width),
+						   FONT_SIZE*.5 - (-ascent+descent)*.5)
+					cr.show_text(utf8)
 
-			cr.restore()
-			break
-		cr.translate(FONT_SIZE, 0)
-		cr.translate(PADDING, 0)
-	cr.set_source_rgb(0,0,0)
-	cr.move_to(MARGIN,FONT_SIZE)
-	cr.set_font_face(noto_sans_lgc)
-	cr.show_text ("U+%04X" % (row_start + NUM_COLS - 1))
-	cr.translate(LABEL_WIDTH + 2 * MARGIN, 0)
+					cr.restore()
+				break
+			cr.translate(FONT_SIZE, 0)
+			cr.translate(PADDING, 0)
+		cr.set_source_rgb(0,0,0)
+		cr.move_to(MARGIN,FONT_SIZE)
+		if stage == 0:
+			cr.set_font_face(noto_sans_lgc)
+			cr.show_text ("U+%04X" % (row_start + NUM_COLS - 1))
+		cr.translate(LABEL_WIDTH + 2 * MARGIN, 0)
 
+		cr.restore()
+		cr.translate(0, FONT_SIZE)
+		cr.translate(0, PADDING)
 	cr.restore()
-	cr.translate(0, FONT_SIZE)
-	cr.translate(0, PADDING)
-cr.restore()
