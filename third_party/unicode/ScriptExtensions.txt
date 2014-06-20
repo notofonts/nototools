@@ -1,0 +1,341 @@
+# ScriptExtensions-7.0.0.txt
+# Date: 2014-05-15, 00:11:35 GMT [MD]
+#
+# Unicode Character Database
+# Copyright (c) 1991-2014 Unicode, Inc.
+# For terms of use, see http://www.unicode.org/terms_of_use.html
+# For documentation, see http://www.unicode.org/reports/tr44/
+# The Script_Extensions property indicates which characters are commonly used
+# with more than one script, but with a limited number of scripts.
+# For each code point, there is one or more property values.  Each such value is a Script property value.
+# For more information, see:
+#   UAX #24: http://www.unicode.org/reports/tr24/ and
+#   UAX #44: http://www.unicode.org/reports/tr44/
+#
+# Each Script_Extensions value in this file consists of a set
+# of one or more abbreviated Script property values. The ordering of the
+# values in that set is not material, but for stability in presentation
+# it is given here as alphabetical.
+#
+# The Script_Extensions values are presented in sorted order in the file.
+# They are sorted first by the number of Script property values in their sets,
+# and then alphabetically by first differing Script property value.
+#
+# Following each distinct Script_Extensions value is the list of code
+# points associated with that value, listed in code point order.
+#
+#
+# All code points not explicitly listed for Script_Extensions
+# have as their value the corresponding Script property value
+#
+# @missing: 0000..10FFFF; <script>
+
+# ================================================
+
+# Property:	Script_Extensions
+
+# ================================================
+
+# Script_Extensions=Deva
+
+1CD0..1CD2    ; Deva # Mn   [3] VEDIC TONE KARSHANA..VEDIC TONE PRENKHA
+1CD4..1CE0    ; Deva # Mn  [13] VEDIC SIGN YAJURVEDIC MIDLINE SVARITA..VEDIC TONE RIGVEDIC KASHMIRI INDEPENDENT SVARITA
+1CE1          ; Deva # Mc       VEDIC TONE ATHARVAVEDIC INDEPENDENT SVARITA
+1CE2..1CE8    ; Deva # Mn   [7] VEDIC SIGN VISARGA SVARITA..VEDIC SIGN VISARGA ANUDATTA WITH TAIL
+1CED          ; Deva # Mn       VEDIC SIGN TIRYAK
+1CF2..1CF3    ; Deva # Mc   [2] VEDIC SIGN ARDHAVISARGA..VEDIC SIGN ROTATED ARDHAVISARGA
+1CF4          ; Deva # Mn       VEDIC TONE CANDRA ABOVE
+1CF8..1CF9    ; Deva # Mn   [2] VEDIC TONE RING ABOVE..VEDIC TONE DOUBLE RING ABOVE
+
+# Total code points: 30
+
+# ================================================
+
+# Script_Extensions=Dupl
+
+1BCA0..1BCA3  ; Dupl # Cf   [4] SHORTHAND FORMAT LETTER OVERLAP..SHORTHAND FORMAT UP STEP
+
+# Total code points: 4
+
+# ================================================
+
+# Script_Extensions=Grek
+
+0342          ; Grek # Mn       COMBINING GREEK PERISPOMENI
+0345          ; Grek # Mn       COMBINING GREEK YPOGEGRAMMENI
+1DC0..1DC1    ; Grek # Mn   [2] COMBINING DOTTED GRAVE ACCENT..COMBINING DOTTED ACUTE ACCENT
+
+# Total code points: 4
+
+# ================================================
+
+# Script_Extensions=Latn
+
+0363..036F    ; Latn # Mn  [13] COMBINING LATIN SMALL LETTER A..COMBINING LATIN SMALL LETTER X
+
+# Total code points: 13
+
+# ================================================
+
+# Script_Extensions=Arab Copt
+
+102E0         ; Arab Copt # Mn       COPTIC EPACT THOUSANDS MARK
+102E1..102FB  ; Arab Copt # No  [27] COPTIC EPACT DIGIT ONE..COPTIC EPACT NUMBER NINE HUNDRED
+
+# Total code points: 28
+
+# ================================================
+
+# Script_Extensions=Arab Syrc
+
+064B..0655    ; Arab Syrc # Mn  [11] ARABIC FATHATAN..ARABIC HAMZA BELOW
+0670          ; Arab Syrc # Mn       ARABIC LETTER SUPERSCRIPT ALEF
+
+# Total code points: 12
+
+# ================================================
+
+# Script_Extensions=Arab Thaa
+
+0660..0669    ; Arab Thaa # Nd  [10] ARABIC-INDIC DIGIT ZERO..ARABIC-INDIC DIGIT NINE
+FDF2          ; Arab Thaa # Lo       ARABIC LIGATURE ALLAH ISOLATED FORM
+FDFD          ; Arab Thaa # So       ARABIC LIGATURE BISMILLAH AR-RAHMAN AR-RAHEEM
+
+# Total code points: 12
+
+# ================================================
+
+# Script_Extensions=Armn Geor
+
+0589          ; Armn Geor # Po       ARMENIAN FULL STOP
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Bopo Hani
+
+302A..302D    ; Bopo Hani # Mn   [4] IDEOGRAPHIC LEVEL TONE MARK..IDEOGRAPHIC ENTERING TONE MARK
+
+# Total code points: 4
+
+# ================================================
+
+# Script_Extensions=Bugi Java
+
+A9CF          ; Bugi Java # Lm       JAVANESE PANGRANGKEP
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Cprt Linb
+
+10100..10102  ; Cprt Linb # Po   [3] AEGEAN WORD SEPARATOR LINE..AEGEAN CHECK MARK
+10107..10133  ; Cprt Linb # No  [45] AEGEAN NUMBER ONE..AEGEAN NUMBER NINETY THOUSAND
+10137..1013F  ; Cprt Linb # So   [9] AEGEAN WEIGHT BASE UNIT..AEGEAN MEASURE THIRD SUBUNIT
+
+# Total code points: 57
+
+# ================================================
+
+# Script_Extensions=Cyrl Latn
+
+0485..0486    ; Cyrl Latn # Mn   [2] COMBINING CYRILLIC DASIA PNEUMATA..COMBINING CYRILLIC PSILI PNEUMATA
+
+# Total code points: 2
+
+# ================================================
+
+# Script_Extensions=Deva Latn
+
+0951..0952    ; Deva Latn # Mn   [2] DEVANAGARI STRESS SIGN UDATTA..DEVANAGARI STRESS SIGN ANUDATTA
+
+# Total code points: 2
+
+# ================================================
+
+# Script_Extensions=Gujr Khoj
+
+0AE6..0AEF    ; Gujr Khoj # Nd  [10] GUJARATI DIGIT ZERO..GUJARATI DIGIT NINE
+
+# Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Hira Kana
+
+3031..3035    ; Hira Kana # Lm   [5] VERTICAL KANA REPEAT MARK..VERTICAL KANA REPEAT MARK LOWER HALF
+3099..309A    ; Hira Kana # Mn   [2] COMBINING KATAKANA-HIRAGANA VOICED SOUND MARK..COMBINING KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK
+309B..309C    ; Hira Kana # Sk   [2] KATAKANA-HIRAGANA VOICED SOUND MARK..KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK
+30A0          ; Hira Kana # Pd       KATAKANA-HIRAGANA DOUBLE HYPHEN
+30FC          ; Hira Kana # Lm       KATAKANA-HIRAGANA PROLONGED SOUND MARK
+FF70          ; Hira Kana # Lm       HALFWIDTH KATAKANA-HIRAGANA PROLONGED SOUND MARK
+FF9E..FF9F    ; Hira Kana # Lm   [2] HALFWIDTH KATAKANA VOICED SOUND MARK..HALFWIDTH KATAKANA SEMI-VOICED SOUND MARK
+
+# Total code points: 14
+
+# ================================================
+
+# Script_Extensions=Mong Phag
+
+1802..1803    ; Mong Phag # Po   [2] MONGOLIAN COMMA..MONGOLIAN FULL STOP
+1805          ; Mong Phag # Po       MONGOLIAN FOUR DOTS
+
+# Total code points: 3
+
+# ================================================
+
+# Script_Extensions=Arab Syrc Thaa
+
+060C          ; Arab Syrc Thaa # Po       ARABIC COMMA
+061B          ; Arab Syrc Thaa # Po       ARABIC SEMICOLON
+061F          ; Arab Syrc Thaa # Po       ARABIC QUESTION MARK
+
+# Total code points: 3
+
+# ================================================
+
+# Script_Extensions=Beng Cakm Sylo
+
+09E6..09EF    ; Beng Cakm Sylo # Nd  [10] BENGALI DIGIT ZERO..BENGALI DIGIT NINE
+
+# Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Cakm Mymr Tale
+
+1040..1049    ; Cakm Mymr Tale # Nd  [10] MYANMAR DIGIT ZERO..MYANMAR DIGIT NINE
+
+# Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Deva Kthi Mahj
+
+0966..096F    ; Deva Kthi Mahj # Nd  [10] DEVANAGARI DIGIT ZERO..DEVANAGARI DIGIT NINE
+
+# Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Hani Hira Kana
+
+3006          ; Hani Hira Kana # Lo       IDEOGRAPHIC CLOSING MARK
+303C          ; Hani Hira Kana # Lo       MASU MARK
+303D          ; Hani Hira Kana # Po       PART ALTERNATION MARK
+3190..3191    ; Hani Hira Kana # So   [2] IDEOGRAPHIC ANNOTATION LINKING MARK..IDEOGRAPHIC ANNOTATION REVERSE MARK
+3192..3195    ; Hani Hira Kana # No   [4] IDEOGRAPHIC ANNOTATION ONE MARK..IDEOGRAPHIC ANNOTATION FOUR MARK
+3196..319F    ; Hani Hira Kana # So  [10] IDEOGRAPHIC ANNOTATION TOP MARK..IDEOGRAPHIC ANNOTATION MAN MARK
+
+# Total code points: 19
+
+# ================================================
+
+# Script_Extensions=Kali Latn Mymr
+
+A92E          ; Kali Latn Mymr # Po       KAYAH LI SIGN CWI
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Buhd Hano Tagb Tglg
+
+1735..1736    ; Buhd Hano Tagb Tglg # Po   [2] PHILIPPINE SINGLE PUNCTUATION..PHILIPPINE DOUBLE PUNCTUATION
+
+# Total code points: 2
+
+# ================================================
+
+# Script_Extensions=Arab Mand Mani Phlp Syrc
+
+0640          ; Arab Mand Mani Phlp Syrc # Lm       ARABIC TATWEEL
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Bopo Hang Hani Hira Kana
+
+3003          ; Bopo Hang Hani Hira Kana # Po       DITTO MARK
+3013          ; Bopo Hang Hani Hira Kana # So       GETA MARK
+301C          ; Bopo Hang Hani Hira Kana # Pd       WAVE DASH
+301D          ; Bopo Hang Hani Hira Kana # Ps       REVERSED DOUBLE PRIME QUOTATION MARK
+301E..301F    ; Bopo Hang Hani Hira Kana # Pe   [2] DOUBLE PRIME QUOTATION MARK..LOW DOUBLE PRIME QUOTATION MARK
+3030          ; Bopo Hang Hani Hira Kana # Pd       WAVY DASH
+3037          ; Bopo Hang Hani Hira Kana # So       IDEOGRAPHIC TELEGRAPH LINE FEED SEPARATOR SYMBOL
+303E..303F    ; Bopo Hang Hani Hira Kana # So   [2] IDEOGRAPHIC VARIATION INDICATOR..IDEOGRAPHIC HALF FILL SPACE
+31C0..31E3    ; Bopo Hang Hani Hira Kana # So  [36] CJK STROKE T..CJK STROKE Q
+3220..3229    ; Bopo Hang Hani Hira Kana # No  [10] PARENTHESIZED IDEOGRAPH ONE..PARENTHESIZED IDEOGRAPH TEN
+322A..3243    ; Bopo Hang Hani Hira Kana # So  [26] PARENTHESIZED IDEOGRAPH MOON..PARENTHESIZED IDEOGRAPH REACH
+3280..3289    ; Bopo Hang Hani Hira Kana # No  [10] CIRCLED IDEOGRAPH ONE..CIRCLED IDEOGRAPH TEN
+328A..32B0    ; Bopo Hang Hani Hira Kana # So  [39] CIRCLED IDEOGRAPH MOON..CIRCLED IDEOGRAPH NIGHT
+32C0..32CB    ; Bopo Hang Hani Hira Kana # So  [12] IDEOGRAPHIC TELEGRAPH SYMBOL FOR JANUARY..IDEOGRAPHIC TELEGRAPH SYMBOL FOR DECEMBER
+3358..3370    ; Bopo Hang Hani Hira Kana # So  [25] IDEOGRAPHIC TELEGRAPH SYMBOL FOR HOUR ZERO..IDEOGRAPHIC TELEGRAPH SYMBOL FOR HOUR TWENTY-FOUR
+337B..337F    ; Bopo Hang Hani Hira Kana # So   [5] SQUARE ERA NAME HEISEI..SQUARE CORPORATION
+33E0..33FE    ; Bopo Hang Hani Hira Kana # So  [31] IDEOGRAPHIC TELEGRAPH SYMBOL FOR DAY ONE..IDEOGRAPHIC TELEGRAPH SYMBOL FOR DAY THIRTY-ONE
+FE45..FE46    ; Bopo Hang Hani Hira Kana # Po   [2] SESAME DOT..WHITE SESAME DOT
+
+# Total code points: 206
+
+# ================================================
+
+# Script_Extensions=Bopo Hang Hani Hira Kana Yiii
+
+3001..3002    ; Bopo Hang Hani Hira Kana Yiii # Po   [2] IDEOGRAPHIC COMMA..IDEOGRAPHIC FULL STOP
+3008          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT ANGLE BRACKET
+3009          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT ANGLE BRACKET
+300A          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT DOUBLE ANGLE BRACKET
+300B          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT DOUBLE ANGLE BRACKET
+300C          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT CORNER BRACKET
+300D          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT CORNER BRACKET
+300E          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT WHITE CORNER BRACKET
+300F          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT WHITE CORNER BRACKET
+3010          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT BLACK LENTICULAR BRACKET
+3011          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT BLACK LENTICULAR BRACKET
+3014          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT TORTOISE SHELL BRACKET
+3015          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT TORTOISE SHELL BRACKET
+3016          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT WHITE LENTICULAR BRACKET
+3017          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT WHITE LENTICULAR BRACKET
+3018          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT WHITE TORTOISE SHELL BRACKET
+3019          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT WHITE TORTOISE SHELL BRACKET
+301A          ; Bopo Hang Hani Hira Kana Yiii # Ps       LEFT WHITE SQUARE BRACKET
+301B          ; Bopo Hang Hani Hira Kana Yiii # Pe       RIGHT WHITE SQUARE BRACKET
+30FB          ; Bopo Hang Hani Hira Kana Yiii # Po       KATAKANA MIDDLE DOT
+FF61          ; Bopo Hang Hani Hira Kana Yiii # Po       HALFWIDTH IDEOGRAPHIC FULL STOP
+FF62          ; Bopo Hang Hani Hira Kana Yiii # Ps       HALFWIDTH LEFT CORNER BRACKET
+FF63          ; Bopo Hang Hani Hira Kana Yiii # Pe       HALFWIDTH RIGHT CORNER BRACKET
+FF64..FF65    ; Bopo Hang Hani Hira Kana Yiii # Po   [2] HALFWIDTH IDEOGRAPHIC COMMA..HALFWIDTH KATAKANA MIDDLE DOT
+
+# Total code points: 26
+
+# ================================================
+
+# Script_Extensions=Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh
+
+A830..A835    ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # No   [6] NORTH INDIC FRACTION ONE QUARTER..NORTH INDIC FRACTION THREE SIXTEENTHS
+A836..A837    ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # So   [2] NORTH INDIC QUARTER MARK..NORTH INDIC PLACEHOLDER MARK
+A838          ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # Sc       NORTH INDIC RUPEE MARK
+A839          ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # So       NORTH INDIC QUANTITY MARK
+
+# Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Beng Deva Gran Gujr Guru Knda Mahj Mlym Orya Sind Sinh Sylo Takr Taml Telu Tirh
+
+0964          ; Beng Deva Gran Gujr Guru Knda Mahj Mlym Orya Sind Sinh Sylo Takr Taml Telu Tirh # Po       DEVANAGARI DANDA
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Beng Deva Gran Gujr Guru Knda Limb Mahj Mlym Orya Sind Sinh Sylo Takr Taml Telu Tirh
+
+0965          ; Beng Deva Gran Gujr Guru Knda Limb Mahj Mlym Orya Sind Sinh Sylo Takr Taml Telu Tirh # Po       DEVANAGARI DOUBLE DANDA
+
+# Total code points: 1
+
+# EOF
