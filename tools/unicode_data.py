@@ -150,7 +150,7 @@ def is_defined(char):
 
 
 _DATA_DIR_PATH = path.abspath(
-    path.join(path.dirname(__file__), os.pardir, "third_party", "unicode"))
+    path.join(path.dirname(__file__), os.pardir, "third_party", "ucd"))
 
 
 def open_unicode_data_file(data_file_name):
