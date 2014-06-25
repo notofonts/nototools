@@ -149,6 +149,11 @@ def is_defined(char):
     return char in _defined_characters
 
 
+def is_private_use(char):
+    """Returns true if the characters is a private use character."""
+    return category(char) == "Co"
+
+
 _DATA_DIR_PATH = path.abspath(
     path.join(path.dirname(__file__), os.pardir, "third_party", "ucd"))
 

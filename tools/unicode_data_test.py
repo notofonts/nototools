@@ -56,6 +56,15 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertTrue(unicode_data.is_defined(0x3400))
         self.assertTrue(unicode_data.is_defined(0x4DB5))
         self.assertFalse(unicode_data.is_defined(0x4DB6))
+    
+    def test_private_use(self):
+        """Tests the is_private_use method."""
+        self.assertTrue(unicode_data.is_private_use(0xE000))
+        self.assertTrue(unicode_data.is_private_use(0xF8FF))
+        self.assertFalse(unicode_data.is_private_use(0x9000))
+        self.assertTrue(unicode_data.is_private_use(0xF0000))
+        self.assertTrue(unicode_data.is_private_use(0x10FFFD))
+        self.assertFalse(unicode_data.is_private_use(0x10FFFE))
 
     def test_parse_code_ranges(self):
         """Tests the _parse_code_ranges method."""
