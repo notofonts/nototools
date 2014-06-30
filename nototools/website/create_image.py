@@ -43,7 +43,7 @@ def create_png(text, output_path, family='Noto Sans', language=None, rtl=False,
 
     pango_ctx = layout.get_context()
     if language is not None:
-        pango_ctx.set_language(pango.Language('ne'))
+        pango_ctx.set_language(pango.Language(language))
     if rtl:
         pango_ctx.set_base_dir(pango.DIRECTION_RTL)
     else:
