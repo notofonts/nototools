@@ -47,6 +47,20 @@ def character_set(font_file_name):
     return frozenset(cmap.keys())
 
 
+def convert_set_to_ranges(charset):
+    """Converts a set of characters to a list of ranges."""
+    working_set = set(charset)
+    output_list = []
+    while working_set:
+        start = min(working_set)
+        end = start + 1
+        while end in working_set:
+            end += 1
+        output_list.append((start, end - 1))
+        working_set.difference_update(range(start, end))
+    return output_list
+
+
 def main(argv):
     """Outputs the character coverage of fonts given on the command line."""
     import unicode_data
