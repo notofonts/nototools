@@ -25,54 +25,18 @@ import sys
 
 from fontTools import ttLib
 
-
-def get_name_records(font):
-    """Get a font's 'name' table records as a dictionary of Unicode strings."""
-    name_table = font['name']
-    names = {}
-    for record in name_table.names:
-        name_ids = (record.platformID, record.platEncID, record.langID)
-        assert name_ids == (3, 1, 0x409)
-        names[record.nameID] = unicode(record.string, 'UTF-16BE')
-    return names
-
-
-def set_name_record(font, record_id, value):
-    """Sets a record in the 'name' table to a given string."""
-    for record in font['name'].names:
-        name_ids = (record.platformID, record.platEncID, record.langID)
-        assert name_ids == (3, 1, 0x409)
-        if record.nameID == record_id:
-            record.string = value.encode('UTF-16BE')
-
-
-def font_version(font):
-    """Returns the font version from the 'name' table."""
-    names = get_name_records(font)
-    return names[5]
-
-
-def printable_font_revision(font, accuracy=2):
-    """Returns the font revision as a string from the 'head' table."""
-    font_revision = font['head'].fontRevision
-    font_revision_int = int(font_revision)
-    font_revision_frac = int(
-        round((font_revision - font_revision_int) * 10**accuracy))
-
-    font_revision_int = str(font_revision_int)
-    font_revision_frac = str(font_revision_frac).zfill(accuracy)
-    return font_revision_int+'.'+font_revision_frac
+import font_data
 
 
 def fix_revision(font):
     """Fix the revision of the font to match its version."""
-    version = font_version(font)
+    version = font_data.font_version(font)
     match = re.match(r'Version (\d{1,5})\.(\d{1,5})', version)
     major_version = match.group(1)
     minor_version = match.group(2)
 
     accuracy = len(minor_version)
-    font_revision = printable_font_revision(font, accuracy)
+    font_revision = font_data.printable_font_revision(font, accuracy)
     expected_font_revision = major_version+'.'+minor_version
     if font_revision != expected_font_revision:
         font['head'].fontRevision = float(expected_font_revision)
@@ -102,7 +66,7 @@ NAME_CORRECTIONS = {
 def fix_name_table(font):
     """Fix copyright and reversed values in the 'name' table."""
     modified = False
-    name_records = get_name_records(font)
+    name_records = font_data.get_name_records(font)
 
     copyright_data = name_records[0]
     years = re.findall('20[0-9][0-9]', copyright_data)
@@ -111,7 +75,7 @@ def fix_name_table(font):
 
     if copyright_data != name_records[0]:
         print 'Updated copyright message to "%s"' % copyright_data
-        set_name_record(font, 0, copyright_data)
+        font_data.set_name_record(font, 0, copyright_data)
         modified = True
 
     for name_id in [1, 3, 4, 6]:
@@ -120,7 +84,7 @@ def fix_name_table(font):
             if source in record:
                 record = record.replace(source, NAME_CORRECTIONS[source])
         if record != name_records[name_id]:
-            set_name_record(font, name_id, record)
+            font_data.set_name_record(font, name_id, record)
             print 'Updated name table record #%d to "%s"' % (
                 name_id, record)
             modified = True
