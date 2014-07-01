@@ -25,6 +25,8 @@ from fontTools import agl
 from fontTools import ttLib
 from fontTools.ttLib.tables import otTables
 
+import font_data
+
 
 def create_script_list(script_tag='DFLT'):
     """Create a ScriptList for the GSUB table."""
@@ -70,15 +72,9 @@ def create_lookup_list(lookups):
     return lookup_list
 
 
-def get_cmap(font):
-    """Get the cmap dictionary of a font."""
-    assert len(font['cmap'].tables) == 1
-    return font['cmap'].tables[0].cmap
-
-
 def get_glyph_name_or_create(char, font):
     """Return the glyph name for a character, creating if it doesn't exist."""
-    cmap = get_cmap(font)
+    cmap = font_data.get_cmap(font)
     if char in cmap:
         return cmap[char]
 
@@ -101,7 +97,7 @@ def get_glyph_name_or_create(char, font):
 
 def create_lookup(table, font, flag=0):
     """Create a Lookup based on mapping table."""
-    cmap = get_cmap(font)
+    cmap = font_data.get_cmap(font)
 
     ligatures = {}
     for output, (ch1, ch2) in table.iteritems():
@@ -130,13 +126,6 @@ def create_lookup(table, font, flag=0):
 
     return lookup
     
-
-def delete_from_cmap(font, chars):
-    """Delete all characters in a list from the cmap table of a font."""
-    cmap = get_cmap(font)
-    for char in chars:
-        del cmap[char]
-
 
 def reg_indicator(letter):
     """Return a regional indicator charater from corresponing capital letter.
@@ -193,7 +182,8 @@ def main(argv):
 
         font['GSUB'] = gsub
 
-        delete_from_cmap(font, EMOJI_FLAGS.keys() + EMOJI_KEYCAPS.keys())
+        font_data.delete_from_cmap(
+            font, EMOJI_FLAGS.keys() + EMOJI_KEYCAPS.keys())
 
         font.save(font_name+'-fixed')
 

@@ -55,3 +55,15 @@ def printable_font_revision(font, accuracy=2):
     font_revision_frac = str(font_revision_frac).zfill(accuracy)
     return font_revision_int+'.'+font_revision_frac
 
+
+def get_cmap(font):
+    """Get the cmap dictionary of a font."""
+    assert len(font['cmap'].tables) == 1
+    return font['cmap'].tables[0].cmap
+
+
+def delete_from_cmap(font, chars):
+    """Delete all characters in a list from the cmap table of a font."""
+    cmap = get_cmap(font)
+    for char in chars:
+        del cmap[char]
