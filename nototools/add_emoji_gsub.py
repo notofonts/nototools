@@ -90,8 +90,6 @@ def get_glyph_name_or_create(char, font):
         font['glyf'].glyphs[glyph_name] = empty_glyph
 
     font.glyphOrder.append(glyph_name)
-    font._buildReverseGlyphOrderDict()
-
     return glyph_name
 
 
