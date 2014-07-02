@@ -58,12 +58,24 @@ def printable_font_revision(font, accuracy=2):
 
 def get_cmap(font):
     """Get the cmap dictionary of a font."""
-    assert len(font['cmap'].tables) == 1
-    return font['cmap'].tables[0].cmap
+    cmap_table = font['cmap']
+    cmaps = {}
+    for table in cmap_table.tables:
+        if (table.format, table.platformID, table.platEncID) in [
+            (4, 3, 1), (12, 3, 10)]:
+            cmaps[table.format] = table.cmap
+    if 12 in cmaps:
+        return cmaps[12]
+    elif 4 in cmaps:
+        return cmaps[4]
+    return {}
 
 
 def delete_from_cmap(font, chars):
-    """Delete all characters in a list from the cmap table of a font."""
-    cmap = get_cmap(font)
-    for char in chars:
-        del cmap[char]
+    """Delete all characters in a list from the cmap tables of a font."""
+    cmap_table = font["cmap"]
+    for table in cmap_table.tables:
+        if (table.format, table.platformID, table.platEncID) in [
+                (4, 3, 1), (12, 3, 10)]:
+            for char in chars:
+                del table.cmap[char]
