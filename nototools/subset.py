@@ -47,12 +47,15 @@ def subset_font(source_file, target_file,
       NotImplementedError: Both include and exclude were specified.
     """
     opt = subset.Options()
-    opt.recalc_bounds = True
-    opt.recalc_timestamp = True
-    opt.canonical_order = True
+
     opt.name_IDs = ['*']
     opt.name_legacy = True
     opt.name_languages = ['*']
+    opt.layout_features = ['*']
+    opt.notdef_outline = True
+    opt.recalc_bounds = True
+    opt.recalc_timestamp = True
+    opt.canonical_order = True
 
     if options is not None:
         for name, value in options:
