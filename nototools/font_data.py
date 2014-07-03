@@ -25,7 +25,8 @@ def get_name_records(font):
     names = {}
     for record in name_table.names:
         name_ids = (record.platformID, record.platEncID, record.langID)
-        assert name_ids == (3, 1, 0x409)
+        if name_ids != (3, 1, 0x409):
+            continue
         names[record.nameID] = unicode(record.string, 'UTF-16BE')
     return names
 
@@ -34,7 +35,8 @@ def set_name_record(font, record_id, value):
     """Sets a record in the 'name' table to a given string."""
     for record in font['name'].names:
         name_ids = (record.platformID, record.platEncID, record.langID)
-        assert name_ids == (3, 1, 0x409)
+        if name_ids != (3, 1, 0x409):
+            continue
         if record.nameID == record_id:
             record.string = value.encode('UTF-16BE')
 
