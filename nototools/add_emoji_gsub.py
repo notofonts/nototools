@@ -25,7 +25,7 @@ from fontTools import agl
 from fontTools import ttLib
 from fontTools.ttLib.tables import otTables
 
-import font_data
+from nototools import font_data
 
 
 def create_script_list(script_tag='DFLT'):
@@ -34,16 +34,19 @@ def create_script_list(script_tag='DFLT'):
     def_lang_sys.ReqFeatureIndex = 0xFFFF
     def_lang_sys.FeatureCount = 1
     def_lang_sys.FeatureIndex = [0]
+    def_lang_sys.LookupOrder = None
 
     script_record = otTables.ScriptRecord()
     script_record.ScriptTag = script_tag
     script_record.Script = otTables.Script()
     script_record.Script.DefaultLangSys = def_lang_sys
+    script_record.Script.LangSysCount = 0
+    script_record.Script.LangSysRecord = []
 
     script_list = otTables.ScriptList()
     script_list.ScriptCount = 1
     script_list.ScriptRecord = [script_record]
-    
+
     return script_list
 
 
@@ -55,11 +58,11 @@ def create_feature_list(feature_tag, lookup_count):
     feature_record.Feature.LookupCount = lookup_count
     feature_record.Feature.LookupListIndex = range(lookup_count)
     feature_record.Feature.FeatureParams = None
-    
+
     feature_list = otTables.FeatureList()
     feature_list.FeatureCount = 1
     feature_list.FeatureRecord = [feature_record]
-    
+
     return feature_list
 
 
@@ -68,7 +71,7 @@ def create_lookup_list(lookups):
     lookup_list = otTables.LookupList()
     lookup_list.LookupCount = len(lookups)
     lookup_list.Lookup = lookups
-    
+
     return lookup_list
 
 
@@ -80,7 +83,7 @@ def get_glyph_name_or_create(char, font):
 
     glyph_name = agl.UV2AGL[char]
     assert glyph_name not in font.glyphOrder
-    
+
     font['hmtx'].metrics[glyph_name] = [0, 0]
     cmap[char] = glyph_name
 
@@ -102,17 +105,17 @@ def create_lookup(table, font, flag=0):
         output = cmap[output]
         ch1 = get_glyph_name_or_create(ch1, font)
         ch2 = get_glyph_name_or_create(ch2, font)
-        
+
         ligature = otTables.Ligature()
         ligature.CompCount = 2
         ligature.Component = [ch2]
         ligature.LigGlyph = output
-        
+
         try:
             ligatures[ch1].append(ligature)
         except KeyError:
             ligatures[ch1] = [ligature]
-    
+
     ligature_subst = otTables.LigatureSubst()
     ligature_subst.ligatures = ligatures
 
@@ -123,7 +126,20 @@ def create_lookup(table, font, flag=0):
     lookup.SubTable = [ligature_subst]
 
     return lookup
-    
+
+
+def create_simple_gsub(lookups, script='DFLT', feature='ccmp'):
+    """Create a simple GSUB table."""
+    gsub_class = ttLib.getTableClass('GSUB')
+    gsub = gsub_class('GSUB')
+
+    gsub.table = otTables.GSUB()
+    gsub.table.Version = 1.0
+    gsub.table.ScriptList = create_script_list(script)
+    gsub.table.FeatureList = create_feature_list(feature, len(lookups))
+    gsub.table.LookupList = create_lookup_list(lookups)
+    return gsub
+
 
 def reg_indicator(letter):
     """Return a regional indicator charater from corresponing capital letter.
@@ -166,19 +182,9 @@ def main(argv):
         font = ttLib.TTFont(font_name)
 
         assert 'GSUB' not in font
-        gsub_class = ttLib.getTableClass('GSUB')
-        gsub = gsub_class('GSUB')
-
-        gsub.table = otTables.GSUB()
-        gsub.table.Version = 1.0
-        gsub.table.ScriptList = create_script_list('DFLT')
-        gsub.table.FeatureList = create_feature_list('ccmp', 2)
-        
-        gsub.table.LookupList = create_lookup_list([
+        font['GSUB'] = create_simple_gsub([
             create_lookup(EMOJI_KEYCAPS, font),
             create_lookup(EMOJI_FLAGS, font)])
-
-        font['GSUB'] = gsub
 
         font_data.delete_from_cmap(
             font, EMOJI_FLAGS.keys() + EMOJI_KEYCAPS.keys())
