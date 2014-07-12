@@ -25,7 +25,7 @@ import sys
 
 from fontTools import ttLib
 
-import font_data
+from nototools import font_data
 
 
 def fix_revision(font):
@@ -57,6 +57,8 @@ def fix_fstype(font):
 
 # Reversed name records in Khmer and Lao fonts
 NAME_CORRECTIONS = {
+    'Sans Kufi': 'Kufi',
+    'SansKufi': 'Kufi',
     'UI Khmer': 'Khmer UI',
     'UIKhmer': 'KhmerUI',
     'UI Lao': 'Lao UI',
@@ -116,7 +118,7 @@ def drop_tables(font, tables):
             print 'Dropped table "%s"' % table
             modified = True
             del font[table]
-    return modified        
+    return modified
 
 
 TABLES_TO_DROP = [
@@ -134,7 +136,7 @@ def main(argv):
         print 'Font file: %s' % font_file
         font = ttLib.TTFont(font_file)
         modified = False
-        
+
         modified |= fix_revision(font)
         modified |= fix_fstype(font)
         modified |= fix_name_table(font)
@@ -142,7 +144,7 @@ def main(argv):
         is_hinted = '/hinted' in font_file or '_hinted' in font_file
         if not is_hinted:
             modified |= drop_hints(font)
-        
+
         tables_to_drop = TABLES_TO_DROP
         if not is_hinted:
             tables_to_drop += ['fpgm', 'prep', 'cvt']
