@@ -18,6 +18,7 @@
 ./generate_sample_text.py A6A0-A6EF > ../sample_texts/und-Bamu.txt
 ./generate_sample_text.py 0995-09A8 09AA-09B0 09B2 09B6-09B9 09F0 09F1 09E6-09EF > ../sample_texts/und-Beng.txt
 ./generate_sample_text.py 1401-145F > ../sample_texts/und-Cans.txt
+./generate_sample_text.py AA00-AA28 AA50-AA59 > ../sample_texts/und-Cham.txt
 ./generate_sample_text.py 2C80-2CB1 > ../sample_texts/und-Copt.txt
 ./generate_sample_text.py 0410-044F > ../sample_texts/und-Cyrl.txt
 ./generate_sample_text.py 0915-0939 > ../sample_texts/und-Deva.txt
