@@ -43,7 +43,7 @@
 ./generate_sample_text.py 1B83-1BA0 > ../sample_texts/und-Sund.txt
 ./generate_sample_text.py 0710-072F > ../sample_texts/und-Syrc.txt
 ./generate_sample_text.py 0B95 0B99-0B9A 0B9C 0B9E-0B9F 0BA3-0BA4 0BA8-0BAA 0BAE-0BB9 > ../sample_texts/und-Taml.txt
-./generate_sample_text.py 0C15-0C28 0C2A-0C39 > ../sample_texts/und-Telu.txt
+./generate_sample_text.py 0C15-0C28 0C2A-0C33 0C35-0C39 > ../sample_texts/und-Telu.txt
 ./generate_sample_text.py 2D30-2D67 > ../sample_texts/und-Tfng.txt
 ./generate_sample_text.py 0E01-0E2E > ../sample_texts/und-Thai.txt
 ./generate_sample_text.py 10380-1039D 1039F > ../sample_texts/und-Ugar.txt
