@@ -30,6 +30,9 @@
 ./generate_sample_text.py 05D0-05EA > ../sample_texts/und-Hebr.txt
 ./generate_sample_text.py A984-A9B2 > ../sample_texts/und-Java.txt
 ./generate_sample_text.py 0C95-0CA8 0CAA-0CB3 0CB5-0CB9 > ../sample_texts/und-Knda.txt
+./generate_sample_text.py 1A20-1A4C > ../sample_texts/und-Lana.txt
+./generate_sample_text.py 0E81 0E82 0E84 0E87 0E88 0E8A 0E8D 0E94-0E97 0E99-0E9F 0EA1-0EA3 0EA5 0EA7 0EAA 0EAB 0EAD 0EAE > ../sample_texts/und-Laoo.txt
+./generate_sample_text.py 1C00-1C23 > ../sample_texts/und-Lepc.txt
 ./generate_sample_text.py 10000-1000B 10080-1009F > ../sample_texts/und-Linb.txt
 ./generate_sample_text.py 1820-1842 > ../sample_texts/und-Mong.txt
 ./generate_sample_text.py ABC0-ABE2 > ../sample_texts/und-Mtei.txt
