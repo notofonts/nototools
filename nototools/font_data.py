@@ -40,6 +40,7 @@ def set_name_record(font, record_id, value):
         if record.nameID == record_id:
             record.string = value.encode('UTF-16BE')
 
+
 def font_version(font):
     """Returns the font version from the 'name' table."""
     names = get_name_records(font)
