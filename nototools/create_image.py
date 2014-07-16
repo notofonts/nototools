@@ -23,7 +23,8 @@ import cairo
 import pango
 import pangocairo
 
-def create_png(text, output_path, family='Noto Sans', language=None, rtl=False,
+def create_png(text, output_path, family='Noto Sans',
+               language=None, rtl=False, vertical=False,
                width=1370, font_size=32, line_spacing=50,
                weight=pango.WEIGHT_NORMAL, style=pango.STYLE_NORMAL):
 
@@ -37,12 +38,22 @@ def create_png(text, output_path, family='Noto Sans', language=None, rtl=False,
         pango_ctx = layout.get_context()
         if language is not None:
             pango_ctx.set_language(pango.Language(language))
+
         if rtl:
-            pango_ctx.set_base_dir(pango.DIRECTION_RTL)
-            layout.set_alignment(pango.ALIGN_RIGHT)
+            if vertical:
+                base_dir = pango.DIRECTION_TTB_RTL
+            else:
+                base_dir = pango.DIRECTION_RTL
+            alignment = pango.ALIGN_RIGHT
         else:
-            pango_ctx.set_base_dir(pango.DIRECTION_LTR)
-            layout.set_alignment(pango.ALIGN_LEFT)
+            if vertical:
+                base_dir = pango.DIRECTION_TTB_LTR
+            else:
+                base_dir = pango.DIRECTION_LTR
+            alignment = pango.ALIGN_LEFT
+
+        pango_ctx.set_base_dir(base_dir)
+        layout.set_alignment(alignment)
 
         layout.set_width(width * pango.SCALE)
         layout.set_spacing((line_spacing-font_size) * pango.SCALE)
@@ -56,6 +67,13 @@ def create_png(text, output_path, family='Noto Sans', language=None, rtl=False,
         layout.set_font_description(font)
 
         layout.set_text(text)
+
+#        # Doesn't work for some reason
+#        pango_ctx.set_base_gravity(pango.GRAVITY_AUTO)
+#        matrix = pango_ctx.get_matrix()
+#        matrix.rotate(90)
+#        pango_ctx.set_matrix(matrix)
+#        layout.context_changed()
 
         extents = layout.get_pixel_extents()
         top_usage = min(extents[0][1], extents[1][1], 0)
@@ -97,6 +115,12 @@ def main():
         sample_text = input_file.read()
     create_png(sample_text.strip(), 'arabic.png',
         family='Noto Naskh Arabic', language='ar', rtl=True)
+
+    file_path = '../sample_texts/mn-Mong.txt'
+    with codecs.open(file_path, 'r', encoding='UTF-8') as input_file:
+        sample_text = input_file.read()
+    create_png(sample_text.strip(), 'mong.png',
+        family='Noto Sans Mongolian', language='mn', vertical=True, rtl=False)
 
 
 if __name__ == '__main__':
