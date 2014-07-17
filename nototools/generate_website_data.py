@@ -443,13 +443,16 @@ def parse_english_labels():
         'hmd': u'A-Hmao',
         'hnd': u'Southern Hindko',
         'hne': u'Chhattisgarhi',
+        'hnj': u'Hmong Njua',
         'hnn': u'Hanunoo',
         'hno': u'Northern Hindko',
         'hoc': u'Ho',
         'hoj': u'Haroti',
+        'hop': u'Hopi',
         'ikt': u'Inuinnaqtun',
         'jml': u'Jumli',
         'kao': u'Xaasongaxango',
+        'kca': u'Khanty',
         'kck': u'Kalanga',
         'kdt': u'Kuy',
         'kfr': u'Kachchi',
@@ -459,6 +462,8 @@ def parse_english_labels():
         'khn': u'Khandesi',
         'kht': u'Khamti',
         'kjg': u'Khmu',
+        'kjh': u'Khakas',
+        'kpy': u'Koryak',
         'kvr': u'Kerinci',
         'kvx': u'Parkari Koli',
         'kxm': u'Northern Khmer',
@@ -561,7 +566,7 @@ def get_english_language_name(lang_scr):
     try:
         return english_language_name[lang_scr]
     except KeyError:
-        print lang_scr
+        print 'Constructing a name for %s.' % lang_scr
         lang, script = lang_scr.split('-')
         return '%s (%s script)' % (
             english_language_name[lang],
@@ -719,9 +724,24 @@ def parse_likely_subtags():
         'hmn': ('hmn', 'Latn', 'CN'),  # Hmong
         'hnj': ('hnj', 'Latn', 'LA'),  # Hmong Njua
         'hno': ('hno', 'Arab', 'PK'),  # Northern Hindko
+        'hop': ('hop', 'Latn', 'US'),  # Hopi
+        'hsn': ('hsn', 'Hans', 'CN'),  # Xiang Chinese
+        'hup': ('hup', 'Latn', 'US'),  # Hupa
+        'hz':  ('hz',  'Latn', 'NA'),  # Herero
+        'iba': ('iba', 'Latn', 'MY'),  # Iban
         'ikt': ('ikt', 'Latn', 'CA'),  # Inuinnaqtun
+        'izh': ('izh', 'Latn', 'RU'),  # Ingrian
+        'jam': ('jam', 'Latn', 'JM'),  # Jamaican Creole English
+        'jpr': ('jpr', 'Hebr', 'IL'),  # Judeo-Persian
+        'jrb': ('jrb', 'Hebr', 'IL'),  # Jedeo-Arabic
+        'jut': ('jut', 'Latn', 'DK'),  # Jutish
+        'kac': ('kac', 'Latn', 'MM'),  # Kachin
+        'kca': ('kca', 'Cyrl', 'RU'),  # Khanty
         'kfy': ('kfy', 'Deva', 'IN'),  # Kumaoni
+        'kjh': ('kjh', 'Cyrl', 'RU'),  # Khakas
         'khn': ('khn', 'Deva', 'IN'),  # Khandesi
+        'kiu': ('kiu', 'Latn', 'TR'),  # Kirmanjki
+        'kpy': ('kpy', 'Cyrl', 'RU'),  # Koryak
         'kxm': ('kxm', 'Thai', 'TH'),  # Northern Khmer
         'laj': ('laj', 'Latn', 'UG'),  # Lango
         'ljp': ('ljp', 'Latn', 'ID'),  # Lampung Api
