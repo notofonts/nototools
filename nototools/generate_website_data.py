@@ -307,7 +307,7 @@ def get_native_language_name(lang_scr):
         language = lang_scr
 
     locl = lang_scr
-    while locl is not None:
+    while locl != 'root':
         for directory in ['common', 'seed']:
             file_path = path.join(
                 directory, 'main', locl.replace('-', '_')+'.xml')
@@ -377,6 +377,9 @@ def parse_english_labels():
     # Add langauges used that miss names
     english_language_name.update({
         'abr': u'Abron',
+        'abq': u'Abaza',
+        'aii': u'Assyrian Neo-Aramaic',
+        'akz': u'Alabama',
         'amo': u'Amo',
         'aoz': u'Uab Meto',
         'atj': u'Atikamekw',
@@ -391,27 +394,37 @@ def parse_english_labels():
         'bhk': u'Albay Bikol',
         'bjj': u'Kanauji',
         'bku': u'Buhid',
+        'blt': u'Tai Dam',
         'bmq': u'Bomu',
         'bqi': u'Bakhtiari',
         'bqv': u'Koro Wachi',
+        'bsq': u'Bassa',
         'bto': u'Rinconada Bikol',
         'btv': u'Bateri',
         'buc': u'Bushi',
         'bvb': u'Bube',
         'bya': u'Batak',
         'bze': u'Jenaama Bozo',
+        'bzx': u'Kelengaxo Bozo',
         'ccp': u'Chakma',
         'cja': u'Western Cham',
+        'cjs': u'Shor',
         'cjm': u'Eastern Cham',
+        'ckt': u'Chukchi',
         'crj': u'Southern East Cree',
         'crk': u'Plains Cree',
         'crl': u'Northern East Cree',
         'crm': u'Moose Cree',
         'crs': u'Seselwa Creole French',
         'csw': u'Swampy Cree',
+        'ctd': u'Tedim Chin',
         'dcc': u'Deccan',
+        'dng': u'Dungan',
         'dnj': u'Dan',
         'dtm': u'Tomo Kan Dogon',
+        'eky': u'Eastern Kayah',
+        'ett': u'Etruscan',
+        'evn': u'Evenki',
         'ffm': u'Maasina Fulfulde',
         'fud': u'East Futuna',
         'fuq': u'Central-Eastern Niger Fulfulde',
@@ -421,11 +434,13 @@ def parse_english_labels():
         'ggn': u'Eastern Gurung',
         'gjk': u'Kachi Koli',
         'gju': u'Gujari',
+        'gld': u'Nanai',
         'gos': u'Gronings',
         'grt': u'Garo',
         'gub': u'Guajajára',
         'gvr': u'Western Gurung',
         'haz': u'Hazaragi',
+        'hmd': u'A-Hmao',
         'hnd': u'Southern Hindko',
         'hne': u'Chhattisgarhi',
         'hnn': u'Hanunoo',
@@ -546,6 +561,7 @@ def get_english_language_name(lang_scr):
     try:
         return english_language_name[lang_scr]
     except KeyError:
+        print lang_scr
         lang, script = lang_scr.split('-')
         return '%s (%s script)' % (
             english_language_name[lang],
@@ -615,37 +631,117 @@ def parse_likely_subtags():
         likely_subtag_data[from_tag] = to_tag
 
     likely_subtag_data.update({
-        'abr': ('bgc', 'Latn', 'GH'),  # Abron
+        'abr': ('abr', 'Latn', 'GH'),  # Abron
+        'abq': ('abq', 'Cyrl', 'RU'),  # Abaza
+        'ada': ('ada', 'Latn', 'GH'),  # Adangme
+        'ae':  ('ae',  'Avst', 'ZZ'),  # Avestan
+        'aeb': ('aeb', 'Arab', 'TN'),  # Tunisian Arabic
+        'aii': ('aii', 'Syrc', 'IQ'),  # Assyrian Neo-Aramaic
+        'ain': ('ain', 'Kana', 'JP'),  # Ainu
+        'akk': ('akk', 'Xsux', 'ZZ'),  # Akkadian
+        'akz': ('akz', 'Latn', 'US'),  # Alabama
+        'ale': ('ale', 'Latn', 'US'),  # Aleut
+        'aln': ('aln', 'Latn', 'XK'),  # Gheg Albanian
+        'an':  ('an',  'Latn', 'ES'),  # Aragonese
+        'anp': ('anp', 'Deva', 'IN'),  # Angika
+        'arc': ('arc', 'Armi', 'ZZ'),  # Imperial Aramaic
+        'aro': ('aro', 'Latn', 'BO'),  # Araona
+        'arp': ('arp', 'Latn', 'US'),  # Arapaho
+        'arq': ('arq', 'Arab', 'DZ'),  # Algerian Arabic
+        'arw': ('arw', 'Latn', 'GY'),  # Arawak
+        'ary': ('ary', 'Arab', 'MA'),  # Moroccan Arabic
+        'arz': ('arz', 'Arab', 'EG'),  # Egyptian Arabic
+        'avk': ('avk', 'Latn', '001'),  # Kotava
+        'azb': ('azb', 'Arab', 'IR'),  # Southern Azerbaijani
+        'bar': ('bar', 'Latn', 'AT'),  # Bavarian
+        'bej': ('bej', 'Arab', 'SD'),  # Beja
         'bci': ('bci', 'Latn', 'CI'),  # Baoulé
         'bgc': ('bgc', 'Deva', 'IN'),  # Haryanvi
         'bhi': ('bhi', 'Deva', 'IN'),  # Bhilali
         'bhk': ('bhk', 'Latn', 'PH'),  # Albay Bikol
+        'bla': ('bla', 'Latn', 'CA'),  # Blackfoot
+        'blt': ('blt', 'Tavt', 'VN'),  # Tai Dam
+        'bpy': ('bpy', 'Beng', 'IN'),  # Bishnupriya
         'bqi': ('bqi', 'Arab', 'IR'),  # Bakhtiari
+        'bsq': ('bsq', 'Bass', 'LR'),  # Bassa
+        'bzx': ('bzx', 'Latn', 'ML'),  # Kelengaxo Bozo
+        'cad': ('cad', 'Latn', 'US'),  # Caddo
+        'car': ('car', 'Latn', 'VE'),  # Galibi Carib
+        'cay': ('cay', 'Latn', 'CA'),  # Cayuga
+        'chn': ('chn', 'Latn', 'US'),  # Chinook Jargon
+        'cho': ('cho', 'Latn', 'US'),  # Choctaw
+        'chy': ('chy', 'Latn', 'US'),  # Cheyenne
+        'cjs': ('cjs', 'Cyrl', 'RU'),  # Shor
+        'ckt': ('ckt', 'Cyrl', 'RU'),  # Chukchi
+        'cop': ('cop', 'Copt', 'EG'),  # Coptic
+        'cps': ('cps', 'Latn', 'PH'),  # Capiznon
+        'crh': ('crh', 'Latn', 'UA'),  # Crimean Tatar
         'crs': ('crs', 'Latn', 'SC'),  # Seselwa Creole French
+        'ctd': ('ctd', 'Latn', 'MM'),  # Tedim Chin
+        'dak': ('dak', 'Latn', 'US'),  # Dakota
         'dcc': ('dcc', 'Arab', 'IN'),  # Deccan
+        'del': ('del', 'Latn', 'US'),  # Delaware
+        'din': ('din', 'Latn', 'SS'),  # Dinka
+        'dng': ('dng', 'Cyrl', 'KG'),  # Dungan
+        'dtp': ('dtp', 'Latn', 'MY'),  # Central Dusun
+        'egl': ('egl', 'Latn', 'IT'),  # Emilian
+        'egy': ('egy', 'Egyp', 'ZZ'),  # Ancient Egyptian
+        'eka': ('eka', 'Egyp', 'NG'),  # Ekajuk
+        'eky': ('eky', 'Kali', 'TH'),  # Eastern Kayah
+        'esu': ('esu', 'Latn', 'US'),  # Central Yupik
+        'ett': ('ett', 'Ital', 'IT'),  # Etruscan
+        'evn': ('evn', 'Latn', 'CN'),  # Evenki
+        'ext': ('ext', 'Latn', 'ES'),  # Extremaduran
         'ffm': ('ffm', 'Latn', 'ML'),  # Maasina Fulfulde
+        'frc': ('frc', 'Latn', 'US'),  # Cajun French
+        'frr': ('frr', 'Latn', 'DE'),  # Northern Frisian
+        'frs': ('frs', 'Latn', 'DE'),  # Eastern Frisian
         'fud': ('fud', 'Latn', 'WF'),  # East Futuna
         'fuq': ('fuq', 'Latn', 'NE'),  # Central-Eastern Niger Fulfulde
         'fuv': ('fuv', 'Latn', 'NG'),  # Nigerian Fulfulde
+        'gan': ('gan', 'Hans', 'CN'),  # Gan Chinese
+        'gay': ('gay', 'Latn', 'ID'),  # Gayo
+        'gba': ('gba', 'Latn', 'CF'),  # Gbaya
+        'gbz': ('gbz', 'Arab', 'IR'),  # Zoroastrian Dari
+        'gld': ('gld', 'Cyrl', 'RU'),  # Nanai
+        'gom': ('gom', 'Deva', 'IN'),  # Goan Konkani
+        'got': ('got', 'Goth', 'ZZ'),  # Gothic
+        'grb': ('grb', 'Latn', 'LR'),  # Grebo
+        'grc': ('grc', 'Grek', 'ZZ'),  # Ancient Greek
+        'guc': ('guc', 'Latn', 'CO'),  # Wayuu
+        'gur': ('gur', 'Latn', 'GH'),  # Frafra
+        'hai': ('hai', 'Latn', 'CA'),  # Haida
+        'hak': ('hak', 'Hant', 'CN'),  # Hakka Chinese
         'haz': ('haz', 'Arab', 'AF'),  # Hazaragi
+        'hif': ('hif', 'Deva', 'FJ'),  # Fiji Hindi
+        'hit': ('hit', 'Xsux', 'ZZ'),  # Hittite
+        'hmd': ('hmd', 'Plrd', 'CN'),  # A-Hmao
+        'hmn': ('hmn', 'Latn', 'CN'),  # Hmong
+        'hnj': ('hnj', 'Latn', 'LA'),  # Hmong Njua
         'hno': ('hno', 'Arab', 'PK'),  # Northern Hindko
         'ikt': ('ikt', 'Latn', 'CA'),  # Inuinnaqtun
         'kfy': ('kfy', 'Deva', 'IN'),  # Kumaoni
         'khn': ('khn', 'Deva', 'IN'),  # Khandesi
         'kxm': ('kxm', 'Thai', 'TH'),  # Northern Khmer
         'laj': ('laj', 'Latn', 'UG'),  # Lango
-        'ljp': ('ljp', 'Latn', 'ID'),  # Lango
+        'ljp': ('ljp', 'Latn', 'ID'),  # Lampung Api
         'lrc': ('lrc', 'Arab', 'IR'),  # Northern Luri
         'mfa': ('mfa', 'Arab', 'TH'),  # Pattani Malay
         'mtr': ('mtr', 'Deva', 'IN'),  # Mewari
+        'mwl': ('mwl', 'Latn', 'PT'),  # Mirandese
+        'mwv': ('mwv', 'Latn', 'ID'),  # Mentawai
         'myx': ('myx', 'Latn', 'UG'),  # Masaaba
         'ndc': ('ndc', 'Latn', 'MZ'),  # Ndau
         'ngl': ('ngl', 'Latn', 'MZ'),  # Lomwe
         'noe': ('noe', 'Deva', 'IN'),  # Nimadi
+        'osa': ('osa', 'Latn', 'US'),  # Osage
+        'rom': ('rom', 'Latn', 'RO'),  # Romany
         'sck': ('sck', 'Deva', 'IN'),  # Sadri
         'skr': ('skr', 'Arab', 'PK'),  # Seraiki
         'sou': ('sou', 'Thai', 'TH'),  # Southern Thai
         'swv': ('swv', 'Deva', 'IN'),  # Shekhawati
+        'uga': ('uga', 'Ugar', 'ZZ'),  # Ugaritic
+        'vep': ('vep', 'Latn', 'RU'),  # Veps
         'vmw': ('vmw', 'Latn', 'MZ'),  # Makhuwa
         'wbr': ('wbr', 'Deva', 'IN'),  # Wagdi
         'wbq': ('wbq', 'Telu', 'IN'),  # Waddar
@@ -749,6 +845,8 @@ family_to_langs = collections.defaultdict(set)
 
 def create_langs_object():
     langs = {}
+#    # Try all languages of which we know the script
+#    for lang_scr in sorted(written_in_scripts):
     for lang_scr in all_used_lang_scrs:
         lang_object = {}
         if '-' in lang_scr:
@@ -771,7 +869,7 @@ def create_langs_object():
             # Scripts we don't have fonts for yet
             print('No font supports the %s script needed for '
                   'the %s language.' % (script, lang_object['name']))
-            assert script in {'Orya', 'Thaa', 'Tibt'}
+            assert script in {'Bass', 'Orya', 'Plrd', 'Thaa', 'Tibt'}
 
             lang_object['families'] = []
         else:
