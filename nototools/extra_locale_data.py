@@ -126,19 +126,66 @@ LIKELY_SUBTAGS = {
     'khn': ('khn', 'Deva', 'IN'),  # Khandesi
     'kiu': ('kiu', 'Latn', 'TR'),  # Kirmanjki
     'kpy': ('kpy', 'Cyrl', 'RU'),  # Koryak
+    'kr': ('kr', 'Arab', 'NG'),  # Kanuri
+    'krj': ('krj', 'Latn', 'PH'),  # Kinaray-a
+    'kut': ('kut', 'Latn', 'CA'),  # Kutenai
     'kxm': ('kxm', 'Thai', 'TH'),  # Northern Khmer
+    'kyu': ('kyu', 'Kali', 'MM'),  # Western Kayah
+    'lab': ('lab', 'Lina', 'ZZ'),  # Linear A
+    'lad': ('lad', 'Latn', 'IL'),  # Ladino
+    'lam': ('lam', 'Latn', 'ZM'),  # Lamba
     'laj': ('laj', 'Latn', 'UG'),  # Lango
+    'lfn': ('lfn', 'Latn', '001'),  # Lingua Franca Nova
+    'lij': ('lij', 'Latn', 'IT'),  # Ligurian
+    'liv': ('liv', 'Latn', 'LV'),  # Livonian
     'ljp': ('ljp', 'Latn', 'ID'),  # Lampung Api
     'lrc': ('lrc', 'Arab', 'IR'),  # Northern Luri
+    'ltg': ('ltg', 'Latn', 'LV'),  # Latgalian
+    'lui': ('lui', 'Latn', 'US'),  # Luiseno
+    'lun': ('lun', 'Latn', 'ZM'),  # Lunda
+    'lus': ('lus', 'Latn', 'IN'),  # Mizo
+    'lut': ('lut', 'Latn', 'US'),  # Lushootseed
+    'lzh': ('lzh', 'Hant', 'CN'),  # Literary Chinese
+    'lzz': ('lzz', 'Latn', 'TR'),  # Laz
+    'mdt': ('mdt', 'Latn', 'CG'),  # Mbere
     'mfa': ('mfa', 'Arab', 'TH'),  # Pattani Malay
+    'mic': ('mic', 'Latn', 'CA'),  # Micmac
+    'mnc': ('mnc', 'Mong', 'CN'),  # Manchu
+    'mns': ('mns', 'Cyrl', 'RU'),  # Mansi
     'mtr': ('mtr', 'Deva', 'IN'),  # Mewari
+    'mus': ('mus', 'Latn', 'US'),  # Creek
     'mwl': ('mwl', 'Latn', 'PT'),  # Mirandese
     'mwv': ('mwv', 'Latn', 'ID'),  # Mentawai
     'myx': ('myx', 'Latn', 'UG'),  # Masaaba
+    'myz': ('myz', 'Mand', 'ZZ'),  # Classical Mandaic
+    'mzn': ('mzn', 'Arab', 'IR'),  # Mazanderani
+    'nan': ('nan', 'Hans', 'CN'),  # Min Nan Chinese
     'ndc': ('ndc', 'Latn', 'MZ'),  # Ndau
     'ngl': ('ngl', 'Latn', 'MZ'),  # Lomwe
+    'nia': ('nia', 'Latn', 'ID'),  # Nias
+    'njo': ('njo', 'Latn', 'IN'),  # Ao Naga
     'noe': ('noe', 'Deva', 'IN'),  # Nimadi
+    'nog': ('nog', 'Cyrl', 'RU'),  # Nogai
+    'non': ('non', 'Runr', 'ZZ'),  # Old Norse
+    'nov': ('nov', 'Latn', '001'),  # Novial
+    'nyo': ('nyo', 'Latn', 'UG'),  # Nyoro
+    'nzi': ('nzi', 'Latn', 'GH'),  # Nzima
+    'oj': ('oj', 'Latn', 'CA'),  # Ojibwa
     'osa': ('osa', 'Latn', 'US'),  # Osage
+    'osc': ('osc', 'Ital', 'ZZ'),  # Oscan
+    'otk': ('otk', 'Orkh', 'ZZ'),  # Old Turkish
+    'pal': ('pal', 'Phli', 'ZZ'),  # Pahlavi FIXME: should really be 'Phlv'
+    'pcd': ('pcd', 'Latn', 'FR'),  # Picard
+    'pdc': ('pdc', 'Latn', 'US'),  # Pennsylvania German
+    'pdt': ('pdt', 'Latn', 'CA'),  # Plautdietsch
+    'peo': ('peo', 'Xpeo', 'ZZ'),  # Old Persian
+    'pfl': ('pfl', 'Latn', 'DE'),  # Palatine German
+    'phn': ('phn', 'Phnx', 'ZZ'),  # Phoenician
+    'pi': ('pi', 'Brah', 'ZZ'),  # Pali
+    'pms': ('pms', 'Latn', 'IT'),  # Piedmontese
+    'pnt': ('pnt', 'Grek', 'GR'),  # Pontic
+    'prs': ('prs', 'Arab', 'AF'),  # Dari
+    'qug': ('qug', 'Latn', 'EC'),  # Chimborazo Highland Quichua
     'rom': ('rom', 'Latn', 'RO'),  # Romany
     'sck': ('sck', 'Deva', 'IN'),  # Sadri
     'skr': ('skr', 'Arab', 'PK'),  # Seraiki
@@ -249,6 +296,8 @@ ENGLISH_LANGUAGE_NAMES = {
     'kvx': u'Parkari Koli',
     'kxm': u'Northern Khmer',
     'kxp': u'Wadiyara Koli',
+    'kyu': u'Western Kayah',
+    'lab': u'Linear A',
     'laj': u'Lango',
     'lbe': u'Lak',
     'lbw': u'Tolaki',
@@ -260,13 +309,16 @@ ENGLISH_LANGUAGE_NAMES = {
     'lki': u'Laki',
     'lmn': u'Lambadi',
     'lrc': u'Northern Luri',
+    'lut': u'Lushootseed',
     'luz': u'Southern Luri',
     'lwl': u'Eastern Lawa',
     'maz': u'Central Mazahua',
     'mdh': u'Maguindanaon',
+    'mdt': u'Mbere',
     'mfa': u'Pattani Malay',
     'mgp': u'Eastern Magar',
     'mgy': u'Mbunga',
+    'mns': u'Mansi',
     'mnw': u'Mon',
     'moe': u'Montagnais',
     'mrd': u'Western Magar',
@@ -275,6 +327,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'mwk': u'Kita Maninkakan',
     'mxc': u'Manyika',
     'myx': u'Masaaba',
+    'myz': u'Classical Mandaic',
     'nch': u'Central Huasteca Nahuatl',
     'ndc': u'Ndau',
     'ngl': u'Lomwe',
@@ -285,9 +338,12 @@ ENGLISH_LANGUAGE_NAMES = {
     'noe': u'Nimadi',
     'nsk': u'Naskapi',
     'nxq': u'Naxi',
+    'osc': u'Oscan',
+    'otk': u'Old Turkish',
     'pcm': u'Nigerian Pidgin',
     'pko': u'Pökoot',
     'prd': u'Parsi-Dari',
+    'prs': u'Dari',
     'puu': u'Punu',
     'rcf': u'Réunion Creole French',
     'rej': u'Rejang',

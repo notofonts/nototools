@@ -402,6 +402,8 @@ def parse_supplemental_data():
             assert attribs['alt'] == 'secondary'
 
         lang = attribs['type']
+        if lang == 'mru':  # CLDR bug: http://unicode.org/cldr/trac/ticket/7709
+            continue
 
         if 'territories' in attribs:
             territories = set(attribs['territories'].split(' '))
@@ -562,7 +564,14 @@ def create_langs_object():
             # Scripts we don't have fonts for yet
             print('No font supports the %s script needed for '
                   'the %s language.' % (script, lang_object['name']))
-            assert script in {'Bass', 'Orya', 'Plrd', 'Thaa', 'Tibt'}
+            assert script in {
+                'Bass',  # Bassa Vah
+                'Lina',  # Linear A
+                'Orya',  # Oriya
+                'Plrd',  # Miao
+                'Thaa',  # Thaana
+                'Tibt',  # Tibetan
+            }
 
             lang_object['families'] = []
         else:
