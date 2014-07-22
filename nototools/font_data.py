@@ -74,11 +74,21 @@ def get_cmap(font):
     return {}
 
 
+UNICODE_CMAPS = {(4, 0, 3), (4, 3, 1), (12, 3, 10)}
+
 def delete_from_cmap(font, chars):
     """Delete all characters in a list from the cmap tables of a font."""
-    cmap_table = font["cmap"]
+    cmap_table = font['cmap']
     for table in cmap_table.tables:
-        if (table.format, table.platformID, table.platEncID) in [
-                (4, 3, 1), (12, 3, 10)]:
+        if (table.format, table.platformID, table.platEncID) in UNICODE_CMAPS:
             for char in chars:
                 del table.cmap[char]
+
+
+def add_to_cmap(font, mapping):
+    """Adds a codepoint to glyph mapping to a font's cmap."""
+    cmap_table = font['cmap']
+    for table in cmap_table.tables:
+        if (table.format, table.platformID, table.platEncID) in UNICODE_CMAPS:
+            for code, glyph in mapping.iteritems():
+                table.cmap[code] = glyph
