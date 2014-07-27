@@ -1,0 +1,10 @@
+URL: https://github.com/googlefonts/fontbakery/archive/5fa16b4bd25cca18eba8dc18f450945545e3925c.zip
+Version: 5fa16b4bd25cca18eba8dc18f450945545e3925c
+License: Apache 2.0
+License File: LICENSE
+
+Description:
+fontcrunch is a TrueType outline simplification tool.
+
+Local Modifications:
+Only the fontcrunch directory is included from fontbakery.
