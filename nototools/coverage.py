@@ -22,16 +22,17 @@ import sys
 from fontTools import ttLib
 
 
-def character_set(font_file_name):
+def character_set(font):
     """Returns the character coverage of a font.
 
     Args:
-      font_file_name: The input font's file name.
+      font: The input font's file name, or a TTFont.
 
     Returns:
       A frozenset listing the characters supported in the font.
     """
-    font = ttLib.TTFont(font_file_name)
+    if type(font) is str:
+        font = ttLib.TTFont(font)
     cmap_table = font["cmap"]
     cmaps = {}
     for table in cmap_table.tables:
