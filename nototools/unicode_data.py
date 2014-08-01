@@ -40,6 +40,7 @@ _general_category_data = {}
 _script_data = {}
 _script_extensions_data = {}
 _block_data = {}
+_age_data = {}
 _core_properties_data = {}
 _defined_characters = set()
 _script_code_to_long_name = {}
@@ -60,13 +61,14 @@ def load_data():
         _load_scripts_txt()
         _load_script_extensions_txt()
         _load_blocks_txt()
+        _load_derived_age_txt()
         _load_derived_core_properties_txt()
         _data_is_loaded = True
 
 
 def name(char, *args):
     """"Returns the name of a character.
-    
+
     Raises a ValueError exception if the character is undefined, unless an
     extra argument is given, in which cast it will return that argument.
     """
@@ -86,11 +88,18 @@ def name(char, *args):
             raise val_error
 
 
+def _char_to_int(char):
+    """Converts a potential character to its scalar value."""
+    if type(char) in [str, unicode]:
+        return ord(char)
+    else:
+        return char
+
+
 def category(char):
     """Returns the general category of a character."""
     load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
+    char = _char_to_int(char)
     try:
         return _general_category_data[char]
     except KeyError:
@@ -100,8 +109,7 @@ def category(char):
 def script(char):
     """Returns the script property of a character as a four-letter code."""
     load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
+    char = _char_to_int(char)
     try:
         return _script_data[char]
     except KeyError:
@@ -110,12 +118,11 @@ def script(char):
 
 def script_extensions(char):
     """Returns the script extensions property of a character.
-    
+
     The return value is a frozenset of four-letter script codes.
     """
     load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
+    char = _char_to_int(char)
     try:
         return _script_extensions_data[char]
     except KeyError:
@@ -125,12 +132,23 @@ def script_extensions(char):
 def block(char):
     """Returns the block property of a character."""
     load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
+    char = _char_to_int(char)
     try:
         return _block_data[char]
     except KeyError:
         return "No_Block"
+
+
+def age(char):
+    """Returns the age property of a character as a string.
+
+    Returns None if the character is unassigned."""
+    load_data()
+    char = _char_to_int(char)
+    try:
+        return _age_data[char]
+    except KeyError:
+        return None
 
 
 def is_default_ignorable(char):
@@ -167,7 +185,7 @@ def open_unicode_data_file(data_file_name):
     Returns:
       A file handle to the data file.
     """
-    return open(path.join(_DATA_DIR_PATH, data_file_name), "rt")
+    return open(path.join(_DATA_DIR_PATH, data_file_name), "r")
 
 
 def _parse_code_ranges(input_data):
@@ -311,6 +329,16 @@ def _load_blocks_txt():
     for first, last, block_name in block_ranges:
         for character_code in xrange(first, last+1):
             _block_data[character_code] = block_name
+
+
+def _load_derived_age_txt():
+    """Load age property from DerivedAge.txt."""
+    with open_unicode_data_file("DerivedAge.txt") as derived_age_txt:
+        age_ranges = _parse_code_ranges(derived_age_txt.read())
+
+    for first, last, char_age in age_ranges:
+        for char_code in xrange(first, last+1):
+            _age_data[char_code] = char_age
 
 
 def _load_derived_core_properties_txt():

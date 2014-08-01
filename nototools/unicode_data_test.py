@@ -20,7 +20,7 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import unittest
 
-import unicode_data
+from nototools import unicode_data
 
 
 class UnicodeDataTest(unittest.TestCase):
@@ -56,7 +56,7 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertTrue(unicode_data.is_defined(0x3400))
         self.assertTrue(unicode_data.is_defined(0x4DB5))
         self.assertFalse(unicode_data.is_defined(0x4DB6))
-    
+
     def test_private_use(self):
         """Tests the is_private_use method."""
         self.assertTrue(unicode_data.is_private_use(0xE000))
@@ -65,6 +65,13 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertTrue(unicode_data.is_private_use(0xF0000))
         self.assertTrue(unicode_data.is_private_use(0x10FFFD))
         self.assertFalse(unicode_data.is_private_use(0x10FFFE))
+
+    def test_age(self):
+        """Tests the age method."""
+        self.assertEqual(unicode_data.age(0xE000), '1.1')
+        self.assertEqual(unicode_data.age(0xE0021), '3.1')
+        self.assertEqual(unicode_data.age(0x20BD), '7.0')
+        self.assertIsNone(unicode_data.age(0x2B820))
 
     def test_parse_code_ranges(self):
         """Tests the _parse_code_ranges method."""
