@@ -47,6 +47,12 @@ def font_version(font):
     return names[5]
 
 
+def font_name(font):
+    """Returns the font name from the 'name' table."""
+    names = get_name_records(font)
+    return names[4]
+
+
 def printable_font_revision(font, accuracy=2):
     """Returns the font revision as a string from the 'head' table."""
     font_revision = font['head'].fontRevision
