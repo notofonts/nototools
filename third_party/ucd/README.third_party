@@ -7,4 +7,8 @@ Description:
 Unicode data files.
 
 Local Modifications:
-No Modifications.
+1. Unicode 8.0 alpha files have been pulled from
+   http://www.unicode.org/Public/8.0.0/ucd/
+
+2. Updates to ScriptExtensions.txt, has been pulled from
+   https://github.com/roozbehp/unicode-data/

@@ -1,5 +1,5 @@
-# ScriptExtensions-7.0.0.txt
-# Date: 2014-05-15, 00:11:35 GMT [MD]
+# ScriptExtensions-8.0.0.txt
+# Date: 2014-06-26, 00:01:00 GMT [RP]
 #
 # Unicode Character Database
 # Copyright (c) 1991-2014 Unicode, Inc.
@@ -38,16 +38,19 @@
 
 # Script_Extensions=Deva
 
-1CD0..1CD2    ; Deva # Mn   [3] VEDIC TONE KARSHANA..VEDIC TONE PRENKHA
-1CD4..1CE0    ; Deva # Mn  [13] VEDIC SIGN YAJURVEDIC MIDLINE SVARITA..VEDIC TONE RIGVEDIC KASHMIRI INDEPENDENT SVARITA
+1CD1          ; Deva # Mn       VEDIC TONE SHARA
+1CD4..1CD6    ; Deva # Mn   [3] VEDIC SIGN YAJURVEDIC MIDLINE SVARITA..VEDIC TONE YAJURVEDIC INDEPENDENT SVARITA
+1CD8          ; Deva # Mn       VEDIC TONE CANDRA BELOW
+1CDB          ; Deva # Mn       VEDIC TONE TRIPLE SVARITA
+1CDE..1CDF    ; Deva # Mn   [2] VEDIC TONE TWO DOTS BELOW..VEDIC TONE THREE DOTS BELOW
 1CE1          ; Deva # Mc       VEDIC TONE ATHARVAVEDIC INDEPENDENT SVARITA
 1CE2..1CE8    ; Deva # Mn   [7] VEDIC SIGN VISARGA SVARITA..VEDIC SIGN VISARGA ANUDATTA WITH TAIL
+1CE9..1CEC    ; Deva # Lo   [4] VEDIC SIGN ANUSVARA ANTARGOMUKHA..VEDIC SIGN ANUSVARA VAMAGOMUKHA WITH TAIL
 1CED          ; Deva # Mn       VEDIC SIGN TIRYAK
-1CF2..1CF3    ; Deva # Mc   [2] VEDIC SIGN ARDHAVISARGA..VEDIC SIGN ROTATED ARDHAVISARGA
-1CF4          ; Deva # Mn       VEDIC TONE CANDRA ABOVE
-1CF8..1CF9    ; Deva # Mn   [2] VEDIC TONE RING ABOVE..VEDIC TONE DOUBLE RING ABOVE
+1CEE..1CF1    ; Deva # Lo   [4] VEDIC SIGN HEXIFORM LONG ANUSVARA..VEDIC SIGN ANUSVARA UBHAYATO MUKHA
+1CF6          ; Deva # Lo       VEDIC SIGN UPADHMANIYA
 
-# Total code points: 30
+# Total code points: 28
 
 # ================================================
 
@@ -139,6 +142,15 @@ A9CF          ; Bugi Java # Lm       JAVANESE PANGRANGKEP
 
 # ================================================
 
+# Script_Extensions=Cyrl Glag
+
+0487          ; Cyrl Glag # Mn       COMBINING CYRILLIC POKRYTIE
+A66F          ; Cyrl Glag # Mn       COMBINING CYRILLIC VZMET
+
+# Total code points: 2
+
+# ================================================
+
 # Script_Extensions=Cyrl Latn
 
 0485..0486    ; Cyrl Latn # Mn   [2] COMBINING CYRILLIC DASIA PNEUMATA..COMBINING CYRILLIC PSILI PNEUMATA
@@ -147,11 +159,51 @@ A9CF          ; Bugi Java # Lm       JAVANESE PANGRANGKEP
 
 # ================================================
 
-# Script_Extensions=Deva Latn
+# Script_Extensions=Cyrl Perm
 
-0951..0952    ; Deva Latn # Mn   [2] DEVANAGARI STRESS SIGN UDATTA..DEVANAGARI STRESS SIGN ANUDATTA
+0483          ; Cyrl Perm # Mn       COMBINING CYRILLIC TITLO
 
-# Total code points: 2
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Deva Gran
+
+1CD0          ; Deva Gran # Mn       VEDIC TONE KARSHANA
+1CD2          ; Deva Gran # Mn       VEDIC TONE PRENKHA
+1CD3          ; Deva Gran # Po       VEDIC SIGN NIHSHVASA
+1CF2..1CF3    ; Deva Gran # Mc   [2] VEDIC SIGN ARDHAVISARGA..VEDIC SIGN ROTATED ARDHAVISARGA
+1CF4          ; Deva Gran # Mn       VEDIC TONE CANDRA ABOVE
+1CF8..1CF9    ; Deva Gran # Mn   [2] VEDIC TONE RING ABOVE..VEDIC TONE DOUBLE RING ABOVE
+
+# Total code points: 6
+
+# ================================================
+
+# Script_Extensions=Deva Knda
+
+1CF5          ; Deva Knda # Lo       VEDIC SIGN JIHVAMULIYA
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Deva Shrd
+
+1CD7          ; Deva Shrd # Mn       VEDIC TONE YAJURVEDIC KATHAKA INDEPENDENT SVARITA
+1CD9          ; Deva Shrd # Mn       VEDIC TONE YAJURVEDIC KATHAKA INDEPENDENT SVARITA SCHROEDER
+1CDC..1CDD    ; Deva Shrd # Mn   [2] VEDIC TONE KATHAKA ANUDATTA..VEDIC TONE DOT BELOW
+1CE0          ; Deva Shrd # Mn       VEDIC TONE RIGVEDIC KASHMIRI INDEPENDENT SVARITA
+
+# Total code points: 5
+
+# ================================================
+
+# Script_Extensions=Deva Telu
+
+1CDA          ; Deva Telu # Mn       VEDIC TONE DOUBLE SVARITA
+
+# Total code points: 1
 
 # ================================================
 
@@ -212,6 +264,14 @@ FF9E..FF9F    ; Hira Kana # Lm   [2] HALFWIDTH KATAKANA VOICED SOUND MARK..HALFW
 
 # ================================================
 
+# Script_Extensions=Deva Gran Latn
+
+20F0          ; Deva Gran Latn # Mn       COMBINING ASTERISK ABOVE
+
+# Total code points: 1
+
+# ================================================
+
 # Script_Extensions=Deva Kthi Mahj
 
 0966..096F    ; Deva Kthi Mahj # Nd  [10] DEVANAGARI DIGIT ZERO..DEVANAGARI DIGIT NINE
@@ -249,6 +309,14 @@ A92E          ; Kali Latn Mymr # Po       KAYAH LI SIGN CWI
 
 # ================================================
 
+# Script_Extensions=Deva Gran Latn Telu
+
+0952          ; Deva Gran Latn Telu # Mn       DEVANAGARI STRESS SIGN ANUDATTA
+
+# Total code points: 1
+
+# ================================================
+
 # Script_Extensions=Arab Mand Mani Phlp Syrc
 
 0640          ; Arab Mand Mani Phlp Syrc # Lm       ARABIC TATWEEL
@@ -279,6 +347,14 @@ A92E          ; Kali Latn Mymr # Po       KAYAH LI SIGN CWI
 FE45..FE46    ; Bopo Hang Hani Hira Kana # Po   [2] SESAME DOT..WHITE SESAME DOT
 
 # Total code points: 206
+
+# ================================================
+
+# Script_Extensions=Deva Gran Latn Shrd Telu
+
+0951          ; Deva Gran Latn Shrd Telu # Mn       DEVANAGARI STRESS SIGN UDATTA
+
+# Total code points: 1
 
 # ================================================
 
