@@ -20,7 +20,7 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import unittest
 
-from nototools import unicode_data
+from . import unicode_data
 
 
 class UnicodeDataTest(unittest.TestCase):

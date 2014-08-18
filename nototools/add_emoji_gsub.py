@@ -25,7 +25,7 @@ from fontTools import agl
 from fontTools import ttLib
 from fontTools.ttLib.tables import otTables
 
-from nototools import font_data
+from . import font_data
 
 
 def create_script_list(script_tag='DFLT'):
