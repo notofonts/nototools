@@ -37,6 +37,7 @@ _data_is_loaded = False
 _property_value_aliases_data = {}
 _character_names_data = {}
 _general_category_data = {}
+_decomposition_data = {}
 _script_data = {}
 _script_extensions_data = {}
 _block_data = {}
@@ -104,6 +105,17 @@ def category(char):
         return _general_category_data[char]
     except KeyError:
         return "Cn"  # Unassigned
+
+
+def canonical_decomposition(char):
+    """Returns the canonical decomposition of a character as a Unicode string.
+    """
+    load_data()
+    char = _char_to_int(char)
+    try:
+        return _decomposition_data[char]
+    except KeyError:
+        return u""
 
 
 def script(char):
@@ -284,6 +296,13 @@ def _load_unicode_data_txt():
         code = int(line[0], 16)
         char_name = line[1]
         general_category = line[2]
+        decomposition = line[5]
+        if decomposition.startswith('<'):
+            # We only care about canonical decompositions
+            decomposition = ''
+        decomposition = decomposition.split()
+        decomposition = [unichr(int(char, 16)) for char in decomposition]
+        decomposition = ''.join(decomposition)
         if char_name.endswith("First>"):
             last_range_opener = code
         elif char_name.endswith("Last>"):
@@ -295,6 +314,7 @@ def _load_unicode_data_txt():
         else:
             _character_names_data[code] = char_name
             _general_category_data[code] = general_category
+            _decomposition_data[code] = decomposition
             _defined_characters.add(code)
 
     _defined_characters = frozenset(_defined_characters)

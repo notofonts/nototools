@@ -20,7 +20,7 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import unittest
 
-from . import unicode_data
+from nototools import unicode_data
 
 
 class UnicodeDataTest(unittest.TestCase):
@@ -33,6 +33,14 @@ class UnicodeDataTest(unittest.TestCase):
         """Tests the category() method."""
         self.assertEqual('Co', unicode_data.category(0xF0001))
         self.assertEqual('Cn', unicode_data.category(0xE01F0))
+
+    def test_canonical_decomposition(self):
+        """Tests the canonical_decomposition() method."""
+        self.assertEqual('', unicode_data.canonical_decomposition(0x0627))
+        self.assertEqual(u'\u064A\u0654',
+                         unicode_data.canonical_decomposition(0x0626))
+        self.assertEqual(u'\U000226D4',
+                         unicode_data.canonical_decomposition(0x2F8A4))
 
     def test_script(self):
         """Tests the script() method."""
