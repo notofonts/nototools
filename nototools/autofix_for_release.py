@@ -25,7 +25,7 @@ import sys
 
 from fontTools import ttLib
 
-from . import font_data
+from nototools import font_data
 
 
 def fix_revision(font):

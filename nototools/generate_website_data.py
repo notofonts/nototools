@@ -36,11 +36,11 @@ import zipfile
 
 from fontTools import ttLib
 
-from . import coverage
-from . import create_image
-from . import extra_locale_data
-from . import font_data
-from . import unicode_data
+from nototools import coverage
+from nototools import create_image
+from nototools import extra_locale_data
+from nototools import font_data
+from nototools import unicode_data
 
 NOTO_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 
