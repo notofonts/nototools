@@ -38,6 +38,7 @@ _property_value_aliases_data = {}
 _character_names_data = {}
 _general_category_data = {}
 _decomposition_data = {}
+_bidi_mirroring_characters = set()
 _script_data = {}
 _script_extensions_data = {}
 _block_data = {}
@@ -184,6 +185,24 @@ def is_private_use(char):
     return category(char) == "Co"
 
 
+def is_bidi_mirroring(char):
+    """Returns true if the characters is bidi mirroring."""
+    load_data()
+    if type(char) in [str, unicode]:
+        char = ord(char)
+    return char in _bidi_mirroring_characters
+
+
+def defined_characters_set(version=None):
+    """Returns the set of all defined characters in the Unicode Standard."""
+    load_data()
+    if version is None:
+        return _defined_characters
+    else:
+        return [char for char in _defined_characters
+                if age(char) is not None and float(age(char)) <= version]
+
+
 _DATA_DIR_PATH = path.abspath(
     path.join(path.dirname(__file__), os.pardir, "third_party", "ucd"))
 
@@ -288,6 +307,7 @@ def _parse_semicolon_separated_data(input_data):
 def _load_unicode_data_txt():
     """Load character data from UnicodeData.txt."""
     global _defined_characters
+    global _bidi_mirroring_characters
 
     with open_unicode_data_file("UnicodeData.txt") as unicode_data_txt:
         unicode_data = _parse_semicolon_separated_data(unicode_data_txt.read())
@@ -296,6 +316,7 @@ def _load_unicode_data_txt():
         code = int(line[0], 16)
         char_name = line[1]
         general_category = line[2]
+
         decomposition = line[5]
         if decomposition.startswith('<'):
             # We only care about canonical decompositions
@@ -303,6 +324,9 @@ def _load_unicode_data_txt():
         decomposition = decomposition.split()
         decomposition = [unichr(int(char, 16)) for char in decomposition]
         decomposition = ''.join(decomposition)
+
+        bidi_mirroring = (line[9] == 'Y')
+
         if char_name.endswith("First>"):
             last_range_opener = code
         elif char_name.endswith("Last>"):
@@ -310,14 +334,19 @@ def _load_unicode_data_txt():
             if "Surrogate" not in char_name:
                 for char in xrange(last_range_opener, code+1):
                     _general_category_data[char] = general_category
+                    if bidi_mirroring:
+                       _bidi_mirroring_characters.add(char)
                     _defined_characters.add(char)
         else:
             _character_names_data[code] = char_name
             _general_category_data[code] = general_category
+            if bidi_mirroring:
+                _bidi_mirroring_characters.add(code)
             _decomposition_data[code] = decomposition
             _defined_characters.add(code)
 
     _defined_characters = frozenset(_defined_characters)
+    _bidi_mirroring_characters = frozenset(_bidi_mirroring_characters)
 
 
 def _load_scripts_txt():

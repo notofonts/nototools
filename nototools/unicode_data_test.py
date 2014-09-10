@@ -65,6 +65,14 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertTrue(unicode_data.is_defined(0x4DB5))
         self.assertFalse(unicode_data.is_defined(0x4DB6))
 
+    def test_defined_characters_set(self):
+        """Tests the defined_characters_set() method."""
+        self.assertIn(0x20BD, unicode_data.defined_characters_set())
+        self.assertNotIn(0xFDD0, unicode_data.defined_characters_set())
+        # Version-restricted
+        self.assertNotIn(0x20BD, unicode_data.defined_characters_set(6.3))
+        self.assertIn(0x20BD, unicode_data.defined_characters_set(7.0))
+
     def test_private_use(self):
         """Tests the is_private_use method."""
         self.assertTrue(unicode_data.is_private_use(0xE000))
@@ -73,6 +81,16 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertTrue(unicode_data.is_private_use(0xF0000))
         self.assertTrue(unicode_data.is_private_use(0x10FFFD))
         self.assertFalse(unicode_data.is_private_use(0x10FFFE))
+
+    def test_bidi_mirroring(self):
+        """Tests the is_bidi_mirroring method."""
+        self.assertTrue(unicode_data.is_bidi_mirroring(0x0028))
+        self.assertTrue(unicode_data.is_bidi_mirroring(0x2140))
+        self.assertTrue(unicode_data.is_bidi_mirroring(0x0029))
+        self.assertTrue(unicode_data.is_bidi_mirroring(0x1D7C3))
+        self.assertFalse(unicode_data.is_bidi_mirroring(0x0020))
+        self.assertTrue(unicode_data.is_bidi_mirroring(0x27CB))
+        self.assertTrue(unicode_data.is_bidi_mirroring(0x27CD))
 
     def test_age(self):
         """Tests the age method."""
