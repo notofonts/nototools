@@ -100,6 +100,27 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertEqual(unicode_data.age(0x20BD), '7.0')
         self.assertIsNone(unicode_data.age(0x2B820))
 
+    def test_script_code(self):
+        """Tests the script_code method."""
+        self.assertEqual(unicode_data.script_code('NKo'), 'Nkoo')
+        self.assertEqual(unicode_data.script_code("N'Ko"), 'Nkoo')
+        self.assertEqual(unicode_data.script_code('NewTaiLue'), 'Talu')
+        self.assertEqual(unicode_data.script_code('Klingon'), 'Zzzz')
+
+    def test_human_readable_script_name(self):
+        """Tests the human_readable_script_name method."""
+        self.assertEqual(unicode_data.human_readable_script_name('Grek'),
+                         'Greek')
+        self.assertEqual(unicode_data.human_readable_script_name('Talu'),
+                         'New Tai Lue')
+        self.assertEqual(unicode_data.human_readable_script_name('Nkoo'), 'NKo')
+        self.assertEqual(unicode_data.human_readable_script_name('Qaae'),
+                         'Emoji')
+        self.assertEqual(unicode_data.human_readable_script_name('Zsym'),
+                         'Symbols')
+        self.assertEqual(unicode_data.human_readable_script_name('Zzzz'),
+                         'Unknown')
+
     def test_parse_code_ranges(self):
         """Tests the _parse_code_ranges method."""
         source = (

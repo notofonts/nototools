@@ -203,6 +203,40 @@ def defined_characters_set(version=None):
                 if age(char) is not None and float(age(char)) <= version]
 
 
+def _folded_script_name(script_name):
+    """Folds a script name to its bare bones for comparison."""
+    return script_name.translate(None, "'_ ").lower()
+
+
+def _is_same_script_name(script1, script2):
+    """Returns true if the two inputs are basically the same script name."""
+    return _folded_script_name(script1) == _folded_script_name(script2)
+
+
+def script_code(script_name):
+    """Returns the four-letter ISO 15924 code of a script from its loose name.
+    """
+    load_data()
+    for code, code_name in _script_code_to_long_name.iteritems():
+        if _is_same_script_name(code_name, script_name):
+            return code
+    return "Zzzz"  # Unknown
+
+
+_HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
+    'Nkoo': 'NKo',
+    'Qaae': 'Emoji',
+    'Zsym': 'Symbols',
+}
+
+def human_readable_script_name(code):
+    """Returns a human-readable name for the script code."""
+    try:
+        return _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES[code]
+    except KeyError:
+        return _script_code_to_long_name[code].replace('_', ' ')
+
+
 _DATA_DIR_PATH = path.abspath(
     path.join(path.dirname(__file__), os.pardir, "third_party", "ucd"))
 
@@ -335,7 +369,7 @@ def _load_unicode_data_txt():
                 for char in xrange(last_range_opener, code+1):
                     _general_category_data[char] = general_category
                     if bidi_mirroring:
-                       _bidi_mirroring_characters.add(char)
+                        _bidi_mirroring_characters.add(char)
                     _defined_characters.add(char)
         else:
             _character_names_data[code] = char_name
