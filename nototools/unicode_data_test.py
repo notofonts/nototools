@@ -82,15 +82,16 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertTrue(unicode_data.is_private_use(0x10FFFD))
         self.assertFalse(unicode_data.is_private_use(0x10FFFE))
 
-    def test_bidi_mirroring(self):
-        """Tests the is_bidi_mirroring method."""
-        self.assertTrue(unicode_data.is_bidi_mirroring(0x0028))
-        self.assertTrue(unicode_data.is_bidi_mirroring(0x2140))
-        self.assertTrue(unicode_data.is_bidi_mirroring(0x0029))
-        self.assertTrue(unicode_data.is_bidi_mirroring(0x1D7C3))
-        self.assertFalse(unicode_data.is_bidi_mirroring(0x0020))
-        self.assertTrue(unicode_data.is_bidi_mirroring(0x27CB))
-        self.assertTrue(unicode_data.is_bidi_mirroring(0x27CD))
+    def test_mirrored(self):
+        """Tests the mirrored method."""
+        self.assertNotIsInstance(unicode_data.mirrored(0x0000), bool)
+        self.assertEqual(unicode_data.mirrored(0x0028), 1)
+        self.assertEqual(unicode_data.mirrored(0x2140), 1)
+        self.assertEqual(unicode_data.mirrored(0x0029), 1)
+        self.assertEqual(unicode_data.mirrored(0x1D7C3), 1)
+        self.assertEqual(unicode_data.mirrored(0x0020), 0)
+        self.assertEqual(unicode_data.mirrored(0x27CB), 1)
+        self.assertEqual(unicode_data.mirrored(0x27CD), 1)
 
     def test_age(self):
         """Tests the age method."""

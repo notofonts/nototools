@@ -185,12 +185,12 @@ def is_private_use(char):
     return category(char) == "Co"
 
 
-def is_bidi_mirroring(char):
-    """Returns true if the characters is bidi mirroring."""
+def mirrored(char):
+    """Returns 1 if the characters is bidi mirroring, 0 otherwise."""
     load_data()
     if type(char) in [str, unicode]:
         char = ord(char)
-    return char in _bidi_mirroring_characters
+    return int(char in _bidi_mirroring_characters)
 
 
 def defined_characters_set(version=None):
