@@ -524,8 +524,7 @@ def check_font(file_name, csv_flag=False, info_flag=False):
                  "Postscript name is '%s', but was expecting '%s'." % (
                      names[6], expected_postscript_name))
 
-        if (names[7] != "Noto is a trademark of Google Inc. and may be "
-                         "registered in certain jurisdictions."):
+        if (names[7] != "Noto is a trademark of Google Inc."):
             warn("Trademark",
                  "Trademark message doesn't match template: '%s'." % names[7])
 
