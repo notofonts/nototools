@@ -65,13 +65,23 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertTrue(unicode_data.is_defined(0x4DB5))
         self.assertFalse(unicode_data.is_defined(0x4DB6))
 
-    def test_defined_characters_set(self):
-        """Tests the defined_characters_set() method."""
-        self.assertIn(0x20BD, unicode_data.defined_characters_set())
-        self.assertNotIn(0xFDD0, unicode_data.defined_characters_set())
+    def test_defined_characters(self):
+        """Tests the defined_characters() method."""
+        self.assertIn(0x20BD, unicode_data.defined_characters())
+        self.assertNotIn(0xFDD0, unicode_data.defined_characters())
         # Version-restricted
-        self.assertNotIn(0x20BD, unicode_data.defined_characters_set(6.3))
-        self.assertIn(0x20BD, unicode_data.defined_characters_set(7.0))
+        self.assertNotIn(0x20BD, unicode_data.defined_characters(6.3))
+        self.assertIn(0x20BD, unicode_data.defined_characters(7.0))
+        # Script restricted
+        self.assertIn(0x1CD1, unicode_data.defined_characters(scr='Deva'))
+        self.assertNotIn(
+            0x1CD1,
+            unicode_data.defined_characters(version=5.1, scr='Deva'))
+        self.assertIn(0x0964, unicode_data.defined_characters(scr='Beng'))
+        self.assertIn(0xA92E, unicode_data.defined_characters(scr='Latn'))
+        self.assertNotIn(
+            0x0363,
+            unicode_data.defined_characters(scr='Arab'))
 
     def test_private_use(self):
         """Tests the is_private_use method."""
@@ -100,6 +110,14 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertEqual(unicode_data.age(0x20BD), '7.0')
         self.assertIsNone(unicode_data.age(0x2B820))
 
+    def test_bidi_mirroring_glyph(self):
+        """Tests the bidi_mirroring_glyph() method."""
+        self.assertEqual(unicode_data.bidi_mirroring_glyph(0x0028), 0x0029)
+        self.assertEqual(unicode_data.bidi_mirroring_glyph(0x0029), 0x0028)
+        self.assertEqual(unicode_data.bidi_mirroring_glyph(0x27CB), 0x27CD)
+        self.assertEqual(unicode_data.bidi_mirroring_glyph(0x27CD), 0x27CB)
+        self.assertIsNone(unicode_data.bidi_mirroring_glyph(0x2140))
+
     def test_script_code(self):
         """Tests the script_code method."""
         self.assertEqual(unicode_data.script_code('NKo'), 'Nkoo')
@@ -120,6 +138,11 @@ class UnicodeDataTest(unittest.TestCase):
                          'Symbols')
         self.assertEqual(unicode_data.human_readable_script_name('Zzzz'),
                          'Unknown')
+
+    def test_all_scripts(self):
+        """Tests the all_scripts() method."""
+        self.assertIn('Latn', unicode_data.all_scripts())
+        self.assertNotIn('Japn', unicode_data.all_scripts())
 
     def test_parse_code_ranges(self):
         """Tests the _parse_code_ranges method."""

@@ -43,6 +43,7 @@ _script_data = {}
 _script_extensions_data = {}
 _block_data = {}
 _age_data = {}
+_bidi_mirroring_glyph_data = {}
 _core_properties_data = {}
 _defined_characters = set()
 _script_code_to_long_name = {}
@@ -65,6 +66,7 @@ def load_data():
         _load_blocks_txt()
         _load_derived_age_txt()
         _load_derived_core_properties_txt()
+        _load_bidi_mirroring_txt()
         _data_is_loaded = True
 
 
@@ -193,14 +195,36 @@ def mirrored(char):
     return int(char in _bidi_mirroring_characters)
 
 
-def defined_characters_set(version=None):
+def bidi_mirroring_glyph(char):
+    """Returns the bidi mirroring glyph property of a character."""
+    load_data()
+    if type(char) in [str, unicode]:
+        char = ord(char)
+    try:
+        return _bidi_mirroring_glyph_data[char]
+    except KeyError:
+        return None
+
+
+_DEFINED_CHARACTERS_CACHE = {}
+
+def defined_characters(version=None, scr=None):
     """Returns the set of all defined characters in the Unicode Standard."""
     load_data()
-    if version is None:
-        return _defined_characters
-    else:
-        return [char for char in _defined_characters
-                if age(char) is not None and float(age(char)) <= version]
+    try:
+        return _DEFINED_CHARACTERS_CACHE[(version, scr)]
+    except KeyError:
+        pass
+    characters = _defined_characters
+    if version is not None:
+        characters = {char for char in characters
+                      if age(char) is not None and float(age(char)) <= version}
+    if scr is not None:
+        characters = {char for char in characters
+                      if script(char) == scr or scr in script_extensions(char)}
+    characters = frozenset(characters)
+    _DEFINED_CHARACTERS_CACHE[(version, scr)] = characters
+    return characters
 
 
 def _folded_script_name(script_name):
@@ -234,7 +258,14 @@ def human_readable_script_name(code):
     try:
         return _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES[code]
     except KeyError:
+        load_data()
         return _script_code_to_long_name[code].replace('_', ' ')
+
+
+def all_scripts():
+    """Return a frozenset of all four-letter script codes."""
+    load_data()
+    return frozenset(_script_code_to_long_name.keys())
 
 
 _DATA_DIR_PATH = path.abspath(
@@ -448,3 +479,14 @@ def _load_property_value_aliases_txt():
             long_name = data_item[2]
             _script_code_to_long_name[code] = long_name
             _script_long_name_to_code[long_name] = code
+
+def _load_bidi_mirroring_txt():
+    """Load bidi mirroring glyphs from BidiMirroring.txt."""
+    with open_unicode_data_file("BidiMirroring.txt") as bidi_mirroring_txt:
+        bmg_pairs = _parse_semicolon_separated_data(bidi_mirroring_txt.read())
+
+    for char, bmg in bmg_pairs:
+        char = int(char, 16)
+        bmg = int(bmg, 16)
+        _bidi_mirroring_glyph_data[char] = bmg
+
