@@ -6,10 +6,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10314 $"/>
-		<generation date="$Date: 2014-05-15 11:34:32 -0700 (Thu, 15 May 2014) $"/>
+		<version number="$Revision: 10669 $"/>
+		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
 		<language type="moh"/>
 		<territory type="CA"/>
 	</identity>
 </ldml>
-

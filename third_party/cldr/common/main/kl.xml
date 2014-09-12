@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2013 Unicode, Inc.
+<!-- Copyright © 1991-2014 Unicode, Inc.
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10257 $"/>
-		<generation date="$Date: 2014-05-09 00:09:23 -0700 (Fri, 09 May 2014) $"/>
+		<version number="$Revision: 10669 $"/>
+		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
 		<language type="kl"/>
 	</identity>
 	<localeDisplayNames>
@@ -353,7 +353,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</localeDisplayNames>
 	<characters>
 		<exemplarCharacters>[a á â ã b c d e é ê f g h i í î ĩ j k l m n o ô p q ĸ r s t u ú û ũ v w x y z æ ø å]</exemplarCharacters>
-		<exemplarCharacters type="auxiliary" draft="unconfirmed">[b c d h x z æ ø å]</exemplarCharacters>
+		<exemplarCharacters type="auxiliary">[]</exemplarCharacters>
 		<exemplarCharacters type="index" draft="unconfirmed">[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Æ Ø Å]</exemplarCharacters>
 		<ellipsis type="final" draft="unconfirmed">{0}…</ellipsis>
 		<ellipsis type="initial" draft="unconfirmed">…{0}</ellipsis>
@@ -1201,7 +1201,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName draft="unconfirmed">danmarkimut koruuni</displayName>
 				<displayName count="one" draft="unconfirmed">danskinut koruuni</displayName>
 				<displayName count="other" draft="unconfirmed">danmarkimut koruuni</displayName>
-				<symbol>kr</symbol>
+				<symbol>kr.</symbol>
 			</currency>
 			<currency type="EUR">
 				<displayName>euro</displayName>
@@ -1926,4 +1926,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</messages>
 	</posix>
 </ldml>
-

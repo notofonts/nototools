@@ -6,11 +6,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10327 $"/>
-		<generation date="$Date: 2014-05-19 05:56:31 -0700 (Mon, 19 May 2014) $"/>
+		<version number="$Revision: 10669 $"/>
+		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
 		<language type="sd"/>
 		<script type="Arab"/>
 		<territory type="PK"/>
 	</identity>
 </ldml>
-

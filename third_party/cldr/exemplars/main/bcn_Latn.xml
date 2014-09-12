@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2013 Unicode, Inc.
+<!-- Copyright © 1991-2014 Unicode, Inc.
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
-  <identity>
-    <version number="$Revision: 9597 $"/>
-    <generation date="$Date: 2014-01-02 12:45:45 -0800 (Thu, 02 Jan 2014) $"/>
-    <language type="bcn"/>
-  </identity>
-  <layout>
-    <orientation>
-      <characterOrder>left-to-right</characterOrder>
-      <lineOrder>top-to-bottom</lineOrder>
-    </orientation>
-  </layout>
-  <characters>
-    <exemplarCharacters draft="unconfirmed">[{á} a {à} {ã́} {ã} {ã̀} b ɓ d ɗ {é} e {è} {ẽ́} {ẽ} {ẽ̀} f g {gb} h {í} i {ì} {ĩ́} {ĩ} {ĩ̀} j k {kp} l m n {ó} o {ò} {ṍ} {õ} {õ̀} {ɔ́} ɔ {ɔ̀} {ɔ̃́}́ {ɔ̃} {ɔ̃̀}̀ p r s t {ú} u {ù} {ṹ} {ũ} {ũ̀} v ʋ w y z]</exemplarCharacters>
-    <exemplarCharacters type="auxiliary" draft="unconfirmed">[c q x]</exemplarCharacters>
-  </characters>
+	<identity>
+		<version number="$Revision: 10701 $"/>
+		<generation date="$Date: 2014-07-30 13:14:57 -0700 (Wed, 30 Jul 2014) $"/>
+		<language type="bcn"/>
+		<script type="Latn"/>
+	</identity>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+			<lineOrder>top-to-bottom</lineOrder>
+		</orientation>
+	</layout>
+	<characters>
+		<exemplarCharacters draft="unconfirmed">[{á} a {à} {ã́} {ã} {ã̀} b ɓ d ɗ {é} e {è} {ẽ́} {ẽ} {ẽ̀} f g {gb} h {í} i {ì} {ĩ́} {ĩ} {ĩ̀} j k {kp} l m n {ó} o {ò} {ṍ} {õ} {õ̀} {ɔ́} ɔ {ɔ̀} {ɔ̃́}́ {ɔ̃} {ɔ̃̀}̀ p r s t {ú} u {ù} {ṹ} {ũ} {ũ̀} v ʋ w y z]</exemplarCharacters>
+		<exemplarCharacters type="auxiliary" draft="unconfirmed">[c q x]</exemplarCharacters>
+	</characters>
 </ldml>
+

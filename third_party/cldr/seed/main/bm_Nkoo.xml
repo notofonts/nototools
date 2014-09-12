@@ -6,9 +6,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10369 $"/>
-		<generation date="$Date: 2014-05-20 22:28:27 -0700 (Tue, 20 May 2014) $"/>
+		<version number="$Revision: 10669 $"/>
+		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
 		<language type="bm"/>
+		<script type="Nkoo"/>
 	</identity>
 	<layout>
 		<orientation>
@@ -160,4 +161,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</currencyFormats>
 	</numbers>
 </ldml>
-

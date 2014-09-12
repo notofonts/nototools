@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10369 $"/>
-		<generation date="$Date: 2014-05-20 22:28:27 -0700 (Tue, 20 May 2014) $"/>
+		<version number="$Revision: 10669 $"/>
+		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
 		<language type="gn"/>
 	</identity>
 	<layout>
@@ -21,5 +21,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters type="auxiliary">[b c d f q w x z]</exemplarCharacters>
 		<exemplarCharacters type="index">[A Ã {CH} E Ẽ G {G\u0303} H I Ĩ J K L M {MB} N {ND} {NG} {NT} Ñ O Õ P R {RR} S T U Ũ V Y Ỹ ʼ]</exemplarCharacters>
 	</characters>
+	<numbers>
+		<currencies>
+			<currency type="PYG">
+				<symbol>₲</symbol>
+			</currency>
+		</currencies>
+	</numbers>
 </ldml>
-

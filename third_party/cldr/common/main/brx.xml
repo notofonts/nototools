@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2013 Unicode, Inc.
+<!-- Copyright © 1991-2014 Unicode, Inc.
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10369 $"/>
-		<generation date="$Date: 2014-05-20 22:28:27 -0700 (Tue, 20 May 2014) $"/>
+		<version number="$Revision: 10809 $"/>
+		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
 		<language type="brx"/>
 	</identity>
 	<localeDisplayNames>
@@ -1195,6 +1195,15 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</field>
 		</fields>
 		<timeZoneNames>
+			<zone type="Asia/Chongqing">
+				<exemplarCity>चोंग्क़ींग</exemplarCity>
+			</zone>
+			<zone type="Asia/Harbin">
+				<exemplarCity>हर्बिन</exemplarCity>
+			</zone>
+			<zone type="Asia/Kashgar">
+				<exemplarCity>काश्गर</exemplarCity>
+			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>अज्ञात</exemplarCity>
 			</zone>
@@ -1534,17 +1543,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<zone type="Africa/Douala">
 				<exemplarCity>दुआला</exemplarCity>
 			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>काश्गर</exemplarCity>
-			</zone>
 			<zone type="Asia/Urumqi">
 				<exemplarCity>उरुमकी</exemplarCity>
-			</zone>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>चोंग्क़ींग</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>हर्बिन</exemplarCity>
 			</zone>
 			<zone type="America/Bogota">
 				<exemplarCity>बोगोटा</exemplarCity>

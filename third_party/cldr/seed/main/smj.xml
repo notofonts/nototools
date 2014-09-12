@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10369 $"/>
-		<generation date="$Date: 2014-05-20 22:28:27 -0700 (Tue, 20 May 2014) $"/>
+		<version number="$Revision: 10669 $"/>
+		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
 		<language type="smj"/>
 	</identity>
 	<localeDisplayNames>
@@ -27,4 +27,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters type="index">[A Á B D E F G H I J K L M N Ń O P R S T U V Å Ä]</exemplarCharacters>
 	</characters>
 </ldml>
-

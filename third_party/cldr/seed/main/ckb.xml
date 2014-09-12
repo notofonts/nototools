@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2013 Unicode, Inc.
+<!-- Copyright © 1991-2014 Unicode, Inc.
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10369 $"/>
-		<generation date="$Date: 2014-05-20 22:28:27 -0700 (Tue, 20 May 2014) $"/>
+		<version number="$Revision: 10669 $"/>
+		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
 		<language type="ckb"/>
 	</identity>
 	<localeDisplayNames>
-		<localeDisplayPattern>
-			<localeSeparator draft="unconfirmed">،</localeSeparator>
-		</localeDisplayPattern>
 		<languages>
 			<language type="af" draft="unconfirmed">ئه‌فریكای</language>
 			<language type="am" draft="unconfirmed">ئه‌مهه‌رینجی</language>
@@ -426,7 +423,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</layout>
 	<characters>
 		<exemplarCharacters>[ئ ا ب پ ت ج چ ح خ د ر ز ڕ ژ س ش ع غ ف ڤ ق ک گ ل ڵ م ن ھ ە و ۆ ی ێ]</exemplarCharacters>
-		<exemplarCharacters type="auxiliary">[\u200E\u200F \u064B \u064C \u064D \u064E \u064F \u0650 \u0651 \u0652 ء آ أ ؤ إ ئ ا ب ة ث ذ ص ض ط ظ ك ه ى ي]</exemplarCharacters>
+		<exemplarCharacters type="auxiliary">[\u200E\u200F \u064B \u064C \u064D \u064E \u064F \u0650 \u0651 \u0652 ء آ أ ؤ إ ة ث ذ ص ض ط ظ ك ه ى ي]</exemplarCharacters>
 		<exemplarCharacters type="index" draft="unconfirmed">[ئ ا ب پ ت ج چ ح خ د ر ز ڕ ژ س ش ع غ ف ڤ ق ک گ ل ڵ م ن ھ ە و ۆ ی ێ]</exemplarCharacters>
 	</characters>
 	<dates>
@@ -590,9 +587,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<month type="11" draft="unconfirmed">تشرینی دووەم</month>
 							<month type="12" draft="unconfirmed">کانونی یەکەم</month>
 						</monthWidth>
-						<monthWidth type="narrow">
-							<month type="12" draft="unconfirmed">D</month>
-						</monthWidth>
 						<monthWidth type="wide">
 							<month type="1" draft="unconfirmed">کانوونی دووەم</month>
 							<month type="2" draft="unconfirmed">شوبات</month>
@@ -622,9 +616,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<month type="10" draft="unconfirmed">تشرینی یەکەم</month>
 							<month type="11" draft="unconfirmed">تشرینی دووەم</month>
 							<month type="12" draft="unconfirmed">کانونی یەکەم</month>
-						</monthWidth>
-						<monthWidth type="narrow">
-							<month type="12" draft="unconfirmed">D</month>
 						</monthWidth>
 						<monthWidth type="wide">
 							<month type="1" draft="unconfirmed">کانوونی دووەم</month>
@@ -955,12 +946,4 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</currency>
 		</currencies>
 	</numbers>
-	<units>
-		<unitLength type="long">
-			<unit type="duration-day">
-				<unitPattern count="one">{0} ڕۆژ</unitPattern>
-			</unit>
-		</unitLength>
-	</units>
 </ldml>
-

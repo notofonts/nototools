@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2013 Unicode, Inc.
+<!-- Copyright © 1991-2014 Unicode, Inc.
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10257 $"/>
-		<generation date="$Date: 2014-05-09 00:09:23 -0700 (Fri, 09 May 2014) $"/>
+		<version number="$Revision: 10772 $"/>
+		<generation date="$Date: 2014-08-12 20:17:03 -0700 (Tue, 12 Aug 2014) $"/>
 		<language type="nn"/>
 	</identity>
 	<localeDisplayNames>
@@ -319,7 +319,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="no">norsk</language>
 			<language type="nog">nogai</language>
 			<language type="non">gammalnorsk</language>
-			<language type="nqo">n'ko</language>
+			<language type="nqo">n’ko</language>
 			<language type="nr">sør-ndebele</language>
 			<language type="nso">nordsotho</language>
 			<language type="nus">nuer</language>
@@ -562,7 +562,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Moon">moon</script>
 			<script type="Mtei">meitei-mayek</script>
 			<script type="Mymr">myanmar</script>
-			<script type="Nkoo">n'ko</script>
+			<script type="Nkoo">n’ko</script>
 			<script type="Ogam">ogham</script>
 			<script type="Olck">ol-chiki</script>
 			<script type="Orkh">orkhon</script>
@@ -1371,7 +1371,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateFormatLength>
 					<dateFormatLength type="short">
 						<dateFormat>
-							<pattern>dd.MM.yy</pattern>
+							<pattern>dd.MM.y</pattern>
 						</dateFormat>
 					</dateFormatLength>
 				</dateFormats>
@@ -1821,6 +1821,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<standard>EET</standard>
 					<daylight>EEST</daylight>
 				</short>
+			</metazone>
+			<metazone type="Europe_Further_Eastern">
+				<long>
+					<standard draft="unconfirmed">Kaliningradtid</standard>
+				</long>
 			</metazone>
 			<metazone type="Europe_Western">
 				<long>

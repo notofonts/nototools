@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2013 Unicode, Inc.
+<!-- Copyright © 1991-2014 Unicode, Inc.
 CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10149 $"/>
-		<generation date="$Date: 2014-04-25 09:34:23 -0700 (Fri, 25 Apr 2014) $"/>
+		<version number="$Revision: 10819 $"/>
+		<generation date="$Date: 2014-08-14 20:53:08 -0700 (Thu, 14 Aug 2014) $"/>
 		<language type="fr"/>
 		<territory type="CH"/>
 	</identity>
@@ -244,11 +244,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</currencyFormat>
 			</currencyFormatLength>
 		</currencyFormats>
-		<currencies>
-			<currency type="CHF">
-				<symbol>CHF</symbol>
-			</currency>
-		</currencies>
 	</numbers>
 </ldml>
 
