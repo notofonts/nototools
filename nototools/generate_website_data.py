@@ -53,12 +53,11 @@ CJK_DIR = path.join(NOTO_DIR, 'third_party', 'noto_cjk')
 
 
 ODD_SCRIPTS = {
-    'CJK': 'Qaak',  # private use code
-    'JP': 'Jpan',
-    'KR': 'Kore',
+    'CJKjp': 'Jpan',
+    'CJKkr': 'Kore',
+    'CJKsc': 'Hans',
+    'CJKtc': 'Hant',
     'NKo': 'Nkoo',
-    'Pahlavi': 'Phli',
-    'Parthian': 'Prti',
     'SumeroAkkadianCuneiform': 'Xsux',
     'Symbols': 'Zsym',
 }
@@ -107,9 +106,10 @@ def find_fonts():
             match = font_name_regexp.match(filename)
             if not match:
                 assert (
+                    filename == 'NotoSansCJK.ttc' or  # All-comprenehsive CJK
                     filename.endswith('.ttx') or
                     filename.startswith('README.') or
-                    filename in ['COPYING', 'LICENSE'])
+                    filename in ['COPYING', 'LICENSE', 'NEWS'])
                 continue
             family, script, variant, weight, style, platform = match.groups()
 
@@ -122,18 +122,15 @@ def find_fonts():
             if weight == '':
                 weight = 'Regular'
 
-            if platform is not None:
-                assert platform == '-Windows'
-                platform = 'windows'
+            assert platform is None
 
             if script == '':  # LGC
                 supported_scripts.update({'Latn', 'Grek', 'Cyrl'})
+            elif script in {'JP', 'KR', 'SC', 'TC', 'CJK'}:
+                continue  # Skip unified or old CJK fonts
             else:
                 script = convert_to_four_letter(script)
                 supported_scripts.add(script)
-
-            if script == 'Qaak':
-                continue  # Skip unified CJK fonts
 
             file_path = path.join(directory, filename)
             if filename.endswith('.ttf') or filename.endswith('.otf'):
@@ -341,7 +338,7 @@ def get_sample_text(language, script):
     if sample_text is not None:
         return sample_text
 
-    return ''
+    raise ValueError, 'language=%s script=%s' % (language, script)
 
 
 def xml_to_dict(element):
@@ -540,15 +537,16 @@ family_to_langs = collections.defaultdict(set)
 
 def create_langs_object():
     langs = {}
-#    # Try all languages of which we know the script
-#    for lang_scr in sorted(written_in_scripts):
-    for lang_scr in all_used_lang_scrs:
+    for lang_scr in sorted(set(written_in_scripts) | all_used_lang_scrs):
         lang_object = {}
         if '-' in lang_scr:
             language, script = lang_scr.split('-')
         else:
             language = lang_scr
-            script = find_likely_script(language)
+            try:
+                script = find_likely_script(language)
+            except KeyError:
+                continue
 
         lang_object['name'] = get_english_language_name(lang_scr)
         native_name = get_native_language_name(lang_scr)
@@ -562,13 +560,17 @@ def create_langs_object():
 
         if script not in supported_scripts:
             # Scripts we don't have fonts for yet
-            print('No font supports the %s script needed for '
-                  'the %s language.' % (script, lang_object['name']))
+            print('No font supports the %s script needed for the %s language.'
+                  % (english_script_name[script], lang_object['name']))
             assert script in {
                 'Bass',  # Bassa Vah
                 'Lina',  # Linear A
+                'Mani',  # Manichaean
+                'Merc',  # Meroitic Cursive
+                'Narb',  # Old North Arabian
                 'Orya',  # Oriya
                 'Plrd',  # Miao
+                'Sora',  # Sora Sompeng
                 'Thaa',  # Thaana
                 'Tibt',  # Tibetan
             }
@@ -927,8 +929,8 @@ def main():
         output_object['family']['noto-kufi-arab']['langs'].remove('khw')
 
         # Kufi doesn't support all characters needed for Kashmiri
-        output_object['lang']['ks-Arab']['families'].remove('noto-kufi-arab')
-        output_object['family']['noto-kufi-arab']['langs'].remove('ks-Arab')
+        output_object['lang']['ks']['families'].remove('noto-kufi-arab')
+        output_object['family']['noto-kufi-arab']['langs'].remove('ks')
         ############### End of hot patches ########
 
         if target_platform == 'linux':
