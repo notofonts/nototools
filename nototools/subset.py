@@ -58,7 +58,7 @@ def subset_font(source_file, target_file,
     opt.canonical_order = True
 
     if options is not None:
-        for name, value in options:
+        for name, value in options.iteritems():
             setattr(opt, name, value)
 
     if include is not None:
