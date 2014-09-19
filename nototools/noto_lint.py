@@ -1293,7 +1293,8 @@ def main():
         action="store_true")
     parser.add_argument(
         "--extrema_threshold",
-        metavar="t",
+        default="0",
+        metavar="threshold",
         nargs="?",
         help="the amount of acceptable error in extrema")
     parser.add_argument(
