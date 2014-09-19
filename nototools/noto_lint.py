@@ -913,13 +913,13 @@ def check_font(file_name,
                             out_of_box = curve_has_off_curve_extrema(curve)
                             if out_of_box > 0:
                                 if out_of_box < extrema_threshold:
-                                    acceptable = ' [acceptable for now]'
+                                    acceptable = ' (acceptable for now])'
                                 else:
                                     acceptable = ''
                                 warn("Extrema", "The glyph '%s' is missing "
                                      "on-curve extreme points in the segment "
                                      "between point %d=%s and point %d=%s "
-                                     "by %f units.%s"
+                                     "by %f units%s."
                                      % (glyph_name,
                                         point,
                                         glyph.coordinates[point],
@@ -1078,10 +1078,18 @@ def check_font(file_name,
                     for lookup_number in record.Feature.LookupListIndex:
                         lookup = font["GSUB"].table.LookupList.Lookup[
                             lookup_number]
-                        assert lookup.LookupType == 1, (
+                        lookup_type = lookup.LookupType
+                        if lookup_type == 7:  # GSUB extension
+                            assert lookup.SubTableCount == 1
+                            lookup_type = lookup.SubTable[0].ExtensionLookupType
+                            subtables = [lookup.SubTable[0].ExtSubTable]
+                        else:
+                            subtables = lookup.SubTable
+
+                        assert lookup_type == 1, (
                             "Don't know how to handle 'rtlm' features with "
                             "lookup type other than 1.")
-                        for subtable in lookup.SubTable:
+                        for subtable in subtables:
                             for key in subtable.mapping.keys():
                                 rtlm[key] = subtable.mapping[key]
                     break
