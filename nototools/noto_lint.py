@@ -382,10 +382,6 @@ HARD_CODED_FONT_INFO = {
     "NotoSansEmoji-Regular.ttf": ("Sans", "Qaae", None, "Regular"),
     "NotoSansKufiArabic-Regular.ttf": ("Kufi", "Arab", None, "Regular"),
     "NotoSansKufiArabic-Bold.ttf": ("Kufi", "Arab", None, "Bold"),
-    "NotoSansPahlavi-Regular.ttf": ("Sans", "Phli", None, "Regular"),
-    "NotoSansParthian-Regular.ttf": ("Sans", "Prti", None, "Regular"),
-    "NotoSansSumeroAkkadianCuneiform-Regular.ttf": (
-        "Sans", "Xsux", None, "Regular"),
     "NotoSansSymbols-Regular.ttf": ("Sans", "Zsym", None, "Regular"),
 }
 
@@ -397,7 +393,9 @@ DESCENT = -600
 
 _last_printed_file_name = None
 
-def check_font(file_name, csv_flag=False, info_flag=False):
+def check_font(file_name,
+               csv_flag=False, info_flag=False, check_legal=True,
+               extrema_threshold=1.0):
     def warn(category, message):
         global _last_printed_file_name
 
@@ -469,7 +467,7 @@ def check_font(file_name, csv_flag=False, info_flag=False):
             expected_postscript_name += (
                 '-' + expected_subfamily_name.replace(' ', ''))
 
-        if not re.match(
+        if check_legal and not re.match(
             r'Copyright 201\d Google Inc. All Rights Reserved.$', names[0]):
             warn("Copyright",
                  "Copyright message doesn't match template: '%s'." % names[0])
@@ -524,7 +522,7 @@ def check_font(file_name, csv_flag=False, info_flag=False):
                  "Postscript name is '%s', but was expecting '%s'." % (
                      names[6], expected_postscript_name))
 
-        if (names[7] != "Noto is a trademark of Google Inc."):
+        if check_legal and names[7] != "Noto is a trademark of Google Inc.":
             warn("Trademark",
                  "Trademark message doesn't match template: '%s'." % names[7])
 
@@ -914,16 +912,21 @@ def check_font(file_name, csv_flag=False, info_flag=False):
 
                             out_of_box = curve_has_off_curve_extrema(curve)
                             if out_of_box > 0:
+                                if out_of_box < extrema_threshold:
+                                    acceptable = ' [acceptable for now]'
+                                else:
+                                    acceptable = ''
                                 warn("Extrema", "The glyph '%s' is missing "
                                      "on-curve extreme points in the segment "
                                      "between point %d=%s and point %d=%s "
-                                     "by %f units."
+                                     "by %f units.%s"
                                      % (glyph_name,
                                         point,
                                         glyph.coordinates[point],
                                         next_point,
                                         glyph.coordinates[next_point],
-                                        out_of_box))
+                                        out_of_box,
+                                        acceptable))
                     start_point = end_point + 1
                     all_contours.append(curves_in_contour)
 
@@ -1076,7 +1079,7 @@ def check_font(file_name, csv_flag=False, info_flag=False):
                         lookup = font["GSUB"].table.LookupList.Lookup[
                             lookup_number]
                         assert lookup.LookupType == 1, (
-                            "Dan't know how to handle 'rtlm' features with "
+                            "Don't know how to handle 'rtlm' features with "
                             "lookup type other than 1.")
                         for subtable in lookup.SubTable:
                             for key in subtable.mapping.keys():
@@ -1204,7 +1207,7 @@ def check_font(file_name, csv_flag=False, info_flag=False):
         if 'Nko' in scripts:
             scripts.remove('Nko')
             scripts.add('NKo')
-        scripts = {script.replace('_', '') for script in scripts}
+        scripts = {script.translate(None, '_ ') for script in scripts}
         return '|'.join(scripts)
 
 
@@ -1285,6 +1288,15 @@ def main():
         help="includes informational messages in the output",
         action="store_true")
     parser.add_argument(
+        "--nolegal",
+        help="ignores mismatches in copyright and trademark fields",
+        action="store_true")
+    parser.add_argument(
+        "--extrema_threshold",
+        metavar="t",
+        nargs="?",
+        help="the amount of acceptable error in extrema")
+    parser.add_argument(
         "font_files",
         metavar="font",
         nargs="+",
@@ -1292,7 +1304,11 @@ def main():
     arguments = parser.parse_args()
 
     for font_file_name in arguments.font_files:
-        check_font(font_file_name, arguments.csv, arguments.info)
+        check_font(font_file_name,
+                   arguments.csv,
+                   arguments.info,
+                   not arguments.nolegal,
+                   float(arguments.extrema_threshold))
 
 
 if __name__ == "__main__":
