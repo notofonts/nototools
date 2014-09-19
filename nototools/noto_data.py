@@ -155,7 +155,28 @@ EXTRA_CHARACTERS_NEEDED = {
 }
 
 
+def char_range(start, end):
+    return range(start, end+1)
+
 CHARACTERS_NOT_NEEDED = {
-    'Arab': range(0x10E60, 0x10E7E+1)
+    'Arab': char_range(0x10E60, 0x10E7E),
+    'Latn': (  # Actually LGC
+        char_range(0x0370, 0x0373) +
+        [0x0376, 0x0377, 0x03CF, 0x0951, 0x0952, 0x1E9C, 0x1E9D, 0x1E9F] +
+        char_range(0x1EFA, 0x1EFF) +
+        [0x2071] +
+        char_range(0x2095, 0x209C) +
+        char_range(0x2160, 0x2183) +
+        char_range(0x2185, 0x2188) +
+        char_range(0x2C6E, 0x2C70) +
+        char_range(0x2C78, 0x2C7F) +
+        char_range(0x2DE0, 0x2DFF) +
+        char_range(0xA640, 0xA673) +
+        char_range(0xA67C, 0xA697) +
+        char_range(0xA722, 0xA787) +
+        [0xA78D, 0xA78E, 0xA790, 0xA791] +
+        char_range(0xA7A0, 0xA7A9) +
+        char_range(0xA7FA, 0xA7FF) +
+        [0xA92E, 0xFB00, 0xFB05, 0xFB06]),
 }
 
