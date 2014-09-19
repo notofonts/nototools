@@ -978,7 +978,9 @@ def check_font(file_name,
             for code in cmap:
                 if cmap[code] in class_def:
                     klass = class_def[cmap[code]]
-                    if klass == 3 and unicode_data.category(code) != "Mn":
+                    if (klass == 3
+                            and unicode_data.category(code) != "Mn"
+                            and code not in noto_data.ACCEPTABLE_AS_COMBINING):
                         warn("Glyph Class",
                              "Glyph %s (U+%04X %s) is defined as class 3 "
                              "(non-spacing) in the GDEF/GlyphClassDef table, "
