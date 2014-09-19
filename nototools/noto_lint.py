@@ -1099,7 +1099,7 @@ def check_font(file_name,
             if (unicode_data.is_private_use(code)
                     or not unicode_data.mirrored(code)):
                 if cmap[code] in rtlm:
-                    warn("BiDi",
+                    warn("Bidi",
                          "The 'rtlm' feature in the font applies to the glyph "
                          "for U+%04X (%s), but it shouldn't, since the "
                          "character is not bidi mirroring." % (
@@ -1109,21 +1109,21 @@ def check_font(file_name,
             # The following tests are only applied to bidi mirroring characters
             if code in ompl:
                 if cmap[code] in rtlm:
-                    warn("BiDi",
+                    warn("Bidi",
                          "The 'rtlm' feature in the font applies to the glyph "
                          "for U+%04X (%s), but it shouldn't, since the "
                          "character is in the OMPL list." % (code, cmap[code]))
 
                 mirrored_pair = ompl[code]
                 if mirrored_pair not in cmap:
-                    warn("BiDi",
+                    warn("Bidi",
                          "The character U+%04X (%s) is supported in the font, "
                          "but its bidi mirrored pair U+%04X (%s) is not." % (
                              code, unicode_data.name(code),
                              mirrored_pair, unicode_data.name(mirrored_pair)))
             else:
                 if cmap[code] not in rtlm:
-                    warn("BiDi", "No 'rtlm' feature is applied to the glyph "
+                    warn("Bidi", "No 'rtlm' feature is applied to the glyph "
                          "for U+%04X (%s), but one should be applied, since "
                          "the character is a bidi mirroring character that is "
                          "not in the OMPL list." % (
