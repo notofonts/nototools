@@ -990,6 +990,25 @@ def check_font(file_name,
                                  unicode_data.name(code),
                                  unicode_data.category(code)))
 
+        # check for duplicate attachment points in AttachList table
+        # See https://code.google.com/p/noto/issues/detail?id=128#c20
+
+        try:
+            attach_point_list = font["GDEF"].table.AttachList.AttachPoint
+        except (KeyError, AttributeError):
+            attach_point_list = []
+
+        for index, attach_point in enumerate(attach_point_list):
+            points = attach_point.PointIndex
+            if len(set(points)) != len(points):
+                warn("Attach List",
+                     "Entry #%d in GDEF.AttachList has duplicate points,"
+                     "resulting in being rejected as a web font." % index)
+            elif sorted(points) != points:
+                warn("Attach List",
+                     "Points in entry #%d in GDEF.AttachList are not in "
+                     "increasing order." % index)
+
         # check that every ligature has a ligature caret in GDEF
         ligatures = []
         if class_def:

@@ -94,6 +94,27 @@ def fix_name_table(font):
     return modified
 
 
+def fix_attachlist(font):
+    """Fix duplicate attachment points in GDEF table."""
+    modified = False
+    try:
+        attach_points = font['GDEF'].table.AttachList.AttachPoint
+    except (KeyError, AttributeError):
+        attach_points = []
+
+    for attach_point in attach_points:
+        points = sorted(set(attach_point.PointIndex))
+        if points != attach_point.PointIndex:
+            attach_point.PointIndex = points
+            attach_point.PointCount = len(points)
+            modified = True
+
+    if modified:
+        print 'Fixed GDEF.AttachList'
+
+    return modified
+
+
 def drop_hints(font):
     """Drops a font's hint."""
     modified = False
@@ -140,6 +161,7 @@ def main(argv):
         modified |= fix_revision(font)
         modified |= fix_fstype(font)
         modified |= fix_name_table(font)
+        modified |= fix_attachlist(font)
 
         is_hinted = '/hinted' in font_file or '_hinted' in font_file
         if not is_hinted:
