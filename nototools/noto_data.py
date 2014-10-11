@@ -147,7 +147,8 @@ EXTRA_CHARACTERS_NEEDED = {
     # http://www.unicode.org/L2/L2010/10407-ext-tamil-follow2.pdf
     'Taml': [0x00B2, 0x00B3, 0x2074, 0x2082, 0x2083, 0x2084],
 
-    # From http://www.unicode.org/L2/L2010/10451-patani-proposal.pdf
+    # From Core Specification and
+    # http://www.unicode.org/L2/L2010/10451-patani-proposal.pdf
     'Thai': [0x02BC, 0x02D7, 0x0303, 0x0331],
 
     # Azerbaijani manat, Russian ruble, and Georgian Lari
