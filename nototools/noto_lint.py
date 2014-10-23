@@ -862,8 +862,8 @@ def check_font(file_name,
             if font_ymin < MIN_UI_HEIGHT:
                 warn(
                     "Bounds",
-                    "Real of yMin in 'head' table is %d, but it should be "
-                    "greater than or equal to %d." % (font_ymin, MIN_UI_HEIGHT))
+                    "Real yMin is %d, but it should be greater than or equal "
+                    "to %d." % (font_ymin, MIN_UI_HEIGHT))
         else:
             hhea_table = font["hhea"]
             if font_ymax > hhea_table.ascent:
