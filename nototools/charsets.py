@@ -675,6 +675,7 @@ WGL4 = [
 ]
 
 # From https://sites.google.com/site/unicodesymbols/Home/japanese-tv-symbols/arib-unicode-mapping-table
+# With some additions from http://www.arib.or.jp/english/html/overview/doc/2-STD-B62v1_0-1p2.pdf
 ARIB = [
     0x00B2, # ² SUPERSCRIPT TWO
     0x00B3, # ³ SUPERSCRIPT THREE
@@ -865,6 +866,10 @@ ARIB = [
     0x2B24, # ⬤ BLACK LARGE CIRCLE
     0x2B2E, # ⬮ BLACK VERTICAL ELLIPSE
     0x2B2F, # ⬯ WHITE VERTICAL ELLIPSE
+    0x2B56, # ⭖ HEAVY OVAL WITH OVAL INSIDE
+    0x2B57, # ⭗ HEAVY CIRCLE WITH CIRCLE INSIDE
+    0x2B58, # ⭘ HEAVY CIRCLE
+    0x2B59, # ⭙ HEAVY CIRCLED SALTIRE
     0x3012, # 〒 POSTAL MARK
     0x3016, # 〖 LEFT WHITE LENTICULAR BRACKET
     0x3017, # 〗 RIGHT WHITE LENTICULAR BRACKET
