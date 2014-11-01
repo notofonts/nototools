@@ -32,13 +32,24 @@ def get_name_records(font):
 
 
 def set_name_record(font, record_id, value):
-    """Sets a record in the 'name' table to a given string."""
-    for record in font['name'].names:
+    """Sets a record in the 'name' table to a given string.
+
+    If the value is None, the name record is dropped."""
+    records_to_drop = set()
+    names = font['name'].names
+    for record_number, record in enumerate(names):
         name_ids = (record.platformID, record.platEncID, record.langID)
         if name_ids != (3, 1, 0x409):
             continue
         if record.nameID == record_id:
-            record.string = value.encode('UTF-16BE')
+            if value is None:
+                records_to_drop.add(record_number)
+            else:
+                record.string = value.encode('UTF-16BE')
+    if records_to_drop:
+        font['name'].names = [
+            record for record_number, record in enumerate(names)
+            if record_number not in records_to_drop]
 
 
 def font_version(font):

@@ -91,6 +91,11 @@ def fix_name_table(font):
                 name_id, record)
             modified = True
 
+    if name_records.has_key(16):
+        font_data.set_name_record(font, 16, None)
+        print 'Name table record #16 dropped'
+        modified = True
+
     return modified
 
 
