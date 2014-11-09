@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="ca"/>
 	</identity>
 	<localeDisplayNames>
@@ -5414,9 +5414,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol draft="contributed">FRF</symbol>
 			</currency>
 			<currency type="GBP">
-				<displayName>lliura esterlina britànica</displayName>
-				<displayName count="one">lliura esterlina britànica</displayName>
-				<displayName count="other">lliures esterlines britàniques</displayName>
+				<displayName>lliura britànica</displayName>
+				<displayName count="one">lliura britànica</displayName>
+				<displayName count="other">lliures britàniques</displayName>
 				<symbol>£</symbol>
 				<symbol alt="narrow" draft="contributed">£</symbol>
 			</currency>

@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10780 $"/>
-		<generation date="$Date: 2014-08-13 01:37:28 -0700 (Wed, 13 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="cy"/>
 	</identity>
 	<localeDisplayNames>
@@ -3713,13 +3713,13 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">Punt Ynysoedd Falkland/Malvinas</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>Punt Sterling Prydain</displayName>
-				<displayName count="zero">Punt Sterling Prydain</displayName>
-				<displayName count="one">Punt Sterling Prydain</displayName>
-				<displayName count="two">Punt Sterling Prydain</displayName>
-				<displayName count="few">Punt Sterling Prydain</displayName>
-				<displayName count="many">Punt Sterling Prydain</displayName>
-				<displayName count="other">Punt Sterling Prydain</displayName>
+				<displayName>Punt Prydain</displayName>
+				<displayName count="zero">Punt Prydain</displayName>
+				<displayName count="one">Punt Prydain</displayName>
+				<displayName count="two">Punt Prydain</displayName>
+				<displayName count="few">Punt Prydain</displayName>
+				<displayName count="many">Punt Prydain</displayName>
+				<displayName count="other">Punt Prydain</displayName>
 				<symbol>£</symbol>
 			</currency>
 			<currency type="GEL">

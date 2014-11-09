@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10739 $"/>
-		<generation date="$Date: 2014-08-07 10:54:13 -0700 (Thu, 07 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="uz"/>
 		<script type="Cyrl"/>
 	</identity>
@@ -2491,9 +2491,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">Фолькленд ороли фунти</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>Инглиз фунт стерлинги</displayName>
-				<displayName count="one">Инглиз фунт стерлинги</displayName>
-				<displayName count="other">Инглиз фунт стерлинги</displayName>
+				<displayName>Инглиз фунт</displayName>
+				<displayName count="one">Инглиз фунт</displayName>
+				<displayName count="other">Инглиз фунт</displayName>
 				<symbol>£</symbol>
 			</currency>
 			<currency type="GTQ">

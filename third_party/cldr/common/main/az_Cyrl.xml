@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 11034 $"/>
+		<generation date="$Date: 2014-10-17 11:57:28 -0700 (Fri, 17 Oct 2014) $"/>
 		<language type="az"/>
 		<script type="Cyrl"/>
 	</identity>
@@ -24,6 +24,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="ru">русҹа</language>
 			<language type="zh">чинҹә</language>
 		</languages>
+		<scripts>
+			<script type="Cyrl">Кирил</script>
+		</scripts>
 		<territories>
 			<territory type="AZ">Азәрбајҹан</territory>
 			<territory type="BR">Бразилија</territory>

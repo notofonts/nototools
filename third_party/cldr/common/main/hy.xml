@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="hy"/>
 	</identity>
 	<localeDisplayNames>
@@ -4244,9 +4244,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>FKP</symbol>
 			</currency>
 			<currency type="GBP">
-				<displayName>Բրիտանական ֆունտ ստեռլինգ</displayName>
-				<displayName count="one">Բրիտանական ֆունտ ստեռլինգ</displayName>
-				<displayName count="other">Բրիտանական ֆունտ ստեռլինգ</displayName>
+				<displayName>Բրիտանական ֆունտ</displayName>
+				<displayName count="one">Բրիտանական ֆունտ</displayName>
+				<displayName count="other">Բրիտանական ֆունտ</displayName>
 				<symbol>£</symbol>
 				<symbol alt="narrow" draft="contributed">£</symbol>
 			</currency>

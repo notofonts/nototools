@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10739 $"/>
-		<generation date="$Date: 2014-08-07 10:54:13 -0700 (Thu, 07 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="br"/>
 	</identity>
 	<localeDisplayNames>
@@ -2539,12 +2539,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">lur gall</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>lur sterling Breizh-Veur</displayName>
-				<displayName count="one">lur sterling Breizh-Veur</displayName>
-				<displayName count="two">lur sterling Breizh-Veur</displayName>
-				<displayName count="few">lur sterling Breizh-Veur</displayName>
-				<displayName count="many">a lurioù sterling Breizh-Veur</displayName>
-				<displayName count="other">lur sterling Breizh-Veur</displayName>
+				<displayName>lur Breizh-Veur</displayName>
+				<displayName count="one">lur Breizh-Veur</displayName>
+				<displayName count="two">lur Breizh-Veur</displayName>
+				<displayName count="few">lur Breizh-Veur</displayName>
+				<displayName count="many">a lurioù Breizh-Veur</displayName>
+				<displayName count="other">lur Breizh-Veur</displayName>
 				<symbol>£ RU</symbol>
 				<symbol alt="narrow" draft="contributed">£</symbol>
 			</currency>

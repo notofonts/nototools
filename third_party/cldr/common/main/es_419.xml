@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10819 $"/>
-		<generation date="$Date: 2014-08-14 20:53:08 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11016 $"/>
+		<generation date="$Date: 2014-09-26 15:10:41 -0700 (Fri, 26 Sep 2014) $"/>
 		<language type="es"/>
 		<territory type="419"/>
 	</identity>
@@ -676,7 +676,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<currencyFormats numberSystem="latn">
 			<currencyFormatLength>
 				<currencyFormat type="standard">
-					<pattern draft="contributed">¤#,##0.00</pattern>
+					<pattern>¤#,##0.00</pattern>
+				</currencyFormat>
+				<currencyFormat type="accounting">
+					<pattern>¤#,##0.00</pattern>
 				</currencyFormat>
 			</currencyFormatLength>
 		</currencyFormats>

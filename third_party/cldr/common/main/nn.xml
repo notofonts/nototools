@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10772 $"/>
-		<generation date="$Date: 2014-08-12 20:17:03 -0700 (Tue, 12 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="nn"/>
 	</identity>
 	<localeDisplayNames>
@@ -2289,9 +2289,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">franske franc</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>britisk pund sterling</displayName>
-				<displayName count="one" draft="unconfirmed">britisk pund sterling</displayName>
-				<displayName count="other" draft="unconfirmed">britiske pund sterling</displayName>
+				<displayName>britisk pund</displayName>
+				<displayName count="one" draft="unconfirmed">britisk pund</displayName>
+				<displayName count="other" draft="unconfirmed">britiske pund</displayName>
 			</currency>
 			<currency type="GEK">
 				<displayName>georgisk kupon larit</displayName>

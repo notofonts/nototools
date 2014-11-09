@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="hu"/>
 	</identity>
 	<localeDisplayNames>
@@ -5519,9 +5519,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>Francia frank</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>brit font sterling</displayName>
-				<displayName count="one">brit font sterling</displayName>
-				<displayName count="other">brit font sterling</displayName>
+				<displayName>brit font</displayName>
+				<displayName count="one">brit font</displayName>
+				<displayName count="other">brit font</displayName>
 				<symbol>GBP</symbol>
 				<symbol alt="narrow" draft="contributed">£</symbol>
 			</currency>

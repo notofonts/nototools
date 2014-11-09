@@ -6,8 +6,8 @@ terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="lb"/>
 	</identity>
 	<localeDisplayNames>
@@ -4111,9 +4111,9 @@ terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">Franséisch Frang</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>Britescht Pond Sterling</displayName>
-				<displayName count="one">Britescht Pond Sterling</displayName>
-				<displayName count="other">Britesch Pond Sterling</displayName>
+				<displayName>Britescht Pond</displayName>
+				<displayName count="one">Britescht Pond</displayName>
+				<displayName count="other">Britesch Pond</displayName>
 				<symbol>£</symbol>
 			</currency>
 			<currency type="GEK">

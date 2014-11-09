@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="tzm"/>
 	</identity>
 	<localeDisplayNames>
@@ -639,7 +639,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>Uṛu</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>Junih Usterlini Ubriṭani</displayName>
+				<displayName>Junih Ubriṭani</displayName>
 			</currency>
 			<currency type="GHC">
 				<displayName>Sidi Uɣani</displayName>

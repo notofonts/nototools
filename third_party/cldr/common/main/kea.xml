@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10739 $"/>
-		<generation date="$Date: 2014-08-07 10:54:13 -0700 (Thu, 07 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="kea"/>
 	</identity>
 	<localeDisplayNames>
@@ -1902,8 +1902,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>FKP</symbol>
 			</currency>
 			<currency type="GBP">
-				<displayName>Libra sterlina britaniku</displayName>
-				<displayName count="other">Libra sterlina britaniku</displayName>
+				<displayName>Libra britaniku</displayName>
+				<displayName count="other">Libra britaniku</displayName>
 				<symbol>£</symbol>
 				<symbol alt="narrow" draft="contributed">£</symbol>
 			</currency>

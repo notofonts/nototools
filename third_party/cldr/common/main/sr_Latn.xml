@@ -7,8 +7,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10820 $"/>
-		<generation date="$Date: 2014-08-14 21:26:58 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="sr"/>
 		<script type="Latn"/>
 	</identity>
@@ -5658,10 +5658,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">francuskih franaka</displayName>
 			</currency>
 			<currency type="GBP">
-				<displayName>Britanska funta sterlinga</displayName>
-				<displayName count="one">britanska funta sterlinga</displayName>
-				<displayName count="few">britanske funte sterlinga</displayName>
-				<displayName count="other">britanskih funti sterlinga</displayName>
+				<displayName>Britanska funta</displayName>
+				<displayName count="one">britanska funta</displayName>
+				<displayName count="few">britanske funte</displayName>
+				<displayName count="other">britanskih funti</displayName>
 				<symbol draft="contributed">£</symbol>
 			</currency>
 			<currency type="GEK">

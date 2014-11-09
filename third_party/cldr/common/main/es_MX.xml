@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10819 $"/>
-		<generation date="$Date: 2014-08-14 20:53:08 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11042 $"/>
+		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
 		<language type="es"/>
 		<territory type="MX"/>
 	</identity>
@@ -1919,11 +1919,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName draft="contributed">libra malvinense</displayName>
 				<displayName count="one" draft="contributed">libra malvinense</displayName>
 				<displayName count="other" draft="contributed">libras malvinenses</displayName>
-			</currency>
-			<currency type="GBP">
-				<displayName draft="contributed">libra esterlina británica</displayName>
-				<displayName count="one" draft="contributed">libra esterlina británica</displayName>
-				<displayName count="other" draft="contributed">libras esterlinas británicas</displayName>
 			</currency>
 			<currency type="GEL">
 				<displayName draft="contributed">lari georgiano</displayName>
