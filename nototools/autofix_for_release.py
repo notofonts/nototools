@@ -55,6 +55,15 @@ def fix_fstype(font):
     return False
 
 
+def fix_vendor_id(font):
+    """Fix the vendor ID of the font."""
+    if font['OS/2'].achVendID != 'GOOG':
+        font['OS/2'].achVendID = 'GOOG'
+        print 'Changed font vendor ID to GOOG'
+        return True
+    return False
+
+
 # Reversed name records in Khmer and Lao fonts
 NAME_CORRECTIONS = {
     'Sans Kufi': 'Kufi',
@@ -165,6 +174,7 @@ def main(argv):
 
         modified |= fix_revision(font)
         modified |= fix_fstype(font)
+        modified |= fix_vendor_id(font)
         modified |= fix_name_table(font)
         modified |= fix_attachlist(font)
 
