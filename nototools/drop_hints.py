@@ -47,7 +47,7 @@ def main(argv):
     font = ttLib.TTFont(argv[1])
 
     drop_hints_from_glyphs(font)
-    drop_tables(font, ['cvt', 'fpgm', 'hdmx', 'LTSH', 'prep', 'VDMX'])
+    drop_tables(font, ['cvt ', 'fpgm', 'hdmx', 'LTSH', 'prep', 'VDMX'])
 
     font.save(argv[2])
 
