@@ -48,7 +48,9 @@ OUTPUT_DIR = path.join(NOTO_DIR, 'website_data')
 CLDR_DIR = path.join(NOTO_DIR, 'third_party', 'cldr')
 LAT_LONG_DIR = path.join(NOTO_DIR, 'third_party', 'dspl')
 SAMPLE_TEXT_DIR = path.join(NOTO_DIR, 'sample_texts')
-FONT_DIR = path.join(NOTO_DIR, 'fonts', 'individual')
+
+FONT_DIR = path.join(NOTO_DIR, 'fonts')
+INDIVIDUAL_FONT_DIR = path.join(FONT_DIR, 'individual')
 CJK_DIR = path.join(NOTO_DIR, 'third_party', 'noto_cjk')
 
 
@@ -99,19 +101,26 @@ def find_fonts():
 
     unicode_data.load_data()
 
-    for directory in [path.join(FONT_DIR, 'hinted'),
-                      path.join(FONT_DIR, 'unhinted'),
+    for directory in [path.join(INDIVIDUAL_FONT_DIR, 'hinted'),
+                      path.join(INDIVIDUAL_FONT_DIR, 'unhinted'),
+                      path.join(FONT_DIR, 'alpha'),
                       CJK_DIR]:
         for filename in os.listdir(directory):
             match = font_name_regexp.match(filename)
-            if not match:
+            if match:
+                family, script, variant, weight, style, platform = match.groups()
+            elif filename == 'NotoNastaliqUrduDraft.ttf':
+                family = 'NotoNastaliq'
+                script = 'Aran'  # Arabic Nastaliq
+                weight = ''
+                style = variant = platform = None
+            else:
                 assert (
                     filename == 'NotoSansCJK.ttc' or  # All-comprenehsive CJK
                     filename.endswith('.ttx') or
                     filename.startswith('README.') or
                     filename in ['COPYING', 'LICENSE', 'NEWS'])
                 continue
-            family, script, variant, weight, style, platform = match.groups()
 
             if family in {'Arimo', 'Cousine', 'Tinos'}:
                 continue  # Skip these three for the website
@@ -126,6 +135,8 @@ def find_fonts():
 
             if script == '':  # LGC
                 supported_scripts.update({'Latn', 'Grek', 'Cyrl'})
+            elif script == 'Aran':
+                supported_scripts.add(script)
             elif script in {'JP', 'KR', 'SC', 'TC', 'CJK'}:
                 continue  # Skip unified or old CJK fonts
             else:
@@ -140,6 +151,8 @@ def find_fonts():
 
             if directory == CJK_DIR:
                 hint_status = 'hinted'
+            elif directory.endswith('alpha'):
+                hint_status = 'unhinted'
             else:
                 hint_status = path.basename(directory)
             assert hint_status in ['hinted', 'unhinted']
@@ -588,6 +601,12 @@ def create_langs_object():
             # FIXME(roozbeh): Figure out if the language is actually supported
             # by the font + Noto LGC. If it's not, don't claim support.
             fonts = [font for font in all_fonts if font.script == query_script]
+
+            # For certain languages of Pakistan, add Nastaliq font
+            if lang_scr in {'bal', 'hnd', 'hno', 'ks-Arab', 'lah',
+                            'pa-Arab', 'skr', 'ur'}:
+                fonts += [font for font in all_fonts if font.script == 'Aran']
+
             family_keys = set([font.key for font in fonts])
 
             lang_object['families'] = sorted(family_keys)
@@ -929,8 +948,8 @@ def main():
         output_object['family']['noto-kufi-arab']['langs'].remove('khw')
 
         # Kufi doesn't support all characters needed for Kashmiri
-        output_object['lang']['ks']['families'].remove('noto-kufi-arab')
-        output_object['family']['noto-kufi-arab']['langs'].remove('ks')
+        output_object['lang']['ks-Arab']['families'].remove('noto-kufi-arab')
+        output_object['family']['noto-kufi-arab']['langs'].remove('ks-Arab')
         ############### End of hot patches ########
 
         if target_platform == 'linux':
@@ -946,7 +965,11 @@ def main():
             if 'sample' in language:
                 del language['sample']
 
-        json_path = path.join(OUTPUT_DIR, 'js', 'data-%s.json'%target_platform)
+        if target_platform == 'other':
+            json_file_name = 'data.json'
+        else:
+            json_file_name = 'data-%s.json' % target_platform
+        json_path = path.join(OUTPUT_DIR, 'js', json_file_name)
         with codecs.open(json_path, 'w', encoding='UTF-8') as json_file:
             json.dump(output_object, json_file,
                       ensure_ascii=False, separators=(',', ':'))
