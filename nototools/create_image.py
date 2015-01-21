@@ -149,7 +149,7 @@ def create_img(text, output_path, **kwargs):
     elif ext == '.svg':
         create_svg(text, output_path, **kwargs)
     else:
-        print 'extension', ext, 'not supported'
+        print 'extension % not supported' % ext
 
 
 def main():
@@ -160,9 +160,8 @@ def main():
     def test(text_file, output_file, **kwargs):
         file_path = '../sample_texts/' + text_file
         with codecs.open(file_path, 'r', encoding='UTF-8') as input_file:
-            sample_text = input_file.read()
-        create_img(sample_text.strip(), output_file,
-            family='Noto Sans Devanagari', language='hi')
+            sample_text = input_file.read().strip()
+        create_img(sample_text, output_file, **kwargs)
 
     test('hi-Deva.txt', 'hindi.png', family='Noto Sans Devanagari',
          language='hi')
