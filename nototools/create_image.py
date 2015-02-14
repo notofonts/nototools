@@ -41,22 +41,6 @@ class DrawParams:
         self.weight = weight
         self.style = style
 
-    @staticmethod
-    def get(**kw):
-        """Get a DrawParams from an arbitray set of keywords.
-           If 'params' is a keyword, its value is a DrawParams and any other
-           keywords update it with new/different values."""
-
-        if 'params' in kw:
-            p = kw['params']
-            for k in kw.keys():
-                if k != 'params':
-                    setattr(p, k, kw[k])
-        else:
-            p = DrawParams()
-            p.__dict__.update(kw)
-        return p
-
 def draw_on_surface(surface, text, params):
     """Draw the string on a pre-created surface and return height."""
     pangocairo_ctx = pangocairo.CairoContext(cairo.Context(surface))
@@ -119,7 +103,7 @@ def draw_on_surface(surface, text, params):
 def create_svg(text, output_path, **kwargs):
     """Creates an SVG image from the given text."""
 
-    params = DrawParams.get(**kwargs);
+    params = DrawParams(**kwargs);
     temp_surface = cairo.SVGSurface(None, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
@@ -131,7 +115,7 @@ def create_svg(text, output_path, **kwargs):
 def create_png(text, output_path, **kwargs):
     """Creates a PNG image from the given text."""
 
-    params = DrawParams.get(**kwargs)
+    params = DrawParams(**kwargs)
     temp_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
