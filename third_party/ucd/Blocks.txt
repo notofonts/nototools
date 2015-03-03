@@ -1,5 +1,5 @@
 # Blocks-8.0.0.txt
-# Date: 2014-08-01, 22:14:00 GMT [KW]
+# Date: 2014-11-10, 23:04:00 GMT [KW]
 #
 # Unicode Character Database
 # Copyright (c) 1991-2014 Unicode, Inc.
@@ -173,6 +173,7 @@ AA80..AADF; Tai Viet
 AAE0..AAFF; Meetei Mayek Extensions
 AB00..AB2F; Ethiopic Extended-A
 AB30..AB6F; Latin Extended-E
+AB70..ABBF; Cherokee Supplement
 ABC0..ABFF; Meetei Mayek
 AC00..D7AF; Hangul Syllables
 D7B0..D7FF; Hangul Jamo Extended-B
@@ -283,6 +284,7 @@ FFF0..FFFF; Specials
 1F700..1F77F; Alchemical Symbols
 1F780..1F7FF; Geometric Shapes Extended
 1F800..1F8FF; Supplemental Arrows-C
+1F900..1F9FF; Supplemental Symbols and Pictographs
 20000..2A6DF; CJK Unified Ideographs Extension B
 2A700..2B73F; CJK Unified Ideographs Extension C
 2B740..2B81F; CJK Unified Ideographs Extension D

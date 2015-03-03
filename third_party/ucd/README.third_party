@@ -1,5 +1,5 @@
-URL: http://www.unicode.org/Public/7.0.0/ucd/
-Version: 7.0.0
+URL: http://www.unicode.org/Public/8.0.0/ucd/
+Version: 8.0.0
 License: Unicode
 License File: LICENSE
 
@@ -10,5 +10,5 @@ Local Modifications:
 1. Unicode 8.0 alpha files have been pulled from
    http://www.unicode.org/Public/8.0.0/ucd/
 
-2. Updates to ScriptExtensions.txt, has been pulled from
-   https://github.com/roozbehp/unicode-data/
+2. Updates to ScriptExtensions.txt and Indic properties have been
+   pulled from https://github.com/roozbehp/unicode-data/

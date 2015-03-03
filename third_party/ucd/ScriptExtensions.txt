@@ -1,16 +1,19 @@
 # ScriptExtensions-8.0.0.txt
-# Date: 2014-06-26, 00:01:00 GMT [RP]
+# Date: 2015-02-18, 02:08:00 GMT [RP]
 #
 # Unicode Character Database
-# Copyright (c) 1991-2014 Unicode, Inc.
+# Copyright (c) 1991-2015 Unicode, Inc.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 # For documentation, see http://www.unicode.org/reports/tr44/
+#
 # The Script_Extensions property indicates which characters are commonly used
 # with more than one script, but with a limited number of scripts.
 # For each code point, there is one or more property values.  Each such value is a Script property value.
 # For more information, see:
-#   UAX #24: http://www.unicode.org/reports/tr24/ and
-#   UAX #44: http://www.unicode.org/reports/tr44/
+#   UAX #24, Unicode Script Property: http://www.unicode.org/reports/tr24/
+#     Especially the sections:
+#        http://www.unicode.org/reports/tr24/#Assignment_Script_Values
+#        http://www.unicode.org/reports/tr24/#Assignment_ScriptX_Values
 #
 # Each Script_Extensions value in this file consists of a set
 # of one or more abbreviated Script property values. The ordering of the
@@ -23,7 +26,6 @@
 #
 # Following each distinct Script_Extensions value is the list of code
 # points associated with that value, listed in code point order.
-#
 #
 # All code points not explicitly listed for Script_Extensions
 # have as their value the corresponding Script property value
@@ -50,7 +52,7 @@
 1CEE..1CF1    ; Deva # Lo   [4] VEDIC SIGN HEXIFORM LONG ANUSVARA..VEDIC SIGN ANUSVARA UBHAYATO MUKHA
 1CF6          ; Deva # Lo       VEDIC SIGN UPADHMANIYA
 
-# Total code points: 28
+# Total code points: 26
 
 # ================================================
 
@@ -176,7 +178,7 @@ A66F          ; Cyrl Glag # Mn       COMBINING CYRILLIC VZMET
 1CF4          ; Deva Gran # Mn       VEDIC TONE CANDRA ABOVE
 1CF8..1CF9    ; Deva Gran # Mn   [2] VEDIC TONE RING ABOVE..VEDIC TONE DOUBLE RING ABOVE
 
-# Total code points: 6
+# Total code points: 8
 
 # ================================================
 
@@ -199,17 +201,34 @@ A66F          ; Cyrl Glag # Mn       COMBINING CYRILLIC VZMET
 
 # ================================================
 
-# Script_Extensions=Deva Telu
+# Script_Extensions=Deva Taml
 
-1CDA          ; Deva Telu # Mn       VEDIC TONE DOUBLE SVARITA
+A8F3          ; Deva Taml # Lo       DEVANAGARI SIGN CANDRABINDU VIRAMA
 
 # Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Gran Taml
+
+0BE6..0BEF    ; Gran Taml # Nd  [10] TAMIL DIGIT ZERO..TAMIL DIGIT NINE
+0BF0..0BF2    ; Gran Taml # No   [3] TAMIL NUMBER TEN..TAMIL NUMBER ONE THOUSAND
+
+# Total code points: 13
 
 # ================================================
 
 # Script_Extensions=Gujr Khoj
 
 0AE6..0AEF    ; Gujr Khoj # Nd  [10] GUJARATI DIGIT ZERO..GUJARATI DIGIT NINE
+
+# Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Guru Mult
+
+0A66..0A6F    ; Guru Mult # Nd  [10] GURMUKHI DIGIT ZERO..GURMUKHI DIGIT NINE
 
 # Total code points: 10
 
@@ -309,14 +328,6 @@ A92E          ; Kali Latn Mymr # Po       KAYAH LI SIGN CWI
 
 # ================================================
 
-# Script_Extensions=Deva Gran Latn Telu
-
-0952          ; Deva Gran Latn Telu # Mn       DEVANAGARI STRESS SIGN ANUDATTA
-
-# Total code points: 1
-
-# ================================================
-
 # Script_Extensions=Arab Mand Mani Phlp Syrc
 
 0640          ; Arab Mand Mani Phlp Syrc # Lm       ARABIC TATWEEL
@@ -350,9 +361,9 @@ FE45..FE46    ; Bopo Hang Hani Hira Kana # Po   [2] SESAME DOT..WHITE SESAME DOT
 
 # ================================================
 
-# Script_Extensions=Deva Gran Latn Shrd Telu
+# Script_Extensions=Deva Knda Mlym Taml Telu
 
-0951          ; Deva Gran Latn Shrd Telu # Mn       DEVANAGARI STRESS SIGN UDATTA
+1CDA          ; Deva Knda Mlym Taml Telu # Mn       VEDIC TONE DOUBLE SVARITA
 
 # Total code points: 1
 
@@ -397,6 +408,22 @@ A838          ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # Sc       NORTH IN
 A839          ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # So       NORTH INDIC QUANTITY MARK
 
 # Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Beng Deva Gran Gujr Guru Knda Latn Mlym Orya Taml Telu
+
+0952          ; Beng Deva Gran Gujr Guru Knda Latn Mlym Orya Taml Telu # Mn       DEVANAGARI STRESS SIGN ANUDATTA
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Beng Deva Gran Gujr Guru Knda Latn Mlym Orya Shrd Taml Telu
+
+0951          ; Beng Deva Gran Gujr Guru Knda Latn Mlym Orya Shrd Taml Telu # Mn       DEVANAGARI STRESS SIGN UDATTA
+
+# Total code points: 1
 
 # ================================================
 
