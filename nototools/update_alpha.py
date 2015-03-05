@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2015 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ This uses compare_summary to generate a comment for the submit, since
 we can't view the file contents, just so we have some idea of what is
 going in."""
 
-__author__ = "dougfelt@google.com (Doug Felt)"
+__author__ = 'dougfelt@google.com (Doug Felt)'
 
 import argparse
 import filecmp
@@ -45,8 +45,8 @@ def push_to_noto_alpha(alphadir, srcdir):
   # could try to use pysvn, but that would be a separate dependency
   # poke svn first in case there's some issue with username/pw, etc.
   os.chdir(alphadir)
-  print "Updating svn."
-  subprocess.check_call(["svn", "up"], stderr=subprocess.STDOUT)
+  print 'Updating svn.'
+  subprocess.check_call(['svn', 'up'], stderr=subprocess.STDOUT)
 
   # TODO(dougfelt): make sure there's nothing already staged in the
   # repo, and that there's no files in the alpha tree that aren't
@@ -71,7 +71,7 @@ def push_to_noto_alpha(alphadir, srcdir):
           font_paths.append(src_path)
 
   if not font_paths:
-    print "All .ttf files compare identical.  Exiting."
+    print 'All .ttf files compare identical.  Exiting.'
     return
 
   # summarize fonts in this commit
@@ -83,7 +83,7 @@ def push_to_noto_alpha(alphadir, srcdir):
     if not result:
       raise 'Could not match root font name in %s' % f
     root_name = result.group(1)
-    new_label = "h" if hinted else "u"
+    new_label = 'h' if hinted else 'u'
     cur_label = name_info.get(root_name, None)
     if cur_label:
       if cur_label.find(new_label) != -1:
@@ -91,7 +91,7 @@ def push_to_noto_alpha(alphadir, srcdir):
       else:
         # Using 'uh' would cause find to fail, if we processed unhinted first.
         # Which we don't, but relying on that is kind of obscure.
-        new_label = "h/u"
+        new_label = 'h/u'
     if new_label:
       name_info[root_name] = new_label
     names = ', '.join(sorted(['%s(%s)' % (k, v) for k, v in name_info.iteritems()]))
@@ -110,12 +110,12 @@ def push_to_noto_alpha(alphadir, srcdir):
   else:
     operation = 'Update'
   one_line_msg = '%s %s from delivery on %s.' % (operation, names, date_str)
-  print "msg: " + one_line_msg
+  print 'msg: ' + one_line_msg
 
   # generate compare file to use as checkin log
   # need to hijack stdout for a bit, yes it's a hack
-  log_msg_file = "/tmp/svn_checkin.txt"
-  sys.stdout = open(log_msg_file, "w")
+  log_msg_file = '/tmp/svn_checkin.txt'
+  sys.stdout = open(log_msg_file, 'w')
   print one_line_msg
   print
   compare_summary.compare_summary(
@@ -129,15 +129,15 @@ def push_to_noto_alpha(alphadir, srcdir):
     dst_path = os.path.join(alphadir, rel_path)
     need_add = not os.path.exists(dst_path)
     # assume if it exists, its under version control
-    print ("adding " if need_add else "editing ") + rel_path
+    print ('adding ' if need_add else 'editing ') + rel_path
     shutil.copy2(src_path, dst_path)
     if need_add:
-      subprocess.check_call(["svn", "add", rel_path], stderr=subprocess.STDOUT)
+      subprocess.check_call(['svn', 'add', rel_path], stderr=subprocess.STDOUT)
 
   # commit the change
   # leave this out for now, it's useful to check before the commit to make sure
   # nothing screwed up.
-  # subprocess.check_call(["svn", "commit", "-F", log_msg_file],
+  # subprocess.check_call(['svn', 'commit', '-F', log_msg_file],
   #                       stderr=subprocess.STDOUT)
 
 def main():
@@ -158,5 +158,5 @@ def main():
 
   push_to_noto_alpha(args.alpha, args.srcdir)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
