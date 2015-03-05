@@ -19,6 +19,7 @@
 __author__ = "dougfelt@google.com (Doug Felt)"
 
 import argparse
+import filecmp
 import os
 import os.path
 
@@ -91,14 +92,28 @@ def print_difference(base_tuple, target_tuple):
   if diff_list and not versions_differ:
     print '  %s differ but same revision number' % ', '.join(diff_list)
 
-def print_shared(key_list, base_map, target_map, comparefn):
+def print_identical(path, identical, show_identical):
+  if not identical:
+    print '%s differs:' % path
+    print '  other difference'
+  elif show_identical:
+    print '%s identical' % path
+
+def print_shared(key_list, base_map, target_map, comparefn,
+                 base_root, target_root, compare_identity, show_identical):
   for k in key_list:
     base_tuple = base_map.get(k)
     target_tuple = target_map.get(k)
     if not comparefn(base_tuple, target_tuple):
       print_difference(base_tuple, target_tuple)
+    elif compare_identity:
+      # The key is also the path
+      identical = filecmp.cmp(os.path.join(base_root, k),
+                              os.path.join(target_root, k))
+      print_identical(k, identical, show_identical)
 
-def compare_summary(base_root, target_root, comparefn, show_missing, show_paths):
+def compare_summary(base_root, target_root, comparefn, show_missing, show_paths,
+                    compare_identity, show_identical):
   base_map = summary_to_map(summary.summarize(base_root))
   target_map = summary_to_map(summary.summarize(target_root))
   missing_in_base, missing_in_target, shared = get_key_lists(base_map, target_map)
@@ -118,7 +133,8 @@ def compare_summary(base_root, target_root, comparefn, show_missing, show_paths)
   if shared:
     if show_missing:
       print 'shared'
-    print_shared(shared, base_map, target_map, comparefn)
+    print_shared(shared, base_map, target_map, comparefn, base_root, target_root,
+                 compare_identity, show_identical)
 
 def tuple_compare(base_t, target_t):
   return base_t == target_t
@@ -128,7 +144,6 @@ def tuple_compare_no_size(base_t, target_t):
     if i == 3:
       continue
     if base_t[i] != target_t[i]:
-#      print "base %s and target %s differ at %d" % (base_t, target_t, i)
       return False
   return True
 
@@ -141,6 +156,10 @@ def main():
   parser.add_argument('--missing',  help='include mismatched files', action='store_true')
   parser.add_argument('--nopaths', help='do not print root paths', action='store_false',
                       default=True, dest='show_paths')
+  parser.add_argument('--compare_identity', help='compare files for identity if otherwise same',
+                      action='store_true')
+  parser.add_argument('--show_identical', help='report when files are identical',
+                      action='store_true')
   args = parser.parse_args()
 
   if not os.path.isdir(args.base_root):
@@ -159,7 +178,8 @@ def main():
   else:
     comparefn = tuple_compare_no_size
 
-  compare_summary(base_root, target_root, comparefn, args.missing, args.show_paths)
+  compare_summary(base_root, target_root, comparefn, args.missing, args.show_paths,
+                  args.compare_identity, args.show_identical)
 
 if __name__ == '__main__':
   main()
