@@ -21,7 +21,7 @@ zip files with an underscore and 8-digit date suffix before the extension.
 This reflects the date of the drop. For each zip of this type we build
 a root named for the date in the target directory.
 
-Most drops contain a two/level tree with the font name and a suffix of
+Most drops contain a two-level tree with the font name and a suffix of
 either '_hinted or '_unhinted' on the top level, and the relevant data
 underneath.  Our structure just uses 'hinted' or 'unhinted', so we
 convert, putting these under the root for the zip.
@@ -84,7 +84,7 @@ def unzip_to_directory_tree(root, filepath):
       subdir = result.group(1)
       filename = result.group(2)
       write_data_to_file(data, root, subdir, filename)
-      continue;
+      continue
 
     result = plain_rx.match(name)
     if not result:
@@ -116,11 +116,10 @@ def unzip_to_directory_tree(root, filepath):
   if unmapped:
     for name, data in unmapped:
       subdir = ''
-      basename = os.path.splitext(name)[0]
       for mapped_name, mapped_subdir in mapped_names:
         if name.startswith(mapped_name):
           subdir = mapped_subdir
-          break;
+          break
       write_data_to_file(data, root, subdir, name)
 
 def grab_files(dst, files):
