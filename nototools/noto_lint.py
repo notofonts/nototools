@@ -407,8 +407,21 @@ def check_font(file_name,
                     interesting_part_of_file_name,
                     printable_font_versions(font))
 
-        if not info_flag and category is "info":
-            return
+        # Assumes "info" warning only and always comes at the end of
+        # processing a file.
+        if category is "info":
+            if not csv_flag:
+                wc = warn_count[0]
+                if wc == 0:
+                    print "Found no issues."
+                elif wc == 1:
+                    print "Found 1 issue."
+                else:
+                    print "Found %d issues." % wc
+            if not info_flag:
+                return
+
+        warn_count[0] += 1
 
         if csv_flag:
             print ('%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
@@ -425,6 +438,7 @@ def check_font(file_name,
             if category is "info":
                 print "[informational]",
             print message.encode('UTF-8')
+
 
     def code_range_to_set(code_range):
         """Converts a code range output by _parse_code_ranges to a set."""
@@ -1240,6 +1254,9 @@ def check_font(file_name,
         return '|'.join(scripts)
 
 
+    # python 2.7 does not have nonlocal, so hack around it
+    warn_count = [0]
+
     font = ttLib.TTFont(file_name)
 
     just_the_file_name = file_name.split("/")[-1]
@@ -1340,6 +1357,12 @@ def main():
                    not arguments.nolegal,
                    float(arguments.extrema_threshold))
 
+    if not arguments.csv:
+        file_count = len(arguments.font_files)
+        if file_count == 1:
+            print "Finished linting 1 file."
+        else:
+            print "Finished linting %d files." % file_count
 
 if __name__ == "__main__":
     main()
