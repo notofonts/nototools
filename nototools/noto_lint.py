@@ -1349,11 +1349,19 @@ def main():
         nargs="?",
         help="the amount of acceptable error in extrema")
     parser.add_argument(
+        "--csv_header",
+        help="write header line when generating csv output",
+        action="store_true")
+    parser.add_argument(
         "font_files",
         metavar="font",
         nargs="+",
         help="a font file to check")
     arguments = parser.parse_args()
+
+    if arguments.csv and arguments.csv_header:
+        print("Script,Style,Variant,Weight,Manufacturer,Category,Hint Status,"
+            "File Name,Revision,Issue")
 
     for font_file_name in arguments.font_files:
         check_font(font_file_name,
