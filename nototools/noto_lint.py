@@ -815,6 +815,11 @@ def check_font(file_name,
                  "from the opposite of value of Descent in 'hhea' table (%d), "
                  "but they should be opposites." %
                  (os2_table.usWinDescent, hhea_table.descent))
+        if os2_table.achVendID != 'GOOG':
+            warn("OS/2",
+                 "Value of achVendID in the 'OS/2' table is %s, "
+                 "but should be GOOG." %
+                 os2_table.achVendID)
 
         if 'Bold' in weight:
             expected_weight = 700
