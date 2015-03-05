@@ -34,10 +34,12 @@ def cmap_count(font):
   for table in cmap_table.tables:
     tup = (table.format, table.platformID, table.platEncID)
     if tup == (4, 3, 1):
+      # Continue scan because we prefer the other cmap if it exists.
       cmap = table.cmap
     elif tup == (12, 3, 10):
+      # Stop scan if we find this cmap. Should be strictly larger than the other.
       cmap = table.cmap
-      break;
+      break
   return len(cmap)
 
 def summarize_file(root, path):

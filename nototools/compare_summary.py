@@ -125,11 +125,11 @@ def compare_summary(base_root, target_root, comparefn, show_missing, show_paths,
     if missing_in_base:
       print 'missing in base'
       print_keys(missing_in_base)
-      print '\n'
+      print
     if missing_in_target:
       print 'missing in target'
       print_keys(missing_in_target)
-      print '\n'
+      print
   if shared:
     if show_missing:
       print 'shared'
@@ -140,7 +140,7 @@ def tuple_compare(base_t, target_t):
   return base_t == target_t
 
 def tuple_compare_no_size(base_t, target_t):
-  for i in range(0, 5):
+  for i in range(len(base_t)):
     if i == 3:
       continue
     if base_t[i] != target_t[i]:
@@ -173,10 +173,7 @@ def main():
   base_root = os.path.abspath(args.base_root)
   target_root = os.path.abspath(args.target_root)
 
-  if args.size:
-    comparefn = tuple_compare
-  else:
-    comparefn = tuple_compare_no_size
+  comparefn = tuple_compare if args.size else tuple_compare_no_size
 
   compare_summary(base_root, target_root, comparefn, args.missing, args.show_paths,
                   args.compare_identity, args.show_identical)
