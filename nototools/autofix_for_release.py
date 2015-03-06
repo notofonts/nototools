@@ -18,7 +18,9 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
+import argparse
 import array
+import os
 from os import path
 import re
 import sys
@@ -26,7 +28,7 @@ import sys
 from fontTools import ttLib
 
 from nototools import font_data
-
+import notoconfig
 
 def fix_revision(font):
     """Fix the revision of the font to match its version."""
@@ -165,38 +167,81 @@ TABLES_TO_DROP = [
     'TSIV',
 ]
 
-def main(argv):
-    """Fix all fonts provided in the command line."""
-    for font_file in argv[1:]:
-        print 'Font file: %s' % font_file
-        font = ttLib.TTFont(font_file)
-        modified = False
+def fix_font(src_file, dst_file, is_hinted, save_unmodified):
+    """Fix font in src_file and write to dst_file.  If is_hinted is false,
+    strip hints.  If unmodified, don't write destination unless save_unmodified
+    is true."""
 
-        modified |= fix_revision(font)
-        modified |= fix_fstype(font)
-        modified |= fix_vendor_id(font)
-        modified |= fix_name_table(font)
-        modified |= fix_attachlist(font)
+    print 'Font file: %s' % src_file
+    font = ttLib.TTFont(src_file)
+    modified = False
 
-        is_hinted = '/hinted' in font_file or '_hinted' in font_file
-        if not is_hinted:
-            modified |= drop_hints(font)
+    modified |= fix_revision(font)
+    modified |= fix_fstype(font)
+    modified |= fix_vendor_id(font)
+    modified |= fix_name_table(font)
+    modified |= fix_attachlist(font)
 
-        tables_to_drop = TABLES_TO_DROP
-        if not is_hinted:
-            tables_to_drop += ['fpgm', 'prep', 'cvt']
-        modified |= drop_tables(font, tables_to_drop)
+    tables_to_drop = TABLES_TO_DROP
+    if not is_hinted:
+        modified |= drop_hints(font)
+        tables_to_drop += ['fpgm', 'prep', 'cvt']
 
-        target_file = (
-            path.dirname(font_file) +
-            '/modified/' +
-            path.basename(font_file))
-        if modified:
-            font.save(target_file)
-        else:
-            print 'No modification necessary'
-        print
+    modified |= drop_tables(font, tables_to_drop)
+    if not modified:
+        print 'No modification necessary'
+    if modified or save_unmodified:
+        # wait until we need it before we create the dest directory
+        dst_dir = path.dirname(dst_file)
+        if not path.isdir(dst_dir):
+            os.makedirs(dst_dir)
+        font.save(dst_file)
+        print 'Wrote %s' % dst_file
+
+def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
+    src_root = path.abspath(src_root)
+    dst_root = path.abspath(dst_root)
+    name_rx = re.compile(name_pat)
+    for root, dirs, files in os.walk(src_root):
+        for file in files:
+            src_file = path.join(root, file)
+            rel_path = src_file[len(src_root)+1:] # +1 to ensure no leading slash.
+            if not name_rx.search(rel_path):
+                continue
+            dst_file = path.join(dst_root, rel_path)
+            is_hinted = root.endswith('/hinted') or '_hinted' in file
+            fix_font(src_file, dst_file, is_hinted, save_unmodified)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name_pat', help='regex for files to fix, '
+                        'searches relative path from root')
+    parser.add_argument('--src_root', help='root of src files',
+                        default=notoconfig.values.get('alpha'))
+    parser.add_argument('--dst_root', help='root of destination',
+                        default=notoconfig.values.get('autofix'))
+    parser.add_argument('--save_unmodified', help='save even unmodified files',
+                        action='store_true')
+    args = parser.parse_args()
+
+    if not args.src_root:
+        # not on command line and not in user's .notoconfig
+        print 'no src root specified.'
+        return
+    if not path.isdir(args.src_root):
+        print '%s does not exist or is not a directory' % args.src_root
+        return
+
+    if not args.dst_root:
+        # not on command line and not in user's .notoconfig
+        args.dst_root = path.join(path.dirname(args.src_root), 'modified')
+    if not path.isdir(args.dst_root):
+        if path.exists(args.dst_root):
+            print '%s exists and is not a directory' % args.dst_root
+            return
+
+    fix_fonts(args.src_root, args.dst_root, args.name_pat, args.save_unmodified)
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()
