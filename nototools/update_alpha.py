@@ -37,6 +37,25 @@ import sys
 import notoconfig
 import compare_summary
 
+class RedirectStdout(object):
+  """Redirect stdout to file."""
+  def __init__(self, filename):
+    self._filename = filename
+
+  def __enter__(self):
+    self._stdout = sys.stdout
+    sys.stdout = open(self._filename, 'w')
+
+  def __exit__(self, etype, evalue, etraceback):
+    file = sys.stdout
+    sys.stdout = self._stdout
+    try:
+      file.close()
+    except e:
+      if not etype:
+        raise e
+    # else raise the original exception
+
 def push_to_noto_alpha(alphadir, srcdir):
   # strip possible trailing slash for later relpath manipulations
   alphadir = os.path.normpath(alphadir)
@@ -66,7 +85,7 @@ def push_to_noto_alpha(alphadir, srcdir):
         if not os.path.exists(dst_path):
           added += 1
           font_paths.append(src_path)
-        elif not filecmp.cmp(src_path, dst_path):
+        elif True or not filecmp.cmp(src_path, dst_path):
           updated += 1
           font_paths.append(src_path)
 
@@ -81,7 +100,7 @@ def push_to_noto_alpha(alphadir, srcdir):
     hinted = f.find('unhinted') == -1
     result = name_rx.match(f)
     if not result:
-      raise 'Could not match root font name in %s' % f
+      raise ValueError('Could not match root font name in %s' % f)
     root_name = result.group(1)
     new_label = 'h' if hinted else 'u'
     cur_label = name_info.get(root_name, None)
@@ -99,7 +118,7 @@ def push_to_noto_alpha(alphadir, srcdir):
   # get date of the drop from srcdir
   result = re.search(r'\d{4}_\d{2}_\d{2}', srcdir)
   if not result:
-    raise 'no date in ' + srcdir
+    raise ValuError('no date in ' + srcdir)
   date_str = result.group().replace('_', '/')
 
   if added:
@@ -113,15 +132,12 @@ def push_to_noto_alpha(alphadir, srcdir):
   print 'msg: ' + one_line_msg
 
   # generate compare file to use as checkin log
-  # need to hijack stdout for a bit, yes it's a hack
-  log_msg_file = '/tmp/svn_checkin.txt'
-  sys.stdout = open(log_msg_file, 'w')
-  print one_line_msg
-  print
-  compare_summary.compare_summary(
+  with RedirectStdout('/tmp/svn_checkin.txt'):
+    print one_line_msg
+    print
+    compare_summary.compare_summary(
       alphadir, srcdir, compare_summary.tuple_compare, False, False, True, False)
-  sys.stdout.close()
-  sys.stdout = sys.__stdout__
+
 
   # make the changes
   for src_path in font_paths:
