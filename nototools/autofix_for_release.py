@@ -76,6 +76,8 @@ NAME_CORRECTIONS = {
     'UILao': 'LaoUI',
 }
 
+TRADEMARK_LINE = u'Noto is a trademark of Google Inc.'
+
 def fix_name_table(font):
     """Fix copyright and reversed values in the 'name' table."""
     modified = False
@@ -101,6 +103,11 @@ def fix_name_table(font):
             print 'Updated name table record #%d to "%s"' % (
                 name_id, record)
             modified = True
+
+    if name_records[7] != TRADEMARK_LINE:
+      font_data.set_name_record(font, 7, TRADEMARK_LINE)
+      modified = True
+      print 'Updated name table record 7 to "%s"' % TRADEMARK_LINE
 
     if name_records.has_key(16):
         font_data.set_name_record(font, 16, None)
