@@ -395,8 +395,9 @@ _last_printed_file_name = None
 
 def check_font(file_name,
                csv_flag=False, info_flag=False, check_legal=True,
-               extrema_threshold=1.0):
-    def warn(category, message):
+               extrema_details=True):
+
+    def warn(category, message, details=True):
         global _last_printed_file_name
 
         interesting_part_of_file_name = ",".join(file_name.split("/")[-2:])
@@ -410,18 +411,30 @@ def check_font(file_name,
         # Assumes "info" warning only and always comes at the end of
         # processing a file.
         if category is "info":
-            if not csv_flag:
-                wc = warn_count[0]
-                if wc == 0:
-                    print "Found no issues."
-                elif wc == 1:
-                    print "Found 1 issue."
+            def pluralize_errmsg(count):
+                if count == 0:
+                    return "no issues"
+                elif count == 1:
+                    return "1 issue"
                 else:
-                    print "Found %d issues." % wc
+                    return "%d issues" % count
+
+            if not csv_flag:
+                ec = err_count[0]
+                sc = suppressed_err_count[0]
+                if not sc:
+                  print "Found %s." % pluralize_errmsg(ec)
+                else:
+                  print "Found %s (%s hidden)." % (pluralize_errmsg(ec),
+                                                   "all" if sc == ec else sc)
             if not info_flag:
                 return
 
-        warn_count[0] += 1
+        err_count[0] += 1
+
+        if not details:
+            suppressed_err_count[0] += 1
+            return
 
         if csv_flag:
             print ('%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
@@ -931,21 +944,17 @@ def check_font(file_name,
 
                             out_of_box = curve_has_off_curve_extrema(curve)
                             if out_of_box > 0:
-                                if out_of_box < extrema_threshold:
-                                    acceptable = ' (acceptable for now])'
-                                else:
-                                    acceptable = ''
                                 warn("Extrema", "The glyph '%s' is missing "
                                      "on-curve extreme points in the segment "
                                      "between point %d=%s and point %d=%s "
-                                     "by %f units%s."
+                                     "by %f units."
                                      % (glyph_name,
                                         point,
                                         glyph.coordinates[point],
                                         next_point,
                                         glyph.coordinates[next_point],
-                                        out_of_box,
-                                        acceptable))
+                                        out_of_box),
+                                      extrema_details)
                     start_point = end_point + 1
                     all_contours.append(curves_in_contour)
 
@@ -1260,7 +1269,8 @@ def check_font(file_name,
 
 
     # python 2.7 does not have nonlocal, so hack around it
-    warn_count = [0]
+    suppressed_err_count = [0]
+    err_count = [0]
 
     font = ttLib.TTFont(file_name)
 
@@ -1343,11 +1353,11 @@ def main():
         help="ignores mismatches in copyright and trademark fields",
         action="store_true")
     parser.add_argument(
-        "--extrema_threshold",
-        default="0",
-        metavar="threshold",
-        nargs="?",
-        help="the amount of acceptable error in extrema")
+        "--suppress_extrema_details",
+        dest="extrema_details",
+        default=True,
+        action="store_false",
+        help="only summarize extrema issues")
     parser.add_argument(
         "--csv_header",
         help="write header line when generating csv output",
@@ -1368,7 +1378,7 @@ def main():
                    arguments.csv,
                    arguments.info,
                    not arguments.nolegal,
-                   float(arguments.extrema_threshold))
+                   arguments.extrema_details)
 
     if not arguments.csv:
         file_count = len(arguments.font_files)
