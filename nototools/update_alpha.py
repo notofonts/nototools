@@ -85,7 +85,7 @@ def push_to_noto_alpha(alphadir, srcdir):
         if not os.path.exists(dst_path):
           added += 1
           font_paths.append(src_path)
-        elif True or not filecmp.cmp(src_path, dst_path):
+        elif or not filecmp.cmp(src_path, dst_path):
           updated += 1
           font_paths.append(src_path)
 
