@@ -24,6 +24,7 @@ import os
 import os.path
 
 import summary
+import noto_lint
 
 def summary_to_map(summary_list):
   result = {}
@@ -51,8 +52,8 @@ def print_keys(key_list):
     print '\t' + k
 
 def print_difference(base_tuple, target_tuple):
-  b_path, b_version, b_name, b_size, b_numglyphs, b_numchars = base_tuple
-  t_path, t_version, t_name, t_size, t_numglyphs, t_numchars = target_tuple
+  b_path, b_version, b_name, b_size, b_numglyphs, b_numchars, b_cmap = base_tuple
+  t_path, t_version, t_name, t_size, t_numglyphs, t_numchars, t_cmap = target_tuple
   print "%s differs:" % b_path
   versions_differ = b_version != t_version
   diff_list = []
@@ -89,6 +90,15 @@ def print_difference(base_tuple, target_tuple):
     else:
       msg = '%d more char%s' % (delta, '' if delta == 1 else 's')
     print '  chars: %s vs %s (%s)' % (b_numchars, t_numchars, msg)
+  if b_cmap != t_cmap:
+    removed_from_base = b_cmap - t_cmap
+    if removed_from_base:
+      print '  cmap removed: ' + noto_lint.printable_unicode_range(
+        removed_from_base)
+    added_in_target = t_cmap - b_cmap
+    if added_in_target:
+      print '  cmap added: ' + noto_lint.printable_unicode_range(
+          added_in_target)
   if diff_list and not versions_differ:
     print '  %s differ but same revision number' % ', '.join(diff_list)
 

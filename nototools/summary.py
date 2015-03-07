@@ -28,7 +28,7 @@ from fontTools import ttLib
 
 import noto_lint
 
-def cmap_count(font):
+def get_largest_cmap(font):
   cmap_table = font['cmap']
   cmap = None
   for table in cmap_table.tables:
@@ -40,7 +40,10 @@ def cmap_count(font):
       # Stop scan if we find this cmap. Should be strictly larger than the other.
       cmap = table.cmap
       break
-  return len(cmap)
+  return cmap
+
+def cmap_count(font):
+  return len(get_largest_cmap(font))
 
 def summarize_file(root, path):
   font = ttLib.TTFont(path)
@@ -50,9 +53,9 @@ def summarize_file(root, path):
   version = noto_lint.printable_font_revision(font)
   num_glyphs = len(font.getGlyphOrder())
   full_name = noto_lint.name_records(font)[4]
-  num_chars = cmap_count(font)
-
-  return (relpath, version, full_name, size, num_glyphs, num_chars)
+  cmap = set(get_largest_cmap(font).keys()) # copy needed? what's the lifespan?
+  num_chars = len(cmap)
+  return (relpath, version, full_name, size, num_glyphs, num_chars, cmap)
 
 def summarize(root):
   result = []
@@ -62,12 +65,22 @@ def summarize(root):
         result.append(summarize_file(root, os.path.join(parent, f)))
   return result
 
+
 def print_tup(tup, short):
-  print ' \t'.join([str(val) for idx, val in enumerate(tup)
-                    if not (short and idx == 3)])
+  def to_str(idx, val):
+    if type(val) == type(set()):
+      result = noto_lint.printable_unicode_range(val)
+    else:
+      result = str(val)
+    if ' ' in result:
+      result = '"%s"' % result
+    return result
+  line = [to_str(idx, val) for idx, val in enumerate(tup)
+                    if not (short and (idx == 3 or idx == 6))]
+  print '\t'.join(line)
 
 def print_summary(summary_list, short):
-  labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars')
+  labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars', 'cmap')
   print_tup(labels, short)
   for tup in summary_list:
     print_tup(tup, short)
