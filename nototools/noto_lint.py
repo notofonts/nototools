@@ -714,10 +714,9 @@ def check_font(file_name,
         if not (script == "Qaae" or script == "Latn"):
           ascii_letters = noto_data.ascii_letters()
           contained_letters = ascii_letters & set(cmap.keys())
-          # all or none
-          if contained_letters and (contained_letters != ascii_letters):
+          if contained_letters:
             warn("Chars",
-                 "Some but not all ASCII letters are in the font: %s."
+                 "There should not be ASCII letters in the font, but there are: %s."
                  % printable_unicode_range(contained_letters))
 
         return cmap
