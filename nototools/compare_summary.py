@@ -34,7 +34,7 @@ def summary_to_map(summary_list):
   return result
 
 def get_key_lists(base_map, target_map):
-  missing_in_base = []
+  added_in_target = []
   missing_in_target = []
   shared = []
   for k in base_map:
@@ -44,8 +44,8 @@ def get_key_lists(base_map, target_map):
       shared.append(k)
   for k in target_map:
     if not base_map.get(k):
-      missing_in_base.append(k)
-  return sorted(missing_in_base), sorted(missing_in_target), sorted(shared)
+      added_in_target.append(k)
+  return sorted(added_in_target), sorted(missing_in_target), sorted(shared)
 
 def print_keys(key_list):
   for k in key_list:
@@ -122,26 +122,26 @@ def print_shared(key_list, base_map, target_map, comparefn,
                               os.path.join(target_root, k))
       print_identical(k, identical, show_identical)
 
-def compare_summary(base_root, target_root, comparefn, show_missing, show_paths,
-                    show_identical):
+def compare_summary(base_root, target_root, comparefn, show_missing, show_added,
+                    show_paths, show_identical):
   base_map = summary_to_map(summary.summarize(base_root))
   target_map = summary_to_map(summary.summarize(target_root))
-  missing_in_base, missing_in_target, shared = get_key_lists(base_map, target_map)
+  added_in_target, missing_in_target, shared = get_key_lists(base_map, target_map)
 
   if show_paths:
     print 'base root: ' + base_root
     print 'target root: ' + target_root
-  if show_missing:
-    if missing_in_base:
-      print 'missing in base'
-      print_keys(missing_in_base)
+  if show_missing or show_added:
+    if show_added and added_in_target:
+      print 'added in target'
+      print_keys(added_in_target)
       print
-    if missing_in_target:
+    if show_missing and missing_in_target:
       print 'missing in target'
       print_keys(missing_in_target)
       print
   if shared:
-    if show_missing:
+    if show_missing or show_added:
       print 'shared'
     print_shared(shared, base_map, target_map, comparefn, base_root, target_root,
                  show_identical)
@@ -163,7 +163,8 @@ def main():
   parser.add_argument('target_root', help='root of directory tree, target for comparison')
   parser.add_argument('--size', help='include size in comparisons',
                       action='store_true')
-  parser.add_argument('--missing',  help='include mismatched files', action='store_true')
+  parser.add_argument('--missing',  help='list files not in target', action='store_true')
+  parser.add_argument('--added', help='list files not in base', action='store_true')
   parser.add_argument('--nopaths', help='do not print root paths', action='store_false',
                       default=True, dest='show_paths')
   parser.add_argument('--show_identical', help='report when files are identical',
@@ -183,8 +184,8 @@ def main():
 
   comparefn = tuple_compare if args.size else tuple_compare_no_size
 
-  compare_summary(base_root, target_root, comparefn, args.missing, args.show_paths,
-                  args.show_identical)
+  compare_summary(base_root, target_root, comparefn, args.missing, args.added,
+                  args.show_paths, args.show_identical)
 
 if __name__ == '__main__':
   main()
