@@ -478,6 +478,9 @@ def check_font(file_name,
         # Check family name
         expected_family_name = 'Noto ' + style
         if script != 'Latn':
+          if style == 'Nastaliq':
+            expected_family_name += ' Urdu'
+          else:
             expected_family_name += (
                 ' ' + unicode_data.human_readable_script_name(script))
         if variant:
@@ -656,26 +659,29 @@ def check_font(file_name,
                 | unicode_data.defined_characters(scr="Cyrl"))
             needed_chars -= _symbol_set()
             needed_chars -= _cjk_set()
+        elif style == 'Nastaliq':
+            needed_chars = noto_data.urdu_set()
         else:
             needed_chars = unicode_data.defined_characters(scr=script)
             needed_chars -= _symbol_set()
 
         needed_chars &= unicode_data.defined_characters(version=6.0)
 
-        try:
-            needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[script])
-        except KeyError:
-            pass
+        if style != 'Nastaliq':
+            try:
+                needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[script])
+            except KeyError:
+                pass
 
-        try:
-            needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
-        except KeyError:
-            pass
+            try:
+                needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
+            except KeyError:
+                pass
 
-        try:
-            needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[script])
-        except KeyError:
-            pass
+            try:
+                needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[script])
+            except KeyError:
+                pass
 
         # TODO: also check character coverage against Unicode blocks for
         # characters of script Common or Inherited
@@ -1291,6 +1297,8 @@ def check_font(file_name,
             assert script != "Zzzz"
         elif style in ["Sans", "Serif"]:
             script = "Latn"  # LGC really
+        elif style in ["Nastaliq"]:
+            script = "Arab"
         else:
             style, script, variant, weight = HARD_CODED_FONT_INFO[
                 just_the_file_name]
