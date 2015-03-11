@@ -161,6 +161,9 @@ def _char_set(compact_set_text):
 def urdu_set():
     return _char_set(URDU_RANGES) | _char_set(URDU_EXTRA)
 
+def ascii_letters():
+  return _char_set("0041..005a,0061..007a")
+
 EXTRA_CHARACTERS_NEEDED = {
     'Arab': [
         0x2010, 0x2011,   # Hyphen and non-breaking hyphen need different shapes
