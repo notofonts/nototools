@@ -174,10 +174,29 @@ TABLES_TO_DROP = [
     'TSIV',
 ]
 
-def fix_font(src_file, dst_file, is_hinted, save_unmodified):
-    """Fix font in src_file and write to dst_file.  If is_hinted is false,
-    strip hints.  If unmodified, don't write destination unless save_unmodified
-    is true."""
+def fix_path(file_path, is_hinted):
+    file_path = re.sub(r'_(?:un)?hinted', '', file_path)
+    if 'hinted/' in file_path:
+        # '==' is higher precedence than 'in'
+        if ('unhinted/' in file_path) == is_hinted:
+            if is_hinted:
+                file_path = file_path.replace('unhinted/', 'hinted/')
+            else:
+                file_path = file_path.replace('hinted/', 'unhinted/')
+    else:
+        file_path = os.path.join('hinted' if is_hinted else 'unhinted', file_path)
+
+    # fix Naskh, assume Arabic if unspecified
+    file_path = re.sub(r'NotoNaskh(-|UI-)', r'NotoNaskhArabic\1', file_path)
+
+    return file_path
+
+def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
+    """Fix font under src_root and write to similar path under dst_root, modulo
+    fixes to the filename.  If is_hinted is false, strip hints.  If unmodified,
+    don't write destination unless save_unmodified is true."""
+
+    src_file = os.path.join(src_root, file_path)
 
     print 'Font file: %s' % src_file
     font = ttLib.TTFont(src_file)
@@ -195,10 +214,17 @@ def fix_font(src_file, dst_file, is_hinted, save_unmodified):
         tables_to_drop += ['fpgm', 'prep', 'cvt']
 
     modified |= drop_tables(font, tables_to_drop)
+
+    fixed_path = fix_path(file_path, is_hinted)
+    if fixed_path != file_path:
+        print 'changed file_path from "%s" to "%s"' % (file_path, fixed_path)
+        modified = True
+
     if not modified:
         print 'No modification necessary'
     if modified or save_unmodified:
         # wait until we need it before we create the dest directory
+        dst_file = os.path.join(dst_root, fixed_path)
         dst_dir = path.dirname(dst_file)
         if not path.isdir(dst_dir):
             os.makedirs(dst_dir)
@@ -212,12 +238,11 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
     for root, dirs, files in os.walk(src_root):
         for file in files:
             src_file = path.join(root, file)
-            rel_path = src_file[len(src_root)+1:] # +1 to ensure no leading slash.
-            if not name_rx.search(rel_path):
+            file_path = src_file[len(src_root)+1:] # +1 to ensure no leading slash.
+            if not name_rx.search(file_path):
                 continue
-            dst_file = path.join(dst_root, rel_path)
             is_hinted = root.endswith('/hinted') or '_hinted' in file
-            fix_font(src_file, dst_file, is_hinted, save_unmodified)
+            fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified)
 
 def main():
     parser = argparse.ArgumentParser()
