@@ -58,13 +58,12 @@ class RedirectStdout(object):
 
 def push_to_noto_alpha(alphadir, srcdir):
   # strip possible trailing slash for later relpath manipulations
-  alphadir = os.path.normpath(alphadir)
-  srcdir = os.path.normpath(srcdir)
+  alphadir = os.path.abspath(alphadir)
+  srcdir = os.path.abspath(srcdir)
 
   # could try to use pysvn, but that would be a separate dependency
   # poke svn first in case there's some issue with username/pw, etc.
   os.chdir(alphadir)
-  print 'Updating svn.'
   subprocess.check_call(['svn', 'up'], stderr=subprocess.STDOUT)
 
   # TODO(dougfelt): make sure there's nothing already staged in the
@@ -83,9 +82,11 @@ def push_to_noto_alpha(alphadir, srcdir):
         dst_path = os.path.join(alphadir, rel_path)
         # skip files that are the same as targets
         if not os.path.exists(dst_path):
+          print "add " + rel_path
           added += 1
           font_paths.append(src_path)
-        elif or not filecmp.cmp(src_path, dst_path):
+        elif not filecmp.cmp(src_path, dst_path):
+          print "update " + rel_path
           updated += 1
           font_paths.append(src_path)
 
