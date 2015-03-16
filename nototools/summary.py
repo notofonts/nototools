@@ -57,12 +57,18 @@ def summarize_file(root, path):
   num_chars = len(cmap)
   return (relpath, version, full_name, size, num_glyphs, num_chars, cmap)
 
-def summarize(root):
+def summarize(root, name=None):
   result = []
+  name_re = re.compile(name) if name else None
   for parent, _, files in os.walk(root):
     for f in sorted(files):
       if f.endswith('.ttf'):
-        result.append(summarize_file(root, os.path.join(parent, f)))
+        path = os.path.join(parent, f)
+        if name_re:
+          relpath = path[len(root) + 1:]
+          if not name_re.search(relpath):
+            continue
+        result.append(summarize_file(root, path))
   return result
 
 
@@ -88,6 +94,8 @@ def print_summary(summary_list, short):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('root', help='root of directory tree')
+    parser.add_argument('--name', help='only report files where name regex matches '
+                        'some portion of the path under root'),
     parser.add_argument('-s', '--short', help='shorter summary format',
                         action='store_true')
     args = parser.parse_args()
@@ -96,8 +104,8 @@ def main():
       print '%s does not exist or is not a directory' % args.root
     else:
       root = os.path.abspath(args.root)
-      print root
-      print_summary(summarize(root), args.short)
+      print "root: %s, name: %s" % (root, args.name if args.name else '[all]')
+      print_summary(summarize(root, name=args.name), args.short)
 
 if __name__ == "__main__":
     main()
