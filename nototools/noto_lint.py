@@ -478,11 +478,11 @@ def check_font(file_name,
         # Check family name
         expected_family_name = 'Noto ' + style
         if script != 'Latn':
-          if style == 'Nastaliq':
-            expected_family_name += ' Urdu'
-          else:
-            expected_family_name += (
-                ' ' + unicode_data.human_readable_script_name(script))
+            if style == 'Nastaliq':
+                expected_family_name += ' Urdu'
+            else:
+                expected_family_name += (
+                    ' ' + unicode_data.human_readable_script_name(script))
         if variant:
             expected_family_name += ' ' + variant
         if weight == 'BoldItalic':
@@ -712,12 +712,12 @@ def check_font(file_name,
                      % printable_unicode_range(non_characters_in_cmap))
 
         if not (script == "Qaae" or script == "Latn"):
-          ascii_letters = noto_data.ascii_letters()
-          contained_letters = ascii_letters & set(cmap.keys())
-          if contained_letters:
-            warn("Chars",
-                 "There should not be ASCII letters in the font, but there are: %s."
-                 % printable_unicode_range(contained_letters))
+            ascii_letters = noto_data.ascii_letters()
+            contained_letters = ascii_letters & set(cmap.keys())
+            if contained_letters:
+                warn("Chars",
+                    "There should not be ASCII letters in the font, but there are: %s."
+                    % printable_unicode_range(contained_letters))
 
         return cmap
 
