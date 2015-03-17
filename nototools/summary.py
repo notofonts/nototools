@@ -49,8 +49,7 @@ def summarize_file(root, path):
   font = ttLib.TTFont(path)
   table_info = {}
   reader = font.reader
-  tags = sorted(reader.keys())
-  for tag in tags:
+  for tag in reader.keys():
     entry = reader.tables[tag]
     entry_len = entry.length
     entry_checkSum = int(entry.checkSum)

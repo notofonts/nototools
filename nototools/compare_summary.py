@@ -66,7 +66,7 @@ def compare_table_info(base_info, target_info):
     b_tup = base_info.get(k)
     t_tup = target_info.get(k)
     if not b_tup:
-      added.push(t_tup)
+      added.append(t_tup)
     else:
       b_len = b_tup[0]
       t_len = t_tup[0]
@@ -81,14 +81,9 @@ def compare_table_info(base_info, target_info):
     if not target_info.get(k):
       removed.append(k)
 
-  def delta_compare(lhs, rhs):
-    result = -cmp(abs(lhs[1]), abs(rhs[1]))
-    if result == 0:
-      result = cmp(lhs[0], rhs[0])
-    return result
-  biggest_deltas = sorted(biggest_deltas, cmp = delta_compare)
-  if len(biggest_deltas) > 5:
-    biggest_deltas = biggest_deltas[:5]
+  biggest_deltas.sort(lambda lhs,rhs: -cmp(abs(lhs[1]), abs(rhs[1])) or
+                      cmp(lhs[0], rhs[0]))
+  del biggest_deltas[5:]
 
   result = []
   if len(biggest_deltas) > 1:
