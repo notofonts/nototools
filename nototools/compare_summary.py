@@ -56,9 +56,60 @@ def print_keys(key_list):
   for k in key_list:
     print '  ' + k
 
+def compare_table_info(base_info, target_info):
+  biggest_deltas = []
+  other_count = 0
+  added = []
+  removed = []
+
+  for k in sorted(target_info):
+    b_tup = base_info.get(k)
+    t_tup = target_info.get(k)
+    if not b_tup:
+      added.push(t_tup)
+    else:
+      b_len = b_tup[0]
+      t_len = t_tup[0]
+      delta = t_len - b_len
+      if delta == 0:
+        if b_tup[1] != t_tup[1]:
+          other_count += 1
+        continue
+      biggest_deltas.append((k, delta))
+
+  for k in sorted(base_info):
+    if not target_info.get(k):
+      removed.append(k)
+
+  def delta_compare(lhs, rhs):
+    result = -cmp(abs(lhs[1]), abs(rhs[1]))
+    if result == 0:
+      result = cmp(lhs[0], rhs[0])
+    return result
+  biggest_deltas = sorted(biggest_deltas, cmp = delta_compare)
+  if len(biggest_deltas) > 5:
+    biggest_deltas = biggest_deltas[:5]
+
+  result = []
+  if len(biggest_deltas) > 1:
+    def print_delta(t):
+      if t[1] == 0:
+        return t[0]
+      return '%s(%+d)' % t
+    biggest_delta_strings = [print_delta(t) for t in biggest_deltas]
+    if other_count > 0 and len(biggest_deltas) < 5:
+      biggest_delta_strings.append('%s other%s' %
+        (other_count, 's' if other_count != 1 else ''))
+    result.append('changed ' + ', '.join(biggest_delta_strings))
+  if added:
+    result.append('added ' + ', '.join('%s(%s)' % t for t in sorted(added)))
+  if removed:
+    result.append('removed ' + ', '.join(sorted(removed)))
+  return '; '.join(result)
+
 def print_difference(k, base_tuple, target_tuple, other_difference):
-  b_path, b_version, b_name, b_size, b_numglyphs, b_numchars, b_cmap = base_tuple
-  t_path, t_version, t_name, t_size, t_numglyphs, t_numchars, t_cmap = target_tuple
+  b_path, b_version, b_name, b_size, b_numglyphs, b_numchars, b_cmap, b_tableinfo = base_tuple
+  t_path, t_version, t_name, t_size, t_numglyphs, t_numchars, t_cmap, t_tableinfo = target_tuple
   print '  ' + k
   versions_differ = b_version != t_version
   diff_list = []
@@ -79,6 +130,9 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
     else:
       msg = '%d byte%s bigger' % (delta, '' if delta == 1 else 's')
     print '    size: %s vs %s (%s)' % (b_size, t_size, msg)
+  table_diffs = compare_table_info(b_tableinfo, t_tableinfo)
+  if table_diffs:
+    print '    tables: %s' % table_diffs
   if b_numglyphs != t_numglyphs:
     diff_list.append('glyph count')
     delta = int(t_numglyphs) - int(b_numglyphs)

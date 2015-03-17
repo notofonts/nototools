@@ -47,6 +47,16 @@ def cmap_count(font):
 
 def summarize_file(root, path):
   font = ttLib.TTFont(path)
+  table_info = {}
+  reader = font.reader
+  tags = sorted(reader.keys())
+  for tag in tags:
+    entry = reader.tables[tag]
+    entry_len = entry.length
+    entry_checkSum = int(entry.checkSum)
+    if entry_checkSum < 0:
+      entry_checkSum += 0x100000000
+    table_info[tag] = (entry_len, entry_checkSum)
 
   relpath = path[len(root) + 1:]
   size = os.path.getsize(path)
@@ -55,7 +65,9 @@ def summarize_file(root, path):
   full_name = noto_lint.name_records(font)[4]
   cmap = set(get_largest_cmap(font).keys()) # copy needed? what's the lifespan?
   num_chars = len(cmap)
-  return (relpath, version, full_name, size, num_glyphs, num_chars, cmap)
+  font.close()
+
+  return (relpath, version, full_name, size, num_glyphs, num_chars, cmap, table_info)
 
 def summarize(root, name=None):
   result = []
@@ -74,19 +86,26 @@ def summarize(root, name=None):
 
 def print_tup(tup, short):
   def to_str(idx, val):
-    if type(val) == type(set()):
-      result = noto_lint.printable_unicode_range(val)
+    if idx == 7 and type(val) == type({}):
+      parts = []
+      for tag in sorted(val):
+        parts.append('%s=%s' % (tag, val[tag][0]))
+      result = ', '.join(parts)
     else:
-      result = str(val)
+      if idx == 6 and type(val) == type(set()):
+        result = noto_lint.printable_unicode_range(val)
+      else:
+        result = str(val)
     if ' ' in result:
       result = '"%s"' % result
     return result
+
   line = [to_str(idx, val) for idx, val in enumerate(tup)
-                    if not (short and (idx == 3 or idx == 6))]
+          if not (short and (idx == 3 or idx == 6 or idx == 7))]
   print '\t'.join(line)
 
 def print_summary(summary_list, short):
-  labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars', 'cmap')
+  labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars', 'cmap', 'table_info')
   print_tup(labels, short)
   for tup in summary_list:
     print_tup(tup, short)
