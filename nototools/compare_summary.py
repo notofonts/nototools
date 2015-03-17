@@ -62,7 +62,7 @@ def compare_table_info(base_info, target_info):
   added = []
   removed = []
 
-  for k in sorted(target_info):
+  for k in target_info:
     b_tup = base_info.get(k)
     t_tup = target_info.get(k)
     if not b_tup:
@@ -77,7 +77,7 @@ def compare_table_info(base_info, target_info):
         continue
       biggest_deltas.append((k, delta))
 
-  for k in sorted(base_info):
+  for k in base_info:
     if not target_info.get(k):
       removed.append(k)
 
@@ -86,7 +86,7 @@ def compare_table_info(base_info, target_info):
   del biggest_deltas[5:]
 
   result = []
-  if len(biggest_deltas) > 1:
+  if biggest_deltas:
     def print_delta(t):
       if t[1] == 0:
         return t[0]
