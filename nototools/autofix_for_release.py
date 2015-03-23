@@ -191,6 +191,16 @@ def fix_path(file_path, is_hinted):
 
     return file_path
 
+def fix_os2_unicoderange(font):
+  os2_bitmap = font_data.get_os2_unicoderange_bitmap(font)
+  expected_bitmap = font_data.get_cmap_unicoderange_bitmap(font)
+  if os2_bitmap != expected_bitmap:
+      font_data.set_os2_unicoderange_bitmap(font, expected_bitmap)
+      bitmap_string = font_data.unicoderange_bitmap_to_string(expected_bitmap)
+      print ('Set unicoderanges: ' + bitmap_string)
+      return True
+  return False
+
 def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
     """Fix font under src_root and write to similar path under dst_root, modulo
     fixes to the filename.  If is_hinted is false, strip hints.  If unmodified,
@@ -207,6 +217,7 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
     modified |= fix_vendor_id(font)
     modified |= fix_name_table(font)
     modified |= fix_attachlist(font)
+    modified |= fix_os2_unicoderange(font)
 
     tables_to_drop = TABLES_TO_DROP
     if not is_hinted:
