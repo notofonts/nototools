@@ -18,6 +18,7 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
+from nototools import opentype_data
 
 def get_name_records(font):
     """Get a font's 'name' table records as a dictionary of Unicode strings."""
@@ -55,6 +56,68 @@ def set_name_record(font, record_id, value):
         font['name'].names = [
             record for record_number, record in enumerate(names)
             if record_number not in records_to_drop]
+
+
+def get_os2_unicoderange_bitmap(font):
+    """Get an integer bitmap representing the UnicodeRange fields in the os/2 table."""
+    os2_table = font['OS/2']
+    return (os2_table.ulUnicodeRange1 |
+           os2_table.ulUnicodeRange2 << 32 |
+           os2_table.ulUnicodeRange3 << 64 |
+           os2_table.ulUnicodeRange4 << 96)
+
+
+def set_os2_unicoderange_bitmap(font, bitmap):
+    """Set the UnicodeRange fields in the os/2 table from the 128 bits of the
+       long integer bitmap."""
+    os2_table = font['OS/2']
+    mask = (1 << 32) - 1
+    os2_table.ulUnicodeRange1 = bitmap & mask
+    os2_table.ulUnicodeRange2 = (bitmap >> 32) & mask
+    os2_table.ulUnicodeRange3 = (bitmap >> 64) & mask
+    os2_table.ulUnicodeRange4 = (bitmap >> 96) & mask
+
+
+def get_cmap_unicoderange_info(font):
+    """Get info on unicode ranges based on the cmap in the font."""
+    cmap = get_cmap(font)
+    return opentype_data.collect_unicoderange_info(cmap)
+
+
+def unicoderange_info_to_bitmap(ur_info):
+    # Turn on a bit (mark it functional) if any range for that bit
+    # has more than 200 characters or is more than 50% covered.
+    # Non-BMP (57) and private use (60, 90) are marked functional if
+    # any character is set.
+    #
+    # This means, for example, that Cyrillic is marked functional
+    # if any of Cyrillic, Cyrillic Supplement, or Cyrillic Extended A or B
+    # have more than 50% coverage.  There's no really good heuristic
+    # for this without explicit per-script data, we're really just
+    # trying to catch obvious errors.
+
+    expected_bitmap = 0L
+    for count, info in ur_info:
+        bit = info[2]
+        # any non-bmp character causes bit 57 to be set
+        if info[0] >= 0x10000:
+            expected_bitmap |= 1 << 57
+        if bit in [57, 60, 90] or count > min(200, (info[1] - info[0]) / 2):
+            expected_bitmap |= 1 << bit
+    return expected_bitmap
+
+
+def get_cmap_unicoderange_bitmap(font):
+    return unicoderange_info_to_bitmap(get_cmap_unicoderange_info(font))
+
+
+def unicoderange_bitmap_to_string(bitmap):
+    have_list = []
+    for bucket_index in range(128):
+        if bitmap & (1 << bucket_index):
+            bucket_name = opentype_data.unicoderange_bucket_index_to_name(bucket_index)
+            have_list.append("%d (%s)" % (bucket_index, bucket_name))
+    return '; '.join(have_list)
 
 
 def font_version(font):

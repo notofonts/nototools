@@ -56,10 +56,10 @@ class RedirectStdout(object):
         raise e
     # else raise the original exception
 
-def push_to_noto_alpha(alphadir, srcdir):
+def push_to_noto_alpha(alphadir, srcdir, dry_run):
   # strip possible trailing slash for later relpath manipulations
-  alphadir = os.path.normpath(alphadir)
-  srcdir = os.path.normpath(srcdir)
+  alphadir = os.path.abspath(alphadir)
+  srcdir = os.path.abspath(srcdir)
 
   # could try to use pysvn, but that would be a separate dependency
   # poke svn first in case there's some issue with username/pw, etc.
@@ -85,7 +85,7 @@ def push_to_noto_alpha(alphadir, srcdir):
         if not os.path.exists(dst_path):
           added += 1
           font_paths.append(src_path)
-        elif or not filecmp.cmp(src_path, dst_path):
+        elif not filecmp.cmp(src_path, dst_path):
           updated += 1
           font_paths.append(src_path)
 
@@ -136,8 +136,7 @@ def push_to_noto_alpha(alphadir, srcdir):
     print one_line_msg
     print
     compare_summary.compare_summary(
-      alphadir, srcdir, compare_summary.tuple_compare, False, False, True, False)
-
+      alphadir, srcdir, None, compare_summary.tuple_compare, True, False, False, False)
 
   # make the changes
   for src_path in font_paths:
@@ -146,9 +145,10 @@ def push_to_noto_alpha(alphadir, srcdir):
     need_add = not os.path.exists(dst_path)
     # assume if it exists, its under version control
     print ('adding ' if need_add else 'editing ') + rel_path
-    shutil.copy2(src_path, dst_path)
-    if need_add:
-      subprocess.check_call(['svn', 'add', rel_path], stderr=subprocess.STDOUT)
+    if not dry_run:
+      shutil.copy2(src_path, dst_path)
+      if need_add:
+        subprocess.check_call(['svn', 'add', rel_path], stderr=subprocess.STDOUT)
 
   # commit the change
   # leave this out for now, it's useful to check before the commit to make sure
@@ -163,6 +163,8 @@ def main():
   parser.add_argument('srcdir', help='source to push to noto-alpha')
   parser.add_argument('--alpha', help='local noto-alpha svn repo',
                       default=values.get('alpha', None))
+  parser.add_argument('--dry-run', dest='dry_run',
+                      help='do not stage changes for svn', action='store_true')
   args = parser.parse_args()
 
   if not os.path.isdir(args.srcdir):
@@ -172,7 +174,7 @@ def main():
   if not os.path.exists(args.alpha):
     print '%s does not exist or is not a directory' % args.alpha
 
-  push_to_noto_alpha(args.alpha, args.srcdir)
+  push_to_noto_alpha(args.alpha, args.srcdir, args.dry_run)
 
 if __name__ == '__main__':
     main()

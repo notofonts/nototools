@@ -120,6 +120,49 @@ DEEMED_UI_SCRIPTS_SET = frozenset({
   'Qaae', # Emoji
 })
 
+# Range spec matches "Noto Nastaliq requirements" doc, Tier 1.
+URDU_RANGES = """
+    0600..0604,060b..0614,061b,061c,061e..061f,0620,0621..063a,
+    0640..0659,065e..066d,0670..0673,0679,067a..067b,067c,067d,
+    067e,067f..0680,0681,0683..0684,0685..0686,0687,0688..0689,
+    068a,068b,068c..068d,068e,068f,0691,0693,0696,0698,0699,
+    069a,069e,06a6,06a9,06ab,06af..06b0,06b1,06b3,06b7,06ba,
+    06bb,06bc,06be,06c0..06c4,06cc..06cd,06d0,06d2..06d5,
+    06dd..06de,06e9,06ee..06ef,06f0..06f9,06ff,0759,075c,0763,
+    0767..0769,076b..077d,08ff,fbb2..fbc1,fd3e..fd3f,fdf2,
+    fdfa..fdfd"""
+
+# Only these two characters are required for Urdu from the Arabic
+# extra characters needed.
+URDU_EXTRA = "2010..2011"
+
+def _char_set(compact_set_text):
+    result = set()
+    prev = -1
+    for part in compact_set_text.split(','):
+        sep_index = part.find('..')
+        if sep_index == -1:
+            cp = int(part, base=16)
+            assert cp > prev
+            # print '%04x' % cp
+            result.add(cp)
+            prev = cp
+        else:
+          start = int(part[:sep_index], base=16)
+          end = int(part[sep_index + 2:], base=16)
+          # print '%04x..%04x' % (start, end)
+          assert start > prev
+          assert end > start
+          for cp in range(start, end + 1):
+              result.add(cp)
+          prev = end
+    return result
+
+def urdu_set():
+    return _char_set(URDU_RANGES) | _char_set(URDU_EXTRA)
+
+def ascii_letters():
+    return _char_set('0041..005a,0061..007a')
 
 EXTRA_CHARACTERS_NEEDED = {
     'Arab': [

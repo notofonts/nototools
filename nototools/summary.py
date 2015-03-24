@@ -28,7 +28,7 @@ from fontTools import ttLib
 
 import noto_lint
 
-def cmap_count(font):
+def get_largest_cmap(font):
   cmap_table = font['cmap']
   cmap = None
   for table in cmap_table.tables:
@@ -40,34 +40,71 @@ def cmap_count(font):
       # Stop scan if we find this cmap. Should be strictly larger than the other.
       cmap = table.cmap
       break
-  return len(cmap)
+  return cmap
+
+def cmap_count(font):
+  return len(get_largest_cmap(font))
 
 def summarize_file(root, path):
   font = ttLib.TTFont(path)
+  table_info = {}
+  reader = font.reader
+  for tag in reader.keys():
+    entry = reader.tables[tag]
+    entry_len = entry.length
+    entry_checkSum = int(entry.checkSum)
+    if entry_checkSum < 0:
+      entry_checkSum += 0x100000000
+    table_info[tag] = (entry_len, entry_checkSum)
 
   relpath = path[len(root) + 1:]
   size = os.path.getsize(path)
   version = noto_lint.printable_font_revision(font)
   num_glyphs = len(font.getGlyphOrder())
   full_name = noto_lint.name_records(font)[4]
-  num_chars = cmap_count(font)
+  cmap = set(get_largest_cmap(font).keys()) # copy needed? what's the lifespan?
+  num_chars = len(cmap)
+  font.close()
 
-  return (relpath, version, full_name, size, num_glyphs, num_chars)
+  return (relpath, version, full_name, size, num_glyphs, num_chars, cmap, table_info)
 
-def summarize(root):
+def summarize(root, name=None):
   result = []
+  name_re = re.compile(name) if name else None
   for parent, _, files in os.walk(root):
     for f in sorted(files):
       if f.endswith('.ttf'):
-        result.append(summarize_file(root, os.path.join(parent, f)))
+        path = os.path.join(parent, f)
+        if name_re:
+          relpath = path[len(root) + 1:]
+          if not name_re.search(relpath):
+            continue
+        result.append(summarize_file(root, path))
   return result
 
+
 def print_tup(tup, short):
-  print ' \t'.join([str(val) for idx, val in enumerate(tup)
-                    if not (short and idx == 3)])
+  def to_str(idx, val):
+    if idx == 7 and type(val) == type({}):
+      parts = []
+      for tag in sorted(val):
+        parts.append('%s=%s' % (tag, val[tag][0]))
+      result = ', '.join(parts)
+    else:
+      if idx == 6 and type(val) == type(set()):
+        result = noto_lint.printable_unicode_range(val)
+      else:
+        result = str(val)
+    if ' ' in result:
+      result = '"%s"' % result
+    return result
+
+  line = [to_str(idx, val) for idx, val in enumerate(tup)
+          if not (short and (idx == 3 or idx == 6 or idx == 7))]
+  print '\t'.join(line)
 
 def print_summary(summary_list, short):
-  labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars')
+  labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars', 'cmap', 'table_info')
   print_tup(labels, short)
   for tup in summary_list:
     print_tup(tup, short)
@@ -75,6 +112,8 @@ def print_summary(summary_list, short):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('root', help='root of directory tree')
+    parser.add_argument('--name', help='only report files where name regex matches '
+                        'some portion of the path under root'),
     parser.add_argument('-s', '--short', help='shorter summary format',
                         action='store_true')
     args = parser.parse_args()
@@ -83,8 +122,8 @@ def main():
       print '%s does not exist or is not a directory' % args.root
     else:
       root = os.path.abspath(args.root)
-      print root
-      print_summary(summarize(root), args.short)
+      print "root: %s, name: %s" % (root, args.name if args.name else '[all]')
+      print_summary(summarize(root, name=args.name), args.short)
 
 if __name__ == "__main__":
     main()

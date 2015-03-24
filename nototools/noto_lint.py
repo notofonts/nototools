@@ -35,6 +35,7 @@ from fontTools.misc import bezierTools
 from fontTools.pens import basePen
 
 from nototools import noto_data
+from nototools import font_data
 from nototools import opentype_data
 from nototools import render
 from nototools import unicode_data
@@ -478,8 +479,11 @@ def check_font(file_name,
         # Check family name
         expected_family_name = 'Noto ' + style
         if script != 'Latn':
-            expected_family_name += (
-                ' ' + unicode_data.human_readable_script_name(script))
+            if style == 'Nastaliq':
+                expected_family_name += ' Urdu'
+            else:
+                expected_family_name += (
+                    ' ' + unicode_data.human_readable_script_name(script))
         if variant:
             expected_family_name += ' ' + variant
         if weight == 'BoldItalic':
@@ -656,26 +660,29 @@ def check_font(file_name,
                 | unicode_data.defined_characters(scr="Cyrl"))
             needed_chars -= _symbol_set()
             needed_chars -= _cjk_set()
+        elif style == 'Nastaliq':
+            needed_chars = noto_data.urdu_set()
         else:
             needed_chars = unicode_data.defined_characters(scr=script)
             needed_chars -= _symbol_set()
 
         needed_chars &= unicode_data.defined_characters(version=6.0)
 
-        try:
-            needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[script])
-        except KeyError:
-            pass
+        if style != 'Nastaliq':
+            try:
+                needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[script])
+            except KeyError:
+                pass
 
-        try:
-            needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
-        except KeyError:
-            pass
+            try:
+                needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
+            except KeyError:
+                pass
 
-        try:
-            needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[script])
-        except KeyError:
-            pass
+            try:
+                needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[script])
+            except KeyError:
+                pass
 
         # TODO: also check character coverage against Unicode blocks for
         # characters of script Common or Inherited
@@ -705,78 +712,40 @@ def check_font(file_name,
                  "there are: %s."
                      % printable_unicode_range(non_characters_in_cmap))
 
+        if not (script == "Qaae" or script == "Latn"):
+            ascii_letters = noto_data.ascii_letters()
+            contained_letters = ascii_letters & set(cmap.keys())
+            if contained_letters:
+                warn("Chars",
+                    "There should not be ASCII letters in the font, but there are: %s."
+                    % printable_unicode_range(contained_letters))
+
         return cmap
 
 
     def check_head_tables(cmap):
         def check_ul_unicode_range():
-            bitmap = (os2_table.ulUnicodeRange1 |
-                      os2_table.ulUnicodeRange2 << 32 |
-                      os2_table.ulUnicodeRange3 << 64 |
-                      os2_table.ulUnicodeRange4 << 96)
-
-            # Number of characters supported in the cmap for each range
-            # in ulUnicodeRange
-            chars_in_range = [0] * 128
-            for code in cmap:
-                if code > 0xFFFF: # The special bit for non-BMP characters
-                    chars_in_range[57] += 1
-                try:
-                    chars_in_range[
-                        opentype_data.ul_unicode_range_bit[code]] += 1
-                except KeyError:
-                    # No bit needed for the character
-                    pass
-
-            expected_bitmap = 0L
-            for bit in range(
-                    max(opentype_data.ul_unicode_range_count.keys())+1):
-                if chars_in_range[bit] > 0:
-                    expected_bitmap |= 1 << bit
-
-                # If we need to be more precise, we can use following algorithm:
-                # # The special bits for non-BMP characters, and private
-                # # use areas
-                # if bit in [57, 60, 90]:
-                #    if chars_in_range[bit] > 0:
-                #      expected_bitmap |= 1 << bit
-                #  elif chars_in_range[bit] >= (
-                #        0.5 * opentype_data.ul_unicode_range_count[bit]):
-                #    expected_bitmap |= 1 << bit
-
+            bitmap = font_data.get_os2_unicoderange_bitmap(font)
+            expected_info = opentype_data.collect_unicoderange_info(cmap)
+            expected_bitmap = font_data.unicoderange_info_to_bitmap(expected_info)
             difference = bitmap ^ expected_bitmap
-            if difference:
-                for bit in range(0, 128):
-                    if difference & (1 << bit):
-                        if bitmap & (1 << bit):
-                            warn("Range bit",
-                                 "ulUnicodeRange bit %d for %s expected to be "
-                                 "not set, while it was set [defined Unicode "
-                                 "chars in ranges=%d, cmapped chars in "
-                                 "ranges=%d]." % (
-                                     bit,
-                                     ', '.join(
-                                         opentype_data.ul_unicode_range_names[
-                                             bit]),
-                                     opentype_data.ul_unicode_range_count[bit],
-                                     chars_in_range[bit]))
-                        else:
-                            if bit == 57:
-                                characters = set(cmap) - set(range(0, 0x10000))
-                            else:
-                                characters = (set(cmap) &
-                                    opentype_data.ul_unicode_range_set[bit])
-                            characters = printable_unicode_range(characters)
-                            warn(
-                                "Range bit",
-                                "ulUnicodeRange bit %d for %s expected to be "
-                                "set, while it was not set [supported "
-                                "characters in the ranges: %s]." % (
-                                    bit,
-                                    ", ".join(
-                                        opentype_data.ul_unicode_range_names[
-                                            bit]),
-                                    characters))
+            if not difference:
+                return
+
+            for bucket_index in range(128):
+                if difference & (1 << bucket_index):
+                    bucket_info = opentype_data.unicoderange_bucket_index_to_info(bucket_index)
+                    range_name = opentype_data.unicoderange_bucket_info_name(bucket_info)
+                    chars_in_bucket = sum(t[0] for t in expected_info if t[1][2] == bucket_index)
+                    size_of_bucket = opentype_data.unicoderange_bucket_info_size(bucket_info)
+                    set_unset = "not be set" if bitmap & (1 << bucket_index) else "be set"
+                    warn("Range bit",
+                         "ulUnicodeRange bit %d (%s) should %s (cmap has "
+                         "%d of %d codepoints in this range)" %
+                         (bucket_index, range_name, set_unset, chars_in_bucket, size_of_bucket))
+            # print printable_unicode_range(set(cmap.keys()))
+            # print "expected %s" % font_data.unicoderange_bitmap_to_string(expected_bitmap)
+            # print "have %s" % font_data.unicoderange_bitmap_to_string(bitmap)
 
         hhea_table = font["hhea"]
 
@@ -1291,6 +1260,8 @@ def check_font(file_name,
             assert script != "Zzzz"
         elif style in ["Sans", "Serif"]:
             script = "Latn"  # LGC really
+        elif style in ["Nastaliq"]:
+            script = "Arab"
         else:
             style, script, variant, weight = HARD_CODED_FONT_INFO[
                 just_the_file_name]

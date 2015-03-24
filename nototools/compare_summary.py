@@ -24,6 +24,7 @@ import os
 import os.path
 
 import summary
+import noto_lint
 
 def summary_to_map(summary_list):
   result = {}
@@ -32,28 +33,79 @@ def summary_to_map(summary_list):
     result[key] = tuple
   return result
 
-def get_key_lists(base_map, target_map):
-  missing_in_base = []
-  missing_in_target = []
+def get_key_lists(base_map, target_map, base_root, target_root):
+  added = []
+  removed = []
   shared = []
-  for k in base_map:
-    if not target_map.get(k):
-      missing_in_target.append(k)
+  identical = []
+  for k in sorted(base_map):
+    target = target_map.get(k)
+    if not target:
+      removed.append(k)
+    elif filecmp.cmp(os.path.join(base_root, k),
+                     os.path.join(target_root, k)):
+      identical.append(k)
     else:
       shared.append(k)
-  for k in target_map:
+  for k in sorted(target_map):
     if not base_map.get(k):
-      missing_in_base.append(k)
-  return sorted(missing_in_base), sorted(missing_in_target), sorted(shared)
+      added.append(k)
+  return added, removed, shared, identical
 
 def print_keys(key_list):
   for k in key_list:
-    print '\t' + k
+    print '  ' + k
 
-def print_difference(base_tuple, target_tuple):
-  b_path, b_version, b_name, b_size, b_numglyphs, b_numchars = base_tuple
-  t_path, t_version, t_name, t_size, t_numglyphs, t_numchars = target_tuple
-  print "%s differs:" % b_path
+def compare_table_info(base_info, target_info):
+  biggest_deltas = []
+  other_count = 0
+  added = []
+  removed = []
+
+  for k in target_info:
+    b_tup = base_info.get(k)
+    t_tup = target_info.get(k)
+    if not b_tup:
+      added.append(t_tup)
+    else:
+      b_len = b_tup[0]
+      t_len = t_tup[0]
+      delta = t_len - b_len
+      if delta == 0:
+        if b_tup[1] != t_tup[1]:
+          other_count += 1
+        continue
+      biggest_deltas.append((k, delta))
+
+  for k in base_info:
+    if not target_info.get(k):
+      removed.append(k)
+
+  biggest_deltas.sort(lambda lhs,rhs: -cmp(abs(lhs[1]), abs(rhs[1])) or
+                      cmp(lhs[0], rhs[0]))
+  del biggest_deltas[5:]
+
+  result = []
+  if biggest_deltas:
+    def print_delta(t):
+      if t[1] == 0:
+        return t[0]
+      return '%s(%+d)' % t
+    biggest_delta_strings = [print_delta(t) for t in biggest_deltas]
+    if other_count > 0 and len(biggest_deltas) < 5:
+      biggest_delta_strings.append('%s other%s' %
+        (other_count, 's' if other_count != 1 else ''))
+    result.append('changed ' + ', '.join(biggest_delta_strings))
+  if added:
+    result.append('added ' + ', '.join('%s(%s)' % t for t in sorted(added)))
+  if removed:
+    result.append('removed ' + ', '.join(sorted(removed)))
+  return '; '.join(result)
+
+def print_difference(k, base_tuple, target_tuple, other_difference):
+  b_path, b_version, b_name, b_size, b_numglyphs, b_numchars, b_cmap, b_tableinfo = base_tuple
+  t_path, t_version, t_name, t_size, t_numglyphs, t_numchars, t_cmap, t_tableinfo = target_tuple
+  print '  ' + k
   versions_differ = b_version != t_version
   diff_list = []
   if versions_differ:
@@ -61,10 +113,10 @@ def print_difference(base_tuple, target_tuple):
       msg = '(base is newer!)'
     else:
       msg = ''
-    print '  version: %s vs %s %s' % (b_version, t_version, msg)
+    print '    version: %s vs %s %s' % (b_version, t_version, msg)
   if b_name != t_name:
     diff_list.append('name')
-    print "  name: '%s' vs '%s'" % (b_name, t_name)
+    print "    name: '%s' vs '%s'" % (b_name, t_name)
   if b_size != t_size:
     diff_list.append('size')
     delta = int(t_size) - int(b_size)
@@ -72,7 +124,10 @@ def print_difference(base_tuple, target_tuple):
       msg = '%d byte%s smaller' % (-delta, '' if delta == -1 else 's')
     else:
       msg = '%d byte%s bigger' % (delta, '' if delta == 1 else 's')
-    print '  size: %s vs %s (%s)' % (b_size, t_size, msg)
+    print '    size: %s vs %s (%s)' % (b_size, t_size, msg)
+  table_diffs = compare_table_info(b_tableinfo, t_tableinfo)
+  if table_diffs:
+    print '    tables: %s' % table_diffs
   if b_numglyphs != t_numglyphs:
     diff_list.append('glyph count')
     delta = int(t_numglyphs) - int(b_numglyphs)
@@ -80,7 +135,7 @@ def print_difference(base_tuple, target_tuple):
       msg = '%d fewer glyph%s' % (-delta, '' if delta == -1 else 's')
     else:
       msg = '%d more glyph%s' % (delta, '' if delta == 1 else 's')
-    print '  glyphs: %s vs %s (%s)' % (b_numglyphs, t_numglyphs, msg)
+    print '    glyphs: %s vs %s (%s)' % (b_numglyphs, t_numglyphs, msg)
   if b_numchars != t_numchars:
     diff_list.append('char count')
     delta = int(t_numchars) - int(b_numchars)
@@ -88,53 +143,27 @@ def print_difference(base_tuple, target_tuple):
       msg = '%d fewer char%s' % (-delta, '' if delta == -1 else 's')
     else:
       msg = '%d more char%s' % (delta, '' if delta == 1 else 's')
-    print '  chars: %s vs %s (%s)' % (b_numchars, t_numchars, msg)
+    print '    chars: %s vs %s (%s)' % (b_numchars, t_numchars, msg)
+  if b_cmap != t_cmap:
+    removed_from_base = b_cmap - t_cmap
+    if removed_from_base:
+      print '    cmap removed: ' + noto_lint.printable_unicode_range(
+        removed_from_base)
+    added_in_target = t_cmap - b_cmap
+    if added_in_target:
+      print '    cmap added: ' + noto_lint.printable_unicode_range(
+          added_in_target)
   if diff_list and not versions_differ:
-    print '  %s differ but same revision number' % ', '.join(diff_list)
+    print '    %s differs but revision number is the same' % ', '.join(diff_list)
+  if not diff_list and other_difference:
+    print '    other difference'
 
-def print_identical(path, identical, show_identical):
-  if not identical:
-    print '%s differs:' % path
-    print '  other difference'
-  elif show_identical:
-    print '%s identical' % path
-
-def print_shared(key_list, base_map, target_map, comparefn,
-                 base_root, target_root, compare_identity, show_identical):
+def print_changed(key_list, base_map, target_map, comparefn):
   for k in key_list:
     base_tuple = base_map.get(k)
     target_tuple = target_map.get(k)
-    if not comparefn(base_tuple, target_tuple):
-      print_difference(base_tuple, target_tuple)
-    elif compare_identity:
-      # The key is also the path
-      identical = filecmp.cmp(os.path.join(base_root, k),
-                              os.path.join(target_root, k))
-      print_identical(k, identical, show_identical)
-
-def compare_summary(base_root, target_root, comparefn, show_missing, show_paths,
-                    compare_identity, show_identical):
-  base_map = summary_to_map(summary.summarize(base_root))
-  target_map = summary_to_map(summary.summarize(target_root))
-  missing_in_base, missing_in_target, shared = get_key_lists(base_map, target_map)
-
-  if show_paths:
-    print 'base root: ' + base_root
-    print 'target root: ' + target_root
-  if show_missing:
-    if missing_in_base:
-      print 'missing in base'
-      print_keys(missing_in_base)
-      print
-    if missing_in_target:
-      print 'missing in target'
-      print_keys(missing_in_target)
-      print
-  if shared:
-    if show_missing:
-      print 'shared'
-    print_shared(shared, base_map, target_map, comparefn, base_root, target_root,
-                 compare_identity, show_identical)
+    other_difference = comparefn(base_tuple, target_tuple)
+    print_difference(k, base_tuple, target_tuple, other_difference)
 
 def tuple_compare(base_t, target_t):
   return base_t == target_t
@@ -147,19 +176,55 @@ def tuple_compare_no_size(base_t, target_t):
       return False
   return True
 
+def compare_summary(base_root, target_root, name=None, comparefn=tuple_compare,
+                    show_added=True, show_removed=True, show_identical=True,
+                    show_paths=True):
+  base_map = summary_to_map(summary.summarize(base_root, name))
+  target_map = summary_to_map(summary.summarize(target_root, name))
+  added, removed, changed, identical = get_key_lists(base_map, target_map,
+                                                     base_root, target_root)
+
+  # no nonlocal in 2.7
+  have_output_hack = [False]
+
+  def header_line(msg):
+    if have_output_hack[0]:
+      print
+    else:
+      have_output_hack[0] = True
+    if msg:
+      print msg
+
+  if show_paths:
+    header_line(None)
+    print 'base root: ' + base_root
+    print 'target root: ' + target_root
+  if show_added and added:
+    header_line('added')
+    print_keys(added)
+  if show_removed and removed:
+    header_line('removed')
+    print_keys(removed)
+  if changed:
+    header_line('changed')
+    print_changed(changed, base_map, target_map, comparefn)
+  if show_identical and identical:
+    header_line('identical')
+    print_keys(identical)
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('base_root', help='root of directory tree, base for comparison')
   parser.add_argument('target_root', help='root of directory tree, target for comparison')
-  parser.add_argument('--size', help='include size in comparisons',
+  parser.add_argument('--name', help='only examine files whose subpath+names contain this regex')
+  parser.add_argument('--compare_size', help='include size in comparisons',
                       action='store_true')
-  parser.add_argument('--missing',  help='include mismatched files', action='store_true')
+  parser.add_argument('--removed',  help='list files not in target', action='store_true')
+  parser.add_argument('--added', help='list files not in base', action='store_true')
+  parser.add_argument('--identical', help='list files that are identical in base and target',
+                      action='store_true')
   parser.add_argument('--nopaths', help='do not print root paths', action='store_false',
                       default=True, dest='show_paths')
-  parser.add_argument('--compare_identity', help='compare files for identity if otherwise same',
-                      action='store_true')
-  parser.add_argument('--show_identical', help='report when files are identical',
-                      action='store_true')
   args = parser.parse_args()
 
   if not os.path.isdir(args.base_root):
@@ -173,10 +238,10 @@ def main():
   base_root = os.path.abspath(args.base_root)
   target_root = os.path.abspath(args.target_root)
 
-  comparefn = tuple_compare if args.size else tuple_compare_no_size
+  comparefn = tuple_compare if args.compare_size else tuple_compare_no_size
 
-  compare_summary(base_root, target_root, comparefn, args.missing, args.show_paths,
-                  args.compare_identity, args.show_identical)
+  compare_summary(base_root, target_root, args.name, comparefn, args.added, args.removed,
+                  args.identical, args.show_paths)
 
 if __name__ == '__main__':
   main()
