@@ -270,7 +270,7 @@ def _setup_unicoderange_data():
         range_start_str, range_end_str = urange.split('-')
         range_start = int(range_start_str, 16)
         range_end = int(range_end_str, 16)
-        if index_str != '':
+        if index_str:
             index = int(index_str)
         tup = (range_start, range_end, index, name)
         ur_data.append(tup)
@@ -285,7 +285,7 @@ def collect_unicoderange_info(cmap):
     are included."""
 
     _setup_unicoderange_data()
-    index_count = 0
+    range_count = 0
     index = 0
     limit = len(ur_data)
     result = []
@@ -293,14 +293,14 @@ def collect_unicoderange_info(cmap):
         while index < limit:
             tup = ur_data[index]
             if cp <= tup[1]:
-                index_count += 1
+                range_count += 1
                 break
-            if index_count:
-                result.append((index_count, ur_data[index]))
-                index_count = 0
+            if range_count:
+                result.append((range_count, ur_data[index]))
+                range_count = 0
             index += 1
-    if index_count:
-        result.append((index_count, ur_data[index]))
+    if range_count:
+        result.append((range_count, ur_data[index]))
     return result
 
 

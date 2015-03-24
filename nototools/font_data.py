@@ -97,9 +97,7 @@ def unicoderange_info_to_bitmap(ur_info):
     # trying to catch obvious errors.
 
     expected_bitmap = 0L
-    for ur in ur_info:
-        count = ur[0]
-        info = ur[1]
+    for count, info in ur_info:
         bit = info[2]
         # any non-bmp character causes bit 57 to be set
         if info[0] >= 0x10000:
