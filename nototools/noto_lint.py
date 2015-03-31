@@ -311,6 +311,9 @@ def name_records(font):
     name_table = font["name"]
     names = {}
     for record in name_table.names:
+        if record.platformID == 1:
+          # ignore Mac encodings for lint, the cjk fonts have them
+          continue
         assert (record.platformID,
                 record.platEncID,
                 record.langID) == (3, 1, 0x409)
