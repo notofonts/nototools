@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11042 $"/>
-		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
+		<version number="$Revision: 11321 $"/>
+		<generation date="$Date: 2015-02-26 12:20:05 -0800 (Thu, 26 Feb 2015) $"/>
 		<language type="es"/>
 	</identity>
 	<localeDisplayNames>
@@ -39,7 +39,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="ar">árabe</language>
 			<language type="ar_001">árabe estándar moderno</language>
 			<language type="arc">arameo</language>
-			<language type="arn">araucano</language>
+			<language type="arn">mapuche</language>
 			<language type="arp">arapaho</language>
 			<language type="arw">arahuaco</language>
 			<language type="as">asamés</language>
@@ -48,9 +48,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="av">avar</language>
 			<language type="awa">avadhi</language>
 			<language type="ay">aimara</language>
-			<language type="az">azerí</language>
+			<language type="az">azerbaiyano</language>
 			<language type="az" alt="short">azerí</language>
-			<language type="ba">bashkir</language>
+			<language type="ba">baskir</language>
 			<language type="bal">baluchi</language>
 			<language type="ban">balinés</language>
 			<language type="bas">basa</language>
@@ -115,14 +115,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="dav">taita</language>
 			<language type="de">alemán</language>
 			<language type="de_AT">alemán austríaco</language>
-			<language type="de_CH">alto alemán de Suiza</language>
+			<language type="de_CH">alto alemán suizo</language>
 			<language type="del">delaware</language>
 			<language type="den">slave</language>
 			<language type="dgr">dogrib</language>
 			<language type="din">dinka</language>
 			<language type="dje">zarma</language>
 			<language type="doi">dogri</language>
-			<language type="dsb">sorbio inferior</language>
+			<language type="dsb">bajo sorbio</language>
 			<language type="dua">duala</language>
 			<language type="dum">neerlandés medieval</language>
 			<language type="dv">divehi</language>
@@ -147,7 +147,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="enm">inglés medieval</language>
 			<language type="eo">esperanto</language>
 			<language type="es">español</language>
-			<language type="es_419">español de América</language>
+			<language type="es_419">español latinoamericano</language>
 			<language type="es_ES">español de España</language>
 			<language type="es_MX">español de México</language>
 			<language type="et">estonio</language>
@@ -191,7 +191,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="gsw">alemán suizo</language>
 			<language type="gu">gujarati</language>
 			<language type="guz">gusii</language>
-			<language type="gv">gaélico manés</language>
+			<language type="gv">manés</language>
 			<language type="gwi">kutchin</language>
 			<language type="ha">hausa</language>
 			<language type="hai">haida</language>
@@ -203,7 +203,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="hmn">hmong</language>
 			<language type="ho">hiri motu</language>
 			<language type="hr">croata</language>
-			<language type="hsb">sorbio superior</language>
+			<language type="hsb">alto sorbio</language>
 			<language type="ht">haitiano</language>
 			<language type="hu">húngaro</language>
 			<language type="hup">hupa</language>
@@ -326,7 +326,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="mni">manipuri</language>
 			<language type="moh">mohawk</language>
 			<language type="mos">mossi</language>
-			<language type="mr">marathi</language>
+			<language type="mr">maratí</language>
 			<language type="ms">malayo</language>
 			<language type="mt">maltés</language>
 			<language type="mua">mundang</language>
@@ -374,7 +374,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="os">osético</language>
 			<language type="osa">osage</language>
 			<language type="ota">turco otomano</language>
-			<language type="pa">punjabí</language>
+			<language type="pa">panyabí</language>
 			<language type="pag">pangasinán</language>
 			<language type="pal">pahlavi</language>
 			<language type="pam">pampanga</language>
@@ -508,7 +508,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="vi">vietnamita</language>
 			<language type="vo">volapük</language>
 			<language type="vot">vótico</language>
-			<language type="vun">kivunjo</language>
+			<language type="vun">vunjo</language>
 			<language type="wa">valón</language>
 			<language type="wae" draft="contributed">walser</language>
 			<language type="wal">walamo</language>
@@ -529,7 +529,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="zap">zapoteco</language>
 			<language type="zbl">símbolos Bliss</language>
 			<language type="zen">zenaga</language>
-			<language type="zgh">tamazight</language>
+			<language type="zgh">tamazight estándar marroquí</language>
 			<language type="zh">chino</language>
 			<language type="zh_Hans">chino simplificado</language>
 			<language type="zh_Hant">chino tradicional</language>
@@ -540,7 +540,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</languages>
 		<scripts>
 			<script type="Arab">árabe</script>
-			<script type="Arab" alt="variant">perso-arábigo</script>
+			<script type="Arab" alt="variant">perso-árabe</script>
 			<script type="Armn">armenio</script>
 			<script type="Avst">avéstico</script>
 			<script type="Bali">balinés</script>
@@ -578,9 +578,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Hani">han</script>
 			<script type="Hano">hanunoo</script>
 			<script type="Hans">simplificado</script>
-			<script type="Hans" alt="stand-alone">hanzi simplificado</script>
+			<script type="Hans" alt="stand-alone">han simplificado</script>
 			<script type="Hant">tradicional</script>
-			<script type="Hant" alt="stand-alone">hanzi tradicional</script>
+			<script type="Hant" alt="stand-alone">han tradicional</script>
 			<script type="Hebr">hebreo</script>
 			<script type="Hira">hiragana</script>
 			<script type="Hmng">pahawh hmong</script>
@@ -632,7 +632,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Saur" draft="contributed">saurashtra</script>
 			<script type="Sgnw" draft="contributed">SignWriting</script>
 			<script type="Shaw">shaviano</script>
-			<script type="Sinh">singalés</script>
+			<script type="Sinh">cingalés</script>
 			<script type="Sund">sundanés</script>
 			<script type="Sylo" draft="contributed">syloti nagri</script>
 			<script type="Syrc">siriaco</script>
@@ -751,7 +751,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="CU">Cuba</territory>
 			<territory type="CV">Cabo Verde</territory>
 			<territory type="CW">Curazao</territory>
-			<territory type="CX">Isla Christmas</territory>
+			<territory type="CX">Isla de Navidad (Christmas)</territory>
 			<territory type="CY">Chipre</territory>
 			<territory type="CZ">República Checa</territory>
 			<territory type="DE">Alemania</territory>
@@ -811,7 +811,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="IM">Isla de Man</territory>
 			<territory type="IN">India</territory>
 			<territory type="IO">Territorio Británico del Océano Índico</territory>
-			<territory type="IQ">Iraq</territory>
+			<territory type="IQ">Irak</territory>
 			<territory type="IR">Irán</territory>
 			<territory type="IS">Islandia</territory>
 			<territory type="IT">Italia</territory>
@@ -876,7 +876,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="NO">Noruega</territory>
 			<territory type="NP">Nepal</territory>
 			<territory type="NR">Nauru</territory>
-			<territory type="NU">Isla Niue</territory>
+			<territory type="NU">Niue</territory>
 			<territory type="NZ">Nueva Zelanda</territory>
 			<territory type="OM">Omán</territory>
 			<territory type="PA">Panamá</territory>
@@ -1025,14 +1025,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="big5han" key="collation">orden del chino tradicional - Big5</type>
 			<type type="buddhist" key="calendar">calendario budista</type>
 			<type type="chinese" key="calendar">calendario chino</type>
-			<type type="coptic" key="calendar">calendario copto</type>
+			<type type="coptic" key="calendar">calendario cóptico</type>
 			<type type="dangi" key="calendar">calendario dangi</type>
 			<type type="deva" key="numbers">dígitos en devanagari</type>
-			<type type="dictionary" key="collation">orden de diccionario</type>
-			<type type="ducet" key="collation">orden Unicode predeterminado</type>
+			<type type="dictionary" key="collation">orden de clasificación del diccionario</type>
+			<type type="ducet" key="collation">orden de clasificación de Unicode predeterminado</type>
 			<type type="ethi" key="numbers">números en etíope</type>
 			<type type="ethiopic" key="calendar">calendario etíope</type>
-			<type type="ethiopic-amete-alem" key="calendar">calendario amete alem etíope</type>
+			<type type="ethiopic-amete-alem" key="calendar">calendario etíope Amete Alem</type>
 			<type type="finance" key="numbers" draft="contributed">Números financieros</type>
 			<type type="fullwide" key="numbers">dígitos de ancho completo</type>
 			<type type="gb2312han" key="collation">orden del chino simplificado - GB2312</type>
@@ -1080,7 +1080,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="pinyin" key="collation">orden pinyin</type>
 			<type type="primary" key="colStrength" draft="contributed">Ordenar solo letras base</type>
 			<type type="quaternary" key="colStrength" draft="contributed">Ordenar acentos/mayúsculas y minúsculas/ancho/kana</type>
-			<type type="reformed" key="collation">orden reformado</type>
+			<type type="reformed" key="collation">orden de clasificación reformado</type>
 			<type type="roc" key="calendar">calendario de la República de China</type>
 			<type type="roman" key="numbers">números romanos</type>
 			<type type="romanlow" key="numbers">números romanos en minúscula</type>
@@ -1098,7 +1098,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="tibt" key="numbers">dígitos en tibetano</type>
 			<type type="traditional" key="collation">orden tradicional</type>
 			<type type="traditional" key="numbers" draft="contributed">Números tradicionales</type>
-			<type type="unihan" key="collation">orden por radical-trazos</type>
+			<type type="unihan" key="collation">orden de clasificación de trazos radicales</type>
 			<type type="upper" key="colCaseFirst" draft="contributed">Ordenar empezando por mayúsculas</type>
 			<type type="vaii" key="numbers" draft="contributed">Dígitos vai</type>
 			<type type="yes" key="colBackwards" draft="contributed">Ordenar acentos con inversión</type>
@@ -1126,7 +1126,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</measurementSystemNames>
 		<codePatterns>
 			<codePattern type="language">Idioma: {0}</codePattern>
-			<codePattern type="script">Dialecto: {0}</codePattern>
+			<codePattern type="script">Alfabeto: {0}</codePattern>
 			<codePattern type="territory">Región: {0}</codePattern>
 		</codePatterns>
 	</localeDisplayNames>
@@ -1288,7 +1288,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Gy">y G</dateFormatItem>
 						<dateFormatItem id="GyMMM">MMM y G</dateFormatItem>
 						<dateFormatItem id="GyMMMd">d MMM y G</dateFormatItem>
-						<dateFormatItem id="GyMMMEd">E, d 'de' MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">E, d MMM y G</dateFormatItem>
+						<dateFormatItem id="GyMMMM">MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="GyMMMMd">d 'de' MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="GyMMMMEd">E, d 'de' MMMM 'de' y G</dateFormatItem>
 						<dateFormatItem id="h">hh a</dateFormatItem>
 						<dateFormatItem id="H" draft="contributed">HH</dateFormatItem>
 						<dateFormatItem id="hm">hh:mm a</dateFormatItem>
@@ -1300,19 +1303,21 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="MEd">E, d/M</dateFormatItem>
 						<dateFormatItem id="MMM">LLL</dateFormatItem>
 						<dateFormatItem id="MMMd">d MMM</dateFormatItem>
-						<dateFormatItem id="MMMdd">dd-MMM</dateFormatItem>
 						<dateFormatItem id="MMMEd">E, d MMM</dateFormatItem>
 						<dateFormatItem id="MMMMd">d 'de' MMMM</dateFormatItem>
+						<dateFormatItem id="MMMMEd">E, d 'de' MMMM</dateFormatItem>
 						<dateFormatItem id="ms">mm:ss</dateFormatItem>
 						<dateFormatItem id="y">y G</dateFormatItem>
 						<dateFormatItem id="yyyy">y G</dateFormatItem>
 						<dateFormatItem id="yyyyM">M/y GGGGG</dateFormatItem>
 						<dateFormatItem id="yyyyMd">d/M/y GGGGG</dateFormatItem>
 						<dateFormatItem id="yyyyMEd">E, d/M/y GGGGG</dateFormatItem>
-						<dateFormatItem id="yyyyMMM">MMM 'de' y G</dateFormatItem>
-						<dateFormatItem id="yyyyMMMd">d 'de' MMM 'de' y G</dateFormatItem>
-						<dateFormatItem id="yyyyMMMEd">E, d 'de' MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="yyyyMMM">MMM y G</dateFormatItem>
+						<dateFormatItem id="yyyyMMMd">d MMM y G</dateFormatItem>
+						<dateFormatItem id="yyyyMMMEd">EEE, d MMM y G</dateFormatItem>
 						<dateFormatItem id="yyyyMMMM">MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="yyyyMMMMd">d 'de' MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="yyyyMMMMEd">EEE, d 'de' MMMM 'de' y G</dateFormatItem>
 						<dateFormatItem id="yyyyQQQ">QQQ y G</dateFormatItem>
 						<dateFormatItem id="yyyyQQQQ">QQQQ 'de' y G</dateFormatItem>
 					</availableFormats>
@@ -1368,7 +1373,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M">MMM–MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMd">
-							<greatestDifference id="d">d-d 'de' MMM</greatestDifference>
+							<greatestDifference id="d">d–d 'de' MMM</greatestDifference>
 							<greatestDifference id="M">d 'de' MMM–d 'de' MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMEd">
@@ -1590,12 +1595,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<quarter type="3">T3</quarter>
 							<quarter type="4">T4</quarter>
 						</quarterWidth>
-						<quarterWidth type="narrow">
-							<quarter type="1">1T</quarter>
-							<quarter type="2">2T</quarter>
-							<quarter type="3">3T</quarter>
-							<quarter type="4">4T</quarter>
-						</quarterWidth>
 						<quarterWidth type="wide">
 							<quarter type="1">1.er trimestre</quarter>
 							<quarter type="2">2.º trimestre</quarter>
@@ -1604,23 +1603,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 						</quarterWidth>
 					</quarterContext>
 					<quarterContext type="stand-alone">
-						<quarterWidth type="abbreviated">
-							<quarter type="1">T1</quarter>
-							<quarter type="2">T2</quarter>
-							<quarter type="3">T3</quarter>
-							<quarter type="4">T4</quarter>
-						</quarterWidth>
 						<quarterWidth type="narrow">
-							<quarter type="1">1T</quarter>
-							<quarter type="2">2T</quarter>
-							<quarter type="3">3T</quarter>
-							<quarter type="4">4T</quarter>
-						</quarterWidth>
-						<quarterWidth type="wide">
-							<quarter type="1">1.er trimestre</quarter>
-							<quarter type="2">2.º trimestre</quarter>
-							<quarter type="3">3.er trimestre</quarter>
-							<quarter type="4">4.º trimestre</quarter>
+							<quarter type="1">1</quarter>
+							<quarter type="2">2</quarter>
+							<quarter type="3">3</quarter>
+							<quarter type="4">4</quarter>
 						</quarterWidth>
 					</quarterContext>
 				</quarters>
@@ -1641,9 +1628,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<eras>
 					<eraNames>
 						<era type="0">antes de Cristo</era>
-						<era type="0" alt="variant">a. e. c.</era>
-						<era type="1">anno Dómini</era>
-						<era type="1" alt="variant">e. c.</era>
+						<era type="0" alt="variant">antes de la era común</era>
+						<era type="1">después de Cristo</era>
+						<era type="1" alt="variant">era común</era>
 					</eraNames>
 					<eraAbbr>
 						<era type="0">a. C.</era>
@@ -1665,7 +1652,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern>d 'de' MMM 'de' y</pattern>
+							<pattern>d MMM y</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
@@ -1726,35 +1713,46 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Ehms">E, h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="EHms">E, H:mm:ss</dateFormatItem>
 						<dateFormatItem id="Gy">y G</dateFormatItem>
-						<dateFormatItem id="GyMMM">MMM 'de' y G</dateFormatItem>
-						<dateFormatItem id="GyMMMd">d MMM 'de' y G</dateFormatItem>
-						<dateFormatItem id="GyMMMEd">E, d 'de' MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="GyMMM">MMM y G</dateFormatItem>
+						<dateFormatItem id="GyMMMd">d MMM y G</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">E, d MMM y G</dateFormatItem>
+						<dateFormatItem id="GyMMMM">MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="GyMMMMd">d 'de' MMMM 'de' y G</dateFormatItem>
+						<dateFormatItem id="GyMMMMEd">E, d 'de' MMMM 'de' y G</dateFormatItem>
 						<dateFormatItem id="h">h a</dateFormatItem>
 						<dateFormatItem id="H">H</dateFormatItem>
 						<dateFormatItem id="hm">h:mm a</dateFormatItem>
 						<dateFormatItem id="Hm">H:mm</dateFormatItem>
 						<dateFormatItem id="hms">h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="Hms">H:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h:mm:ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">H:mm:ss v</dateFormatItem>
+						<dateFormatItem id="hmsvvvv">h:mm:ss a (vvvv)</dateFormatItem>
+						<dateFormatItem id="Hmsvvvv">H:mm:ss (vvvv)</dateFormatItem>
+						<dateFormatItem id="hmv">h:mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">H:mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">d/M</dateFormatItem>
 						<dateFormatItem id="MEd">E, d/M</dateFormatItem>
 						<dateFormatItem id="MMd">d/M</dateFormatItem>
 						<dateFormatItem id="MMdd">d/M</dateFormatItem>
 						<dateFormatItem id="MMM">LLL</dateFormatItem>
-						<dateFormatItem id="MMMd">d 'de' MMM</dateFormatItem>
-						<dateFormatItem id="MMMdd">d 'de' MMM</dateFormatItem>
-						<dateFormatItem id="MMMEd">E, d 'de' MMM</dateFormatItem>
+						<dateFormatItem id="MMMd">d MMM</dateFormatItem>
+						<dateFormatItem id="MMMEd">E, d MMM</dateFormatItem>
 						<dateFormatItem id="MMMMd">d 'de' MMMM</dateFormatItem>
+						<dateFormatItem id="MMMMEd">E, d 'de' MMMM</dateFormatItem>
 						<dateFormatItem id="ms">mm:ss</dateFormatItem>
 						<dateFormatItem id="y">y</dateFormatItem>
 						<dateFormatItem id="yM">M/y</dateFormatItem>
 						<dateFormatItem id="yMd">d/M/y</dateFormatItem>
 						<dateFormatItem id="yMEd">EEE, d/M/y</dateFormatItem>
 						<dateFormatItem id="yMM">M/y</dateFormatItem>
-						<dateFormatItem id="yMMM">MMM 'de' y</dateFormatItem>
-						<dateFormatItem id="yMMMd">d 'de' MMM 'de' y</dateFormatItem>
-						<dateFormatItem id="yMMMEd">EEE, d 'de' MMMM 'de' y</dateFormatItem>
+						<dateFormatItem id="yMMM">MMM y</dateFormatItem>
+						<dateFormatItem id="yMMMd">d MMM y</dateFormatItem>
+						<dateFormatItem id="yMMMEd">EEE, d MMM y</dateFormatItem>
 						<dateFormatItem id="yMMMM">MMMM 'de' y</dateFormatItem>
+						<dateFormatItem id="yMMMMd">d 'de' MMMM 'de' y</dateFormatItem>
+						<dateFormatItem id="yMMMMEd">EEE, d 'de' MMMM 'de' y</dateFormatItem>
 						<dateFormatItem id="yQQQ">QQQ y</dateFormatItem>
 						<dateFormatItem id="yQQQQ">QQQQ 'de' y</dateFormatItem>
 					</availableFormats>
@@ -1820,6 +1818,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="d">E, d MMM–E, d MMM</greatestDifference>
 							<greatestDifference id="M">E, d MMM–E, d MMM</greatestDifference>
 						</intervalFormatItem>
+						<intervalFormatItem id="MMMMd">
+							<greatestDifference id="d">d–d 'de' MMMM</greatestDifference>
+							<greatestDifference id="M">d 'de' MMMM–d 'de' MMMM</greatestDifference>
+						</intervalFormatItem>
+						<intervalFormatItem id="MMMMEd">
+							<greatestDifference id="d">E, d 'de' MMMM–E, d 'de' MMMM</greatestDifference>
+							<greatestDifference id="M">E, d 'de' MMMM–E, d 'de' MMMM</greatestDifference>
+						</intervalFormatItem>
 						<intervalFormatItem id="y">
 							<greatestDifference id="y">y–y</greatestDifference>
 						</intervalFormatItem>
@@ -1838,22 +1844,32 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="y">E, d/M/y–E, d/M/y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMM">
-							<greatestDifference id="M">MMM-MMM 'de' y</greatestDifference>
+							<greatestDifference id="M">MMM–MMM y</greatestDifference>
 							<greatestDifference id="y">MMM y–MMM y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">d–d 'de' MMM 'de' y</greatestDifference>
-							<greatestDifference id="M">d MMM–d MMM 'de' y</greatestDifference>
-							<greatestDifference id="y">d MMM 'de' y–d MMM 'de' y</greatestDifference>
+							<greatestDifference id="d">d–d MMM y</greatestDifference>
+							<greatestDifference id="M">d MMM–d MMM y</greatestDifference>
+							<greatestDifference id="y">d MMM y–d MMM y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMEd">
-							<greatestDifference id="d">E, d MMM–E, d MMM 'de' y</greatestDifference>
-							<greatestDifference id="M">E, d MMM–E, d MMM 'de' y</greatestDifference>
-							<greatestDifference id="y">E, d MMM 'de' y–E, d MMM 'de' y</greatestDifference>
+							<greatestDifference id="d">E, d MMM–E, d MMM y</greatestDifference>
+							<greatestDifference id="M">E, d MMM–E, d MMM y</greatestDifference>
+							<greatestDifference id="y">E, d MMM y–E, d MMM y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMM">
 							<greatestDifference id="M">MMMM–MMMM 'de' y</greatestDifference>
 							<greatestDifference id="y">MMMM 'de' y–MMMM 'de' y</greatestDifference>
+						</intervalFormatItem>
+						<intervalFormatItem id="yMMMMd">
+							<greatestDifference id="d">d–d 'de' MMMM 'de' y</greatestDifference>
+							<greatestDifference id="M">d 'de' MMMM–d 'de' MMMM 'de' y</greatestDifference>
+							<greatestDifference id="y">d 'de' MMMM 'de' y–d 'de' MMMM 'de' y</greatestDifference>
+						</intervalFormatItem>
+						<intervalFormatItem id="yMMMMEd">
+							<greatestDifference id="d">E, d 'de' MMMM–E, d 'de' MMMM 'de' y</greatestDifference>
+							<greatestDifference id="M">E, d 'de' MMMM–E, d 'de' MMMM 'de' y</greatestDifference>
+							<greatestDifference id="y">E, d 'de' MMMM 'de' y–E, d 'de' MMMM 'de' y</greatestDifference>
 						</intervalFormatItem>
 					</intervalFormats>
 				</dateTimeFormats>
@@ -2054,7 +2070,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</field>
 			<field type="day">
 				<displayName>Día</displayName>
-				<relative type="-2">antes de ayer</relative>
+				<relative type="-2">anteayer</relative>
 				<relative type="-1">ayer</relative>
 				<relative type="0">hoy</relative>
 				<relative type="1">mañana</relative>
@@ -2313,15 +2329,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">horario de verano de {0}</regionFormat>
 			<regionFormat type="standard">horario estándar de {0}</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Chongqing</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kashgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Ciudad desconocida</exemplarCity>
 			</zone>
@@ -3202,7 +3209,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<exemplarCity>Miquelón</exemplarCity>
 			</zone>
 			<zone type="Pacific/Pitcairn">
-				<exemplarCity>Islas Pitcairn</exemplarCity>
+				<exemplarCity>Pitcairn</exemplarCity>
 			</zone>
 			<zone type="America/Puerto_Rico">
 				<exemplarCity>Puerto Rico</exemplarCity>
@@ -3391,7 +3398,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<exemplarCity>Asjabad</exemplarCity>
 			</zone>
 			<zone type="Africa/Tunis">
-				<exemplarCity>Túnez capital</exemplarCity>
+				<exemplarCity>Túnez</exemplarCity>
 			</zone>
 			<zone type="Pacific/Tongatapu">
 				<exemplarCity>Tongatapu</exemplarCity>
@@ -3977,7 +3984,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<long>
 					<generic>hora de Groenlandia oriental</generic>
 					<standard>hora estándar de Groenlandia oriental</standard>
-					<daylight>hora de verano de de Groenlandia oriental</daylight>
+					<daylight>hora de verano de Groenlandia oriental</daylight>
 				</long>
 			</metazone>
 			<metazone type="Greenland_Western">
@@ -4170,7 +4177,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</metazone>
 			<metazone type="Marquesas">
 				<long>
-					<standard>hora de las islas Marquesas</standard>
+					<standard>hora de Marquesas</standard>
 				</long>
 			</metazone>
 			<metazone type="Marshall_Islands">
@@ -4261,7 +4268,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</metazone>
 			<metazone type="Norfolk">
 				<long>
-					<standard>hora de las islas Norfolk</standard>
+					<standard>hora de la isla Norfolk</standard>
 				</long>
 			</metazone>
 			<metazone type="Noronha">
@@ -4591,30 +4598,30 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</decimalFormatLength>
 			<decimalFormatLength type="short">
 				<decimalFormat>
-					<pattern type="1000" count="one">0K</pattern>
-					<pattern type="1000" count="other">0K</pattern>
-					<pattern type="10000" count="one">00K</pattern>
-					<pattern type="10000" count="other">00K</pattern>
-					<pattern type="100000" count="one">000K</pattern>
-					<pattern type="100000" count="other">000K</pattern>
-					<pattern type="1000000" count="one">0M</pattern>
-					<pattern type="1000000" count="other">0M</pattern>
-					<pattern type="10000000" count="one">00M</pattern>
-					<pattern type="10000000" count="other">00M</pattern>
-					<pattern type="100000000" count="one">000M</pattern>
-					<pattern type="100000000" count="other">000M</pattern>
-					<pattern type="1000000000" count="one">0000M</pattern>
-					<pattern type="1000000000" count="other">0000M</pattern>
-					<pattern type="10000000000" count="one">00MRD</pattern>
-					<pattern type="10000000000" count="other">00MRD</pattern>
-					<pattern type="100000000000" count="one">000MRD</pattern>
-					<pattern type="100000000000" count="other">000MRD</pattern>
-					<pattern type="1000000000000" count="one">0B</pattern>
-					<pattern type="1000000000000" count="other">0B</pattern>
-					<pattern type="10000000000000" count="one">00B</pattern>
-					<pattern type="10000000000000" count="other">00B</pattern>
-					<pattern type="100000000000000" count="one">000B</pattern>
-					<pattern type="100000000000000" count="other">000B</pattern>
+					<pattern type="1000" count="one">0 K</pattern>
+					<pattern type="1000" count="other">0 K</pattern>
+					<pattern type="10000" count="one">00 K</pattern>
+					<pattern type="10000" count="other">00 K</pattern>
+					<pattern type="100000" count="one">000 K</pattern>
+					<pattern type="100000" count="other">000 K</pattern>
+					<pattern type="1000000" count="one">0 M</pattern>
+					<pattern type="1000000" count="other">0 M</pattern>
+					<pattern type="10000000" count="one">00 M</pattern>
+					<pattern type="10000000" count="other">00 M</pattern>
+					<pattern type="100000000" count="one">000 M</pattern>
+					<pattern type="100000000" count="other">000 M</pattern>
+					<pattern type="1000000000" count="one">0000 M</pattern>
+					<pattern type="1000000000" count="other">0000 M</pattern>
+					<pattern type="10000000000" count="one">00 MRD</pattern>
+					<pattern type="10000000000" count="other">00 MRD</pattern>
+					<pattern type="100000000000" count="one">000 MRD</pattern>
+					<pattern type="100000000000" count="other">000 MRD</pattern>
+					<pattern type="1000000000000" count="one">0 B</pattern>
+					<pattern type="1000000000000" count="other">0 B</pattern>
+					<pattern type="10000000000000" count="one">00 B</pattern>
+					<pattern type="10000000000000" count="other">00 B</pattern>
+					<pattern type="100000000000000" count="one">000 B</pattern>
+					<pattern type="100000000000000" count="other">000 B</pattern>
 				</decimalFormat>
 			</decimalFormatLength>
 		</decimalFormats>
@@ -4728,9 +4735,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
 			<currency type="AWG">
-				<displayName>florín de Aruba</displayName>
-				<displayName count="one">florín de Aruba</displayName>
-				<displayName count="other">florines de Aruba</displayName>
+				<displayName>florín arubeño</displayName>
+				<displayName count="one">florín arubeño</displayName>
+				<displayName count="other">florines arubeños</displayName>
 				<symbol>AWG</symbol>
 			</currency>
 			<currency type="AZM">
@@ -4754,9 +4761,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>BAM</symbol>
 			</currency>
 			<currency type="BBD">
-				<displayName>dólar de Barbados</displayName>
-				<displayName count="one">dólar de Barbados</displayName>
-				<displayName count="other">dólares de Barbados</displayName>
+				<displayName>dólar barbadense</displayName>
+				<displayName count="one">dólar barbadense</displayName>
+				<displayName count="other">dólares barbadenses</displayName>
 				<symbol>BBD</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -4788,9 +4795,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">leva fuertes búlgaros</displayName>
 			</currency>
 			<currency type="BGN">
-				<displayName>leva</displayName>
-				<displayName count="one">leva</displayName>
-				<displayName count="other">levas</displayName>
+				<displayName>lev búlgaro</displayName>
+				<displayName count="one">lev búlgaro</displayName>
+				<displayName count="other">levas búlgaras</displayName>
 				<symbol>BGN</symbol>
 			</currency>
 			<currency type="BHD">
@@ -4868,9 +4875,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">cruceiros brasileños</displayName>
 			</currency>
 			<currency type="BSD">
-				<displayName>dólar de las Bahamas</displayName>
-				<displayName count="one">dólar de las Bahamas</displayName>
-				<displayName count="other">dólares de las Bahamas</displayName>
+				<displayName>dólar bahameño</displayName>
+				<displayName count="one">dólar bahameño</displayName>
+				<displayName count="other">dólares bahameños</displayName>
 				<symbol>BSD</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -4904,9 +4911,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">р.</symbol>
 			</currency>
 			<currency type="BZD">
-				<displayName>dólar de Belice</displayName>
-				<displayName count="one">dólar de Belice</displayName>
-				<displayName count="other">dólares de Belice</displayName>
+				<displayName>dólar beliceño</displayName>
+				<displayName count="one">dólar beliceño</displayName>
+				<displayName count="other">dólares beliceños</displayName>
 				<symbol>BZD</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5119,9 +5126,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
 			<currency type="FKP">
-				<displayName>libra de las Islas Malvinas</displayName>
-				<displayName count="one">libra de las Islas Malvinas</displayName>
-				<displayName count="other">libras de las Islas Malvinas</displayName>
+				<displayName>libra malvinense</displayName>
+				<displayName count="one">libra malvinense</displayName>
+				<displayName count="other">libras malvinenses</displayName>
 				<symbol>FKP</symbol>
 			</currency>
 			<currency type="FRF">
@@ -5206,9 +5213,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
 			<currency type="HKD">
-				<displayName>dólar de Hong Kong</displayName>
-				<displayName count="one">dólar de Hong Kong</displayName>
-				<displayName count="other">dólares de Hong Kong</displayName>
+				<displayName>dólar hongkonés</displayName>
+				<displayName count="one">dólar hongkonés</displayName>
+				<displayName count="other">dólares hongkoneses</displayName>
 				<symbol>HKD</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5236,9 +5243,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>HTG</symbol>
 			</currency>
 			<currency type="HUF">
-				<displayName>forinto</displayName>
-				<displayName count="one">forinto</displayName>
-				<displayName count="other">forintos</displayName>
+				<displayName>forinto húngaro</displayName>
+				<displayName count="one">forinto húngaro</displayName>
+				<displayName count="other">forintos húngaros</displayName>
 				<symbol>HUF</symbol>
 			</currency>
 			<currency type="IDR">
@@ -5295,9 +5302,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">liras italianas</displayName>
 			</currency>
 			<currency type="JMD">
-				<displayName>dólar de Jamaica</displayName>
-				<displayName count="one">dólar de Jamaica</displayName>
-				<displayName count="other">dólares de Jamaica</displayName>
+				<displayName>dólar jamaicano</displayName>
+				<displayName count="one">dólar jamaicano</displayName>
+				<displayName count="other">dólares jamaicanos</displayName>
 				<symbol>JMD</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5366,9 +5373,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
 			<currency type="KZT">
-				<displayName>tengue</displayName>
-				<displayName count="one">tengue</displayName>
-				<displayName count="other">tengues</displayName>
+				<displayName>tenge kazako</displayName>
+				<displayName count="one">tenge kazako</displayName>
+				<displayName count="other">tenges kazakos</displayName>
 				<symbol>KZT</symbol>
 				<symbol alt="narrow" draft="contributed">₸</symbol>
 			</currency>
@@ -5386,9 +5393,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>LBP</symbol>
 			</currency>
 			<currency type="LKR">
-				<displayName>rupia de Sri Lanka</displayName>
-				<displayName count="one">rupia de Sri Lanka</displayName>
-				<displayName count="other">rupias de Sri Lanka</displayName>
+				<displayName>rupia esrilanquesa</displayName>
+				<displayName count="one">rupia esrilanquesa</displayName>
+				<displayName count="other">rupias esrilanquesas</displayName>
 				<symbol>LKR</symbol>
 			</currency>
 			<currency type="LRD">
@@ -5402,9 +5409,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>loti lesothense</displayName>
 			</currency>
 			<currency type="LTL">
-				<displayName>litas</displayName>
-				<displayName count="one">litas</displayName>
-				<displayName count="other">litas</displayName>
+				<displayName>litas lituano</displayName>
+				<displayName count="one">litas lituana</displayName>
+				<displayName count="other">litas lituanas</displayName>
 				<symbol>LTL</symbol>
 			</currency>
 			<currency type="LTT">
@@ -5428,9 +5435,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">francos financieros luxemburgueses</displayName>
 			</currency>
 			<currency type="LVL">
-				<displayName>lats</displayName>
-				<displayName count="one">lats</displayName>
-				<displayName count="other">lats</displayName>
+				<displayName>lats letón</displayName>
+				<displayName count="one">lats letón</displayName>
+				<displayName count="other">lats letónes</displayName>
 				<symbol>LVL</symbol>
 			</currency>
 			<currency type="LVR">
@@ -5527,9 +5534,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>MVR</symbol>
 			</currency>
 			<currency type="MWK">
-				<displayName>kuacha malauí</displayName>
-				<displayName count="one">kuacha malauí</displayName>
-				<displayName count="other">kuachas malauís</displayName>
+				<displayName>kwacha malauí</displayName>
+				<displayName count="one">kwacha malauí</displayName>
+				<displayName count="other">kwachas malauís</displayName>
 				<symbol>MWK</symbol>
 			</currency>
 			<currency type="MXN">
@@ -6105,9 +6112,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>código reservado para pruebas</displayName>
 			</currency>
 			<currency type="XXX">
-				<displayName>divisa desconocida</displayName>
-				<displayName count="one">moneda desconocida/no válida</displayName>
-				<displayName count="other">monedas desconocidas/no válidas</displayName>
+				<displayName>moneda desconocida</displayName>
+				<displayName count="one">(unidad de moneda desconocida)</displayName>
+				<displayName count="other">(moneda desconocida)</displayName>
 			</currency>
 			<currency type="YDD">
 				<displayName>dinar yemení</displayName>
@@ -6147,7 +6154,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>kuacha zambiano</displayName>
 				<displayName count="one">kuacha zambiano</displayName>
 				<displayName count="other">kuachas zambianos</displayName>
-				<symbol>ZMW</symbol>
 			</currency>
 			<currency type="ZRN">
 				<displayName>nuevo zaire zaireño</displayName>
@@ -7087,7 +7093,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} M</unitPattern>
 			</unit>
 			<unit type="length-parsec">
-				<displayName>pc</displayName>
+				<displayName>parsecs</displayName>
 				<unitPattern count="one">{0} pc</unitPattern>
 				<unitPattern count="other">{0} pc</unitPattern>
 			</unit>
@@ -7097,7 +7103,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} pm</unitPattern>
 			</unit>
 			<unit type="length-yard">
-				<displayName>yd</displayName>
+				<displayName>yardas</displayName>
 				<unitPattern count="one">{0} yd</unitPattern>
 				<unitPattern count="other">{0} yd</unitPattern>
 			</unit>
@@ -7142,9 +7148,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} oz</unitPattern>
 			</unit>
 			<unit type="mass-ounce-troy">
-				<displayName>oz tr</displayName>
-				<unitPattern count="one">{0} oz tr</unitPattern>
-				<unitPattern count="other">{0} oz tr</unitPattern>
+				<displayName>oz t</displayName>
+				<unitPattern count="one">{0} oz t</unitPattern>
+				<unitPattern count="other">{0} oz t</unitPattern>
 			</unit>
 			<unit type="mass-pound">
 				<displayName>lb</displayName>
@@ -7292,7 +7298,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} yd³</unitPattern>
 			</unit>
 			<unit type="volume-cup">
-				<displayName>tza.</displayName>
+				<displayName>tazas</displayName>
 				<unitPattern count="one">{0} tza.</unitPattern>
 				<unitPattern count="other">{0} tza.</unitPattern>
 			</unit>
@@ -7332,7 +7338,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} ml</unitPattern>
 			</unit>
 			<unit type="volume-pint">
-				<displayName>pt</displayName>
+				<displayName>pintas</displayName>
 				<unitPattern count="one">{0} pt</unitPattern>
 				<unitPattern count="other">{0} pt</unitPattern>
 			</unit>
@@ -7342,14 +7348,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} qt</unitPattern>
 			</unit>
 			<unit type="volume-tablespoon">
-				<displayName>cd.</displayName>
+				<displayName>cdas.</displayName>
 				<unitPattern count="one">{0} cd.</unitPattern>
-				<unitPattern count="other">{0} cda.</unitPattern>
+				<unitPattern count="other">{0} cdas.</unitPattern>
 			</unit>
 			<unit type="volume-teaspoon">
-				<displayName>cdta.</displayName>
+				<displayName>cdtas.</displayName>
 				<unitPattern count="one">{0} cdta.</unitPattern>
-				<unitPattern count="other">{0} cdta.</unitPattern>
+				<unitPattern count="other">{0} cdtas.</unitPattern>
 			</unit>
 		</unitLength>
 		<unitLength type="narrow">
@@ -7357,8 +7363,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<compoundUnitPattern draft="contributed">{0}/{1}</compoundUnitPattern>
 			</compoundUnit>
 			<unit type="acceleration-g-force">
-				<unitPattern count="one" draft="contributed">{0} G</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} G</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}G</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}G</unitPattern>
 			</unit>
 			<unit type="angle-arc-minute">
 				<unitPattern count="one">{0}'</unitPattern>
@@ -7373,189 +7379,189 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0}°</unitPattern>
 			</unit>
 			<unit type="area-acre">
-				<unitPattern count="one">{0} ac</unitPattern>
-				<unitPattern count="other">{0} ac</unitPattern>
+				<unitPattern count="one">{0}ac</unitPattern>
+				<unitPattern count="other">{0}ac</unitPattern>
 			</unit>
 			<unit type="area-hectare">
-				<unitPattern count="one">{0} ha</unitPattern>
-				<unitPattern count="other">{0} ha</unitPattern>
+				<unitPattern count="one">{0}ha</unitPattern>
+				<unitPattern count="other">{0}ha</unitPattern>
 			</unit>
 			<unit type="area-square-foot">
-				<unitPattern count="one">{0} ft²</unitPattern>
-				<unitPattern count="other">{0} ft²</unitPattern>
+				<unitPattern count="one">{0}ft²</unitPattern>
+				<unitPattern count="other">{0}ft²</unitPattern>
 			</unit>
 			<unit type="area-square-kilometer">
-				<unitPattern count="one">{0} km²</unitPattern>
-				<unitPattern count="other">{0} km²</unitPattern>
+				<unitPattern count="one">{0}km²</unitPattern>
+				<unitPattern count="other">{0}km²</unitPattern>
 			</unit>
 			<unit type="area-square-meter">
-				<unitPattern count="one">{0} m²</unitPattern>
-				<unitPattern count="other">{0} m²</unitPattern>
+				<unitPattern count="one">{0}m²</unitPattern>
+				<unitPattern count="other">{0}m²</unitPattern>
 			</unit>
 			<unit type="area-square-mile">
-				<unitPattern count="one">{0} mi²</unitPattern>
-				<unitPattern count="other">{0} mi²</unitPattern>
+				<unitPattern count="one">{0}mi²</unitPattern>
+				<unitPattern count="other">{0}mi²</unitPattern>
 			</unit>
 			<unit type="duration-day">
 				<displayName>d</displayName>
-				<unitPattern count="one">{0} d</unitPattern>
-				<unitPattern count="other">{0} d</unitPattern>
+				<unitPattern count="one">{0}d</unitPattern>
+				<unitPattern count="other">{0}d</unitPattern>
 			</unit>
 			<unit type="duration-hour">
 				<displayName>h</displayName>
-				<unitPattern count="one">{0} h</unitPattern>
-				<unitPattern count="other">{0} h</unitPattern>
+				<unitPattern count="one">{0}h</unitPattern>
+				<unitPattern count="other">{0}h</unitPattern>
 			</unit>
 			<unit type="duration-millisecond">
 				<displayName>ms</displayName>
-				<unitPattern count="one">{0} ms</unitPattern>
-				<unitPattern count="other">{0} ms</unitPattern>
+				<unitPattern count="one">{0}ms</unitPattern>
+				<unitPattern count="other">{0}ms</unitPattern>
 			</unit>
 			<unit type="duration-minute">
 				<displayName>min</displayName>
-				<unitPattern count="one">{0} min</unitPattern>
-				<unitPattern count="other">{0} min</unitPattern>
+				<unitPattern count="one">{0}min</unitPattern>
+				<unitPattern count="other">{0}min</unitPattern>
 			</unit>
 			<unit type="duration-month">
 				<displayName>m</displayName>
-				<unitPattern count="one">{0} m</unitPattern>
-				<unitPattern count="other">{0} m</unitPattern>
+				<unitPattern count="one">{0}m</unitPattern>
+				<unitPattern count="other">{0}m</unitPattern>
 			</unit>
 			<unit type="duration-second">
 				<displayName>s</displayName>
-				<unitPattern count="one">{0} s</unitPattern>
-				<unitPattern count="other">{0} s</unitPattern>
+				<unitPattern count="one">{0}s</unitPattern>
+				<unitPattern count="other">{0}s</unitPattern>
 			</unit>
 			<unit type="duration-week">
 				<displayName>sem</displayName>
-				<unitPattern count="one">{0} sem</unitPattern>
-				<unitPattern count="other">{0} sem</unitPattern>
+				<unitPattern count="one">{0}sem</unitPattern>
+				<unitPattern count="other">{0}sem</unitPattern>
 			</unit>
 			<unit type="duration-year">
 				<displayName>a</displayName>
-				<unitPattern count="one">{0} a</unitPattern>
-				<unitPattern count="other">{0} a</unitPattern>
+				<unitPattern count="one">{0}a</unitPattern>
+				<unitPattern count="other">{0}a</unitPattern>
 			</unit>
 			<unit type="length-centimeter">
 				<displayName>cm</displayName>
-				<unitPattern count="one">{0} cm</unitPattern>
-				<unitPattern count="other">{0} cm</unitPattern>
+				<unitPattern count="one">{0}cm</unitPattern>
+				<unitPattern count="other">{0}cm</unitPattern>
 			</unit>
 			<unit type="length-foot">
-				<unitPattern count="one">{0} ft</unitPattern>
-				<unitPattern count="other">{0} ft</unitPattern>
+				<unitPattern count="one">{0}ft</unitPattern>
+				<unitPattern count="other">{0}ft</unitPattern>
 			</unit>
 			<unit type="length-inch">
-				<unitPattern count="one">{0} in</unitPattern>
-				<unitPattern count="other">{0} in</unitPattern>
+				<unitPattern count="one">{0}in</unitPattern>
+				<unitPattern count="other">{0}in</unitPattern>
 			</unit>
 			<unit type="length-kilometer">
 				<displayName>km</displayName>
-				<unitPattern count="one">{0} km</unitPattern>
-				<unitPattern count="other">{0} km</unitPattern>
+				<unitPattern count="one">{0}km</unitPattern>
+				<unitPattern count="other">{0}km</unitPattern>
 			</unit>
 			<unit type="length-light-year">
-				<unitPattern count="one">{0} a. l.</unitPattern>
-				<unitPattern count="other">{0} a. l.</unitPattern>
+				<unitPattern count="one">{0}a.l.</unitPattern>
+				<unitPattern count="other">{0}a.l.</unitPattern>
 			</unit>
 			<unit type="length-meter">
 				<displayName>m</displayName>
-				<unitPattern count="one">{0} m</unitPattern>
-				<unitPattern count="other">{0} m</unitPattern>
+				<unitPattern count="one">{0}m</unitPattern>
+				<unitPattern count="other">{0}m</unitPattern>
 			</unit>
 			<unit type="length-mile">
-				<unitPattern count="one">{0} mi</unitPattern>
-				<unitPattern count="other">{0} mi</unitPattern>
+				<unitPattern count="one">{0}mi</unitPattern>
+				<unitPattern count="other">{0}mi</unitPattern>
 			</unit>
 			<unit type="length-millimeter">
 				<displayName>mm</displayName>
-				<unitPattern count="one">{0} mm</unitPattern>
-				<unitPattern count="other">{0} mm</unitPattern>
+				<unitPattern count="one">{0}mm</unitPattern>
+				<unitPattern count="other">{0}mm</unitPattern>
 			</unit>
 			<unit type="length-picometer">
-				<unitPattern count="one">{0} pm</unitPattern>
-				<unitPattern count="other">{0} pm</unitPattern>
+				<unitPattern count="one">{0}pm</unitPattern>
+				<unitPattern count="other">{0}pm</unitPattern>
 			</unit>
 			<unit type="length-yard">
-				<unitPattern count="one">{0} yd</unitPattern>
-				<unitPattern count="other">{0} yd</unitPattern>
+				<unitPattern count="one">{0}yd</unitPattern>
+				<unitPattern count="other">{0}yd</unitPattern>
 			</unit>
 			<unit type="mass-gram">
 				<displayName>g</displayName>
-				<unitPattern count="one">{0} g</unitPattern>
-				<unitPattern count="other">{0} g</unitPattern>
+				<unitPattern count="one">{0}g</unitPattern>
+				<unitPattern count="other">{0}g</unitPattern>
 			</unit>
 			<unit type="mass-kilogram">
 				<displayName>kg</displayName>
-				<unitPattern count="one">{0} kg</unitPattern>
-				<unitPattern count="other">{0} kg</unitPattern>
+				<unitPattern count="one">{0}kg</unitPattern>
+				<unitPattern count="other">{0}kg</unitPattern>
 			</unit>
 			<unit type="mass-ounce">
-				<unitPattern count="one">{0} oz</unitPattern>
-				<unitPattern count="other">{0} oz</unitPattern>
+				<unitPattern count="one">{0}oz</unitPattern>
+				<unitPattern count="other">{0}oz</unitPattern>
 			</unit>
 			<unit type="mass-pound">
-				<unitPattern count="one">{0} lb</unitPattern>
-				<unitPattern count="other">{0} lb</unitPattern>
+				<unitPattern count="one">{0}lb</unitPattern>
+				<unitPattern count="other">{0}lb</unitPattern>
 			</unit>
 			<unit type="power-horsepower">
-				<unitPattern count="one">{0} hp</unitPattern>
-				<unitPattern count="other">{0} hp</unitPattern>
+				<unitPattern count="one">{0}hp</unitPattern>
+				<unitPattern count="other">{0}hp</unitPattern>
 			</unit>
 			<unit type="power-kilowatt">
-				<unitPattern count="one">{0} kW</unitPattern>
-				<unitPattern count="other">{0} kW</unitPattern>
+				<unitPattern count="one">{0}kW</unitPattern>
+				<unitPattern count="other">{0}kW</unitPattern>
 			</unit>
 			<unit type="power-watt">
-				<unitPattern count="one">{0} W</unitPattern>
-				<unitPattern count="other">{0} W</unitPattern>
+				<unitPattern count="one">{0}W</unitPattern>
+				<unitPattern count="other">{0}W</unitPattern>
 			</unit>
 			<unit type="pressure-hectopascal">
-				<unitPattern count="one">{0} hPa</unitPattern>
-				<unitPattern count="other">{0} hPa</unitPattern>
+				<unitPattern count="one">{0}hPa</unitPattern>
+				<unitPattern count="other">{0}hPa</unitPattern>
 			</unit>
 			<unit type="pressure-inch-hg">
-				<unitPattern count="one">{0} inHg</unitPattern>
-				<unitPattern count="other">{0} inHg</unitPattern>
+				<unitPattern count="one">{0}inHg</unitPattern>
+				<unitPattern count="other">{0}inHg</unitPattern>
 			</unit>
 			<unit type="pressure-millibar">
-				<unitPattern count="one">{0} mbar</unitPattern>
-				<unitPattern count="other">{0} mbar</unitPattern>
+				<unitPattern count="one">{0}mbar</unitPattern>
+				<unitPattern count="other">{0}mbar</unitPattern>
 			</unit>
 			<unit type="speed-kilometer-per-hour">
 				<displayName>km/h</displayName>
-				<unitPattern count="one">{0} km/h</unitPattern>
-				<unitPattern count="other">{0} km/h</unitPattern>
+				<unitPattern count="one">{0}km/h</unitPattern>
+				<unitPattern count="other">{0}km/h</unitPattern>
 			</unit>
 			<unit type="speed-meter-per-second">
-				<unitPattern count="one">{0} m/s</unitPattern>
-				<unitPattern count="other">{0} m/s</unitPattern>
+				<unitPattern count="one">{0}m/s</unitPattern>
+				<unitPattern count="other">{0}m/s</unitPattern>
 			</unit>
 			<unit type="speed-mile-per-hour">
-				<unitPattern count="one">{0} mi/h</unitPattern>
-				<unitPattern count="other">{0} mi/h</unitPattern>
+				<unitPattern count="one">{0}mi/h</unitPattern>
+				<unitPattern count="other">{0}mi/h</unitPattern>
 			</unit>
 			<unit type="temperature-celsius">
 				<displayName>°C</displayName>
-				<unitPattern count="one">{0} °C</unitPattern>
-				<unitPattern count="other">{0} °C</unitPattern>
+				<unitPattern count="one">{0}°C</unitPattern>
+				<unitPattern count="other">{0}°C</unitPattern>
 			</unit>
 			<unit type="temperature-fahrenheit">
-				<unitPattern count="one">{0} °F</unitPattern>
-				<unitPattern count="other">{0} °F</unitPattern>
+				<unitPattern count="one">{0}°F</unitPattern>
+				<unitPattern count="other">{0}°F</unitPattern>
 			</unit>
 			<unit type="volume-cubic-kilometer">
-				<unitPattern count="one">{0} km³</unitPattern>
-				<unitPattern count="other">{0} km³</unitPattern>
+				<unitPattern count="one">{0}km³</unitPattern>
+				<unitPattern count="other">{0}km³</unitPattern>
 			</unit>
 			<unit type="volume-cubic-mile">
-				<unitPattern count="one">{0} mi³</unitPattern>
-				<unitPattern count="other">{0} mi³</unitPattern>
+				<unitPattern count="one">{0}mi³</unitPattern>
+				<unitPattern count="other">{0}mi³</unitPattern>
 			</unit>
 			<unit type="volume-liter">
 				<displayName>l</displayName>
-				<unitPattern count="one">{0} l</unitPattern>
-				<unitPattern count="other">{0} l</unitPattern>
+				<unitPattern count="one">{0}l</unitPattern>
+				<unitPattern count="other">{0}l</unitPattern>
 			</unit>
 		</unitLength>
 		<durationUnit type="hm">
@@ -7582,10 +7588,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<listPatternPart type="2">{0} y {1}</listPatternPart>
 		</listPattern>
 		<listPattern type="unit-narrow">
-			<listPatternPart type="start">{0}, {1}</listPatternPart>
-			<listPatternPart type="middle">{0}, {1}</listPatternPart>
-			<listPatternPart type="end">{0}, {1}</listPatternPart>
-			<listPatternPart type="2">{0} y {1}</listPatternPart>
+			<listPatternPart type="start">{0} {1}</listPatternPart>
+			<listPatternPart type="middle">{0} {1}</listPatternPart>
+			<listPatternPart type="end">{0} {1}</listPatternPart>
+			<listPatternPart type="2">{0} {1}</listPatternPart>
 		</listPattern>
 		<listPattern type="unit-short">
 			<listPatternPart type="start">{0}, {1}</listPatternPart>

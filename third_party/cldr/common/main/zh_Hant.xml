@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10895 $"/>
-		<generation date="$Date: 2014-09-01 11:57:54 -0700 (Mon, 01 Sep 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="zh"/>
 		<script type="Hant"/>
 	</identity>
@@ -820,20 +820,20 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AE">阿拉伯聯合大公國</territory>
 			<territory type="AF">阿富汗</territory>
 			<territory type="AG">安地卡及巴布達</territory>
-			<territory type="AI">安圭拉島</territory>
+			<territory type="AI">安圭拉</territory>
 			<territory type="AL">阿爾巴尼亞</territory>
 			<territory type="AM">亞美尼亞</territory>
 			<territory type="AN">荷屬安地列斯</territory>
 			<territory type="AO">安哥拉</territory>
 			<territory type="AQ">南極洲</territory>
 			<territory type="AR">阿根廷</territory>
-			<territory type="AS">美屬薩摩亞群島</territory>
+			<territory type="AS">美屬薩摩亞</territory>
 			<territory type="AT">奧地利</territory>
 			<territory type="AU">澳洲</territory>
-			<territory type="AW">阿路巴</territory>
+			<territory type="AW">荷屬阿魯巴</territory>
 			<territory type="AX">奧蘭群島</territory>
 			<territory type="AZ">亞塞拜然</territory>
-			<territory type="BA">波士尼亞與赫塞格維納</territory>
+			<territory type="BA">波士尼亞與赫塞哥維納</territory>
 			<territory type="BB">巴貝多</territory>
 			<territory type="BD">孟加拉</territory>
 			<territory type="BE">比利時</territory>
@@ -855,7 +855,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="BY">白俄羅斯</territory>
 			<territory type="BZ">貝里斯</territory>
 			<territory type="CA">加拿大</territory>
-			<territory type="CC">可可斯群島</territory>
+			<territory type="CC">科科斯（基林）群島</territory>
 			<territory type="CD">剛果（金夏沙）</territory>
 			<territory type="CD" alt="variant">剛果民主共和國</territory>
 			<territory type="CF">中非共和國</territory>
@@ -917,11 +917,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GS">南喬治亞與南三明治群島</territory>
 			<territory type="GT">瓜地馬拉</territory>
 			<territory type="GU">關島</territory>
-			<territory type="GW">幾內亞比紹</territory>
+			<territory type="GW">幾內亞比索</territory>
 			<territory type="GY">蓋亞那</territory>
 			<territory type="HK">中華人民共和國香港特別行政區</territory>
 			<territory type="HK" alt="short">香港</territory>
-			<territory type="HM">赫德島和麥克唐納群島</territory>
+			<territory type="HM">赫德及麥當勞群島</territory>
 			<territory type="HN">宏都拉斯</territory>
 			<territory type="HR">克羅埃西亞</territory>
 			<territory type="HT">海地</territory>
@@ -932,7 +932,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="IL">以色列</territory>
 			<territory type="IM">曼島</territory>
 			<territory type="IN">印度</territory>
-			<territory type="IO">英屬印度洋領土</territory>
+			<territory type="IO">英屬印度洋領地</territory>
 			<territory type="IQ">伊拉克</territory>
 			<territory type="IR">伊朗</territory>
 			<territory type="IS">冰島</territory>
@@ -989,7 +989,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="MY">馬來西亞</territory>
 			<territory type="MZ">莫三比克</territory>
 			<territory type="NA">納米比亞</territory>
-			<territory type="NC">新喀里多尼亞群島</territory>
+			<territory type="NC">新喀里多尼亞</territory>
 			<territory type="NE">尼日</territory>
 			<territory type="NF">諾福克島</territory>
 			<territory type="NG">奈及利亞</territory>
@@ -1039,16 +1039,16 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="SO">索馬利亞</territory>
 			<territory type="SR">蘇利南</territory>
 			<territory type="SS">南蘇丹</territory>
-			<territory type="ST">聖多美及普林西比</territory>
+			<territory type="ST">聖多美普林西比</territory>
 			<territory type="SV">薩爾瓦多</territory>
 			<territory type="SX">荷屬聖馬丁</territory>
 			<territory type="SY">敘利亞</territory>
 			<territory type="SZ">史瓦濟蘭</territory>
 			<territory type="TA">特里斯坦達庫尼亞群島</territory>
-			<territory type="TC">土克斯及開科斯群島</territory>
+			<territory type="TC">英屬土克凱可群島</territory>
 			<territory type="TD">查德</territory>
 			<territory type="TF">法屬南方屬地</territory>
-			<territory type="TG">多哥共和國</territory>
+			<territory type="TG">多哥</territory>
 			<territory type="TH">泰國</territory>
 			<territory type="TJ">塔吉克</territory>
 			<territory type="TK">托克勞群島</territory>
@@ -1623,22 +1623,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateFormats>
 					<dateFormatLength type="full">
 						<dateFormat>
-							<pattern numbers="d=hanidays">U年MMMdEEEE</pattern>
+							<pattern numbers="d=hanidays">rU年MMMdEEEE</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="long">
 						<dateFormat>
-							<pattern numbers="d=hanidays">U年MMMd</pattern>
+							<pattern numbers="d=hanidays">rU年MMMd</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern numbers="d=hanidays">U年MMMd</pattern>
+							<pattern numbers="d=hanidays">r年MMMd</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
 						<dateFormat>
-							<pattern>U/M/d</pattern>
+							<pattern>r/M/d</pattern>
 						</dateFormat>
 					</dateFormatLength>
 				</dateFormats>
@@ -1646,26 +1646,30 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<availableFormats>
 						<dateFormatItem id="d">d日</dateFormatItem>
 						<dateFormatItem id="Ed">d日E</dateFormatItem>
-						<dateFormatItem id="Gy">U年</dateFormatItem>
-						<dateFormatItem id="GyMMM">U年MMM</dateFormatItem>
-						<dateFormatItem id="GyMMMd">U年MMMd日</dateFormatItem>
-						<dateFormatItem id="GyMMMEd">U年MMMd日E</dateFormatItem>
+						<dateFormatItem id="Gy">rU年</dateFormatItem>
+						<dateFormatItem id="GyMMM">rU年MMM</dateFormatItem>
+						<dateFormatItem id="GyMMMd">r年MMMd</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">rU年MMMdE</dateFormatItem>
 						<dateFormatItem id="M">MMM</dateFormatItem>
 						<dateFormatItem id="Md">M/d</dateFormatItem>
 						<dateFormatItem id="MEd">M/dE</dateFormatItem>
 						<dateFormatItem id="MMMd">MMMd日</dateFormatItem>
 						<dateFormatItem id="MMMEd">MMMd日E</dateFormatItem>
-						<dateFormatItem id="y">U年</dateFormatItem>
-						<dateFormatItem id="yMd">U年MMMd日</dateFormatItem>
-						<dateFormatItem id="yyyy">U年</dateFormatItem>
-						<dateFormatItem id="yyyyM">U年MMM</dateFormatItem>
-						<dateFormatItem id="yyyyMd">U年MMMd日</dateFormatItem>
-						<dateFormatItem id="yyyyMEd">U年MMMd日，E</dateFormatItem>
-						<dateFormatItem id="yyyyMMM">U年MMM</dateFormatItem>
-						<dateFormatItem id="yyyyMMMd">U年MMMd日</dateFormatItem>
-						<dateFormatItem id="yyyyMMMEd">U年MMMd日E</dateFormatItem>
-						<dateFormatItem id="yyyyQQQ">U年QQQQ</dateFormatItem>
-						<dateFormatItem id="yyyyQQQQ">U年QQQQ</dateFormatItem>
+						<dateFormatItem id="UM">U年MMM</dateFormatItem>
+						<dateFormatItem id="UMd">U年MMMd</dateFormatItem>
+						<dateFormatItem id="UMMM">U年MMM</dateFormatItem>
+						<dateFormatItem id="UMMMd">U年MMMd</dateFormatItem>
+						<dateFormatItem id="y">rU年</dateFormatItem>
+						<dateFormatItem id="yMd">r年MMMd</dateFormatItem>
+						<dateFormatItem id="yyyy">rU年</dateFormatItem>
+						<dateFormatItem id="yyyyM">rU年MMM</dateFormatItem>
+						<dateFormatItem id="yyyyMd">r年MMMd</dateFormatItem>
+						<dateFormatItem id="yyyyMEd">rU年MMMd，E</dateFormatItem>
+						<dateFormatItem id="yyyyMMM">rU年MMM</dateFormatItem>
+						<dateFormatItem id="yyyyMMMd">r年MMMd</dateFormatItem>
+						<dateFormatItem id="yyyyMMMEd">rU年MMMdE</dateFormatItem>
+						<dateFormatItem id="yyyyQQQ">rU年QQQQ</dateFormatItem>
+						<dateFormatItem id="yyyyQQQQ">rU年QQQQ</dateFormatItem>
 					</availableFormats>
 					<intervalFormats>
 						<intervalFormatFallback>{0}至{1}</intervalFormatFallback>
@@ -1723,39 +1727,39 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M">LLLL至LLLL</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="y">
-							<greatestDifference id="y">U至U</greatestDifference>
+							<greatestDifference id="y">rU至rU</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yM">
-							<greatestDifference id="M">U/M至U/M</greatestDifference>
-							<greatestDifference id="y">U/M至U/M</greatestDifference>
+							<greatestDifference id="M">r/M至r/M</greatestDifference>
+							<greatestDifference id="y">r/M至r/M</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMd">
-							<greatestDifference id="d">U/M/d至U/M/d</greatestDifference>
-							<greatestDifference id="M">U/M/d至U/M/d</greatestDifference>
-							<greatestDifference id="y">U/M/d至U/M/d</greatestDifference>
+							<greatestDifference id="d">r/M/d至r/M/d</greatestDifference>
+							<greatestDifference id="M">r/M/d至r/M/d</greatestDifference>
+							<greatestDifference id="y">r/M/d至r/M/d</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMEd">
-							<greatestDifference id="d">U/M/dE至U/M/dE</greatestDifference>
-							<greatestDifference id="M">U/M/dE至U/M/dE</greatestDifference>
-							<greatestDifference id="y">U/M/dE至U/M/dE</greatestDifference>
+							<greatestDifference id="d">r/M/dE至r/M/dE</greatestDifference>
+							<greatestDifference id="M">r/M/dE至r/M/dE</greatestDifference>
+							<greatestDifference id="y">r/M/dE至r/M/dE</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMM">
-							<greatestDifference id="M">U年MMM至MMM</greatestDifference>
-							<greatestDifference id="y">U年MMM至U年MMM</greatestDifference>
+							<greatestDifference id="M">rU年MMM至MMM</greatestDifference>
+							<greatestDifference id="y">rU年MMM至rU年MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">U年MMMd日至d日</greatestDifference>
-							<greatestDifference id="M">U年MMMd日至MMMd日</greatestDifference>
-							<greatestDifference id="y">U年MMMd日至U年MMMd日</greatestDifference>
+							<greatestDifference id="d">r年MMMd至d</greatestDifference>
+							<greatestDifference id="M">r年MMMd至MMMd</greatestDifference>
+							<greatestDifference id="y">r年MMMd至r年MMMd</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMEd">
-							<greatestDifference id="d">U年MMMd日E至d日E</greatestDifference>
-							<greatestDifference id="M">U年MMMd日E至MMMd日E</greatestDifference>
-							<greatestDifference id="y">U年MMMd日E至U年MMMd日E</greatestDifference>
+							<greatestDifference id="d">rU年MMMdE至dE</greatestDifference>
+							<greatestDifference id="M">rU年MMMdE至MMMdE</greatestDifference>
+							<greatestDifference id="y">rU年MMMdE至rU年MMMdE</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMM">
-							<greatestDifference id="M">U年MMMM至MMMM</greatestDifference>
-							<greatestDifference id="y">U年MMMM至U年MMMM</greatestDifference>
+							<greatestDifference id="M">rU年MMMM至MMMM</greatestDifference>
+							<greatestDifference id="y">rU年MMMM至rU年MMMM</greatestDifference>
 						</intervalFormatItem>
 					</intervalFormats>
 				</dateTimeFormats>
@@ -2689,6 +2693,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="hms">ah:mm:ss</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">ah:mm:ss [v]</dateFormatItem>
+						<dateFormatItem id="Hmsv">HH:mm:ss [v]</dateFormatItem>
+						<dateFormatItem id="hmv">ah:mm [v]</dateFormatItem>
+						<dateFormatItem id="Hmv">HH:mm [v]</dateFormatItem>
 						<dateFormatItem id="M">M月</dateFormatItem>
 						<dateFormatItem id="Md">M/d</dateFormatItem>
 						<dateFormatItem id="MEd">M/d（E）</dateFormatItem>
@@ -4020,15 +4028,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (+1)</regionFormat>
 			<regionFormat type="standard">{0} (+0)</regionFormat>
 			<fallbackFormat>{1}（{0}）</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>重慶</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>哈爾濱</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>喀什米爾</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>未知城市</exemplarCity>
 			</zone>
@@ -4657,7 +4656,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<exemplarCity>塔拉瓦</exemplarCity>
 			</zone>
 			<zone type="Indian/Comoro">
-				<exemplarCity>科摩羅群島</exemplarCity>
+				<exemplarCity>葛摩</exemplarCity>
 			</zone>
 			<zone type="America/St_Kitts">
 				<exemplarCity>聖基茨</exemplarCity>
@@ -6896,8 +6895,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol draft="contributed">GWP</symbol>
 			</currency>
 			<currency type="GYD">
-				<displayName>圭亞那元</displayName>
-				<displayName count="other">圭亞那元</displayName>
+				<displayName>蓋亞那元</displayName>
+				<displayName count="other">蓋亞那元</displayName>
 				<symbol>GYD</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -7313,8 +7312,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
 			<currency type="OMR">
-				<displayName>阿曼里奧</displayName>
-				<displayName count="other">阿曼里奧</displayName>
+				<displayName>阿曼里亞爾</displayName>
+				<displayName count="other">阿曼里亞爾</displayName>
 				<symbol>OMR</symbol>
 			</currency>
 			<currency type="PAB">
@@ -7375,8 +7374,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">₲</symbol>
 			</currency>
 			<currency type="QAR">
-				<displayName>卡達爾里亞爾</displayName>
-				<displayName count="other">卡達爾里亞爾</displayName>
+				<displayName>卡達里亞爾</displayName>
+				<displayName count="other">卡達里亞爾</displayName>
 				<symbol>QAR</symbol>
 			</currency>
 			<currency type="RHD">
@@ -7416,8 +7415,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>RWF</symbol>
 			</currency>
 			<currency type="SAR">
-				<displayName>沙烏地里雅</displayName>
-				<displayName count="other">沙烏地里雅</displayName>
+				<displayName>沙烏地里亞爾</displayName>
+				<displayName count="other">沙烏地里亞爾</displayName>
 				<symbol>SAR</symbol>
 			</currency>
 			<currency type="SBD">
@@ -7792,8 +7791,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol draft="contributed">YDD</symbol>
 			</currency>
 			<currency type="YER">
-				<displayName>葉門里雅</displayName>
-				<displayName count="other">葉門里雅</displayName>
+				<displayName>葉門里亞爾</displayName>
+				<displayName count="other">葉門里亞爾</displayName>
 				<symbol>YER</symbol>
 			</currency>
 			<currency type="YUD">
@@ -8858,307 +8857,307 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0}G</unitPattern>
 			</unit>
 			<unit type="acceleration-meter-per-second-squared">
-				<unitPattern count="other" draft="contributed">{0} m/s²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}m/s²</unitPattern>
 			</unit>
 			<unit type="angle-arc-minute">
-				<unitPattern count="other">{0} 分鐘</unitPattern>
+				<unitPattern count="other">{0}分鐘</unitPattern>
 			</unit>
 			<unit type="angle-arc-second">
-				<unitPattern count="other">{0} 秒</unitPattern>
+				<unitPattern count="other">{0}秒</unitPattern>
 			</unit>
 			<unit type="angle-degree">
-				<unitPattern count="other">{0} 度</unitPattern>
+				<unitPattern count="other">{0}度</unitPattern>
 			</unit>
 			<unit type="angle-radian">
-				<unitPattern count="other" draft="contributed">{0} 弧度</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}弧度</unitPattern>
 			</unit>
 			<unit type="area-acre">
-				<unitPattern count="other">{0} 英畝</unitPattern>
+				<unitPattern count="other">{0}英畝</unitPattern>
 			</unit>
 			<unit type="area-hectare">
-				<unitPattern count="other">{0} 公頃</unitPattern>
+				<unitPattern count="other">{0}公頃</unitPattern>
 			</unit>
 			<unit type="area-square-centimeter">
-				<unitPattern count="other" draft="contributed">{0} cm²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}cm²</unitPattern>
 			</unit>
 			<unit type="area-square-foot">
-				<unitPattern count="other">{0} 平方英尺</unitPattern>
+				<unitPattern count="other">{0}平方英尺</unitPattern>
 			</unit>
 			<unit type="area-square-inch">
-				<unitPattern count="other" draft="contributed">{0} in²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}in²</unitPattern>
 			</unit>
 			<unit type="area-square-kilometer">
-				<unitPattern count="other" draft="contributed">{0} km²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}km²</unitPattern>
 			</unit>
 			<unit type="area-square-meter">
-				<unitPattern count="other" draft="contributed">{0} m²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}m²</unitPattern>
 			</unit>
 			<unit type="area-square-mile">
-				<unitPattern count="other">{0} 平方英里</unitPattern>
+				<unitPattern count="other">{0}平方英里</unitPattern>
 			</unit>
 			<unit type="area-square-yard">
-				<unitPattern count="other" draft="contributed">{0} yd²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}yd²</unitPattern>
 			</unit>
 			<unit type="consumption-liter-per-kilometer">
-				<unitPattern count="other" draft="contributed">{0} L/km</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}L/km</unitPattern>
 			</unit>
 			<unit type="consumption-mile-per-gallon">
-				<unitPattern count="other" draft="contributed">{0} mpg</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}mpg</unitPattern>
 			</unit>
 			<unit type="digital-bit">
-				<unitPattern count="other" draft="contributed">{0} bit</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}bit</unitPattern>
 			</unit>
 			<unit type="digital-byte">
-				<unitPattern count="other" draft="contributed">{0} byte</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}byte</unitPattern>
 			</unit>
 			<unit type="digital-gigabit">
-				<unitPattern count="other" draft="contributed">{0} Gb</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}Gb</unitPattern>
 			</unit>
 			<unit type="digital-gigabyte">
-				<unitPattern count="other" draft="contributed">{0} GB</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}GB</unitPattern>
 			</unit>
 			<unit type="digital-kilobit">
-				<unitPattern count="other" draft="contributed">{0} kb</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}kb</unitPattern>
 			</unit>
 			<unit type="digital-kilobyte">
-				<unitPattern count="other" draft="contributed">{0} kB</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}kB</unitPattern>
 			</unit>
 			<unit type="digital-megabit">
-				<unitPattern count="other" draft="contributed">{0} Mb</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}Mb</unitPattern>
 			</unit>
 			<unit type="digital-megabyte">
-				<unitPattern count="other" draft="contributed">{0} MB</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}MB</unitPattern>
 			</unit>
 			<unit type="digital-terabit">
-				<unitPattern count="other" draft="contributed">{0} Tb</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}Tb</unitPattern>
 			</unit>
 			<unit type="digital-terabyte">
-				<unitPattern count="other" draft="contributed">{0} TB</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}TB</unitPattern>
 			</unit>
 			<unit type="duration-day">
 				<displayName>天</displayName>
-				<unitPattern count="other">{0} 天</unitPattern>
+				<unitPattern count="other">{0}天</unitPattern>
 			</unit>
 			<unit type="duration-hour">
 				<displayName>小時</displayName>
-				<unitPattern count="other">{0} 小時</unitPattern>
+				<unitPattern count="other">{0}時</unitPattern>
 			</unit>
 			<unit type="duration-microsecond">
-				<unitPattern count="other" draft="contributed">{0} μs</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}μs</unitPattern>
 			</unit>
 			<unit type="duration-millisecond">
 				<displayName>毫秒</displayName>
-				<unitPattern count="other">{0} 毫秒</unitPattern>
+				<unitPattern count="other">{0}毫秒</unitPattern>
 			</unit>
 			<unit type="duration-minute">
 				<displayName>分鐘</displayName>
-				<unitPattern count="other">{0} 分鐘</unitPattern>
+				<unitPattern count="other">{0}分</unitPattern>
 			</unit>
 			<unit type="duration-month">
 				<displayName>個月</displayName>
-				<unitPattern count="other">{0} 個月</unitPattern>
+				<unitPattern count="other">{0}個月</unitPattern>
 			</unit>
 			<unit type="duration-nanosecond">
-				<unitPattern count="other" draft="contributed">{0} ns</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}ns</unitPattern>
 			</unit>
 			<unit type="duration-second">
 				<displayName>秒</displayName>
-				<unitPattern count="other">{0} 秒</unitPattern>
+				<unitPattern count="other">{0}秒</unitPattern>
 			</unit>
 			<unit type="duration-week">
 				<displayName>週</displayName>
-				<unitPattern count="other">{0} 週</unitPattern>
+				<unitPattern count="other">{0}週</unitPattern>
 			</unit>
 			<unit type="duration-year">
 				<displayName>年</displayName>
-				<unitPattern count="other">{0} 年</unitPattern>
+				<unitPattern count="other">{0}年</unitPattern>
 			</unit>
 			<unit type="electric-ampere">
-				<unitPattern count="other" draft="contributed">{0} A</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}A</unitPattern>
 			</unit>
 			<unit type="electric-milliampere">
-				<unitPattern count="other" draft="contributed">{0} mA</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}mA</unitPattern>
 			</unit>
 			<unit type="electric-ohm">
-				<unitPattern count="other" draft="contributed">{0} Ω</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}Ω</unitPattern>
 			</unit>
 			<unit type="electric-volt">
-				<unitPattern count="other" draft="contributed">{0} V</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}V</unitPattern>
 			</unit>
 			<unit type="energy-calorie">
-				<unitPattern count="other" draft="contributed">{0} 卡</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}卡</unitPattern>
 			</unit>
 			<unit type="energy-foodcalorie">
-				<unitPattern count="other" draft="contributed">{0} 大卡</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}大卡</unitPattern>
 			</unit>
 			<unit type="energy-joule">
-				<unitPattern count="other" draft="contributed">{0} 焦</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}焦</unitPattern>
 			</unit>
 			<unit type="energy-kilocalorie">
-				<unitPattern count="other" draft="contributed">{0} 千卡</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}千卡</unitPattern>
 			</unit>
 			<unit type="energy-kilojoule">
-				<unitPattern count="other" draft="contributed">{0} 千焦</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}千焦</unitPattern>
 			</unit>
 			<unit type="energy-kilowatt-hour">
-				<unitPattern count="other" draft="contributed">{0} kWh</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}kWh</unitPattern>
 			</unit>
 			<unit type="frequency-gigahertz">
-				<unitPattern count="other" draft="contributed">{0} GHz</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}GHz</unitPattern>
 			</unit>
 			<unit type="frequency-hertz">
-				<unitPattern count="other" draft="contributed">{0} Hz</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}Hz</unitPattern>
 			</unit>
 			<unit type="frequency-kilohertz">
-				<unitPattern count="other" draft="contributed">{0} kHz</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}kHz</unitPattern>
 			</unit>
 			<unit type="frequency-megahertz">
-				<unitPattern count="other" draft="contributed">{0} MHz</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}MHz</unitPattern>
 			</unit>
 			<unit type="length-astronomical-unit">
-				<unitPattern count="other" draft="contributed">{0} au</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}au</unitPattern>
 			</unit>
 			<unit type="length-centimeter">
 				<displayName>公分</displayName>
-				<unitPattern count="other">{0} 公分</unitPattern>
+				<unitPattern count="other">{0}公分</unitPattern>
 			</unit>
 			<unit type="length-decimeter">
-				<unitPattern count="other" draft="contributed">{0} dm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}dm</unitPattern>
 			</unit>
 			<unit type="length-fathom">
 				<displayName draft="contributed">英尋</displayName>
-				<unitPattern count="other" draft="contributed">{0} fm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}fm</unitPattern>
 			</unit>
 			<unit type="length-foot">
-				<unitPattern count="other">{0} 呎</unitPattern>
+				<unitPattern count="other">{0}呎</unitPattern>
 			</unit>
 			<unit type="length-furlong">
 				<displayName draft="contributed">化朗</displayName>
-				<unitPattern count="other" draft="contributed">{0} 化朗</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}化朗</unitPattern>
 			</unit>
 			<unit type="length-inch">
-				<unitPattern count="other">{0} 吋</unitPattern>
+				<unitPattern count="other">{0}吋</unitPattern>
 			</unit>
 			<unit type="length-kilometer">
 				<displayName>公里</displayName>
-				<unitPattern count="other">{0} 公里</unitPattern>
+				<unitPattern count="other">{0}公里</unitPattern>
 			</unit>
 			<unit type="length-light-year">
-				<unitPattern count="other">{0} 光年</unitPattern>
+				<unitPattern count="other">{0}光年</unitPattern>
 			</unit>
 			<unit type="length-meter">
 				<displayName>公尺</displayName>
-				<unitPattern count="other">{0} 公尺</unitPattern>
+				<unitPattern count="other">{0}公尺</unitPattern>
 			</unit>
 			<unit type="length-micrometer">
-				<unitPattern count="other" draft="contributed">{0} µm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}µm</unitPattern>
 			</unit>
 			<unit type="length-mile">
-				<unitPattern count="other">{0} 英里</unitPattern>
+				<unitPattern count="other">{0}英里</unitPattern>
 			</unit>
 			<unit type="length-millimeter">
 				<displayName>公釐</displayName>
-				<unitPattern count="other">{0} 公釐</unitPattern>
+				<unitPattern count="other">{0}公釐</unitPattern>
 			</unit>
 			<unit type="length-nanometer">
-				<unitPattern count="other" draft="contributed">{0} nm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}nm</unitPattern>
 			</unit>
 			<unit type="length-nautical-mile">
-				<unitPattern count="other" draft="contributed">{0} nmi</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}nmi</unitPattern>
 			</unit>
 			<unit type="length-parsec">
-				<unitPattern count="other" draft="contributed">{0} pc</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}pc</unitPattern>
 			</unit>
 			<unit type="length-picometer">
-				<unitPattern count="other">{0} 皮米</unitPattern>
+				<unitPattern count="other">{0}皮米</unitPattern>
 			</unit>
 			<unit type="length-yard">
-				<unitPattern count="other">{0} 碼</unitPattern>
+				<unitPattern count="other">{0}碼</unitPattern>
 			</unit>
 			<unit type="light-lux">
-				<unitPattern count="other" draft="contributed">{0} lx</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}lx</unitPattern>
 			</unit>
 			<unit type="mass-carat">
-				<unitPattern count="other" draft="contributed">{0} CD</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}CD</unitPattern>
 			</unit>
 			<unit type="mass-gram">
 				<displayName>克</displayName>
-				<unitPattern count="other">{0} 克</unitPattern>
+				<unitPattern count="other">{0}克</unitPattern>
 			</unit>
 			<unit type="mass-kilogram">
 				<displayName>公斤</displayName>
-				<unitPattern count="other">{0} 公斤</unitPattern>
+				<unitPattern count="other">{0}公斤</unitPattern>
 			</unit>
 			<unit type="mass-metric-ton">
-				<unitPattern count="other" draft="contributed">{0} t</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}t</unitPattern>
 			</unit>
 			<unit type="mass-microgram">
-				<unitPattern count="other" draft="contributed">{0} µg</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}µg</unitPattern>
 			</unit>
 			<unit type="mass-milligram">
-				<unitPattern count="other" draft="contributed">{0} mg</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}mg</unitPattern>
 			</unit>
 			<unit type="mass-ounce">
-				<unitPattern count="other">{0} 盎司</unitPattern>
+				<unitPattern count="other">{0}盎司</unitPattern>
 			</unit>
 			<unit type="mass-ounce-troy">
-				<unitPattern count="other" draft="contributed">{0} oz t</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}oz-t</unitPattern>
 			</unit>
 			<unit type="mass-pound">
-				<unitPattern count="other">{0} 磅</unitPattern>
+				<unitPattern count="other">{0}磅</unitPattern>
 			</unit>
 			<unit type="mass-stone">
 				<displayName draft="contributed">英石</displayName>
-				<unitPattern count="other" draft="contributed">{0} st</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}st</unitPattern>
 			</unit>
 			<unit type="mass-ton">
-				<unitPattern count="other" draft="contributed">{0} tn</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}tn</unitPattern>
 			</unit>
 			<unit type="power-gigawatt">
-				<unitPattern count="other" draft="contributed">{0} GW</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}GW</unitPattern>
 			</unit>
 			<unit type="power-horsepower">
-				<unitPattern count="other">{0} 匹</unitPattern>
+				<unitPattern count="other">{0}匹</unitPattern>
 			</unit>
 			<unit type="power-kilowatt">
-				<unitPattern count="other">{0} 千瓦</unitPattern>
+				<unitPattern count="other">{0}千瓦</unitPattern>
 			</unit>
 			<unit type="power-megawatt">
-				<unitPattern count="other" draft="contributed">{0} MW</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}MW</unitPattern>
 			</unit>
 			<unit type="power-milliwatt">
-				<unitPattern count="other" draft="contributed">{0} mW</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}mW</unitPattern>
 			</unit>
 			<unit type="power-watt">
-				<unitPattern count="other">{0} 瓦特</unitPattern>
+				<unitPattern count="other">{0}瓦特</unitPattern>
 			</unit>
 			<unit type="pressure-hectopascal">
-				<unitPattern count="other">{0} 百帕</unitPattern>
+				<unitPattern count="other">{0}百帕</unitPattern>
 			</unit>
 			<unit type="pressure-inch-hg">
-				<unitPattern count="other" draft="contributed">{0} 英吋汞柱</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}英吋汞柱</unitPattern>
 			</unit>
 			<unit type="pressure-millibar">
-				<unitPattern count="other">{0} 毫巴</unitPattern>
+				<unitPattern count="other">{0}毫巴</unitPattern>
 			</unit>
 			<unit type="pressure-millimeter-of-mercury">
-				<unitPattern count="other" draft="contributed">{0} mm Hg</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}mmHg</unitPattern>
 			</unit>
 			<unit type="pressure-pound-per-square-inch">
-				<unitPattern count="other" draft="contributed">{0} psi</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}psi</unitPattern>
 			</unit>
 			<unit type="proportion-karat">
-				<unitPattern count="other" draft="contributed">{0} kt</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}kt</unitPattern>
 			</unit>
 			<unit type="speed-kilometer-per-hour">
 				<displayName>公里/小時</displayName>
-				<unitPattern count="other">{0} km/h</unitPattern>
+				<unitPattern count="other">{0}km/h</unitPattern>
 			</unit>
 			<unit type="speed-meter-per-second">
-				<unitPattern count="other" draft="contributed">{0} 公尺/秒</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}公尺/秒</unitPattern>
 			</unit>
 			<unit type="speed-mile-per-hour">
-				<unitPattern count="other">{0} 英里/小時</unitPattern>
+				<unitPattern count="other">{0}英里/小時</unitPattern>
 			</unit>
 			<unit type="temperature-celsius">
 				<displayName>°C</displayName>
@@ -9172,72 +9171,72 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other" draft="contributed">{0}°K</unitPattern>
 			</unit>
 			<unit type="volume-acre-foot">
-				<unitPattern count="other" draft="contributed">{0} ac ft</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}ac-ft</unitPattern>
 			</unit>
 			<unit type="volume-bushel">
 				<displayName draft="contributed">蒲式耳</displayName>
-				<unitPattern count="other" draft="contributed">{0} bu</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}bu</unitPattern>
 			</unit>
 			<unit type="volume-centiliter">
-				<unitPattern count="other" draft="contributed">{0} cL</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}cL</unitPattern>
 			</unit>
 			<unit type="volume-cubic-centimeter">
-				<unitPattern count="other" draft="contributed">{0} cm³</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}cm³</unitPattern>
 			</unit>
 			<unit type="volume-cubic-foot">
-				<unitPattern count="other" draft="contributed">{0} ft³</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}ft³</unitPattern>
 			</unit>
 			<unit type="volume-cubic-inch">
-				<unitPattern count="other" draft="contributed">{0} in³</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}in³</unitPattern>
 			</unit>
 			<unit type="volume-cubic-kilometer">
-				<unitPattern count="other">{0} km³</unitPattern>
+				<unitPattern count="other">{0}km³</unitPattern>
 			</unit>
 			<unit type="volume-cubic-meter">
-				<unitPattern count="other" draft="contributed">{0} m³</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}m³</unitPattern>
 			</unit>
 			<unit type="volume-cubic-mile">
-				<unitPattern count="other">{0} 立方英里</unitPattern>
+				<unitPattern count="other">{0}立方英里</unitPattern>
 			</unit>
 			<unit type="volume-cubic-yard">
-				<unitPattern count="other" draft="contributed">{0} yd³</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}yd³</unitPattern>
 			</unit>
 			<unit type="volume-cup">
-				<unitPattern count="other" draft="contributed">{0} c</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}c</unitPattern>
 			</unit>
 			<unit type="volume-deciliter">
-				<unitPattern count="other" draft="contributed">{0} dL</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}dL</unitPattern>
 			</unit>
 			<unit type="volume-fluid-ounce">
-				<unitPattern count="other" draft="contributed">{0} fl oz</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}fl-oz</unitPattern>
 			</unit>
 			<unit type="volume-gallon">
-				<unitPattern count="other" draft="contributed">{0} gal</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}gal</unitPattern>
 			</unit>
 			<unit type="volume-hectoliter">
-				<unitPattern count="other" draft="contributed">{0} hL</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}hL</unitPattern>
 			</unit>
 			<unit type="volume-liter">
 				<displayName>公升</displayName>
-				<unitPattern count="other">{0} 公升</unitPattern>
+				<unitPattern count="other">{0}公升</unitPattern>
 			</unit>
 			<unit type="volume-megaliter">
-				<unitPattern count="other" draft="contributed">{0} ML</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}ML</unitPattern>
 			</unit>
 			<unit type="volume-milliliter">
-				<unitPattern count="other" draft="contributed">{0} mL</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}mL</unitPattern>
 			</unit>
 			<unit type="volume-pint">
-				<unitPattern count="other" draft="contributed">{0} pt</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}pt</unitPattern>
 			</unit>
 			<unit type="volume-quart">
-				<unitPattern count="other" draft="contributed">{0} qt</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}qt</unitPattern>
 			</unit>
 			<unit type="volume-tablespoon">
-				<unitPattern count="other" draft="contributed">{0} 匙</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}匙</unitPattern>
 			</unit>
 			<unit type="volume-teaspoon">
-				<unitPattern count="other" draft="contributed">{0} tsp</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}tsp</unitPattern>
 			</unit>
 		</unitLength>
 		<durationUnit type="hm">
@@ -9258,10 +9257,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<listPatternPart type="2">{0}和{1}</listPatternPart>
 		</listPattern>
 		<listPattern type="unit">
-			<listPatternPart type="start">{0}{1}</listPatternPart>
-			<listPatternPart type="middle">{0}{1}</listPatternPart>
-			<listPatternPart type="end">{0}{1}</listPatternPart>
-			<listPatternPart type="2">{0}{1}</listPatternPart>
+			<listPatternPart type="start">{0} {1}</listPatternPart>
+			<listPatternPart type="middle">{0} {1}</listPatternPart>
+			<listPatternPart type="end">{0} {1}</listPatternPart>
+			<listPatternPart type="2">{0} {1}</listPatternPart>
 		</listPattern>
 		<listPattern type="unit-narrow">
 			<listPatternPart type="start">{0}{1}</listPatternPart>
@@ -9270,10 +9269,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<listPatternPart type="2">{0}{1}</listPatternPart>
 		</listPattern>
 		<listPattern type="unit-short">
-			<listPatternPart type="start">{0}{1}</listPatternPart>
-			<listPatternPart type="middle">{0}{1}</listPatternPart>
-			<listPatternPart type="end">{0}{1}</listPatternPart>
-			<listPatternPart type="2">{0}{1}</listPatternPart>
+			<listPatternPart type="start">{0} {1}</listPatternPart>
+			<listPatternPart type="middle">{0} {1}</listPatternPart>
+			<listPatternPart type="end">{0} {1}</listPatternPart>
+			<listPatternPart type="2">{0} {1}</listPatternPart>
 		</listPattern>
 	</listPatterns>
 	<posix>

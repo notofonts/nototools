@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10962 $"/>
-		<generation date="$Date: 2014-09-10 09:30:49 -0700 (Wed, 10 Sep 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="da"/>
 	</identity>
 	<localeDisplayNames>
@@ -747,7 +747,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AT">Østrig</territory>
 			<territory type="AU">Australien</territory>
 			<territory type="AW">Aruba</territory>
-			<territory type="AX">Ålandsøerne</territory>
+			<territory type="AX">Åland</territory>
 			<territory type="AZ">Aserbajdsjan</territory>
 			<territory type="BA">Bosnien-Hercegovina</territory>
 			<territory type="BB">Barbados</territory>
@@ -905,9 +905,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="MY">Malaysia</territory>
 			<territory type="MZ">Mozambique</territory>
 			<territory type="NA">Namibia</territory>
-			<territory type="NC">Ny Caledonien</territory>
+			<territory type="NC">Ny Kaledonien</territory>
 			<territory type="NE">Niger</territory>
-			<territory type="NF">Norfolkøen</territory>
+			<territory type="NF">Norfolk Island</territory>
 			<territory type="NG">Nigeria</territory>
 			<territory type="NI">Nicaragua</territory>
 			<territory type="NL">Holland</territory>
@@ -1693,12 +1693,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern>dd/MM/y</pattern>
+							<pattern>d. MMM y</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
 						<dateFormat>
-							<pattern>dd/MM/yy</pattern>
+							<pattern>dd/MM/y</pattern>
 						</dateFormat>
 					</dateFormatLength>
 				</dateFormats>
@@ -1763,6 +1763,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">HH.mm</dateFormatItem>
 						<dateFormatItem id="hms">h.mm.ss a</dateFormatItem>
 						<dateFormatItem id="Hms">HH.mm.ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h.mm.ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">HH.mm.ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h.mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">HH.mm v</dateFormatItem>
 						<dateFormatItem id="M">M</dateFormatItem>
 						<dateFormatItem id="Md">d/M</dateFormatItem>
 						<dateFormatItem id="MEd">E d/M</dateFormatItem>
@@ -2339,15 +2343,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (+1)</regionFormat>
 			<regionFormat type="standard">{0} (+0)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Chongqing</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kashgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Ukendt by</exemplarCity>
 			</zone>

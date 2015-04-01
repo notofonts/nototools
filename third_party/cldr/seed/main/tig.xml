@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10753 $"/>
-		<generation date="$Date: 2014-08-11 09:10:03 -0700 (Mon, 11 Aug 2014) $"/>
+		<version number="$Revision: 11275 $"/>
+		<generation date="$Date: 2015-02-19 12:56:49 -0800 (Thu, 19 Feb 2015) $"/>
 		<language type="tig"/>
 	</identity>
 	<localeDisplayNames>
@@ -229,8 +229,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="JP" draft="unconfirmed">ጃፓን</territory>
 			<territory type="KH" draft="unconfirmed">ካምቦዲያ</territory>
 			<territory type="KM" draft="unconfirmed">ኮሞሮስ</territory>
-			<territory type="KP" draft="unconfirmed">ደቡብ ኮሪያ</territory>
-			<territory type="KR" draft="unconfirmed">ሰሜን ኮሪያ</territory>
+			<territory type="KP" draft="unconfirmed">ሰሜን ኮሪያ</territory>
+			<territory type="KR" draft="unconfirmed">ደቡብ ኮሪያ</territory>
 			<territory type="KW" draft="unconfirmed">ክዌት</territory>
 			<territory type="LB" draft="unconfirmed">ሊባኖስ</territory>
 			<territory type="LT" draft="unconfirmed">ሊቱዌኒያ</territory>
@@ -290,7 +290,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</territories>
 	</localeDisplayNames>
 	<characters>
-		<exemplarCharacters>[\u135F ፡ ፣-፧ ። ፠ ፨ ᎐-᎙ ፲-፼ ፩-፱ ሀ-ሏ ⶀ ሐ-ሟ ᎀ-ᎃ ⶁ ሠ-ሯ ⶂ ሰ-ሷ ⶃ ሸ-ሿ ⶄ ቀ-ቈ ቊ-ቍ ቐ-ቖ ቘ ቚ-ቝ በ-ቧ ᎄ-ᎇ ⶅ ቨ-ቷ ⶆ ቸ-ቿ ⶇ ኀ-ኈ ኊ-ኍ ነ-ኗ ⶈ ኘ-ኟ ⶉ አ-ኧ ⶊ ከ-ኰ ኲ-ኵ ኸ-ኾ ዀ ዂ-ዅ ወ-ዖ ዘ-ዟ ⶋ ዠ-ዷ ⶌ ዸ-ዿ ⶍ ጀ-ጇ ⶎ ገ-ጐ ጒ-ጕ ጘ-ጟ ⶓ-ⶖ ጠ-ጧ ⶏ ጨ-ጯ ⶐ ጰ-ጷ ⶑ ጸ-ፏ ᎈ-ᎋ ፐ-ፗ ᎌ-ᎏ ⶒ ፘ-ፚ ⶠ-ⶦ ⶨ-ⶮ ⶰ-ⶶ ⶸ-ⶾ ⷀ-ⷆ ⷈ-ⷎ ⷐ-ⷖ ⷘ-ⷞ]</exemplarCharacters>
+		<exemplarCharacters>[\u135F ፡ ፣-፧ ። ፠ ፨ ᎐-᎙ ፲-፼ ሀ-ሏ ⶀ ሐ-ሟ ᎀ-ᎃ ⶁ ሠ-ሯ ⶂ ሰ-ሷ ⶃ ሸ-ሿ ⶄ ቀ-ቈ ቊ-ቍ ቐ-ቖ ቘ ቚ-ቝ በ-ቧ ᎄ-ᎇ ⶅ ቨ-ቷ ⶆ ቸ-ቿ ⶇ ኀ-ኈ ኊ-ኍ ነ-ኗ ⶈ ኘ-ኟ ⶉ አ-ኧ ⶊ ከ-ኰ ኲ-ኵ ኸ-ኾ ዀ ዂ-ዅ ወ-ዖ ዘ-ዟ ⶋ ዠ-ዷ ⶌ ዸ-ዿ ⶍ ጀ-ጇ ⶎ ገ-ጐ ጒ-ጕ ጘ-ጟ ⶓ-ⶖ ጠ-ጧ ⶏ ጨ-ጯ ⶐ ጰ-ጷ ⶑ ጸ-ፏ ᎈ-ᎋ ፐ-ፗ ᎌ-ᎏ ⶒ ፘ-ፚ ⶠ-ⶦ ⶨ-ⶮ ⶰ-ⶶ ⶸ-ⶾ ⷀ-ⷆ ⷈ-ⷎ ⷐ-ⷖ ⷘ-ⷞ]</exemplarCharacters>
 		<exemplarCharacters type="index" draft="unconfirmed">[ሀ ለ ⶀ መ ᎀ ᎁ ᎃ ⶁ ረ ⶂ ሰ ሸ ⶄ ቈ ቐ ቘ ᎄ ᎅ ᎇ ⶅ ቨ ⶆ ቸ ኀ ኈ ነ ኘ ⶉ ⶊ ከ ኰ ዀ ወ ዐ ⶋ ዠ ደ ⶌ ዸ ጀ ⶎ ጐ ጘ ⶓ ⶕ ⶖ ⶏ ጨ ⶐ ⶑ ጸ ፈ ᎈ ᎉ ᎋ ፐ ᎍ ᎎ ᎏ ፘ ⶠ ⶢ ⶣ ⶤ ⶦ ⶨ ⶩ ⶫ ⶬ ⶮ ⶰ ⶱ ⶳ ⶴ ⶶ ⶸ ⶹ ⶻ ⶼ ⶾ ⷀ ⷁ ⷃ ⷄ ⷆ ⷈ ⷉ ⷋ ⷌ ⷎ ⷐ ⷑ ⷓ ⷔ ⷖ ⷘ ⷙ ⷛ ⷜ ⷝ]</exemplarCharacters>
 	</characters>
 	<dates>

@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="eu"/>
 	</identity>
 	<localeDisplayNames>
@@ -342,7 +342,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="419">Latinoamerika</territory>
 			<territory type="AC">Ascension uhartea</territory>
 			<territory type="AD">Andorra</territory>
-			<territory type="AE">Arabiar Emirrerri Batuak</territory>
+			<territory type="AE">Arabiar Emirerri Batuak</territory>
 			<territory type="AF">Afganistan</territory>
 			<territory type="AG">Antigua eta Barbuda</territory>
 			<territory type="AI">Angila</territory>
@@ -367,7 +367,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="BH">Bahrain</territory>
 			<territory type="BI">Burundi</territory>
 			<territory type="BJ">Benin</territory>
-			<territory type="BL">San Bartolome</territory>
+			<territory type="BL">Saint Barthélemy</territory>
 			<territory type="BM">Bermuda</territory>
 			<territory type="BN">Brunei</territory>
 			<territory type="BO">Bolivia</territory>
@@ -380,7 +380,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="BY">Bielorrusia</territory>
 			<territory type="BZ">Belize</territory>
 			<territory type="CA">Kanada</territory>
-			<territory type="CC">Cocos (Keeling) uharteak</territory>
+			<territory type="CC">Cocos uharteak</territory>
 			<territory type="CD">Kongoko Errepublika Demokratikoa</territory>
 			<territory type="CD" alt="variant">Kongo (KED)</territory>
 			<territory type="CF">Afrika Erdiko Errepublika</territory>
@@ -430,7 +430,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GD">Grenada</territory>
 			<territory type="GE">Georgia</territory>
 			<territory type="GF">Guyana Frantsesa</territory>
-			<territory type="GG">Guernsey</territory>
+			<territory type="GG">Guernesey</territory>
 			<territory type="GH">Ghana</territory>
 			<territory type="GI">Gibraltar</territory>
 			<territory type="GL">Groenlandia</territory>
@@ -575,7 +575,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="TF">Hegoaldeko lurralde frantsesak</territory>
 			<territory type="TG">Togo</territory>
 			<territory type="TH">Thailandia</territory>
-			<territory type="TJ">Tadjikistan</territory>
+			<territory type="TJ">Tajikistan</territory>
 			<territory type="TK">Tokelau</territory>
 			<territory type="TL">Ekialdeko Timor</territory>
 			<territory type="TL" alt="variant">Timor ekialdea</territory>
@@ -1816,15 +1816,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (udako ordua)</regionFormat>
 			<regionFormat type="standard">{0} (ordu estandarra)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Chongqing</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kashgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Hiri ezezaguna</exemplarCity>
 			</zone>

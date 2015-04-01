@@ -6,8 +6,8 @@ terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="dsb"/>
 	</identity>
 	<localeDisplayNames>
@@ -60,6 +60,8 @@ terms of use, see http://www.unicode.org/copyright.html
 			<language type="da">danšćina</language>
 			<language type="dav">taita</language>
 			<language type="de">nimšćina</language>
+			<language type="de_AT">awstriska nimšćina</language>
+			<language type="de_CH">šwicarska wusokonimšćina</language>
 			<language type="dje">zarma</language>
 			<language type="dsb">dolnoserbšćina</language>
 			<language type="dua">duala</language>
@@ -1787,9 +1789,6 @@ terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} lěśojski cas</regionFormat>
 			<regionFormat type="standard">{0} zymski cas</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kaxgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Njeznate</exemplarCity>
 			</zone>
@@ -2457,6 +2456,11 @@ terms of use, see http://www.unicode.org/copyright.html
 					<standard>OEZ</standard>
 					<daylight>OESZ</daylight>
 				</short>
+			</metazone>
+			<metazone type="Europe_Further_Eastern">
+				<long>
+					<standard>Kaliningradski cas</standard>
+				</long>
 			</metazone>
 			<metazone type="Europe_Western">
 				<long>

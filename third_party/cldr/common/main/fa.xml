@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="fa"/>
 	</identity>
 	<localeDisplayNames>
@@ -691,11 +691,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AO">آنگولا</territory>
 			<territory type="AQ">جنوبگان</territory>
 			<territory type="AR">آرژانتین</territory>
-			<territory type="AS">ساموآی آمریکا</territory>
+			<territory type="AS">ساموآی امریکا</territory>
 			<territory type="AT">اتریش</territory>
 			<territory type="AU">استرالیا</territory>
 			<territory type="AW">آروبا</territory>
-			<territory type="AX">جزایر اُلند</territory>
+			<territory type="AX">جزایر آلاند</territory>
 			<territory type="AZ">جمهوری آذربایجان</territory>
 			<territory type="BA">بوسنی و هرزگوین</territory>
 			<territory type="BB">باربادوس</territory>
@@ -710,7 +710,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="BM">برمودا</territory>
 			<territory type="BN">برونئی</territory>
 			<territory type="BO">بولیوی</territory>
-			<territory type="BQ">جزایر کارائیب هلند</territory>
+			<territory type="BQ">بونیر</territory>
 			<territory type="BR">برزیل</territory>
 			<territory type="BS">باهاما</territory>
 			<territory type="BT">بوتان</territory>
@@ -719,7 +719,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="BY">بلاروس</territory>
 			<territory type="BZ">بلیز</territory>
 			<territory type="CA">کانادا</territory>
-			<territory type="CC">جزایر کوکوس (کیلینگ)</territory>
+			<territory type="CC">جزایر کوکوس</territory>
 			<territory type="CD">کنگو - کینشاسا</territory>
 			<territory type="CD" alt="variant">کنگو (جمهوری دموکراتیک)</territory>
 			<territory type="CF">جمهوری افریقای مرکزی</territory>
@@ -778,14 +778,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GP">گوادلوپ</territory>
 			<territory type="GQ">گینهٔ استوایی</territory>
 			<territory type="GR">یونان</territory>
-			<territory type="GS">جزایر جورجیای جنوبی و ساندویچ جنوبی</territory>
+			<territory type="GS">جورجیای جنوبی و جزایر ساندویچ جنوبی</territory>
 			<territory type="GT">گواتمالا</territory>
 			<territory type="GU">گوام</territory>
 			<territory type="GW">گینهٔ بیسائو</territory>
 			<territory type="GY">گویان</territory>
 			<territory type="HK">هنگ‌کنگ، ناحیهٔ ویژهٔ حکومتی چین</territory>
 			<territory type="HK" alt="short">هنگ‌کنگ</territory>
-			<territory type="HM">جزایر هرد و مک‌دونالد</territory>
+			<territory type="HM">جزیرهٔ هرد و جزایر مک‌دونالد</territory>
 			<territory type="HN">هندوراس</territory>
 			<territory type="HR">کرواسی</territory>
 			<territory type="HT">هائیتی</territory>
@@ -809,7 +809,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="KG">قرقیزستان</territory>
 			<territory type="KH">کامبوج</territory>
 			<territory type="KI">کیریباتی</territory>
-			<territory type="KM">کومور</territory>
+			<territory type="KM">کومورو</territory>
 			<territory type="KN">سنت کیتس و نویس</territory>
 			<territory type="KP">کرهٔ شمالی</territory>
 			<territory type="KR">کرهٔ جنوبی</territory>
@@ -855,7 +855,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="NA">نامیبیا</territory>
 			<territory type="NC">کالدونیای جدید</territory>
 			<territory type="NE">نیجر</territory>
-			<territory type="NF">جزیره نورفک</territory>
+			<territory type="NF">جزیرهٔ نورفولک</territory>
 			<territory type="NG">نیجریه</territory>
 			<territory type="NI">نیکاراگوئه</territory>
 			<territory type="NL">هلند</territory>
@@ -863,7 +863,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="NP">نپال</territory>
 			<territory type="NR">نائورو</territory>
 			<territory type="NU">نیوئه</territory>
-			<territory type="NZ">زلاند نو</territory>
+			<territory type="NZ">نیوزیلند</territory>
 			<territory type="OM">عمان</territory>
 			<territory type="PA">پاناما</territory>
 			<territory type="PE">پرو</territory>
@@ -899,12 +899,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="SJ">اسوالبارد و جان‌ماین</territory>
 			<territory type="SK">اسلواکی</territory>
 			<territory type="SL">سیرالئون</territory>
-			<territory type="SM">سن مارینو</territory>
+			<territory type="SM">سان‌مارینو</territory>
 			<territory type="SN">سنگال</territory>
 			<territory type="SO">سومالی</territory>
 			<territory type="SR">سورینام</territory>
 			<territory type="SS">سودان جنوبی</territory>
-			<territory type="ST">سائوتومه و پرینسیپ</territory>
+			<territory type="ST">پرینسیپ و سائوتومه</territory>
 			<territory type="SV">السالوادور</territory>
 			<territory type="SX">سنت مارتن</territory>
 			<territory type="SY">سوریه</territory>
@@ -2558,15 +2558,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">وقت تابستانی {0}</regionFormat>
 			<regionFormat type="standard">وقت عادی {0}</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>چونگ‌کینگ</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>هاربین</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>کاشغر</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>شهر نامشخص</exemplarCity>
 			</zone>
@@ -5526,9 +5517,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>تالای ساموا</displayName>
 			</currency>
 			<currency type="XAF">
-				<displayName>فرانک CFA مرکز آفریقا</displayName>
-				<displayName count="one">فرانک CFA مرکز آفریقا</displayName>
-				<displayName count="other">فرانک CFA مرکز آفریقا</displayName>
+				<displayName>فرانک CFA مرکز افریقا</displayName>
+				<displayName count="one">فرانک CFA مرکز افریقا</displayName>
+				<displayName count="other">فرانک CFA مرکز افریقا</displayName>
 				<symbol>FCFA</symbol>
 			</currency>
 			<currency type="XAG">
@@ -5545,9 +5536,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>فرانک طلای فرانسه</displayName>
 			</currency>
 			<currency type="XOF">
-				<displayName>فرانک CFA غرب آفریقا</displayName>
-				<displayName count="one">فرانک CFA غرب آفریقا</displayName>
-				<displayName count="other">فرانک CFA غرب آفریقا</displayName>
+				<displayName>فرانک CFA غرب افریقا</displayName>
+				<displayName count="one">فرانک CFA غرب افریقا</displayName>
+				<displayName count="other">فرانک CFA غرب افریقا</displayName>
 				<symbol>CFA</symbol>
 			</currency>
 			<currency type="XPD">

@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10701 $"/>
-		<generation date="$Date: 2014-07-30 13:14:57 -0700 (Wed, 30 Jul 2014) $"/>
+		<version number="$Revision: 11072 $"/>
+		<generation date="$Date: 2014-12-04 15:58:51 -0800 (Thu, 04 Dec 2014) $"/>
 		<language type="iby"/>
 		<script type="Latn"/>
 	</identity>
@@ -18,7 +18,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</orientation>
 	</layout>
 	<characters>
-		<exemplarCharacters draft="unconfirmed">[{á} {ā} a b {ḅ} d {é} {ē} e {ẹ́} {ẹ̄} {ẹ} f g {gb} {gh} {gw} h {í} {ī} i {ị́} {ị̄} {ị}  j k {kp} {kw} l m {ḿ} {ń} n {nw} {ny} {ó} {ō} o {ọ́} {ọ̄} {ọ} p r s t {ú} {ū} u {ụ́} {ụ̄} {ụ} v w y z]</exemplarCharacters>
+		<exemplarCharacters draft="unconfirmed">[a á ā b ḅ d e é ē ẹ {ẹ\u0301} {ẹ\u0304} f g {gb} {gh} {gw} h i í ī ị {ị\u0301} {ị\u0304} j k {kp} {kw} l m ḿ n ń {nw} {ny} o ó ō ọ {ọ\u0301} {ọ\u0304} p r s t u ú ū ụ {ụ\u0301} {ụ\u0304} v w y z]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary" draft="unconfirmed">[c q x]</exemplarCharacters>
 	</characters>
 </ldml>

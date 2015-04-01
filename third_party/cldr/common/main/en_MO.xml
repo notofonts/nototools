@@ -6,39 +6,13 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10819 $"/>
-		<generation date="$Date: 2014-08-14 20:53:08 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11150 $"/>
+		<generation date="$Date: 2015-01-23 14:43:31 -0800 (Fri, 23 Jan 2015) $"/>
 		<language type="en"/>
 		<territory type="MO"/>
 	</identity>
 	<dates>
 		<timeZoneNames>
-			<zone type="Europe/London">
-				<short>
-					<daylight>∅∅∅</daylight>
-				</short>
-			</zone>
-			<metazone type="Europe_Central">
-				<short>
-					<generic>∅∅∅</generic>
-					<standard>∅∅∅</standard>
-					<daylight>∅∅∅</daylight>
-				</short>
-			</metazone>
-			<metazone type="Europe_Eastern">
-				<short>
-					<generic>∅∅∅</generic>
-					<standard>∅∅∅</standard>
-					<daylight>∅∅∅</daylight>
-				</short>
-			</metazone>
-			<metazone type="Europe_Western">
-				<short>
-					<generic>∅∅∅</generic>
-					<standard>∅∅∅</standard>
-					<daylight>∅∅∅</daylight>
-				</short>
-			</metazone>
 			<metazone type="Hong_Kong">
 				<short>
 					<generic>HKT</generic>

@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11042 $"/>
-		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
+		<version number="$Revision: 11353 $"/>
+		<generation date="$Date: 2015-03-06 13:54:42 -0800 (Fri, 06 Mar 2015) $"/>
 		<language type="ru"/>
 	</identity>
 	<localeDisplayNames>
@@ -117,7 +117,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="de_AT">австрийский немецкий</language>
 			<language type="de_CH">швейцарский верхненемецкий</language>
 			<language type="del">делаварский</language>
-			<language type="den" draft="contributed">славянский</language>
+			<language type="den">слейви</language>
 			<language type="dgr">догриб</language>
 			<language type="din">динка</language>
 			<language type="dje">зарма</language>
@@ -539,48 +539,48 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Afak" draft="contributed">афака</script>
 			<script type="Arab">арабица</script>
 			<script type="Arab" alt="variant">персидско-арабская</script>
-			<script type="Armi">Арамейская</script>
+			<script type="Armi">арамейская</script>
 			<script type="Armn">армянская</script>
-			<script type="Avst">Авестийская</script>
-			<script type="Bali">Балийская</script>
+			<script type="Avst">авестийская</script>
+			<script type="Bali">балийская</script>
 			<script type="Bamu" draft="contributed">бамум</script>
 			<script type="Bass" draft="contributed">басса (вах)</script>
-			<script type="Batk">Батакская</script>
+			<script type="Batk">батакская</script>
 			<script type="Beng">бенгальская</script>
-			<script type="Blis">Блиссимволика</script>
+			<script type="Blis">блиссимволика</script>
 			<script type="Bopo">бопомофо</script>
-			<script type="Brah">Брахми</script>
-			<script type="Brai">Брайля</script>
-			<script type="Bugi">Бугинизийская</script>
-			<script type="Buhd">Бухид</script>
-			<script type="Cakm">Чакмийская</script>
-			<script type="Cans">Канадское слоговое письмо</script>
-			<script type="Cari">Карийская</script>
-			<script type="Cham">Чамская</script>
-			<script type="Cher">Чероки</script>
-			<script type="Cirt">Кирт</script>
-			<script type="Copt">Коптская</script>
-			<script type="Cprt">Кипрская</script>
+			<script type="Brah">брахми</script>
+			<script type="Brai">брайля</script>
+			<script type="Bugi">бугинизийская</script>
+			<script type="Buhd">бухид</script>
+			<script type="Cakm">чакмийская</script>
+			<script type="Cans">канадское слоговое письмо</script>
+			<script type="Cari">карийская</script>
+			<script type="Cham">чамская</script>
+			<script type="Cher">чероки</script>
+			<script type="Cirt">кирт</script>
+			<script type="Copt">коптская</script>
+			<script type="Cprt">кипрская</script>
 			<script type="Cyrl">кириллица</script>
-			<script type="Cyrs">Старославянская</script>
+			<script type="Cyrs">старославянская</script>
 			<script type="Deva">деванагари</script>
-			<script type="Dsrt">Дезерет</script>
+			<script type="Dsrt">дезерет</script>
 			<script type="Dupl" draft="contributed">дуплоянская скоропись</script>
-			<script type="Egyd">Египетская демотическая</script>
-			<script type="Egyh">Египетская иератическая</script>
-			<script type="Egyp">Египетская иероглифическая</script>
+			<script type="Egyd">египетская демотическая</script>
+			<script type="Egyh">египетская иератическая</script>
+			<script type="Egyp">египетская иероглифическая</script>
 			<script type="Ethi">эфиопская</script>
-			<script type="Geok">Грузинская хуцури</script>
+			<script type="Geok">грузинская хуцури</script>
 			<script type="Geor">грузинская</script>
-			<script type="Glag">Глаголица</script>
-			<script type="Goth">Готская</script>
+			<script type="Glag">глаголица</script>
+			<script type="Goth">готская</script>
 			<script type="Gran" draft="contributed">грантха</script>
 			<script type="Grek">греческая</script>
 			<script type="Gujr">гуджарати</script>
 			<script type="Guru">гурмукхи</script>
 			<script type="Hang">хангыль</script>
 			<script type="Hani">китайская</script>
-			<script type="Hano">Хануну</script>
+			<script type="Hano">хануну</script>
 			<script type="Hans">упрощенная китайская</script>
 			<script type="Hans" alt="stand-alone">упрощенная китайская</script>
 			<script type="Hant">традиционная китайская</script>
@@ -588,110 +588,110 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Hebr">иврит</script>
 			<script type="Hira">хирагана</script>
 			<script type="Hluw" draft="contributed">лувийские иероглифы</script>
-			<script type="Hmng" draft="contributed">Пахау хмонг</script>
-			<script type="Hrkt">Катакана или хирагана</script>
-			<script type="Hung">Старовенгерская</script>
-			<script type="Inds" draft="contributed">Хараппская (письменность долины Инда)</script>
-			<script type="Ital">Староитальянская</script>
-			<script type="Java">Яванская</script>
+			<script type="Hmng" draft="contributed">пахау хмонг</script>
+			<script type="Hrkt">катакана или хирагана</script>
+			<script type="Hung">старовенгерская</script>
+			<script type="Inds" draft="contributed">хараппская (письменность долины Инда)</script>
+			<script type="Ital">староитальянская</script>
+			<script type="Java">яванская</script>
 			<script type="Jpan">японская</script>
 			<script type="Jurc" draft="contributed">чжурчжэньская</script>
-			<script type="Kali">Кайа</script>
+			<script type="Kali">кайа</script>
 			<script type="Kana">катакана</script>
-			<script type="Khar">Кхароштхи</script>
+			<script type="Khar">кхароштхи</script>
 			<script type="Khmr">кхмерская</script>
 			<script type="Khoj" draft="contributed">ходжики</script>
 			<script type="Knda">каннада</script>
 			<script type="Kore">корейская</script>
 			<script type="Kpel" draft="contributed">кпелле</script>
-			<script type="Kthi">Кайтхи</script>
-			<script type="Lana">Ланна</script>
+			<script type="Kthi">кайтхи</script>
+			<script type="Lana">ланна</script>
 			<script type="Laoo">лаосская</script>
-			<script type="Latf">Латинская фрактура</script>
-			<script type="Latg">Гэльская латинская</script>
+			<script type="Latf">латинская фрактура</script>
+			<script type="Latg">гэльская латинская</script>
 			<script type="Latn">латиница</script>
-			<script type="Lepc">Лепха</script>
-			<script type="Limb">Лимбу</script>
-			<script type="Lina">Линейное письмо А</script>
-			<script type="Linb">Линейное письмо Б</script>
+			<script type="Lepc">лепха</script>
+			<script type="Limb">лимбу</script>
+			<script type="Lina">линейное письмо А</script>
+			<script type="Linb">линейное письмо Б</script>
 			<script type="Lisu" draft="contributed">лису</script>
 			<script type="Loma" draft="contributed">лома</script>
-			<script type="Lyci">Лициан</script>
-			<script type="Lydi">Лидийская</script>
-			<script type="Mand">Мандейская</script>
-			<script type="Mani" draft="contributed">Манихейская</script>
-			<script type="Maya">Майя</script>
+			<script type="Lyci">лициан</script>
+			<script type="Lydi">лидийская</script>
+			<script type="Mand">мандейская</script>
+			<script type="Mani" draft="contributed">манихейская</script>
+			<script type="Maya">майя</script>
 			<script type="Mend" draft="contributed">менде</script>
 			<script type="Merc" draft="contributed">мероитская курсивная</script>
-			<script type="Mero">Мероитская</script>
+			<script type="Mero">мероитская</script>
 			<script type="Mlym">малаяльская</script>
 			<script type="Mong">монгольская</script>
-			<script type="Moon" draft="contributed">Азбука Муна</script>
+			<script type="Moon" draft="contributed">азбука муна</script>
 			<script type="Mroo" draft="contributed">мро</script>
-			<script type="Mtei">Манипури</script>
+			<script type="Mtei">манипури</script>
 			<script type="Mymr">мьянманская</script>
 			<script type="Narb" draft="contributed">северноаравийское</script>
 			<script type="Nbat" draft="contributed">набатейская</script>
 			<script type="Nkgb" draft="contributed">наси геба</script>
-			<script type="Nkoo">Нко</script>
+			<script type="Nkoo">нко</script>
 			<script type="Nshu" draft="contributed">нюй-шу</script>
-			<script type="Ogam">Огамическая</script>
-			<script type="Olck" draft="contributed">Ол Чики</script>
-			<script type="Orkh" draft="contributed">Орхоно-енисейская</script>
+			<script type="Ogam">огамическая</script>
+			<script type="Olck" draft="contributed">ол чики</script>
+			<script type="Orkh" draft="contributed">орхоно-енисейская</script>
 			<script type="Orya">ория</script>
-			<script type="Osma">Османская</script>
+			<script type="Osma">османская</script>
 			<script type="Palm" draft="contributed">пальмиры</script>
-			<script type="Perm" draft="contributed">Древнепермская</script>
-			<script type="Phag" draft="contributed">Пагспа</script>
+			<script type="Perm" draft="contributed">древнепермская</script>
+			<script type="Phag" draft="contributed">пагспа</script>
 			<script type="Phli" draft="contributed">пехлевийская</script>
 			<script type="Phlp" draft="contributed">пахлави псалтирная</script>
-			<script type="Phlv">Пахлави книжная</script>
-			<script type="Phnx" draft="contributed">Финикийская</script>
-			<script type="Plrd" draft="contributed">Поллардовская фонетика</script>
+			<script type="Phlv">пахлави книжная</script>
+			<script type="Phnx" draft="contributed">финикийская</script>
+			<script type="Plrd" draft="contributed">поллардовская фонетика</script>
 			<script type="Prti" draft="contributed">парфянская</script>
-			<script type="Rjng" draft="contributed">Реджангская</script>
-			<script type="Roro">Ронго-ронго</script>
-			<script type="Runr">Руническая</script>
-			<script type="Samr" draft="contributed">Самаритянская</script>
-			<script type="Sara" draft="contributed">Сарати</script>
+			<script type="Rjng" draft="contributed">реджангская</script>
+			<script type="Roro">ронго-ронго</script>
+			<script type="Runr">руническая</script>
+			<script type="Samr" draft="contributed">самаритянская</script>
+			<script type="Sara" draft="contributed">сарати</script>
 			<script type="Sarb" draft="contributed">староюжноарабская</script>
-			<script type="Saur">Саураштра</script>
-			<script type="Sgnw">Язык знаков</script>
-			<script type="Shaw">Алфавит Шоу</script>
+			<script type="Saur">саураштра</script>
+			<script type="Sgnw">язык знаков</script>
+			<script type="Shaw">алфавит Шоу</script>
 			<script type="Shrd" draft="contributed">шарада</script>
 			<script type="Sind" draft="contributed">кхудавади</script>
 			<script type="Sinh">сингальская</script>
 			<script type="Sora" draft="contributed">сора-сонпенг</script>
-			<script type="Sund">Сунданская</script>
-			<script type="Sylo" draft="contributed">Силоти Нагри</script>
-			<script type="Syrc">Сирийская</script>
-			<script type="Syre">Сирийская эстрангело</script>
-			<script type="Syrj">Западносирийская</script>
-			<script type="Syrn">Восточно-сирийская</script>
-			<script type="Tagb">Тагбанва</script>
+			<script type="Sund">сунданская</script>
+			<script type="Sylo" draft="contributed">силоти нагри</script>
+			<script type="Syrc">сирийская</script>
+			<script type="Syre">сирийская эстрангело</script>
+			<script type="Syrj">западносирийская</script>
+			<script type="Syrn">восточно-сирийская</script>
+			<script type="Tagb">тагбанва</script>
 			<script type="Takr" draft="contributed">такри</script>
-			<script type="Tale" draft="contributed">Тайский Ле</script>
-			<script type="Talu" draft="contributed">Новый Тайский Ле</script>
+			<script type="Tale" draft="contributed">тайский ле</script>
+			<script type="Talu" draft="contributed">новый тайский ле</script>
 			<script type="Taml">тамильская</script>
 			<script type="Tang" draft="contributed">тангутское меня</script>
 			<script type="Tavt" draft="contributed">тай-вьет</script>
 			<script type="Telu">телугу</script>
-			<script type="Teng" draft="contributed">Тенгварская</script>
-			<script type="Tfng" draft="contributed">Древнеливийская</script>
-			<script type="Tglg">Тагалог</script>
+			<script type="Teng" draft="contributed">тенгварская</script>
+			<script type="Tfng" draft="contributed">древнеливийская</script>
+			<script type="Tglg">тагалог</script>
 			<script type="Thaa">таана</script>
 			<script type="Thai">тайская</script>
 			<script type="Tibt">тибетская</script>
 			<script type="Tirh" draft="contributed">тирхута</script>
-			<script type="Ugar">Угаритская</script>
-			<script type="Vaii" draft="contributed">Вайская</script>
-			<script type="Visp">Видимая речь</script>
+			<script type="Ugar">угаритская</script>
+			<script type="Vaii" draft="contributed">вайская</script>
+			<script type="Visp">видимая речь</script>
 			<script type="Wara" draft="contributed">варанг-кшити</script>
 			<script type="Wole" draft="contributed">волеаи</script>
-			<script type="Xpeo">Староперсидская</script>
-			<script type="Xsux">Шумеро-аккадская клинопись</script>
-			<script type="Yiii">И</script>
-			<script type="Zinh">Унаследованная</script>
+			<script type="Xpeo">староперсидская</script>
+			<script type="Xsux">шумеро-аккадская клинопись</script>
+			<script type="Yiii">и</script>
+			<script type="Zinh">унаследованная</script>
 			<script type="Zmth" draft="contributed">математические обозначения</script>
 			<script type="Zsym">символы</script>
 			<script type="Zxxx">бесписьменный</script>
@@ -898,7 +898,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="MS">Монтсеррат</territory>
 			<territory type="MT">Мальта</territory>
 			<territory type="MU">Маврикий</territory>
-			<territory type="MV">Мальдивские о-ва</territory>
+			<territory type="MV">Мальдивы</territory>
 			<territory type="MW">Малави</territory>
 			<territory type="MX">Мексика</territory>
 			<territory type="MY">Малайзия</territory>
@@ -924,7 +924,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="PK">Пакистан</territory>
 			<territory type="PL">Польша</territory>
 			<territory type="PM">Сен-Пьер и Микелон</territory>
-			<territory type="PN">Питкэрн</territory>
+			<territory type="PN">Питкерн</territory>
 			<territory type="PR">Пуэрто-Рико</territory>
 			<territory type="PS">Палестинские территории</territory>
 			<territory type="PS" alt="short">Палестина</territory>
@@ -1568,7 +1568,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern>dd.MM.y G</pattern>
+							<pattern>d MMM y 'г'. G</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
@@ -1634,99 +1634,99 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<intervalFormats>
 						<intervalFormatFallback>{0} - {1}</intervalFormatFallback>
 						<intervalFormatItem id="d">
-							<greatestDifference id="d">d-d</greatestDifference>
+							<greatestDifference id="d">d–d</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="h">
-							<greatestDifference id="a">h a - h a</greatestDifference>
-							<greatestDifference id="h">h-h a</greatestDifference>
+							<greatestDifference id="a">h a – h a</greatestDifference>
+							<greatestDifference id="h">h–h a</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="H">
-							<greatestDifference id="H">H-H</greatestDifference>
+							<greatestDifference id="H">H–H</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hm">
-							<greatestDifference id="a">h:mm a - h:mm a</greatestDifference>
-							<greatestDifference id="h">h:mm-h:mm a</greatestDifference>
-							<greatestDifference id="m">h:mm-h:mm a</greatestDifference>
+							<greatestDifference id="a">h:mm a – h:mm a</greatestDifference>
+							<greatestDifference id="h">h:mm–h:mm a</greatestDifference>
+							<greatestDifference id="m">h:mm–h:mm a</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Hm">
-							<greatestDifference id="H">H:mm-H:mm</greatestDifference>
-							<greatestDifference id="m">H:mm-H:mm</greatestDifference>
+							<greatestDifference id="H">H:mm–H:mm</greatestDifference>
+							<greatestDifference id="m">H:mm–H:mm</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hmv">
-							<greatestDifference id="a">h:mm a - h:mm a v</greatestDifference>
-							<greatestDifference id="h">h:mm-h:mm a v</greatestDifference>
-							<greatestDifference id="m">h:mm-h:mm a v</greatestDifference>
+							<greatestDifference id="a">h:mm a – h:mm a v</greatestDifference>
+							<greatestDifference id="h">h:mm–h:mm a v</greatestDifference>
+							<greatestDifference id="m">h:mm–h:mm a v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Hmv">
-							<greatestDifference id="H">H:mm-H:mm v</greatestDifference>
-							<greatestDifference id="m">H:mm-H:mm v</greatestDifference>
+							<greatestDifference id="H">H:mm–H:mm v</greatestDifference>
+							<greatestDifference id="m">H:mm–H:mm v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hv">
-							<greatestDifference id="a">h a - h a v</greatestDifference>
-							<greatestDifference id="h">h-h a v</greatestDifference>
+							<greatestDifference id="a">h a – h a v</greatestDifference>
+							<greatestDifference id="h">h–h a v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Hv">
-							<greatestDifference id="H">H-H v</greatestDifference>
+							<greatestDifference id="H">H–H v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="M">
-							<greatestDifference id="M">M-M</greatestDifference>
+							<greatestDifference id="M">M–M</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Md">
-							<greatestDifference id="d">dd.MM - dd.MM</greatestDifference>
-							<greatestDifference id="M">dd.MM - dd.MM</greatestDifference>
+							<greatestDifference id="d">dd.MM – dd.MM</greatestDifference>
+							<greatestDifference id="M">dd.MM – dd.MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MEd">
-							<greatestDifference id="d">E, dd.MM - E, dd.MM</greatestDifference>
-							<greatestDifference id="M">E, dd.MM - E, dd.MM</greatestDifference>
+							<greatestDifference id="d">E, dd.MM – E, dd.MM</greatestDifference>
+							<greatestDifference id="M">E, dd.MM – E, dd.MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMM">
-							<greatestDifference id="M">LLL-MMM</greatestDifference>
+							<greatestDifference id="M">LLL-LLL</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMd">
-							<greatestDifference id="d">d-d MMM</greatestDifference>
-							<greatestDifference id="M">d MMM - d MMM</greatestDifference>
+							<greatestDifference id="d">d–d MMM</greatestDifference>
+							<greatestDifference id="M">d MMM – d MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMEd">
 							<greatestDifference id="d">ccc, d - E, d MMM</greatestDifference>
-							<greatestDifference id="M">ccc, d MMM - ccc, d MMM</greatestDifference>
+							<greatestDifference id="M">ccc, d MMM – ccc, d MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMM">
-							<greatestDifference id="M">LLLL-LLLL</greatestDifference>
+							<greatestDifference id="M">LLLL–LLLL</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="y">
-							<greatestDifference id="y">y-y G</greatestDifference>
+							<greatestDifference id="y">y–y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yM">
-							<greatestDifference id="M">MM.y - MM.y G</greatestDifference>
-							<greatestDifference id="y">MM.y - MM.y G</greatestDifference>
+							<greatestDifference id="M">MM.y – MM.y G</greatestDifference>
+							<greatestDifference id="y">MM.y – MM.y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMd">
-							<greatestDifference id="d">dd.MM.y - dd.MM.y G</greatestDifference>
-							<greatestDifference id="M">dd.MM.y - dd.MM.y G</greatestDifference>
-							<greatestDifference id="y">dd.MM.y - dd.MM.y G</greatestDifference>
+							<greatestDifference id="d">dd.MM.y – dd.MM.y G</greatestDifference>
+							<greatestDifference id="M">dd.MM.y – dd.MM.y G</greatestDifference>
+							<greatestDifference id="y">dd.MM.y – dd.MM.y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMEd">
-							<greatestDifference id="d">ccc, dd.MM.y - ccc, dd.MM.y G</greatestDifference>
-							<greatestDifference id="M">ccc, dd.MM.y - ccc, dd.MM.y G</greatestDifference>
-							<greatestDifference id="y">ccc, dd.MM.y - ccc, dd.MM.y G</greatestDifference>
+							<greatestDifference id="d">ccc, dd.MM.y – ccc, dd.MM.y G</greatestDifference>
+							<greatestDifference id="M">ccc, dd.MM.y – ccc, dd.MM.y G</greatestDifference>
+							<greatestDifference id="y">ccc, dd.MM.y – ccc, dd.MM.y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMM">
-							<greatestDifference id="M">LLL-LLL y 'г'. G</greatestDifference>
-							<greatestDifference id="y">LLL y - LLL y 'г'. G</greatestDifference>
+							<greatestDifference id="M">LLL–LLL y 'г'. G</greatestDifference>
+							<greatestDifference id="y">LLL y – LLL y 'г'. G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">d-d MMM y 'г'. G</greatestDifference>
-							<greatestDifference id="M">d MMM - d MMM y 'г'. G</greatestDifference>
-							<greatestDifference id="y">d MMM y - d MMM y 'г'. G</greatestDifference>
+							<greatestDifference id="d">d–d MMM y 'г'. G</greatestDifference>
+							<greatestDifference id="M">d MMM – d MMM y 'г'. G</greatestDifference>
+							<greatestDifference id="y">d MMM y – d MMM y 'г'. G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMEd">
-							<greatestDifference id="d">ccc, d - ccc, d MMM y 'г'. G</greatestDifference>
-							<greatestDifference id="M">ccc, d MMM - ccc, d MMM y 'г'. G</greatestDifference>
-							<greatestDifference id="y">ccc, d MMM y - ccc, d MMM y 'г'. G</greatestDifference>
+							<greatestDifference id="d">ccc, d – ccc, d MMM y 'г'. G</greatestDifference>
+							<greatestDifference id="M">ccc, d MMM – ccc, d MMM y 'г'. G</greatestDifference>
+							<greatestDifference id="y">ccc, d MMM y – ccc, d MMM y 'г'. G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMM">
-							<greatestDifference id="M">LLLL-LLLL y 'г'. G</greatestDifference>
-							<greatestDifference id="y">LLLL y - LLLL y 'г'. G</greatestDifference>
+							<greatestDifference id="M">LLLL–LLLL y 'г'. G</greatestDifference>
+							<greatestDifference id="y">LLLL y – LLLL y 'г'. G</greatestDifference>
 						</intervalFormatItem>
 					</intervalFormats>
 				</dateTimeFormats>
@@ -2057,6 +2057,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">H:mm</dateFormatItem>
 						<dateFormatItem id="hms">h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="Hms">H:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h:mm:ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">H:mm:ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h:mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">H:mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">dd.MM</dateFormatItem>
 						<dateFormatItem id="MEd">E, dd.MM</dateFormatItem>
@@ -2084,99 +2088,99 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<intervalFormats>
 						<intervalFormatFallback>{0} - {1}</intervalFormatFallback>
 						<intervalFormatItem id="d">
-							<greatestDifference id="d">d-d</greatestDifference>
+							<greatestDifference id="d">d–d</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="h">
-							<greatestDifference id="a">h a - h a</greatestDifference>
-							<greatestDifference id="h">h-h a</greatestDifference>
+							<greatestDifference id="a">h a – h a</greatestDifference>
+							<greatestDifference id="h">h–h a</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="H">
-							<greatestDifference id="H">H-H</greatestDifference>
+							<greatestDifference id="H">H–H</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hm">
-							<greatestDifference id="a">h:mm a - h:mm a</greatestDifference>
-							<greatestDifference id="h">h:mm-h:mm a</greatestDifference>
-							<greatestDifference id="m">h:mm-h:mm a</greatestDifference>
+							<greatestDifference id="a">h:mm a – h:mm a</greatestDifference>
+							<greatestDifference id="h">h:mm–h:mm a</greatestDifference>
+							<greatestDifference id="m">h:mm–h:mm a</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Hm">
-							<greatestDifference id="H">H:mm-H:mm</greatestDifference>
-							<greatestDifference id="m">H:mm-H:mm</greatestDifference>
+							<greatestDifference id="H">H:mm–H:mm</greatestDifference>
+							<greatestDifference id="m">H:mm–H:mm</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hmv">
-							<greatestDifference id="a">h:mm a - h:mm a v</greatestDifference>
-							<greatestDifference id="h">h:mm-h:mm a v</greatestDifference>
-							<greatestDifference id="m">h:mm-h:mm a v</greatestDifference>
+							<greatestDifference id="a">h:mm a – h:mm a v</greatestDifference>
+							<greatestDifference id="h">h:mm–h:mm a v</greatestDifference>
+							<greatestDifference id="m">h:mm–h:mm a v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Hmv">
-							<greatestDifference id="H">H:mm-H:mm v</greatestDifference>
-							<greatestDifference id="m">H:mm-H:mm v</greatestDifference>
+							<greatestDifference id="H">H:mm–H:mm v</greatestDifference>
+							<greatestDifference id="m">H:mm–H:mm v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hv">
-							<greatestDifference id="a">h a - h a v</greatestDifference>
-							<greatestDifference id="h">h-h a v</greatestDifference>
+							<greatestDifference id="a">h a – h a v</greatestDifference>
+							<greatestDifference id="h">h–h a v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Hv">
-							<greatestDifference id="H">H-H v</greatestDifference>
+							<greatestDifference id="H">H–H v</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="M">
-							<greatestDifference id="M">M-M</greatestDifference>
+							<greatestDifference id="M">M–M</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="Md">
-							<greatestDifference id="d">dd.MM - dd.MM</greatestDifference>
-							<greatestDifference id="M">dd.MM - dd.MM</greatestDifference>
+							<greatestDifference id="d">dd.MM – dd.MM</greatestDifference>
+							<greatestDifference id="M">dd.MM – dd.MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MEd">
-							<greatestDifference id="d">E, dd.MM - E, dd.MM</greatestDifference>
-							<greatestDifference id="M">E, dd.MM - E, dd.MM</greatestDifference>
+							<greatestDifference id="d">E, dd.MM – E, dd.MM</greatestDifference>
+							<greatestDifference id="M">E, dd.MM – E, dd.MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMM">
-							<greatestDifference id="M">LLL-MMM</greatestDifference>
+							<greatestDifference id="M">LLL-LLL</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMd">
-							<greatestDifference id="d">d-d MMM</greatestDifference>
-							<greatestDifference id="M">d MMM - d MMM</greatestDifference>
+							<greatestDifference id="d">d–d MMM</greatestDifference>
+							<greatestDifference id="M">d MMM – d MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMEd">
 							<greatestDifference id="d">ccc, d - E, d MMM</greatestDifference>
-							<greatestDifference id="M">ccc, d MMM - ccc, d MMM</greatestDifference>
+							<greatestDifference id="M">ccc, d MMM – ccc, d MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMM">
-							<greatestDifference id="M">LLLL-LLLL</greatestDifference>
+							<greatestDifference id="M">LLLL–LLLL</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="y">
-							<greatestDifference id="y">y-y</greatestDifference>
+							<greatestDifference id="y">y–y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yM">
-							<greatestDifference id="M">MM.y - MM.y</greatestDifference>
-							<greatestDifference id="y">MM.y - MM.y</greatestDifference>
+							<greatestDifference id="M">MM.y – MM.y</greatestDifference>
+							<greatestDifference id="y">MM.y – MM.y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMd">
-							<greatestDifference id="d">dd.MM.y - dd.MM.y</greatestDifference>
-							<greatestDifference id="M">dd.MM.y - dd.MM.y</greatestDifference>
-							<greatestDifference id="y">dd.MM.y - dd.MM.y</greatestDifference>
+							<greatestDifference id="d">dd.MM.y – dd.MM.y</greatestDifference>
+							<greatestDifference id="M">dd.MM.y – dd.MM.y</greatestDifference>
+							<greatestDifference id="y">dd.MM.y – dd.MM.y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMEd">
-							<greatestDifference id="d">ccc, dd.MM.y - ccc, dd.MM.y</greatestDifference>
-							<greatestDifference id="M">ccc, dd.MM.y - ccc, dd.MM.y</greatestDifference>
-							<greatestDifference id="y">ccc, dd.MM.y - ccc, dd.MM.y</greatestDifference>
+							<greatestDifference id="d">ccc, dd.MM.y – ccc, dd.MM.y</greatestDifference>
+							<greatestDifference id="M">ccc, dd.MM.y – ccc, dd.MM.y</greatestDifference>
+							<greatestDifference id="y">ccc, dd.MM.y – ccc, dd.MM.y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMM">
-							<greatestDifference id="M">LLL-LLL y 'г'.</greatestDifference>
-							<greatestDifference id="y">LLL y - LLL y 'г'.</greatestDifference>
+							<greatestDifference id="M">LLL–LLL y 'г'.</greatestDifference>
+							<greatestDifference id="y">LLL y – LLL y 'г'.</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">d-d MMM y 'г'.</greatestDifference>
-							<greatestDifference id="M">d MMM - d MMM y 'г'.</greatestDifference>
-							<greatestDifference id="y">d MMM y - d MMM y 'г'.</greatestDifference>
+							<greatestDifference id="d">d–d MMM y 'г'.</greatestDifference>
+							<greatestDifference id="M">d MMM – d MMM y 'г'.</greatestDifference>
+							<greatestDifference id="y">d MMM y – d MMM y 'г'.</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMEd">
-							<greatestDifference id="d">ccc, d - ccc, d MMM y 'г'.</greatestDifference>
-							<greatestDifference id="M">ccc, d MMM - ccc, d MMM y 'г'.</greatestDifference>
-							<greatestDifference id="y">ccc, d MMM y - ccc, d MMM y 'г'.</greatestDifference>
+							<greatestDifference id="d">ccc, d – ccc, d MMM y 'г'.</greatestDifference>
+							<greatestDifference id="M">ccc, d MMM – ccc, d MMM y 'г'.</greatestDifference>
+							<greatestDifference id="y">ccc, d MMM y – ccc, d MMM y 'г'.</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMM">
-							<greatestDifference id="M">LLLL-LLLL y 'г'.</greatestDifference>
-							<greatestDifference id="y">LLLL y - LLLL y 'г'.</greatestDifference>
+							<greatestDifference id="M">LLLL–LLLL y 'г'.</greatestDifference>
+							<greatestDifference id="y">LLLL y – LLLL y 'г'.</greatestDifference>
 						</intervalFormatItem>
 					</intervalFormats>
 				</dateTimeFormats>
@@ -3237,19 +3241,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<hourFormat>+HH:mm;-HH:mm</hourFormat>
 			<gmtFormat>GMT{0}</gmtFormat>
 			<gmtZeroFormat>GMT</gmtZeroFormat>
-			<regionFormat>{0}, время</regionFormat>
+			<regionFormat>{0}</regionFormat>
 			<regionFormat type="daylight">{0} (+1)</regionFormat>
 			<regionFormat type="standard">{0} (+0)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Чунцин</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Харбин</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Кашгар</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Неизвестный город</exemplarCity>
 			</zone>

@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11042 $"/>
-		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="id"/>
 	</identity>
 	<localeDisplayNames>
@@ -864,7 +864,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GP">Guadeloupe</territory>
 			<territory type="GQ">Guinea Ekuatorial</territory>
 			<territory type="GR">Yunani</territory>
-			<territory type="GS">Georgia Selatan dan Kepulauan Sandwich Selatan</territory>
+			<territory type="GS">Georgia Selatan &amp; Kep. Sandwich Selatan</territory>
 			<territory type="GT">Guatemala</territory>
 			<territory type="GU">Guam</territory>
 			<territory type="GW">Guinea-Bissau</territory>
@@ -1907,7 +1907,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M">E, d MMM – E, d MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="y">
-							<greatestDifference id="y">y-y G</greatestDifference>
+							<greatestDifference id="y">y–y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yM">
 							<greatestDifference id="M">M/y – M/y GGGGG</greatestDifference>
@@ -1928,7 +1928,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="y">MMM y – MMM y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">d-d MMM y G</greatestDifference>
+							<greatestDifference id="d">d–d MMM y G</greatestDifference>
 							<greatestDifference id="M">d MMM – d MMM y G</greatestDifference>
 							<greatestDifference id="y">d MMM y – d MMM y G</greatestDifference>
 						</intervalFormatItem>
@@ -2352,7 +2352,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M">E, d MMM – E, d MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="y">
-							<greatestDifference id="y">y-y</greatestDifference>
+							<greatestDifference id="y">y–y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yM">
 							<greatestDifference id="M">M/y – M/y</greatestDifference>
@@ -2373,7 +2373,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="y">MMM y – MMM y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">d-d MMM y</greatestDifference>
+							<greatestDifference id="d">d–d MMM y</greatestDifference>
 							<greatestDifference id="M">d MMM – d MMM y</greatestDifference>
 							<greatestDifference id="y">d MMM y – d MMM y</greatestDifference>
 						</intervalFormatItem>
@@ -3023,7 +3023,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>Minggu</displayName>
 				<relative type="-1">minggu lalu</relative>
 				<relative type="0">minggu ini</relative>
-				<relative type="1">Minggu berikutnya</relative>
+				<relative type="1">minggu berikutnya</relative>
 				<relativeTime type="future">
 					<relativeTimePattern count="other">Dalam {0} minggu</relativeTimePattern>
 				</relativeTime>
@@ -3085,9 +3085,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>Hari dalam Seminggu</displayName>
 			</field>
 			<field type="sun">
-				<relative type="-1">Minggu lalu</relative>
-				<relative type="0">Minggu ini</relative>
-				<relative type="1">Minggu berikutnya</relative>
+				<relative type="-1">hari Minggu lalu</relative>
+				<relative type="0">hari Minggu ini</relative>
+				<relative type="1">hari Minggu berikutnya</relative>
 			</field>
 			<field type="sun-short">
 				<relative type="-1">Min. lalu</relative>
@@ -3286,15 +3286,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">Waktu Terang {0}</regionFormat>
 			<regionFormat type="standard">Waktu Standar {0}</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Chongqing</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kashgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Tidak Dikenal</exemplarCity>
 			</zone>

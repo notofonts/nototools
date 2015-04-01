@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="hsb"/>
 	</identity>
 	<localeDisplayNames>
@@ -61,6 +61,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="dav">taita</language>
 			<language type="de">němčina</language>
 			<language type="de_AT">awstriska němčina</language>
+			<language type="de_CH">šwicarska wysokoněmčina</language>
 			<language type="dje">zarma</language>
 			<language type="dsb">delnjoserbšćina</language>
 			<language type="dua">duala</language>
@@ -280,7 +281,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="zh">chinšćina</language>
 			<language type="zh_Hans">chinšćina (zjednorjena)</language>
 			<language type="zh_Hant">chinšćina (tradicionalna)</language>
-			<language type="zu">zulušćina&quot;</language>
+			<language type="zu">zulušćina</language>
 			<language type="zxx">žadyn rěčny wobsah</language>
 		</languages>
 		<scripts>
@@ -1782,9 +1783,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} lětni čas</regionFormat>
 			<regionFormat type="standard">{0} zymski čas</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kašgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>njeznate</exemplarCity>
 			</zone>

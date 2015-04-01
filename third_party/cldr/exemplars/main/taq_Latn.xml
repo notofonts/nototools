@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10701 $"/>
-		<generation date="$Date: 2014-07-30 13:14:57 -0700 (Wed, 30 Jul 2014) $"/>
+		<version number="$Revision: 11072 $"/>
+		<generation date="$Date: 2014-12-04 15:58:51 -0800 (Thu, 04 Dec 2014) $"/>
 		<language type="taq"/>
 		<script type="Latn"/>
 	</identity>
@@ -18,7 +18,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</orientation>
 	</layout>
 	<characters>
-		<exemplarCharacters draft="unconfirmed">[a {ă} b {ḅ} d {ḍ} e ə f g h {ḥ} ʕ i j k l {ḷ} m n ŋ o q ɾ r s {ṣ} {š} t {ṭ} u w x y z {ẓ} {ž}]</exemplarCharacters>
+		<exemplarCharacters draft="unconfirmed">[a ă b ḅ d ḍ e ə f g h ḥ i j k l ḷ m n ŋ o q r ɾ s š ṣ t ṭ u w x y z ž ẓ ʕ]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary" draft="unconfirmed">[c p v]</exemplarCharacters>
 	</characters>
 </ldml>

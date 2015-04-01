@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11042 $"/>
-		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
+		<version number="$Revision: 11348 $"/>
+		<generation date="$Date: 2015-03-04 23:15:52 -0800 (Wed, 04 Mar 2015) $"/>
 		<language type="en"/>
 	</identity>
 	<localeDisplayNames>
@@ -117,7 +117,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="chp">Chipewyan</language>
 			<language type="chr">Cherokee</language>
 			<language type="chy">Cheyenne</language>
-			<language type="ckb">Sorani Kurdish</language>
+			<language type="ckb">Central Kurdish</language>
 			<language type="co">Corsican</language>
 			<language type="cop">Coptic</language>
 			<language type="cps">Capiznon</language>
@@ -162,9 +162,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="en_AU">Australian English</language>
 			<language type="en_CA">Canadian English</language>
 			<language type="en_GB">British English</language>
-			<language type="en_GB" alt="short">U.K. English</language>
+			<language type="en_GB" alt="short">UK English</language>
 			<language type="en_US">American English</language>
-			<language type="en_US" alt="short">U.S. English</language>
+			<language type="en_US" alt="short">US English</language>
 			<language type="enm">Middle English</language>
 			<language type="eo">Esperanto</language>
 			<language type="es">Spanish</language>
@@ -604,6 +604,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="wal">Wolaytta</language>
 			<language type="war">Waray</language>
 			<language type="was">Washo</language>
+			<language type="wbp">Warlpiri</language>
 			<language type="wo">Wolof</language>
 			<language type="wuu">Wu Chinese</language>
 			<language type="xal">Kalmyk</language>
@@ -923,7 +924,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="FR">France</territory>
 			<territory type="GA">Gabon</territory>
 			<territory type="GB">United Kingdom</territory>
-			<territory type="GB" alt="short">U.K.</territory>
+			<territory type="GB" alt="short">UK</territory>
 			<territory type="GD">Grenada</territory>
 			<territory type="GE">Georgia</territory>
 			<territory type="GF">French Guiana</territory>
@@ -1089,7 +1090,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="UG">Uganda</territory>
 			<territory type="UM">U.S. Outlying Islands</territory>
 			<territory type="US">United States</territory>
-			<territory type="US" alt="short">U.S.</territory>
+			<territory type="US" alt="short">US</territory>
 			<territory type="UY">Uruguay</territory>
 			<territory type="UZ">Uzbekistan</territory>
 			<territory type="VA">Vatican City</territory>
@@ -1176,6 +1177,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<key type="colStrength">Sorting Strength</key>
 			<key type="currency">Currency</key>
 			<key type="kv">Highest Ignored</key>
+			<key type="lb">Line Break Style</key>
 			<key type="numbers">Numbers</key>
 			<key type="timezone">Time Zone</key>
 			<key type="va">Locale Variant</key>
@@ -1196,17 +1198,19 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="cakm" key="numbers">Chakma Digits</type>
 			<type type="cham" key="numbers">Cham Digits</type>
 			<type type="chinese" key="calendar">Chinese Calendar</type>
+			<type type="compat" key="collation">Previous Sort Order, for compatibility</type>
 			<type type="coptic" key="calendar">Coptic Calendar</type>
 			<type type="dangi" key="calendar">Dangi Calendar</type>
 			<type type="deva" key="numbers">Devanagari Digits</type>
 			<type type="dictionary" key="collation">Dictionary Sort Order</type>
 			<type type="ducet" key="collation">Default Unicode Sort Order</type>
+			<type type="emoji" key="collation">Emoji Sort Order</type>
 			<type type="eor" key="collation">European Ordering Rules</type>
 			<type type="ethi" key="numbers">Ethiopic Numerals</type>
 			<type type="ethiopic" key="calendar">Ethiopic Calendar</type>
 			<type type="ethiopic-amete-alem" key="calendar">Ethiopic Amete Alem Calendar</type>
 			<type type="finance" key="numbers">Financial Numerals</type>
-			<type type="fullwide" key="numbers">Full Width Digits</type>
+			<type type="fullwide" key="numbers">Full-Width Digits</type>
 			<type type="gb2312han" key="collation">Simplified Chinese Sort Order - GB2312</type>
 			<type type="geor" key="numbers">Georgian Numerals</type>
 			<type type="gregorian" key="calendar">Gregorian Calendar</type>
@@ -1243,6 +1247,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="latn" key="numbers">Western Digits</type>
 			<type type="lepc" key="numbers">Lepcha Digits</type>
 			<type type="limb" key="numbers">Limbu Digits</type>
+			<type type="loose" key="lb">Loose Line Break Style</type>
 			<type type="lower" key="colCaseFirst">Sort Lowercase First</type>
 			<type type="mlym" key="numbers">Malayalam Digits</type>
 			<type type="mong" key="numbers">Mongolian Digits</type>
@@ -1258,6 +1263,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="no" key="colNormalization">Sort Without Normalization</type>
 			<type type="no" key="colNumeric">Sort Digits Individually</type>
 			<type type="non-ignorable" key="colAlternate">Sort Symbols</type>
+			<type type="normal" key="lb">Normal Line Break Style</type>
 			<type type="olck" key="numbers">Ol Chiki Digits</type>
 			<type type="orya" key="numbers">Oriya Digits</type>
 			<type type="osma" key="numbers">Osmanya Digits</type>
@@ -1280,6 +1286,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="shrd" key="numbers">Sharada Digits</type>
 			<type type="sora" key="numbers">Sora Sompeng Digits</type>
 			<type type="standard" key="collation">Standard Sort Order</type>
+			<type type="strict" key="lb">Strict Line Break Style</type>
 			<type type="stroke" key="collation">Stroke Sort Order</type>
 			<type type="sund" key="numbers">Sundanese Digits</type>
 			<type type="takr" key="numbers">Takri Digits</type>
@@ -1420,22 +1427,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateFormats>
 					<dateFormatLength type="full">
 						<dateFormat>
-							<pattern>EEEE, MMMM d, U</pattern>
+							<pattern>EEEE, MMMM d, r(U)</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="long">
 						<dateFormat>
-							<pattern>MMMM d, U</pattern>
+							<pattern>MMMM d, r(U)</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern>MMM d, U</pattern>
+							<pattern>MMM d, r</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
 						<dateFormat>
-							<pattern>M/d/yy</pattern>
+							<pattern>M/d/r</pattern>
 						</dateFormat>
 					</dateFormatLength>
 				</dateFormats>
@@ -1468,10 +1475,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="EHm">E HH:mm</dateFormatItem>
 						<dateFormatItem id="Ehms">E h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="EHms">E HH:mm:ss</dateFormatItem>
-						<dateFormatItem id="Gy">U</dateFormatItem>
-						<dateFormatItem id="GyMMM">MMM U</dateFormatItem>
-						<dateFormatItem id="GyMMMd">MMM d, U</dateFormatItem>
-						<dateFormatItem id="GyMMMEd">E, MMM d, U</dateFormatItem>
+						<dateFormatItem id="Gy">r(U)</dateFormatItem>
+						<dateFormatItem id="GyMMM">MMM r(U)</dateFormatItem>
+						<dateFormatItem id="GyMMMd">MMM d, r</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">E, MMM d, r(U)</dateFormatItem>
 						<dateFormatItem id="h">h a</dateFormatItem>
 						<dateFormatItem id="H">HH</dateFormatItem>
 						<dateFormatItem id="hm">h:mm a</dateFormatItem>
@@ -1485,17 +1492,21 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="MMMd">MMM d</dateFormatItem>
 						<dateFormatItem id="MMMEd">E, MMM d</dateFormatItem>
 						<dateFormatItem id="ms">mm:ss</dateFormatItem>
-						<dateFormatItem id="y">U</dateFormatItem>
-						<dateFormatItem id="yMd">M/d/y</dateFormatItem>
-						<dateFormatItem id="yyyy">U</dateFormatItem>
-						<dateFormatItem id="yyyyM">M/y</dateFormatItem>
-						<dateFormatItem id="yyyyMd">M/d/y</dateFormatItem>
-						<dateFormatItem id="yyyyMEd">E, M/d/y</dateFormatItem>
-						<dateFormatItem id="yyyyMMM">MMM U</dateFormatItem>
-						<dateFormatItem id="yyyyMMMd">MMM d, U</dateFormatItem>
-						<dateFormatItem id="yyyyMMMEd">E, MMM d, U</dateFormatItem>
-						<dateFormatItem id="yyyyQQQ">QQQ U</dateFormatItem>
-						<dateFormatItem id="yyyyQQQQ">QQQQ U</dateFormatItem>
+						<dateFormatItem id="UM">M/U</dateFormatItem>
+						<dateFormatItem id="UMd">M/d/U</dateFormatItem>
+						<dateFormatItem id="UMMM">MMM U</dateFormatItem>
+						<dateFormatItem id="UMMMd">MMM d, U</dateFormatItem>
+						<dateFormatItem id="y">r(U)</dateFormatItem>
+						<dateFormatItem id="yMd">M/d/r</dateFormatItem>
+						<dateFormatItem id="yyyy">r(U)</dateFormatItem>
+						<dateFormatItem id="yyyyM">M/r</dateFormatItem>
+						<dateFormatItem id="yyyyMd">M/d/r</dateFormatItem>
+						<dateFormatItem id="yyyyMEd">E, M/d/r</dateFormatItem>
+						<dateFormatItem id="yyyyMMM">MMM r(U)</dateFormatItem>
+						<dateFormatItem id="yyyyMMMd">MMM d, r</dateFormatItem>
+						<dateFormatItem id="yyyyMMMEd">E, MMM d, r(U)</dateFormatItem>
+						<dateFormatItem id="yyyyQQQ">QQQ r(U)</dateFormatItem>
+						<dateFormatItem id="yyyyQQQQ">QQQQ r(U)</dateFormatItem>
 					</availableFormats>
 					<intervalFormats>
 						<intervalFormatFallback>{0} – {1}</intervalFormatFallback>
@@ -2016,6 +2027,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="hms">h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h:mm:ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">HH:mm:ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h:mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">HH:mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">M/d</dateFormatItem>
 						<dateFormatItem id="MEd">E, M/d</dateFormatItem>
@@ -2540,6 +2555,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</field>
 			<field type="dayperiod">
 				<displayName>AM/PM</displayName>
+				<displayName alt="variant">am/pm</displayName>
 			</field>
 			<field type="hour">
 				<displayName>Hour</displayName>
@@ -4568,8 +4584,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</currency>
 			<currency type="MGA">
 				<displayName>Malagasy Ariary</displayName>
-				<displayName count="one">Malagasy Ariary</displayName>
-				<displayName count="other">Malagasy Ariaries</displayName>
+				<displayName count="one">Malagasy ariary</displayName>
+				<displayName count="other">Malagasy ariaries</displayName>
 			</currency>
 			<currency type="MGF">
 				<displayName>Malagasy Franc</displayName>
@@ -4638,8 +4654,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</currency>
 			<currency type="MWK">
 				<displayName>Malawian Kwacha</displayName>
-				<displayName count="one">Malawian Kwacha</displayName>
-				<displayName count="other">Malawian Kwachas</displayName>
+				<displayName count="one">Malawian kwacha</displayName>
+				<displayName count="other">Malawian kwachas</displayName>
 			</currency>
 			<currency type="MXN">
 				<displayName>Mexican Peso</displayName>
@@ -5038,9 +5054,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">Uruguayan pesos</displayName>
 			</currency>
 			<currency type="UZS">
-				<displayName>Uzbekistan Som</displayName>
-				<displayName count="one">Uzbekistan som</displayName>
-				<displayName count="other">Uzbekistan som</displayName>
+				<displayName>Uzbekistani Som</displayName>
+				<displayName count="one">Uzbekistani som</displayName>
+				<displayName count="other">Uzbekistani som</displayName>
 			</currency>
 			<currency type="VEB">
 				<displayName>Venezuelan Bolívar (1871–2008)</displayName>
@@ -5073,9 +5089,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">Samoan tala</displayName>
 			</currency>
 			<currency type="XAF">
-				<displayName>CFA Franc BEAC</displayName>
-				<displayName count="one">CFA franc BEAC</displayName>
-				<displayName count="other">CFA francs BEAC</displayName>
+				<displayName>Central African CFA Franc</displayName>
+				<displayName count="one">Central African CFA franc</displayName>
+				<displayName count="other">Central African CFA francs</displayName>
 			</currency>
 			<currency type="XAG">
 				<displayName>Silver</displayName>
@@ -5133,9 +5149,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">French UIC-francs</displayName>
 			</currency>
 			<currency type="XOF">
-				<displayName>CFA Franc BCEAO</displayName>
-				<displayName count="one">CFA franc BCEAO</displayName>
-				<displayName count="other">CFA francs BCEAO</displayName>
+				<displayName>West African CFA Franc</displayName>
+				<displayName count="one">West African CFA franc</displayName>
+				<displayName count="other">West African CFA francs</displayName>
 			</currency>
 			<currency type="XPD">
 				<displayName>Palladium</displayName>
@@ -6017,7 +6033,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-hour">
 				<displayName>hours</displayName>
 				<unitPattern count="one">{0} hr</unitPattern>
-				<unitPattern count="other">{0} hrs</unitPattern>
+				<unitPattern count="other">{0} hr</unitPattern>
 				<perUnitPattern>{0}ph</perUnitPattern>
 			</unit>
 			<unit type="duration-microsecond">
@@ -6033,7 +6049,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-minute">
 				<displayName>mins</displayName>
 				<unitPattern count="one">{0} min</unitPattern>
-				<unitPattern count="other">{0} mins</unitPattern>
+				<unitPattern count="other">{0} min</unitPattern>
 			</unit>
 			<unit type="duration-month">
 				<displayName>months</displayName>
@@ -6048,7 +6064,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-second">
 				<displayName>secs</displayName>
 				<unitPattern count="one">{0} sec</unitPattern>
-				<unitPattern count="other">{0} secs</unitPattern>
+				<unitPattern count="other">{0} sec</unitPattern>
 				<perUnitPattern>{0}ps</perUnitPattern>
 			</unit>
 			<unit type="duration-week">

@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11042 $"/>
-		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="lv"/>
 	</identity>
 	<localeDisplayNames>
@@ -2208,15 +2208,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0}: vasaras laiks</regionFormat>
 			<regionFormat type="standard">{0}: standarta laiks</regionFormat>
 			<fallbackFormat>{0} ({1})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Čuncjina</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbina</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Keškera</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>nezināma pilsēta</exemplarCity>
 			</zone>
