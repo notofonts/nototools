@@ -153,26 +153,26 @@ def update_cldr(noto_repo, cldr_repo, update=False):
 
 
 def main():
-    values = notoconfig.values
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--cldr', help='directory of local cldr svn repo',
-                        default=values.get('cldr', None))
-    parser.add_argument('--noto', help='directory of local noto git repo',
-                        default=values.get('noto', None))
-    parser.add_argument('--branch', help='confirm current branch of noto git repo')
-    args = parser.parse_args()
+  values = notoconfig.values
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--cldr', help='directory of local cldr svn repo',
+                      default=values.get('cldr', None))
+  parser.add_argument('--noto', help='directory of local noto git repo',
+                      default=values.get('noto', None))
+  parser.add_argument('--branch', help='confirm current branch of noto git repo')
+  args = parser.parse_args()
 
-    if not args.cldr or not args.noto:
-      print "need both cldr and not repository information"
+  if not args.cldr or not args.noto:
+    print "need both cldr and not repository information"
+    return
+
+  if args.branch:
+    cur_branch = git_get_branch(args.noto)
+    if cur_branch != args.branch:
+      print "Expected branch '%s' but %s is in branch '%s'." % (args.branch, args.noto, cur_branch)
       return
 
-    if args.branch:
-      cur_branch = git_get_branch(args.noto)
-      if cur_branch != args.branch:
-        print "Expected branch '%s' but %s is in branch '%s'." % (args.branch, args.noto, cur_branch)
-        return
-
-    update_cldr(args.noto, args.cldr)
+  update_cldr(args.noto, args.cldr)
 
 if __name__ == '__main__':
     main()
