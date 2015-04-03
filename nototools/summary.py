@@ -71,7 +71,7 @@ def summarize_file(root, path):
   else:
     version = noto_lint.printable_font_revision(font) # default 2
   num_glyphs = len(font.getGlyphOrder())
-  full_name = noto_lint.name_records(font)[4]
+  full_name = font_data.get_name_records(font)[4]
   cmap = set(get_largest_cmap(font).keys()) # copy needed? what's the lifespan?
   num_chars = len(cmap)
   font.close()

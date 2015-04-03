@@ -307,23 +307,8 @@ def curves_intersect(contour_list):
     return False
 
 
-def name_records(font):
-    name_table = font["name"]
-    names = {}
-    for record in name_table.names:
-        if record.platformID == 1:
-          # ignore Mac encodings for lint, the cjk fonts have them
-          continue
-        assert (record.platformID,
-                record.platEncID,
-                record.langID) == (3, 1, 0x409)
-        names[record.nameID] = unicode(record.string, "UTF-16BE")
-    return names
-
-
 def font_version(font):
-    names = name_records(font)
-    return names[5]
+    return font_data.get_name_records(font)[5]
 
 
 def printable_font_revision(font, accuracy=2):
@@ -446,7 +431,7 @@ def check_font(file_name,
                 style,
                 variant if variant else '',
                 weight,
-                name_records(font)[8].split()[0],
+                font_data.get_name_records(font)[8].split()[0],
                 category,
                 interesting_part_of_file_name,
                 printable_font_revision(font),
@@ -477,7 +462,7 @@ def check_font(file_name,
         return code_range_to_set(ranges) & unicode_data.defined_characters()
 
     def check_name_table():
-        names = name_records(font)
+        names = font_data.get_name_records(font)
 
         # Check family name
         expected_family_name = 'Noto ' + style
