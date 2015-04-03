@@ -167,6 +167,8 @@ EXTRA_CHARACTERS_NEEDED = {
         0x2010, 0x2011,   # Hyphen and non-breaking hyphen need different shapes
         0x204F, 0x2E41],  # For Sindhi
 
+    'Avst': [0x2E30, 0x2E31],  # From Core Specification and NamesList.txt
+
     # From http://www.unicode.org/L2/L2014/14064r-n4537r-cherokee.pdf section 8
     'Cher': [
         0x0300, 0x0301, 0x0302, 0x0304, 0x030B,
