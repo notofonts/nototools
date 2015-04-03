@@ -104,8 +104,6 @@ FFF0..FFFF; Specials
 """
 
 UNDER_DEVELOPMENT_RANGES_TXT = """
-0780..07BF; Thaana
-0B00..0B7F; Oriya
 0F00..0FFF; Tibetan
 """
 
