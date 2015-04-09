@@ -59,9 +59,19 @@ def summarize_file(root, path):
 
   relpath = path[len(root) + 1:]
   size = os.path.getsize(path)
-  version = noto_lint.printable_font_revision(font)
+  # Printable_font_revision requires you specify the accuracy of digits.
+  # ttLib apparently reads the fixed values as a float, so it loses the info.
+  # Adobe fonts use 3 digits, so the default from printable_font_revision of 2
+  # is insufficient.
+  # Assume that the name from the name table is accurate, and use it instead.
+  version_string = noto_lint.font_version(font);
+  match = re.match(r'Version (\d+\.\d+)', version_string)
+  if match:
+    version = match.group(1)
+  else:
+    version = noto_lint.printable_font_revision(font) # default 2
   num_glyphs = len(font.getGlyphOrder())
-  full_name = noto_lint.name_records(font)[4]
+  full_name = font_data.get_name_records(font)[4]
   cmap = set(get_largest_cmap(font).keys()) # copy needed? what's the lifespan?
   num_chars = len(cmap)
   font.close()
@@ -73,7 +83,7 @@ def summarize(root, name=None):
   name_re = re.compile(name) if name else None
   for parent, _, files in os.walk(root):
     for f in sorted(files):
-      if f.endswith('.ttf'):
+      if f.endswith('.ttf') or f.endswith('.otf'):
         path = os.path.join(parent, f)
         if name_re:
           relpath = path[len(root) + 1:]
