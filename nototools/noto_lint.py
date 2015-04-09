@@ -1175,64 +1175,85 @@ def check_font(file_name,
                          "glyph '%s' doesn't have hints." % glyph_name)
 
 
-    def get_horizontal_advance(glyph_id):
-        hmtx_table = font['hmtx'].metrics
-        adv, lsb = hmtx_table[glyph_id]
-        return adv
-
-
-    def check_typesetting_whitespace():
+    def check_explicit_advances():
+        """Check some cases where we expect advances to be explicitly related."""
         cmap = font_data.get_cmap(font)
 
-        def expect_width(codepoint, expected, low_divisor=1, high_divisor=None):
+        def get_horizontal_advance(codepoint):
+            return font_data.get_glyph_horizontal_advance(font, cmap[codepoint])
+
+        def expect_width(codepoint, expected, low_divisor=None, high_divisor=None):
             # it is ok if the font does not support the tested codepoint
-            if not codepoint in cmap:
+            if codepoint not in cmap:
                 return
-            glyph_name = cmap[codepoint]
-            adv = get_horizontal_advance(glyph_name)
+            # no low divisor means exact match of the expected advance
+            if not low_divisor:
+                low_divisor = 1
+                slop = 0
+            else:
+                slop = 1
+            adv = get_horizontal_advance(codepoint)
             if not high_divisor:
                 exp = int(round(float(expected) / low_divisor))
-                if abs(adv - exp) > 1:
-                    warn("Whitespace",
+                if abs(adv - exp) > slop:
+                    glyph_name = cmap[codepoint]
+                    glyph_id = font.getGlyphID(glyph_name)
+                    warn("Advances",
                          "The advance of U+%04x (%s, glyph %d) is %d, but expected %d." %
-                         (codepoint, glyph_name, font.getGlyphID(glyph_name), adv, exp))
+                         (codepoint, glyph_name, glyph_id, adv, exp))
             else:
                 # note name switch, since the higher divisor returns the lower value
                 high_exp = int(round(float(expected) / low_divisor))
                 low_exp =  int(round(float(expected) / high_divisor))
-                if adv < low_exp - 1 or adv > high_exp + 1:
-                    warn("Whitespace",
+                if not (low_exp - slop <= adv <= high_exp + slop):
+                    glyph_name = cmap[codepoint]
+                    glyph_id = font.getGlyphID(glyph_name)
+                    warn("Advances",
                          "The advance of U+%04x (%s, glyph %d) is %, but expected between"
-                         "%d and %d." % (codepoint, glyph_name, font.getGlyphID(glyph_name),
-                                         adv, low_exp, high_exp))
+                         "%d and %d." % (codepoint, glyph_name, glyph_id, adv, low_exp,
+                                         high_exp))
 
 
-        em_char = ord(u'\u2001') # or U+2003, should be equal
         digit_char = ord('0')
         period_char = ord('.')
-        if em_char in cmap:
-            em_width = get_horizontal_advance(cmap[em_char])
-            print em_width, str(em_width)
-            expect_width(0x2000, em_width, 2)
-            expect_width(0x2002, em_width, 2)
-            expect_width(0x2003, em_width)
-            expect_width(0x2004, em_width, 3)
-            expect_width(0x2005, em_width, 4)
-            expect_width(0x2006, em_width, 6)
+        comma_char = ord(',')
+        space_char = ord(' ')
+
         if digit_char in cmap:
-            digit_width = get_horizontal_advance(cmap[digit_char])
-            expect_width(0x2007, digit_width)
+            digit_width = get_horizontal_advance(digit_char)
+            for i in range(10):
+                digit_char = ord('0') + i
+                width = get_horizontal_advance(digit_char)
+                if width != digit_width:
+                    warn("Advances",
+                         "The advance of '%s' (%d) is different from that of '0' (%d)." %
+                         (digit_char, width, digit_width))
+
         if period_char in cmap:
-            period_width = get_horizontal_advance(cmap[period_char])
-            expect_width(0x2008, period_width)
-        if em_char in cmap:
-            # see http://unicode.org/charts/PDF/U2000.pdf, but microsoft (below)
-            # says French uses 1/8 em.
-            expect_width(0x2009, em_width, 5, 6)
-            # see http://www.microsoft.com/typography/developers/fdsspec/spaces.htm
-            expect_width(0x200A, em_width, 10, 16)
-        #zws
-        expect_width(0x200B, 0)
+            period_width = get_horizontal_advance(period_char)
+            if comma_char in cmap:
+                expect_width(comma_char, period_width)
+        if 0x00a0 in cmap: # no-break space
+            space_width = get_horizontal_advance(space_char);
+            expect_width(0x00a0, space_width)
+        em_width = font['head'].unitsPerEm
+        expect_width(0x2000, em_width, 2) # en_quad
+        expect_width(0x2001, em_width)    # em_quad
+        expect_width(0x2002, em_width, 2) # en_space
+        expect_width(0x2003, em_width)    # em_space
+        expect_width(0x2004, em_width, 3) # three-per-em space
+        expect_width(0x2005, em_width, 4) # four-per-em space
+        expect_width(0x2006, em_width, 6) # six-per-em space
+        if digit_char in cmap:
+            expect_width(0x2007, digit_width) # figure space
+        if period_char in cmap:
+            expect_width(0x2008, period_width) # punctuation space
+        # see http://unicode.org/charts/PDF/U2000.pdf, but microsoft (below)
+        # says French uses 1/8 em.
+        expect_width(0x2009, em_width, 5, 6) # thin space
+        # see http://www.microsoft.com/typography/developers/fdsspec/spaces.htm
+        expect_width(0x200A, em_width, 10, 16) # hair space
+        expect_width(0x200B, 0) # zero width space
 
 
     def check_stems(cmap):
@@ -1353,7 +1374,7 @@ def check_font(file_name,
     check_gpos_and_gsub_tables()
     check_for_bidi_pairs(cmap)
     check_hints()
-    check_typesetting_whitespace()
+    check_explicit_advances()
     check_stems(cmap)
 
     # This must be done at the very end, since the subsetter may change the font
