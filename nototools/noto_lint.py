@@ -482,7 +482,12 @@ def check_font(file_name,
         ranges = unicode_data._parse_code_ranges(noto_data.CJK_RANGES_TXT)
         return code_range_to_set(ranges) & unicode_data.defined_characters()
 
+
     def check_name_table():
+        if is_cjk:
+           check_name_table_cjk()
+           return
+
         names = font_data.get_name_records(font)
 
         # Check family name
@@ -509,6 +514,116 @@ def check_font(file_name,
 
         if check_legal and not re.match(
             r'Copyright 201\d Google Inc. All Rights Reserved.$', names[0]):
+            warn("Copyright",
+                 "Copyright message doesn't match template: '%s'." % names[0])
+
+        if names[1] != expected_family_name:
+            warn("Family name",
+                 "Font family name is '%s', but was expecting '%s'." % (
+                     names[1], expected_family_name))
+
+        if names[2] != expected_subfamily_name:
+            warn("Sub-family name",
+                 "Font subfamily name is '%s', but was expecting '%s'." % (
+                     names[2], expected_subfamily_name))
+
+        if names[4] != expected_full_name:
+            warn("Font name",
+                 "Full font name is '%s', but was expecting '%s'." % (
+                     names[4], expected_full_name))
+
+        # TODO(roozbeh): Make sure the description field contains information on
+        # whether or not the font is hinted
+
+        match = re.match(r"Version (\d{1,5})\.(\d{1,5})", names[5])
+        if match:
+            major_version = match.group(1)
+            minor_version = match.group(2)
+            if ((0 <= int(major_version) <= 65535)
+                and (0 <= int(minor_version) <= 65535)):
+                match_end = names[5][match.end():]
+                is_hinted = "/hinted" in file_name or "_hinted" in file_name
+                if ((is_hinted and match_end != "") or
+                    (not is_hinted and match_end not in ["", " uh"])):
+                    warn(
+                        "Version",
+                        "Version string '%s' has extra characters at its end." %
+                        names[5])
+                accuracy = len(minor_version)
+                font_revision = printable_font_revision(font, accuracy)
+                if font_revision != major_version+"."+minor_version:
+                    warn("Font Revision", "fontRevision in 'head' table is %s, "
+                         "while font version in 'name' table is %s.%s." % (
+                             font_revision, major_version, minor_version))
+            else:
+                warn("Version",
+                     "Version string has numerical parts out of "
+                     "[0, 65535]: '%s'." % names[5])
+        else:
+            warn("Version", "Version string is irregular: '%s'." % names[5])
+
+        if names[6] != expected_postscript_name:
+            warn("Postscript name",
+                 "Postscript name is '%s', but was expecting '%s'." % (
+                     names[6], expected_postscript_name))
+
+        if check_legal and names[7] != "Noto is a trademark of Google Inc.":
+            warn("Trademark",
+                 "Trademark message doesn't match template: '%s'." % names[7])
+
+        if 8 not in names:
+            warn("Manufacturer",
+                 "Manufacturer name in 'name' table is not set.")
+
+        if 9 not in names:
+            warn("Designer", "Designer name in 'name' table is not set.")
+
+        if 10 not in names:
+            warn("Description",
+                 "The description field in 'name' table is not set.")
+
+        if 11 not in names:
+            warn("Vendor", "The Vendor URL field in 'name' table is not set.")
+        elif names[11] != 'http://code.google.com/p/noto/':
+            warn("Vendor",
+                 "Vendor URL field doesn't match template: '%s'." % names[11])
+
+        if 12 not in names:
+            warn("Designer",
+                 "The Designer URL field in 'name' tables is not set.")
+        elif not names[12].startswith('http://'):
+            warn("Designer",
+                 "The Designer URL field in 'name' is not an "
+                 "http URL: '%s'." % names[12])
+
+        if names[13] != "Licensed under the Apache License, Version 2.0":
+            warn("License",
+                 "License message doesn't match template: '%s'." % names[13])
+
+        if names[14] != "http://www.apache.org/licenses/LICENSE-2.0":
+            warn("License",
+                 "License URL doesn't match template: '%s'." % names[14])
+
+
+    def check_name_table_cjk():
+        names = font_data.get_name_records(font)
+
+        # Check family name
+        expected_family_name = 'Noto ' + style
+        if variant:
+            expected_family_name += ' ' + variant
+        if weight:
+            expected_subfamily_name = weight
+
+        expected_full_name = expected_family_name
+        expected_postscript_name = expected_family_name.replace(' ', '')
+        if weight != 'Regular':
+            expected_full_name += ' ' + expected_subfamily_name
+            expected_postscript_name += (
+                '-' + expected_subfamily_name.replace(' ', ''))
+
+        if check_legal and not re.match(
+            r'Copyright . 201\d(?:, 201\d)? Adobe Systems Incorporated.* with Reserved Font Name \'Noto\'.$', names[0]):
             warn("Copyright",
                  "Copyright message doesn't match template: '%s'." % names[0])
 
@@ -698,9 +813,14 @@ def check_font(file_name,
 
         missing_chars = needed_chars - set(cmap.keys())
         if missing_chars:
-            warn("Chars",
-                 "The following characters are missing from the font: %s."
-                     % printable_unicode_range(missing_chars))
+            if len(missing_chars) > 100:
+                warn("Chars",
+                     "Over 100 characters are missing from the font: %s."
+                     % ", ".join(printable_unicode_range(missing_chars).split(", ")[:5]) + "...")
+            else:
+                warn("Chars",
+                     "The following characters are missing from the font: %s."
+                         % printable_unicode_range(missing_chars))
 
         privates_in_cmap = {char for char in cmap
                             if unicode_data.is_private_use(char)}
@@ -1252,6 +1372,7 @@ def check_font(file_name,
 
     font = ttLib.TTFont(file_name)
 
+    is_cjk = False
     just_the_file_name = file_name.split("/")[-1]
     fontname_regex = (
         "Noto"
@@ -1289,6 +1410,7 @@ def check_font(file_name,
         if match:
             style, variant, weight = match.groups()
             script = 'Hani' # dummy for now
+            is_cjk = True
         else:
             style, script, variant, weight = HARD_CODED_FONT_INFO[
                 just_the_file_name]
