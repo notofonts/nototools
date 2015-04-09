@@ -357,11 +357,25 @@ FONT_STYLES = [
     "Nastaliq",
 ]
 
+CJK_FONT_STYLES = [
+    "Sans"
+]
+
 FONT_WEIGHTS = [
     "Regular",
     "Bold",
     "Italic",
     "BoldItalic",
+]
+
+CJK_FONT_WEIGHTS = [
+    "Light",
+    "DemiLight",
+    "Thin",
+    "Regular",
+    "Medium",
+    "Bold",
+    "Black"
 ]
 
 FONT_VARIANTS = [
@@ -370,6 +384,13 @@ FONT_VARIANTS = [
     "Eastern",
     "Western",
     "Estrangela",
+]
+
+CJK_FONT_VARIANTS = [
+    "JA",
+    "KR",
+    "SC",
+    "TC"
 ]
 
 HARD_CODED_FONT_INFO = {
@@ -1269,11 +1290,23 @@ def check_font(file_name,
                  "Style %s also needs a script mentioned in the "
                  "file name." % style)
     else:
-        style, script, variant, weight = HARD_CODED_FONT_INFO[
-            just_the_file_name]
-        warn("File name",
-             "File name '%s' does not match the Noto font naming guidelines."
-             % just_the_file_name)
+        cjkfontname_regex = (
+        "Noto"
+        + "(?P<style>" + "|".join(CJK_FONT_STYLES) + ")"
+        + "(?P<variant>" + "|".join(CJK_FONT_VARIANTS) + ")?"
+        + "-"
+        + "(?P<weight>" + "|".join(CJK_FONT_WEIGHTS) + ")"
+        + ".otf$")
+        match = re.match(cjkfontname_regex, just_the_file_name)
+        if match:
+            style, variant, weight = match.groups()
+            script = 'Hani' # dummy for now
+        else:
+            style, script, variant, weight = HARD_CODED_FONT_INFO[
+                just_the_file_name]
+            warn("File name",
+                 "File name '%s' does not match the Noto font naming guidelines."
+                 % just_the_file_name)
 
     is_ui = (variant == "UI")
 
