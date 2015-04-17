@@ -27,6 +27,7 @@ import collections
 import itertools
 import math
 import re
+import sys
 
 from fontTools import subset
 from fontTools import ttLib
@@ -440,6 +441,7 @@ def check_font(file_name,
             if category is "info":
                 print "[informational]",
             print message.encode('UTF-8')
+        sys.stdout.flush()
 
 
     def code_range_to_set(code_range):
