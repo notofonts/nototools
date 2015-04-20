@@ -27,6 +27,7 @@ import collections
 import itertools
 import math
 import re
+import sys
 
 from fontTools import subset
 from fontTools import ttLib
@@ -461,6 +462,7 @@ def check_font(file_name,
             if category is "info":
                 print "[informational]",
             print message.encode('UTF-8')
+        sys.stdout.flush()
 
 
     def code_range_to_set(code_range):
@@ -951,7 +953,7 @@ def check_font(file_name,
                  "from the opposite of value of Descent in 'hhea' table (%d), "
                  "but they should be opposites." %
                  (os2_table.usWinDescent, hhea_table.descent))
-        if os2_table.achVendID != 'GOOG':
+        if check_legal and os2_table.achVendID != 'GOOG':
             warn("OS/2",
                  "Value of achVendID in the 'OS/2' table is %s, "
                  "but should be GOOG." %

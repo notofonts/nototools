@@ -162,6 +162,9 @@ def urdu_set():
 def ascii_letters():
     return _char_set('0041..005a,0061..007a')
 
+def char_range(start, end):
+    return range(start, end+1)
+
 EXTRA_CHARACTERS_NEEDED = {
     'Arab': [
         0x2010, 0x2011,   # Hyphen and non-breaking hyphen need different shapes
@@ -183,6 +186,12 @@ EXTRA_CHARACTERS_NEEDED = {
 
     'Sylo': [0x2055],  # From Core Specification
 
+    # From Core Specification
+    'Syrc': [
+        0x0303, 0x0304, 0x0307, 0x0308, 0x030A, 0x0320,
+        0x0323, 0x0324, 0x0325, 0x032D, 0x032E, 0x0330,
+        0x060C, 0x061B, 0x061F, 0x0640] + char_range(0x064B, 0x0652),
+
     # From Core Specification & http://www.unicode.org/L2/L2001/01369-n2372.pdf
     'Tale': [0x0300, 0x0301, 0x0307, 0x0308, 0x030C],
 
@@ -198,9 +207,6 @@ EXTRA_CHARACTERS_NEEDED = {
     'Zsym': [0x20BC, 0x20BD, 0x20BE],
 }
 
-
-def char_range(start, end):
-    return range(start, end+1)
 
 CHARACTERS_NOT_NEEDED = {
     'Arab': char_range(0x10E60, 0x10E7E),
