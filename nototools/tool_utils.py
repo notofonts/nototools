@@ -17,6 +17,7 @@
 import contextlib
 import datetime
 import os
+import shutil
 import subprocess
 import time
 import zipfile
@@ -63,6 +64,30 @@ def generate_zip_with_7za(root_dir, file_paths, archive_path):
   with temp_chdir(root_dir):
     # capture but discard output
     subprocess.check_output(arg_list)
+
+
+def generate_zip_with_7za_from_filepairs(pairs, archive_path):
+  """Pairs are source/destination path pairs. The source will be put into the
+  zip with name destination.  The destination must be a suffix of the source."""
+
+  staging_dir = '/tmp/stage_7za'
+  if os.path.exists(staging_dir):
+    shutil.rmtree(staging_dir)
+  os.makedirs(staging_dir)
+
+  pair_map = {}
+  for source, dest in pairs:
+    if not source.endswith(dest):
+      staging_source = os.path.join(staging_dir, dest)
+      shutil.copyfile(source, staging_source)
+      source_root = staging_dir
+    else:
+      source_root = source[:-len(dest)]
+    if source_root not in pair_map:
+      pair_map[source_root] = set()
+    pair_map[source_root].add(dest)
+  for source_root, dest_set in pair_map.iteritems():
+    generate_zip_with_7za(source_root, sorted(dest_set), archive_path)
 
 
 def zip_extract_with_timestamp(zippath, dstdir):

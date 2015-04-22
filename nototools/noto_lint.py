@@ -41,6 +41,7 @@ from nototools import opentype_data
 from nototools import render
 from nototools import unicode_data
 
+NOTO_URL = "http://code.google.com/p/noto/"
 
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
@@ -376,11 +377,26 @@ FONT_VARIANTS = [
 ]
 
 CJK_FONT_VARIANTS = [
-    "JA",
+    "JP",
     "KR",
     "SC",
-    "TC"
+    "TC",
+    "CJKjp",
+    "CJKkr",
+    "CJKsc",
+    "CJKtc"
 ]
+
+CJK_VARIANT_NAMES = {
+    "JP": "JP",
+    "KR": "KR",
+    "SC": "SC",
+    "TC": "TC",
+    "CJKjp": "CJK JP",
+    "CJKkr": "CJK KR",
+    "CJKsc": "CJK SC",
+    "CJKtc": "CJK TC"
+}
 
 HARD_CODED_FONT_INFO = {
     "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
@@ -586,7 +602,7 @@ def check_font(file_name,
 
         if 11 not in names:
             warn("Vendor", "The Vendor URL field in 'name' table is not set.")
-        elif names[11] != 'http://code.google.com/p/noto/':
+        elif names[11] != NOTO_URL:
             warn("Vendor",
                  "Vendor URL field doesn't match template: '%s'." % names[11])
 
@@ -612,8 +628,10 @@ def check_font(file_name,
 
         # Check family name
         expected_family_name = 'Noto ' + style
+        if is_mono:
+            expected_family_name += ' Mono'
         if variant:
-            expected_family_name += ' ' + variant
+            expected_family_name += ' ' + CJK_VARIANT_NAMES[variant]
         expected_family_name += ' ' + weight # weight always included
 
         expected_subfamily_name = 'Regular' # all regular for now
@@ -621,7 +639,6 @@ def check_font(file_name,
         expected_full_name = expected_family_name
         expected_postscript_name = 'Noto' + style + variant + '-' + weight
 
-        NOTO_URL = "http://code.google.com/p/noto/"
         ADOBE_COPYRIGHT = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
                            u"\(http://www.adobe.com/\), with Reserved Font Name 'Noto'.")
         SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
@@ -718,7 +735,7 @@ def check_font(file_name,
             warn("License",
                  "License URL doesn't match template: '%s'." % names[14])
 
-    def _check_needed_chars():
+    def _check_needed_chars(cmap):
         # TODO(roozbeh): check the glyph requirements for controls specified at
         # https://www.microsoft.com/typography/otspec/recom.htm
 
@@ -779,12 +796,15 @@ def check_font(file_name,
         expected_tables = [(4, 3, 1), (12, 3, 10)]
         if is_cjk:
             expected_tables.extend([
-                # Adobe says historically some programs used this to identify
-                # the script in the font.
-                (6, 1, 2),  # mac ISO10646 1993 (deprecated)
+                # Adobe says historically some programs used these to identify
+                # the script in the font.  The encodingID is the quickdraw script
+                # manager code.  These are dummy tables.
+                (6, 1, 1),  # Japanese
+                (6, 1, 2),  # Traditional Chinese
+                (6, 1, 3),  # Korean
+                (6, 1, 25), # Simplified Chinese
                 # Adobe says these just point at the windows versions, so there
-                # is no issue.  We however need to be careful if we rebuild the
-                # font from the ttx.
+                # is no issue.
                 (4, 0, 3),   # Unicode, BMP only
                 (12, 0, 4),  # Unicode, Includes Non-BMP
                 # Required for variation selectors.
@@ -841,7 +861,7 @@ def check_font(file_name,
                          % code)
 
         if not is_cjk:
-            _check_needed_chars()
+            _check_needed_chars(cmap)
         privates_in_cmap = {char for char in cmap
                             if unicode_data.is_private_use(char)}
         if privates_in_cmap:
@@ -1288,9 +1308,7 @@ def check_font(file_name,
 
         Only the first 'rtlm' feature in the font is used.
         """
-        ### TEMP skip for cjk
-        if is_cjk:
-            return
+        # need to discuss this with Adobe
 
         rtlm = {}
         if "GSUB" in font:
@@ -1453,6 +1471,7 @@ def check_font(file_name,
     font = ttLib.TTFont(file_name)
 
     is_cjk = False
+    is_mono = False
     just_the_file_name = file_name.split("/")[-1]
     fontname_regex = (
         "Noto"
@@ -1482,16 +1501,17 @@ def check_font(file_name,
         cjkfontname_regex = (
         "Noto"
         + "(?P<style>" + "|".join(CJK_FONT_STYLES) + ")"
+        + "(?P<mono>Mono)?"
         + "(?P<variant>" + "|".join(CJK_FONT_VARIANTS) + ")?"
         + "-"
         + "(?P<weight>" + "|".join(CJK_FONT_WEIGHTS) + ")"
         + ".otf$")
         match = re.match(cjkfontname_regex, just_the_file_name)
         if match:
-            style, variant, weight = match.groups()
+            style, mono, variant, weight = match.groups()
             script = None
             is_cjk = True
-            print "cjk style: %s var: %s weight: %s" % (style, variant, weight)
+            is_mono = (mono == "Mono")
         else:
             style, script, variant, weight = HARD_CODED_FONT_INFO[
                 just_the_file_name]

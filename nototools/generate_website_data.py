@@ -33,7 +33,6 @@ import re
 import shutil
 import subprocess
 import xml.etree.cElementTree as ElementTree
-import zipfile
 
 from fontTools import ttLib
 
@@ -55,6 +54,8 @@ FONT_DIR = path.join(NOTO_DIR, 'fonts')
 INDIVIDUAL_FONT_DIR = path.join(FONT_DIR, 'individual')
 CJK_DIR = path.join(NOTO_DIR, 'third_party', 'noto_cjk')
 
+APACHE_LICENSE_LOC = path.join(NOTO_DIR, 'LICENSE')
+SIL_LICENSE_LOC = path.join(NOTO_DIR, 'third_party', 'noto_cjk', 'LICENSE')
 
 ODD_SCRIPTS = {
     'CJKjp': 'Jpan',
@@ -85,7 +86,7 @@ Font = collections.namedtuple(
     'Font',
     'filepath, hint_status, key, '
     'family, script, variant, weight, style, platform,'
-    'charset')
+    'charset, license_type')
 
 
 all_fonts = []
@@ -127,6 +128,11 @@ def find_fonts():
                     raise ValueError("unexpected filename in %s: '%s'." %
                                      (directory, filename))
                 continue
+
+            if directory == CJK_DIR:
+                license_type = 'sil'
+            else:
+                license_type = 'apache'
 
             if mono:
                 # we don't provide the Mono CJK on the website
@@ -179,7 +185,7 @@ def find_fonts():
 
             font = Font(file_path, hint_status, key,
                         family, script, variant, weight, style, platform,
-                        charset)
+                        charset, license_type)
             all_fonts.append(font)
 
 
@@ -700,11 +706,6 @@ def compress_png(pngpath):
     subprocess.call(['optipng', '-o7', '-quiet', pngpath])
 
 
-def recompress_zip(zippath):
-    dev_null = open(os.devnull, 'w')
-    subprocess.call(['advzip', '-z', '-4', zippath], stdout=dev_null)
-
-
 def compress(filepath, compress_function):
     print 'Compressing %s.' % filepath
     oldsize = os.stat(filepath).st_size
@@ -763,10 +764,16 @@ def create_zip(major_name, target_platform, fonts):
     else:
         assert frozen_fonts not in zip_contents_cache.values()
         zip_contents_cache[zip_basename] = frozen_fonts
-        with zipfile.ZipFile(zippath, 'w', zipfile.ZIP_DEFLATED) as output_zip:
-            for font in fonts:
-                output_zip.write(font.filepath, path.basename(font.filepath))
-    compress(zippath, recompress_zip)
+        pairs = []
+        license_types = set()
+        for font in fonts:
+            pairs.append((font.filepath, path.basename(font.filepath)))
+            license_types.add(font.license_type)
+        if 'apache' in license_types:
+            pairs.append((APACHE_LICENSE_LOC, 'LICENSE.txt'))
+        if 'sil' in license_types:
+            pairs.append((SIL_LICENSE_LOC, 'LICENSE_CJK.txt'))
+        tool_utils.generate_zip_with_7za_from_filepairs(pairs, zippath)
     return zip_basename
 
 
@@ -901,7 +908,9 @@ def generate_ttc_zips_with_7za():
             print("Continue: assuming built %s is valid." % zip_basename)
             continue
         oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
-        tool_utils.generate_zip_with_7za(CJK_DIR, [filename], zip_path)
+        pairs = [(path.join(CJK_DIR, filename), filename),
+                 (SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+        tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
         newsize = os.stat(zip_path).st_size
         print "Wrote " + zip_path
         print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
@@ -1046,10 +1055,10 @@ def main():
     # Compress the ttc files.  Requires 7za on the build machine.
     generate_ttc_zips_with_7za()
 
-    # Drop presently unused directories
-    if not args.continuing:
-        shutil.rmtree(path.join(OUTPUT_DIR, 'fonts'))
-        shutil.rmtree(path.join(OUTPUT_DIR, 'css'))
+    # Keep presently unused directories so we can continue after first success
+    #    if not args.continuing:
+    #        shutil.rmtree(path.join(OUTPUT_DIR, 'fonts'))
+    #        shutil.rmtree(path.join(OUTPUT_DIR, 'css'))
 
 
 if __name__ == '__main__':
