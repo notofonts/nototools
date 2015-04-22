@@ -33,7 +33,6 @@ import re
 import shutil
 import subprocess
 import xml.etree.cElementTree as ElementTree
-import zipfile
 
 from fontTools import ttLib
 
@@ -705,11 +704,6 @@ def fonts_are_basically_the_same(font1, font2):
 
 def compress_png(pngpath):
     subprocess.call(['optipng', '-o7', '-quiet', pngpath])
-
-
-def recompress_zip(zippath):
-    dev_null = open(os.devnull, 'w')
-    subprocess.call(['advzip', '-z', '-4', zippath], stdout=dev_null)
 
 
 def compress(filepath, compress_function):
