@@ -1538,12 +1538,12 @@ def check_font(file_name,
     check_for_intersections_and_off_curve_extrema()
     check_gdef_table(cmap)
     check_gpos_and_gsub_tables()
-    #TEMP check_for_bidi_pairs(cmap)
+    check_for_bidi_pairs(cmap)
     check_hints()
     check_stems(cmap)
 
     # This must be done at the very end, since the subsetter may change the font
-    #TEMP check_accessiblity(cmap)
+    check_accessiblity(cmap)
 
     warn("info",
          "supported characters: " + printable_unicode_range(cmap.keys()))
