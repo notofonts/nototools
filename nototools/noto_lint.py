@@ -42,6 +42,7 @@ from nototools import render
 from nototools import unicode_data
 
 NOTO_URL = "http://code.google.com/p/noto/"
+NOTO_NEW_URL = "http://www.google.com/get/noto/"
 
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
@@ -637,10 +638,13 @@ def check_font(file_name,
         expected_subfamily_name = 'Regular' # all regular for now
 
         expected_full_name = expected_family_name
-        expected_postscript_name = 'Noto' + style + variant + '-' + weight
+        expected_postscript_name = 'Noto' + style
+        if is_mono:
+          expected_postscript_name += 'Mono'
+        expected_postscript_name += variant + '-' + weight
 
         ADOBE_COPYRIGHT = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
-                           u"\(http://www.adobe.com/\), with Reserved Font Name 'Noto'.")
+                           u"\(http://www.adobe.com/\).")
         SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
                        "Version 1.1. This Font Software is distributed on an \"AS IS\" "
                        "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
@@ -715,7 +719,7 @@ def check_font(file_name,
 
         if 11 not in names:
             warn("Vendor", "The Vendor URL field in 'name' table is not set.")
-        elif names[11] != NOTO_URL:
+        elif names[11] != NOTO_NEW_URL:
             warn("Vendor",
                  "Vendor URL field doesn't match template: '%s'." % names[11])
 
@@ -1148,7 +1152,7 @@ def check_font(file_name,
                     all_contours.append(curves_in_contour)
 
                 if curves_intersect(all_contours):
-                    warn("Inersection",
+                    warn("Intersection",
                          "The glyph '%s' has intersecting "
                          "outlines." % glyph_name)
 
@@ -1417,7 +1421,7 @@ def check_font(file_name,
                 if lsb != 0:
                     warn("Stem",
                          "The glyph for U+%04X (%s) is supposed to have a stem "
-                         "connecting to the left, but it's left side bearing "
+                         "connecting to the left, but its left side bearing "
                          "is %d instead of 0."
                          % (code, unicode_data.name(code), lsb))
             if code in joins_to_right:
@@ -1534,12 +1538,12 @@ def check_font(file_name,
     check_for_intersections_and_off_curve_extrema()
     check_gdef_table(cmap)
     check_gpos_and_gsub_tables()
-    check_for_bidi_pairs(cmap)
+    #TEMP check_for_bidi_pairs(cmap)
     check_hints()
     check_stems(cmap)
 
     # This must be done at the very end, since the subsetter may change the font
-    check_accessiblity(cmap)
+    #TEMP check_accessiblity(cmap)
 
     warn("info",
          "supported characters: " + printable_unicode_range(cmap.keys()))
