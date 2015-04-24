@@ -21,6 +21,7 @@ from __future__ import division
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
+import argparse
 import codecs
 import collections
 import csv
@@ -32,7 +33,6 @@ import re
 import shutil
 import subprocess
 import xml.etree.cElementTree as ElementTree
-import zipfile
 
 from fontTools import ttLib
 
@@ -41,6 +41,7 @@ from nototools import create_image
 from nototools import extra_locale_data
 from nototools import font_data
 from nototools import unicode_data
+from nototools import tool_utils
 
 NOTO_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 
@@ -53,6 +54,8 @@ FONT_DIR = path.join(NOTO_DIR, 'fonts')
 INDIVIDUAL_FONT_DIR = path.join(FONT_DIR, 'individual')
 CJK_DIR = path.join(NOTO_DIR, 'third_party', 'noto_cjk')
 
+APACHE_LICENSE_LOC = path.join(NOTO_DIR, 'LICENSE')
+SIL_LICENSE_LOC = path.join(NOTO_DIR, 'third_party', 'noto_cjk', 'LICENSE')
 
 ODD_SCRIPTS = {
     'CJKjp': 'Jpan',
@@ -74,7 +77,8 @@ def convert_to_four_letter(script):
         for lname in unicode_data._script_long_name_to_code:
             if lname.replace('_', '').lower() == script.lower():
                 script = unicode_data._script_long_name_to_code[lname]
-    assert len(script) in {0, 4}
+    if len(script) != 4:
+      raise ValueError("script code '%s' is not the right length." % script)
     return script
 
 
@@ -82,7 +86,7 @@ Font = collections.namedtuple(
     'Font',
     'filepath, hint_status, key, '
     'family, script, variant, weight, style, platform,'
-    'charset')
+    'charset, license_type')
 
 
 all_fonts = []
@@ -91,6 +95,7 @@ supported_scripts = set()
 def find_fonts():
     font_name_regexp = re.compile(
         '(NotoSans|NotoSerif|NotoNaskh|NotoKufi|Arimo|Cousine|Tinos)'
+        '(Mono)?'
         '(.*?)'
         '(UI|Eastern|Estrangela|Western)?'
         '-'
@@ -108,18 +113,32 @@ def find_fonts():
         for filename in os.listdir(directory):
             match = font_name_regexp.match(filename)
             if match:
-                family, script, variant, weight, style, platform = match.groups()
+                family, mono, script, variant, weight, style, platform = match.groups()
             elif filename == 'NotoNastaliqUrduDraft.ttf':
                 family = 'NotoNastaliq'
                 script = 'Aran'  # Arabic Nastaliq
                 weight = ''
                 style = variant = platform = None
             else:
-                assert (
-                    filename == 'NotoSansCJK.ttc' or  # All-comprenehsive CJK
+                if not (
+                    filename == 'NotoSansCJK.ttc' or  # All-comprehensive CJK
                     filename.endswith('.ttx') or
                     filename.startswith('README.') or
-                    filename in ['COPYING', 'LICENSE', 'NEWS'])
+                    filename in ['COPYING', 'LICENSE', 'NEWS', 'HISTORY']):
+                    raise ValueError("unexpected filename in %s: '%s'." %
+                                     (directory, filename))
+                continue
+
+            if directory == CJK_DIR:
+                license_type = 'sil'
+            else:
+                license_type = 'apache'
+
+            if mono:
+                # we don't provide the Mono CJK on the website
+                continue
+            if script == "Historic":
+                # we don't provide this either
                 continue
 
             if family in {'Arimo', 'Cousine', 'Tinos'}:
@@ -166,7 +185,7 @@ def find_fonts():
 
             font = Font(file_path, hint_status, key,
                         family, script, variant, weight, style, platform,
-                        charset)
+                        charset, license_type)
             all_fonts.append(font)
 
 
@@ -388,12 +407,12 @@ def get_english_language_name(lang_scr):
     try:
         return english_language_name[lang_scr]
     except KeyError:
-        print 'Constructing a name for %s.' % lang_scr
         lang, script = lang_scr.split('-')
-        return '%s (%s script)' % (
+        name = '%s (%s script)' % (
             english_language_name[lang],
             english_script_name[script])
-
+        print "Constructing name '%s' for %s." % (name, lang_scr)
+        return name
 
 used_in_regions = collections.defaultdict(set)
 written_in_scripts = collections.defaultdict(set)
@@ -559,6 +578,7 @@ def create_langs_object():
             try:
                 script = find_likely_script(language)
             except KeyError:
+                print "no likely script for %s" % language
                 continue
 
         lang_object['name'] = get_english_language_name(lang_scr)
@@ -573,8 +593,8 @@ def create_langs_object():
 
         if script not in supported_scripts:
             # Scripts we don't have fonts for yet
-            print('No font supports the %s script needed for the %s language.'
-                  % (english_script_name[script], lang_object['name']))
+            print('No font supports the %s script (%s) needed for the %s language.'
+                  % (english_script_name[script], script, lang_object['name']))
             assert script in {
                 'Bass',  # Bassa Vah
                 'Lina',  # Linear A
@@ -645,7 +665,7 @@ def get_css_generic_family(family):
 
 
 CSS_WEIGHT_MAPPING = {
-    'Thin': 100,
+    'Thin': 250,
     'Light': 300,
     'DemiLight': 350,
     'Regular': 400,
@@ -684,11 +704,6 @@ def fonts_are_basically_the_same(font1, font2):
 
 def compress_png(pngpath):
     subprocess.call(['optipng', '-o7', '-quiet', pngpath])
-
-
-def recompress_zip(zippath):
-    dev_null = open(os.devnull, 'w')
-    subprocess.call(['advzip', '-z', '-4', zippath], stdout=dev_null)
 
 
 def compress(filepath, compress_function):
@@ -739,14 +754,26 @@ def create_zip(major_name, target_platform, fonts):
     zippath = path.join(OUTPUT_DIR, 'pkgs', zip_basename)
     frozen_fonts = frozenset(fonts)
     if path.isfile(zippath):  # Skip if the file already exists
-        assert zip_contents_cache[zip_basename] == frozen_fonts
+        # When continuing, we assume that if it exists, it is good
+        if zip_basename not in zip_contents_cache:
+            print("Continue: assuming built %s is valid" % zip_basename)
+            zip_contents_cache[zip_basename] = frozen_fonts
+        else:
+            assert zip_contents_cache[zip_basename] == frozen_fonts
+        return zip_basename
     else:
         assert frozen_fonts not in zip_contents_cache.values()
         zip_contents_cache[zip_basename] = frozen_fonts
-        with zipfile.ZipFile(zippath, 'w', zipfile.ZIP_DEFLATED) as output_zip:
-            for font in fonts:
-                output_zip.write(font.filepath, path.basename(font.filepath))
-    compress(zippath, recompress_zip)
+        pairs = []
+        license_types = set()
+        for font in fonts:
+            pairs.append((font.filepath, path.basename(font.filepath)))
+            license_types.add(font.license_type)
+        if 'apache' in license_types:
+            pairs.append((APACHE_LICENSE_LOC, 'LICENSE.txt'))
+        if 'sil' in license_types:
+            pairs.append((SIL_LICENSE_LOC, 'LICENSE_CJK.txt'))
+        tool_utils.generate_zip_with_7za_from_filepairs(pairs, zippath)
     return zip_basename
 
 
@@ -789,6 +816,10 @@ def create_families_object(target_platform):
                    if font.key == key and font.variant != 'UI'
                                       and font.filepath.endswith('tf')}
 
+        if not members:
+            mbrs = {font for font in all_fonts if font.key == key}
+            raise ValueError("no members for %s from %s" % (key, [f.filepath for f in mbrs]))
+
         members_to_drop = set()
         for font in members:
             if font.platform == target_platform:
@@ -823,7 +854,10 @@ def create_families_object(target_platform):
 
         repr_members = {font for font in members
                         if font.weight == 'Regular' and font.style is None}
-        assert len(repr_members) == 1
+
+        if len(repr_members) != 1:
+            raise ValueError("Do not have a single regular font (%s) for key: %s (from %s)." %
+                             (len(repr_members), key, [f.filepath for f in members]))
         repr_member = repr_members.pop()
 
         font_family_name = get_font_family_name(repr_member.filepath)
@@ -855,6 +889,33 @@ def create_families_object(target_platform):
     return families, all_font_files
 
 
+def generate_ttc_zips_with_7za():
+    """Generate zipped versions of the ttc files and put in pkgs directory."""
+
+    # The font family code skips the ttc files, but we want them in the
+    # package directory. Instead of mucking with the family code to add the ttcs
+    # and then exclude them from the other handling, we'll just handle them
+    # separately.
+    # For now at least, the only .ttc fonts are the CJK fonts
+
+    pkg_dir = path.join(OUTPUT_DIR, 'pkgs')
+    tool_utils.ensure_dir_exists(pkg_dir)
+    filenames = [path.basename(f) for f in os.listdir(CJK_DIR) if f.endswith('.ttc')]
+    for filename in filenames:
+        zip_basename = filename + '.zip'
+        zip_path = path.join(pkg_dir, zip_basename)
+        if path.isfile(zip_path):
+            print("Continue: assuming built %s is valid." % zip_basename)
+            continue
+        oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
+        pairs = [(path.join(CJK_DIR, filename), filename),
+                 (SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+        tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
+        newsize = os.stat(zip_path).st_size
+        print "Wrote " + zip_path
+        print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
+
+
 def generate_sample_images(data_object):
     image_dir = path.join(OUTPUT_DIR, 'images', 'samples')
     for family_key in data_object['family']:
@@ -880,6 +941,10 @@ def generate_sample_images(data_object):
                 else:
                     family_suffix = ''
                 image_location = path.join(image_dir, image_file_name)
+                if path.isfile(image_location):
+                    # Don't rebuild images when continuing.
+                    print "Continue: assuming image file '%s' is valid." % image_location
+                    continue
                 create_image.create_png(
                     sample_text,
                     image_location,
@@ -903,19 +968,30 @@ def create_package_object(fonts, target_platform):
 def main():
     """Outputs data files for the noto website."""
 
-    if path.exists(OUTPUT_DIR):
-        assert path.isdir(OUTPUT_DIR)
-        print 'Removing the old website directory...'
-        shutil.rmtree(OUTPUT_DIR)
-    os.mkdir(OUTPUT_DIR)
-    os.mkdir(path.join(OUTPUT_DIR, 'pkgs'))
-    os.mkdir(path.join(OUTPUT_DIR, 'fonts'))
-    os.mkdir(path.join(OUTPUT_DIR, 'fonts', 'hinted'))
-    os.mkdir(path.join(OUTPUT_DIR, 'css'))
-    os.mkdir(path.join(OUTPUT_DIR, 'css', 'fonts'))
-    os.mkdir(path.join(OUTPUT_DIR, 'images'))
-    os.mkdir(path.join(OUTPUT_DIR, 'images', 'samples'))
-    os.mkdir(path.join(OUTPUT_DIR, 'js'))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--continue', help="continue with existing built objects",
+                        action='store_true', dest='continuing')
+    args = parser.parse_args();
+
+    # 'continue' is useful for debugging the build process.  some zips take a
+    # long time to build, and this lets the process be restarted and catch up
+    # quickly.
+    #
+    # The run for the actual deploy should be a clean one from scratch.
+    if not args.continuing:
+        if path.exists(OUTPUT_DIR):
+            assert path.isdir(OUTPUT_DIR)
+            print 'Removing the old website directory...'
+            shutil.rmtree(OUTPUT_DIR)
+        os.mkdir(OUTPUT_DIR)
+        os.mkdir(path.join(OUTPUT_DIR, 'pkgs'))
+        os.mkdir(path.join(OUTPUT_DIR, 'fonts'))
+        os.mkdir(path.join(OUTPUT_DIR, 'fonts', 'hinted'))
+        os.mkdir(path.join(OUTPUT_DIR, 'css'))
+        os.mkdir(path.join(OUTPUT_DIR, 'css', 'fonts'))
+        os.mkdir(path.join(OUTPUT_DIR, 'images'))
+        os.mkdir(path.join(OUTPUT_DIR, 'images', 'samples'))
+        os.mkdir(path.join(OUTPUT_DIR, 'js'))
 
     print 'Finding all fonts...'
     find_fonts()
@@ -931,6 +1007,7 @@ def main():
         print 'Generating data objects and CSS...'
         output_object['region'] = create_regions_object()
         output_object['lang'] = create_langs_object()
+
         output_object['family'], all_font_files = create_families_object(
             target_platform)
 
@@ -940,6 +1017,7 @@ def main():
 
         ############### Hot patches ###############
         # Kufi is broken for Urdu Heh goal
+        # See issue #34
         output_object['lang']['ur']['families'].remove('noto-kufi-arab')
         output_object['family']['noto-kufi-arab']['langs'].remove('ur')
 
@@ -974,12 +1052,15 @@ def main():
             json.dump(output_object, json_file,
                       ensure_ascii=False, separators=(',', ':'))
 
-    # Drop presently unused directories
-    shutil.rmtree(path.join(OUTPUT_DIR, 'fonts'))
-    shutil.rmtree(path.join(OUTPUT_DIR, 'css'))
+    # Compress the ttc files.  Requires 7za on the build machine.
+    generate_ttc_zips_with_7za()
+
+    # Keep presently unused directories so we can continue after first success
+    #    if not args.continuing:
+    #        shutil.rmtree(path.join(OUTPUT_DIR, 'fonts'))
+    #        shutil.rmtree(path.join(OUTPUT_DIR, 'css'))
 
 
 if __name__ == '__main__':
     locale.setlocale(locale.LC_COLLATE, 'en_US.UTF-8')
     main()
-

@@ -159,6 +159,15 @@ def get_cmap(font):
     return {}
 
 
+def get_variation_sequence_cmap(font):
+    """Return the variation selector cmap, if available."""
+    cmap_table = font['cmap']
+    for table in cmap_table.tables:
+        if table.format == 14:
+            return table
+    return None
+
+
 UNICODE_CMAPS = {(4, 0, 3), (4, 3, 1), (12, 3, 10)}
 
 def delete_from_cmap(font, chars):

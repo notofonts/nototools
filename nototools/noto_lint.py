@@ -27,6 +27,7 @@ import collections
 import itertools
 import math
 import re
+import sys
 
 from fontTools import subset
 from fontTools import ttLib
@@ -40,6 +41,8 @@ from nototools import opentype_data
 from nototools import render
 from nototools import unicode_data
 
+NOTO_URL = "http://code.google.com/p/noto/"
+NOTO_NEW_URL = "http://www.google.com/get/noto/"
 
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
@@ -307,20 +310,8 @@ def curves_intersect(contour_list):
     return False
 
 
-def name_records(font):
-    name_table = font["name"]
-    names = {}
-    for record in name_table.names:
-        assert (record.platformID,
-                record.platEncID,
-                record.langID) == (3, 1, 0x409)
-        names[record.nameID] = unicode(record.string, "UTF-16BE")
-    return names
-
-
 def font_version(font):
-    names = name_records(font)
-    return names[5]
+    return font_data.get_name_records(font)[5]
 
 
 def printable_font_revision(font, accuracy=2):
@@ -357,11 +348,25 @@ FONT_STYLES = [
     "Nastaliq",
 ]
 
+CJK_FONT_STYLES = [
+    "Sans"
+]
+
 FONT_WEIGHTS = [
     "Regular",
     "Bold",
     "Italic",
     "BoldItalic",
+]
+
+CJK_FONT_WEIGHTS = [
+    "Light",
+    "DemiLight",
+    "Thin",
+    "Regular",
+    "Medium",
+    "Bold",
+    "Black"
 ]
 
 FONT_VARIANTS = [
@@ -371,6 +376,28 @@ FONT_VARIANTS = [
     "Western",
     "Estrangela",
 ]
+
+CJK_FONT_VARIANTS = [
+    "JP",
+    "KR",
+    "SC",
+    "TC",
+    "CJKjp",
+    "CJKkr",
+    "CJKsc",
+    "CJKtc"
+]
+
+CJK_VARIANT_NAMES = {
+    "JP": "JP",
+    "KR": "KR",
+    "SC": "SC",
+    "TC": "TC",
+    "CJKjp": "CJK JP",
+    "CJKkr": "CJK KR",
+    "CJKsc": "CJK SC",
+    "CJKtc": "CJK TC"
+}
 
 HARD_CODED_FONT_INFO = {
     "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
@@ -443,7 +470,7 @@ def check_font(file_name,
                 style,
                 variant if variant else '',
                 weight,
-                name_records(font)[8].split()[0],
+                font_data.get_name_records(font)[8].split()[0],
                 category,
                 interesting_part_of_file_name,
                 printable_font_revision(font),
@@ -452,6 +479,7 @@ def check_font(file_name,
             if category is "info":
                 print "[informational]",
             print message.encode('UTF-8')
+        sys.stdout.flush()
 
 
     def code_range_to_set(code_range):
@@ -473,8 +501,13 @@ def check_font(file_name,
         ranges = unicode_data._parse_code_ranges(noto_data.CJK_RANGES_TXT)
         return code_range_to_set(ranges) & unicode_data.defined_characters()
 
+
     def check_name_table():
-        names = name_records(font)
+        if is_cjk:
+           check_name_table_cjk()
+           return
+
+        names = font_data.get_name_records(font)
 
         # Check family name
         expected_family_name = 'Noto ' + style
@@ -570,7 +603,7 @@ def check_font(file_name,
 
         if 11 not in names:
             warn("Vendor", "The Vendor URL field in 'name' table is not set.")
-        elif names[11] != 'http://code.google.com/p/noto/':
+        elif names[11] != NOTO_URL:
             warn("Vendor",
                  "Vendor URL field doesn't match template: '%s'." % names[11])
 
@@ -591,60 +624,122 @@ def check_font(file_name,
                  "License URL doesn't match template: '%s'." % names[14])
 
 
-    def check_cmap_table():
-        cmap_table = font['cmap']
-        cmaps = {}
-        for table in cmap_table.tables:
-            if (table.format,
-                table.platformID,
-                table.platEncID) not in [(4, 3, 1), (12, 3, 10)]:
-                warn("cmap",
-                     "'cmap' has a subtable of "
-                     "(format=%d, platform=%d, encoding=%d), "
-                     "which it shouldn't have." % (
-                         table.format, table.platformID, table.platEncID))
+    def check_name_table_cjk():
+        names = font_data.get_name_records(font)
+
+        # Check family name
+        expected_family_name = 'Noto ' + style
+        if is_mono:
+            expected_family_name += ' Mono'
+        if variant:
+            expected_family_name += ' ' + CJK_VARIANT_NAMES[variant]
+        expected_family_name += ' ' + weight # weight always included
+
+        expected_subfamily_name = 'Regular' # all regular for now
+
+        expected_full_name = expected_family_name
+        expected_postscript_name = 'Noto' + style
+        if is_mono:
+          expected_postscript_name += 'Mono'
+        expected_postscript_name += variant + '-' + weight
+
+        ADOBE_COPYRIGHT = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
+                           u"\(http://www.adobe.com/\).")
+        SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
+                       "Version 1.1. This Font Software is distributed on an \"AS IS\" "
+                       "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
+                       "or implied. See the SIL Open Font License for the specific language, "
+                       "permissions and limitations governing your use of this Font Software.")
+        SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
+
+        if check_legal and not re.match(ADOBE_COPYRIGHT, names[0]):
+            warn("Copyright",
+                 "Copyright message doesn't match template: '%s': \n%s" %
+                 (names[0], ADOBE_COPYRIGHT))
+
+        if names[1] != expected_family_name:
+            warn("Family name",
+                 "Font family name is '%s', but was expecting '%s'." % (
+                     names[1], expected_family_name))
+
+        if names[2] != expected_subfamily_name:
+            warn("Sub-family name",
+                 "Font subfamily name is '%s', but was expecting '%s'." % (
+                     names[2], expected_subfamily_name))
+
+        if names[4] != expected_full_name:
+            warn("Font name",
+                 "Full font name is '%s', but was expecting '%s'." % (
+                     names[4], expected_full_name))
+
+        # CFF font hinting isn't a thing we expect to see in a version string
+
+        version_string = names[5]
+        idx = version_string.find(';')
+        if idx >= 0:
+          version_string = version_string[:idx]
+        match = re.match(r"Version (\d{1,5})\.(\d{1,5})", version_string)
+        if match:
+            major_version = match.group(1)
+            minor_version = match.group(2)
+            if ((0 <= int(major_version) <= 65535)
+                and (0 <= int(minor_version) <= 65535)):
+                accuracy = len(minor_version)
+                font_revision = printable_font_revision(font, accuracy)
+                if font_revision != major_version+"."+minor_version:
+                    warn("Font Revision", "fontRevision in 'head' table is %s, "
+                         "while font version in 'name' table is %s.%s." % (
+                             font_revision, major_version, minor_version))
             else:
-                cmaps[table.format] = table.cmap
-
-        if 4 not in cmaps:
-            warn("cmap",
-                 "'cmap' does not have a format 4 subtable, but it should.")
-
-        if 12 in cmaps:
-            cmap = cmaps[12]
-            # if there is a format 12 table, it should have non-BMP characters
-            if max(cmap.keys()) <= 0xFFFF:
-                warn("cmap",
-                     "'cmap' has a format 12 subtable but no "
-                     "non-BMP characters.")
-
-            # the format 4 table should be a subset of the format 12 one
-            if 4 in cmaps:
-                for char in cmaps[4]:
-                    if char not in cmap:
-                        warn("cmap",
-                             "U+%04X is mapped in cmap's format 4 subtable but "
-                             "not in the format 12 one." % char)
-                    elif cmaps[4][char] != cmap[char]:
-                        warn("cmap",
-                             "U+%04X is mapped to %s in cmap's format 4 "
-                             "subtable but to %s in the format 12 one." % (
-                                 char, cmaps[4][char], cmap[char]))
+                warn("Version",
+                     "Version string has numerical parts outside the range "
+                     "[0, 65535]: '%s'." % version_string)
         else:
-            cmap = cmaps[4]
+            warn("Version", "Version string is irregular: '%s'." % names[5])
 
+        if names[6] != expected_postscript_name:
+            warn("Postscript name",
+                 "Postscript name is '%s', but was expecting '%s'." % (
+                     names[6], expected_postscript_name))
 
-        required_in_all_fonts = [
-            0x0000, # .null
-            0x000D, # CR
-            0x0020] # space
-        for code in required_in_all_fonts:
-            if code not in cmap:
-                warn("cmap",
-                     "U+%04X is not mapped in cmap, but it should be (see "
-                     "https://www.microsoft.com/typography/otspec/recom.htm)."
-                         % code)
+        if check_legal and names[7] != "Noto is a trademark of Google Inc.":
+            warn("Trademark",
+                 "Trademark message doesn't match template: '%s'." % names[7])
 
+        if 8 not in names:
+            warn("Manufacturer",
+                 "Manufacturer name in 'name' table is not set.")
+
+        if 9 not in names:
+            warn("Designer", "Designer name in 'name' table is not set.")
+
+        if 10 not in names:
+            warn("Description",
+                 "The description field in 'name' table is not set.")
+
+        if 11 not in names:
+            warn("Vendor", "The Vendor URL field in 'name' table is not set.")
+        elif names[11] != NOTO_NEW_URL:
+            warn("Vendor",
+                 "Vendor URL field doesn't match template: '%s'." % names[11])
+
+        if 12 not in names:
+            warn("Designer",
+                 "The Designer URL field in 'name' table is not set.")
+        elif not names[12].startswith('http://'):
+            warn("Designer",
+                 "The Designer URL field in 'name' is not an "
+                 "http URL: '%s'." % names[12])
+
+        if names[13] != SIL_LICENSE:
+            warn("License",
+                 "License message doesn't match template: '%s'." % names[13])
+
+        if names[14] != SIL_LICENSE_URL:
+            warn("License",
+                 "License URL doesn't match template: '%s'." % names[14])
+
+    def _check_needed_chars(cmap):
         # TODO(roozbeh): check the glyph requirements for controls specified at
         # https://www.microsoft.com/typography/otspec/recom.htm
 
@@ -689,10 +784,88 @@ def check_font(file_name,
 
         missing_chars = needed_chars - set(cmap.keys())
         if missing_chars:
-            warn("Chars",
-                 "The following characters are missing from the font: %s."
-                     % printable_unicode_range(missing_chars))
+            if len(missing_chars) > 100:
+                warn("Chars",
+                     "Over 100 characters are missing from the font: %s."
+                     % ", ".join(printable_unicode_range(missing_chars).split(", ")[:5]) + "...")
+            else:
+                warn("Chars",
+                     "The following characters are missing from the font: %s."
+                         % printable_unicode_range(missing_chars))
 
+
+    def check_cmap_table():
+        cmap_table = font['cmap']
+        cmaps = {}
+        expected_tables = [(4, 3, 1), (12, 3, 10)]
+        if is_cjk:
+            expected_tables.extend([
+                # Adobe says historically some programs used these to identify
+                # the script in the font.  The encodingID is the quickdraw script
+                # manager code.  These are dummy tables.
+                (6, 1, 1),  # Japanese
+                (6, 1, 2),  # Traditional Chinese
+                (6, 1, 3),  # Korean
+                (6, 1, 25), # Simplified Chinese
+                # Adobe says these just point at the windows versions, so there
+                # is no issue.
+                (4, 0, 3),   # Unicode, BMP only
+                (12, 0, 4),  # Unicode, Includes Non-BMP
+                # Required for variation selectors.
+                (14, 0, 5)]) # Unicode, Variation sequences
+        for table in cmap_table.tables:
+            if (table.format,
+                table.platformID,
+                table.platEncID) not in expected_tables:
+                warn("cmap",
+                     "'cmap' has a subtable of "
+                     "(format=%d, platform=%d, encoding=%d), "
+                     "which it shouldn't have." % (
+                         table.format, table.platformID, table.platEncID))
+            elif table != (12, 0, 4):
+                cmaps[table.format] = table.cmap
+
+        if 4 not in cmaps:
+            warn("cmap",
+                 "'cmap' does not have a format 4 subtable, but it should.")
+
+        if 12 in cmaps:
+            cmap = cmaps[12]
+            # if there is a format 12 table, it should have non-BMP characters
+            if max(cmap.keys()) <= 0xFFFF:
+                warn("cmap",
+                     "'cmap' has a format 12 subtable but no "
+                     "non-BMP characters.")
+
+            # the format 4 table should be a subset of the format 12 one
+            if 4 in cmaps:
+                for char in cmaps[4]:
+                    if char not in cmap:
+                        warn("cmap",
+                             "U+%04X is mapped in cmap's format 4 subtable but "
+                             "not in the format 12 one." % char)
+                    elif cmaps[4][char] != cmap[char]:
+                        warn("cmap",
+                             "U+%04X is mapped to %s in cmap's format 4 "
+                             "subtable but to %s in the format 12 one." % (
+                                 char, cmaps[4][char], cmap[char]))
+        else:
+            cmap = cmaps[4]
+
+
+        required_in_all_fonts = [
+            0x0000, # .null
+            0x000D, # CR
+            0x0020] # space
+        for code in required_in_all_fonts:
+            if code not in cmap:
+                warn("cmap",
+                     "U+%04X is not mapped in cmap, but it should be (see "
+                     "https://www.microsoft.com/typography/otspec/recom.htm)."
+                         % code)
+
+        if not is_cjk:
+            _check_needed_chars(cmap)
         privates_in_cmap = {char for char in cmap
                             if unicode_data.is_private_use(char)}
         if privates_in_cmap:
@@ -712,7 +885,7 @@ def check_font(file_name,
                  "there are: %s."
                      % printable_unicode_range(non_characters_in_cmap))
 
-        if not (script == "Qaae" or script == "Latn"):
+        if not (script == "Qaae" or script == "Latn" or is_cjk):
             ascii_letters = noto_data.ascii_letters()
             contained_letters = ascii_letters & set(cmap.keys())
             if contained_letters:
@@ -764,6 +937,13 @@ def check_font(file_name,
                  "Value of lineGap in 'hhea' table is %d, but should be 0."
                      % hhea_table.lineGap)
 
+        vhea_table = font.get("vhea")
+        if vhea_table:
+            if vhea_table.lineGap != 0:
+                warn("Line Gap",
+                     "Value of lineGap in 'vhea' table is %d, but should be 0."
+                     % vhea_table.lineGap)
+
         os2_table = font["OS/2"]
 
         if os2_table.fsType != 0:
@@ -797,15 +977,30 @@ def check_font(file_name,
                  "from the opposite of value of Descent in 'hhea' table (%d), "
                  "but they should be opposites." %
                  (os2_table.usWinDescent, hhea_table.descent))
-        if os2_table.achVendID != 'GOOG':
+        if check_legal and os2_table.achVendID != 'GOOG':
             warn("OS/2",
                  "Value of achVendID in the 'OS/2' table is %s, "
                  "but should be GOOG." %
                  os2_table.achVendID)
 
-        if 'Bold' in weight:
-            expected_weight = 700
+        if is_cjk:
+            expected_weights = {
+                'black': 900,
+                'bold': 700,
+                'medium': 500,
+                'regular': 400,
+                'demilight': 350,
+                'light': 300,
+                'thin': 250
+                }
         else:
+            expected_weights = {
+                'bold': 700,
+                'regular': 400
+            }
+        expected_weight = expected_weights.get(weight.lower())
+        if not expected_weight:
+            print "unexpected weight '%s'" % weight
             expected_weight = 400
 
         if os2_table.usWeightClass != expected_weight:
@@ -813,11 +1008,38 @@ def check_font(file_name,
                  "Value of usWeightClass in 'OS/2' table is %d, but should "
                  "be %d." % (os2_table.usWeightClass, expected_weight))
 
+        OS2_SEL_ITALIC_MASK = 1
+        OS2_SEL_BOLD_MASK = 1 << 5
+        OS2_SEL_REGULAR_MASK = 1 << 6
+        OS2_SEL_USE_TYPO_METRICS_MASK = 1 << 7
+        OS2_SEL_WWS_MASK = 1 << 8
+        # debug
+        if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
+            print "fsSelection italic"
+        if os2_table.fsSelection & OS2_SEL_BOLD_MASK:
+            print "fsSelection bold"
+        if os2_table.fsSelection & OS2_SEL_REGULAR_MASK:
+            print "fsSelection regular"
+            if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
+                warn("OS/2",
+                     "fsSelection Regular bit is set, so the Italic bit should be clear.")
+            if os2_table.fsSelection & OS2_SEL_BOLD_MASK:
+                warn("OS/2",
+                     "fsSelection Regular bit is set, so the Bold bit should be clear.")
+        if os2_table.fsSelection & OS2_SEL_WWS_MASK:
+            print "fsSelection wws"
+
+        if os2_table.fsSelection & OS2_SEL_USE_TYPO_METRICS_MASK:
+            warn("OS/2",
+                 "UseTypoMetrics bit in fsSelection is set, but should be clear.")
+
         # Do not check for now
         # check_ul_unicode_range()
 
 
     def check_vertical_limits():
+        if 'glyf' not in font:
+            return
         glyf_table = font['glyf']
         us_win_ascent = font['OS/2'].usWinAscent
         us_win_descent = font['OS/2'].usWinDescent
@@ -878,6 +1100,8 @@ def check_font(file_name,
 
 
     def check_for_intersections_and_off_curve_extrema():
+        if 'glyf' not in font:
+            return
         glyf_table = font['glyf']
         for glyph_index in range(len(glyf_table.glyphOrder)):
             glyph_name = glyf_table.glyphOrder[glyph_index]
@@ -928,7 +1152,7 @@ def check_font(file_name,
                     all_contours.append(curves_in_contour)
 
                 if curves_intersect(all_contours):
-                    warn("Inersection",
+                    warn("Intersection",
                          "The glyph '%s' has intersecting "
                          "outlines." % glyph_name)
 
@@ -1070,7 +1294,7 @@ def check_font(file_name,
           "Vai",
           "Yi",
         ]
-        if unicode_data.human_readable_script_name(script) in whitelist:
+        if not is_cjk and unicode_data.human_readable_script_name(script) in whitelist:
             return
         if "GPOS" not in font:
             warn("GPOS", "There is no GPOS table in the font.")
@@ -1088,6 +1312,8 @@ def check_font(file_name,
 
         Only the first 'rtlm' feature in the font is used.
         """
+        # need to discuss this with Adobe
+
         rtlm = {}
         if "GSUB" in font:
             feature_record = font["GSUB"].table.FeatureList.FeatureRecord
@@ -1148,6 +1374,8 @@ def check_font(file_name,
                              code, cmap[code]))
 
     def check_hints():
+        if not 'glyf' in font:
+            return
         expected_to_be_hinted = '/hinted' in file_name or '_hinted' in file_name
         expected_to_be_unhinted = not expected_to_be_hinted
 
@@ -1257,6 +1485,8 @@ def check_font(file_name,
 
 
     def check_stems(cmap):
+        if not 'glyf' in font:
+            return
         # Only implemented for Ogham, currently
         # FIXME: Add support for Arabic, Syriac, Mongolian, Phags-Pa,
         # Devanagari, Bengali, etc
@@ -1273,7 +1503,7 @@ def check_font(file_name,
                 if lsb != 0:
                     warn("Stem",
                          "The glyph for U+%04X (%s) is supposed to have a stem "
-                         "connecting to the left, but it's left side bearing "
+                         "connecting to the left, but its left side bearing "
                          "is %d instead of 0."
                          % (code, unicode_data.name(code), lsb))
             if code in joins_to_right:
@@ -1285,6 +1515,7 @@ def check_font(file_name,
                          "connecting to the right, but it's right side bearing "
                          "is %d instead of -70."
                          % (code, unicode_data.name(code), rsb))
+
 
     def check_accessiblity(cmap):
         """Test if all glyphs are accessible through cmap, decomps, or GSUB.
@@ -1325,6 +1556,8 @@ def check_font(file_name,
 
     font = ttLib.TTFont(file_name)
 
+    is_cjk = False
+    is_mono = False
     just_the_file_name = file_name.split("/")[-1]
     fontname_regex = (
         "Noto"
@@ -1351,11 +1584,26 @@ def check_font(file_name,
                  "Style %s also needs a script mentioned in the "
                  "file name." % style)
     else:
-        style, script, variant, weight = HARD_CODED_FONT_INFO[
-            just_the_file_name]
-        warn("File name",
-             "File name '%s' does not match the Noto font naming guidelines."
-             % just_the_file_name)
+        cjkfontname_regex = (
+        "Noto"
+        + "(?P<style>" + "|".join(CJK_FONT_STYLES) + ")"
+        + "(?P<mono>Mono)?"
+        + "(?P<variant>" + "|".join(CJK_FONT_VARIANTS) + ")?"
+        + "-"
+        + "(?P<weight>" + "|".join(CJK_FONT_WEIGHTS) + ")"
+        + ".otf$")
+        match = re.match(cjkfontname_regex, just_the_file_name)
+        if match:
+            style, mono, variant, weight = match.groups()
+            script = None
+            is_cjk = True
+            is_mono = (mono == "Mono")
+        else:
+            style, script, variant, weight = HARD_CODED_FONT_INFO[
+                just_the_file_name]
+            warn("File name",
+                 "File name '%s' does not match the Noto font naming guidelines."
+                 % just_the_file_name)
 
     is_ui = (variant == "UI")
 

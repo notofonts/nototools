@@ -19,10 +19,14 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
+import os
+import os.path
+fonts_conf = os.path.abspath(os.path.join (os.path.dirname(__file__), "fonts.conf"))
+os.putenv("FONTCONFIG_FILE", fonts_conf)
+
 import cairo
 import pango
 import pangocairo
-import os.path
 
 class DrawParams:
     """Parameters used for rendering text in draw_on_surface and its callers"""
@@ -69,7 +73,6 @@ def draw_on_surface(surface, text, params):
     layout.set_width(params.width * pango.SCALE)
     layout.set_spacing((params.line_spacing - params.font_size) * pango.SCALE)
 
-    # TODO: use ctypes to wrap fontconfig to avoid using the system's fonts
     font = pango.FontDescription()
     font.set_family(params.family)
     font.set_size(params.font_size * pango.SCALE)
