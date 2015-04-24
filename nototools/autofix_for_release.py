@@ -113,10 +113,7 @@ def fix_name_table(font):
       modified = True
       print 'Updated name table record 7 to "%s"' % TRADEMARK_LINE
 
-    # Name record 16 is the preferred family, and it needs to be present
-    # in the CJK fonts since there are more than 2 weights.  It is not
-    # clear why it was being dropped (or why record 17, preferred subfamily,
-    # was not being dropped).
+    # TODO: check preferred family/subfamily(16&17)
 
     return modified
 
