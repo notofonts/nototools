@@ -186,3 +186,10 @@ def add_to_cmap(font, mapping):
         if (table.format, table.platformID, table.platEncID) in UNICODE_CMAPS:
             for code, glyph in mapping.iteritems():
                 table.cmap[code] = glyph
+
+
+def get_glyph_horizontal_advance(font, glyph_id):
+    """Returns the horiz advance of the glyph id."""
+    hmtx_table = font['hmtx'].metrics
+    adv, lsb = hmtx_table[glyph_id]
+    return adv
