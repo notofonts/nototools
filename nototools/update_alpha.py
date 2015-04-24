@@ -82,11 +82,9 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
         dst_path = os.path.join(alphadir, rel_path)
         # skip files that are the same as targets
         if not os.path.exists(dst_path):
-          print "add " + rel_path
           added += 1
           font_paths.append(src_path)
         elif not filecmp.cmp(src_path, dst_path):
-          print "update " + rel_path
           updated += 1
           font_paths.append(src_path)
 
@@ -130,10 +128,10 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
   else:
     operation = 'Update'
   one_line_msg = '%s %s from delivery on %s.' % (operation, names, date_str)
-  print 'msg: ' + one_line_msg
 
   # generate compare file to use as checkin log
-  with RedirectStdout('/tmp/svn_checkin.txt'):
+  checkin_msg_file = '/tmp/svn_checkin.txt'
+  with RedirectStdout(checkin_msg_file):
     print one_line_msg
     print
     compare_summary.compare_summary(
@@ -145,7 +143,6 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
     dst_path = os.path.join(alphadir, rel_path)
     need_add = not os.path.exists(dst_path)
     # assume if it exists, its under version control
-    print ('adding ' if need_add else 'editing ') + rel_path
     if not dry_run:
       shutil.copy2(src_path, dst_path)
       if need_add:
@@ -154,16 +151,25 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
   # commit the change
   # leave this out for now, it's useful to check before the commit to make sure
   # nothing screwed up.
-  # subprocess.check_call(['svn', 'commit', '-F', log_msg_file],
+  # subprocess.check_call(['svn', 'commit', '-F', checkin_msg_file],
   #                       stderr=subprocess.STDOUT)
+
+  with open(checkin_msg_file) as f:
+    checkin_msg = f.read().strip();
+
+  print '%s\n-----\n%s\n-----' % ('dry run' if dry_run else 'summary', checkin_msg)
+  if not dry_run:
+    print 'command to update: svn commit -F \'%s\'' % checkin_msg_file
+
 
 def main():
   values = notoconfig.values
+  default_alpha = values.get('alpha')
 
   parser = argparse.ArgumentParser()
   parser.add_argument('srcdir', help='source to push to noto-alpha')
-  parser.add_argument('--alpha', help='local noto-alpha svn repo',
-                      default=values.get('alpha', None))
+  parser.add_argument('--alpha', help='local noto-alpha svn repo (default %s)' %
+                      default_alpha, default=default_alpha)
   parser.add_argument('--dry-run', dest='dry_run',
                       help='do not stage changes for svn', action='store_true')
   args = parser.parse_args()
@@ -174,6 +180,7 @@ def main():
 
   if not os.path.exists(args.alpha):
     print '%s does not exist or is not a directory' % args.alpha
+    return
 
   push_to_noto_alpha(args.alpha, args.srcdir, args.dry_run)
 

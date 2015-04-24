@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Copy downloaded font zip files from MT into noto directory structure.
+"""Copy downloaded font zip files from Monotype into noto directory
+structure.
 
 This leverages some properties of the font drops.  The drops come in
 zip files with an underscore and 8-digit date suffix before the extension.
@@ -46,28 +47,32 @@ import cStringIO
 import os
 import os.path
 import re
+import shutil
 import sys
 import zipfile
 
 from fontTools import ttLib
 
-def write_data_to_file(data, root, subdir, filename):
-  dir = os.path.join(root, subdir)
-  if not os.path.exists(dir):
-    os.mkdir(dir)
-  with open(os.path.join(dir, filename), 'wb') as f:
-    f.write(data)
-  print 'extracted %s into %s' % (filename, dir)
+import notoconfig
 
-def unzip_to_directory_tree(root, filepath):
-  print "# " + filepath
+def write_data_to_file(data, root, subdir, filename):
+  dstdir = os.path.join(root, subdir)
+  if not os.path.exists(dstdir):
+    os.mkdir(dstdir)
+  with open(os.path.join(dstdir, filename), 'wb') as f:
+    f.write(data)
+  print 'extracted \'%s\' into %s' % (filename, subdir)
+
+
+def unzip_to_directory_tree(drop_dir, filepath):
   hint_rx = re.compile(r'_((?:un)?hinted)/(.+)')
   plain_rx = re.compile(r'[^/]+')
   zf = zipfile.ZipFile(filepath, 'r')
+  print 'extracting files from %s to %s' % (filepath, drop_dir)
+  count = 0
   mapped_names = []
   unmapped = []
   for name in zf.namelist():
-    print "## " + name
     # skip names representing portions of the path
     if name.endswith('/'):
       continue
@@ -83,7 +88,8 @@ def unzip_to_directory_tree(root, filepath):
       # we know where it goes
       subdir = result.group(1)
       filename = result.group(2)
-      write_data_to_file(data, root, subdir, filename)
+      write_data_to_file(data, drop_dir, subdir, filename)
+      count += 1
       continue
 
     result = plain_rx.match(name)
@@ -98,12 +104,13 @@ def unzip_to_directory_tree(root, filepath):
     # if it's not a .ttf file, but it starts with
     # the name of a .ttf file (sans suffix), we put
     # it in the same subdir the .ttf file went into.
-    # else we put it at root (no subdir).
+    # else we put it at drop_dir (no subdir).
     if name.endswith('.ttf'):
       blobfile = cStringIO.StringIO(data)
       font = ttLib.TTFont(blobfile)
       subdir = 'hinted' if font.get('fpgm') or font.get('prep') else 'unhinted'
-      write_data_to_file(data, root, subdir, name)
+      write_data_to_file(data, drop_dir, subdir, name)
+      count += 1
 
       basename = os.path.splitext(name)[0]
       mapped_names.append((basename, subdir))
@@ -120,9 +127,25 @@ def unzip_to_directory_tree(root, filepath):
         if name.startswith(mapped_name):
           subdir = mapped_subdir
           break
-      write_data_to_file(data, root, subdir, name)
+      write_data_to_file(data, drop_dir, subdir, name)
+      count += 1
+
+  print 'extracted %d files' % count
+
 
 def grab_files(dst, files):
+  """Get date from each filename in files, create a folder for it, under
+  dst/drops, then extract the files to it."""
+
+  # The zip indicates that the corresponding drop is good and built from it. But
+  # we might have messed up along the way, so:
+  # - if we have a drop and a zip, assume it's already handled
+  # - if we have a drop but no zip, assume the drop needs to be rebuilt from the zip
+  # - if we have a zip and no drop
+  #   - if we have new zip, complain
+  #   - else rebuild the drop from the old zip
+  # - else build the drop, and if successful, save the zip
+
   name_date_rx = re.compile(r'(.*)_(\d{4})(\d{2})(\d{2})\.zip')
   for f in files:
     filename = os.path.basename(f)
@@ -132,12 +155,34 @@ def grab_files(dst, files):
       continue
     name = result.group(1)
     date = '_'.join([d for d in result.group(2,3,4)])
-    drop_dir = os.path.join(dst, date)
-    if not os.path.exists(drop_dir):
-      os.mkdir(drop_dir)
+    drop_dir = os.path.join(dst, 'drops', date)
+
+    zip_dir = os.path.join(dst, 'zips')
+    zip_filename = os.path.join(zip_dir, filename)
+    if os.path.exists(drop_dir):
+      if os.path.exists(zip_filename):
+        print 'already have a Monotype drop and zip for %s' % filename
+        continue
+      else:
+        # clean up, assume needs rebuild
+        shutil.rmtree(drop_dir)
+    else:
+      if os.path.exists(zip_filename):
+        if os.path.realpath(f) != os.path.realpath(zip_filename):
+          print 'already have a zip file named %s for %s' % (zip_filename, f)
+          continue
+
+    os.mkdir(drop_dir)
     unzip_to_directory_tree(drop_dir, f)
 
+    if not os.path.exists(zip_filename):
+      print 'writing %s to %s' % (f, zip_filename)
+      shutil.copy2(f, zip_filename)
+
+
 def find_and_grab_files(dst, src, namere):
+  """Iterate over files in src with names matching namere, and pass
+  this list to grab_files."""
   filelist = []
   for f in os.listdir(src):
     path = os.path.join(src, f)
@@ -151,26 +196,37 @@ def find_and_grab_files(dst, src, namere):
     return
   grab_files(dst, filelist)
 
+
 def main():
+  # The dest directory must exist and should have 'zips' and 'drops' subdirs.
+
+  default_srcdir = os.path.expanduser('~/Downloads')
+  default_dstdir = notoconfig.values.get('monotype_data')
+  default_regex = r'Noto.*_\d{8}.zip'
+
   parser = argparse.ArgumentParser()
-  parser.add_argument('dstdir', help='destination directory')
-  parser.add_argument('-sd', '--srcdir', help='source directory',
-                      default=os.path.expanduser('~/Downloads'))
-  parser.add_argument('--name', help='file name regex to match',
-                      default=r'Noto.*_\d{8}\.zip')
+  parser.add_argument('-dd', '--dstdir', help='destination directory (default %s)' %
+                      default_dstdir, default=default_dstdir)
+  parser.add_argument('-sd', '--srcdir', help='source directory (default %s)' %
+                      default_srcdir, default=default_srcdir)
+  parser.add_argument('--name', help='file name regex to match ( default \'%s\'' %
+                      default_regex, default=default_regex)
+  parser.add_argument('--srcs', help='source files (if defined, use instead of srcdir+name)',
+                      nargs="*")
   args = parser.parse_args()
 
-  if not os.path.isdir(args.srcdir):
-    print '%s does not exist or is not a directory' % args.srcdir
-    return
-
   if not os.path.exists(args.dstdir):
-    os.makedirs(args.dstdir)
-  elif not os.path.isdir(args.dstdir):
-    print '%s exists and is not a directory' % args.dstdir
+    print '%s does not exists or is not a directory' % args.dstdir
     return
 
-  find_and_grab_files(args.dstdir, args.srcdir, args.name)
+  if args.srcs:
+    grab_files(args.dstdir, args.srcs)
+  else:
+    if not os.path.isdir(args.srcdir):
+      print '%s does not exist or is not a directory' % args.srcdir
+      return
+
+    find_and_grab_files(args.dstdir, args.srcdir, args.name)
 
 if __name__ == "__main__":
     main()
