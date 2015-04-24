@@ -151,7 +151,7 @@ def find_and_grab_files(dst, src, namere):
 
 
 def main():
-  # The dest directory must exists and should have 'zips' and 'drops' subdirs.
+  # The dest directory must exist and should have 'zips' and 'drops' subdirs.
 
   default_srcdir = os.path.expanduser('~/Downloads')
   default_dstdir = notoconfig.values.get('adobe_data')
