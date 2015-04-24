@@ -42,6 +42,7 @@ from nototools import render
 from nototools import unicode_data
 
 NOTO_URL = "http://code.google.com/p/noto/"
+NOTO_NEW_URL = "http://www.google.com/get/noto/"
 
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
@@ -643,10 +644,13 @@ def check_font(file_name,
         expected_subfamily_name = 'Regular' # all regular for now
 
         expected_full_name = expected_family_name
-        expected_postscript_name = 'Noto' + style + variant + '-' + weight
+        expected_postscript_name = 'Noto' + style
+        if is_mono:
+          expected_postscript_name += 'Mono'
+        expected_postscript_name += variant + '-' + weight
 
         ADOBE_COPYRIGHT = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
-                           u"\(http://www.adobe.com/\), with Reserved Font Name 'Noto'.")
+                           u"\(http://www.adobe.com/\).")
         SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
                        "Version 1.1. This Font Software is distributed on an \"AS IS\" "
                        "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
@@ -721,7 +725,7 @@ def check_font(file_name,
 
         if 11 not in names:
             warn("Vendor", "The Vendor URL field in 'name' table is not set.")
-        elif names[11] != NOTO_URL:
+        elif names[11] != NOTO_NEW_URL:
             warn("Vendor",
                  "Vendor URL field doesn't match template: '%s'." % names[11])
 
@@ -1154,7 +1158,7 @@ def check_font(file_name,
                     all_contours.append(curves_in_contour)
 
                 if curves_intersect(all_contours):
-                    warn("Inersection",
+                    warn("Intersection",
                          "The glyph '%s' has intersecting "
                          "outlines." % glyph_name)
 
@@ -1404,6 +1408,88 @@ def check_font(file_name,
                          "The font is supposed to be hinted, but "
                          "glyph '%s' doesn't have hints." % glyph_name)
 
+
+    def check_explicit_advances():
+        """Check some cases where we expect advances to be explicitly related."""
+        cmap = font_data.get_cmap(font)
+
+        def get_horizontal_advance(codepoint):
+            return font_data.get_glyph_horizontal_advance(font, cmap[codepoint])
+
+        def expect_width(codepoint, expected, low_divisor=None, high_divisor=None):
+            # it is ok if the font does not support the tested codepoint
+            if codepoint not in cmap:
+                return
+            # no low divisor means exact match of the expected advance
+            if not low_divisor:
+                low_divisor = 1
+                slop = 0
+            else:
+                slop = 1
+            adv = get_horizontal_advance(codepoint)
+            if not high_divisor:
+                exp = int(round(float(expected) / low_divisor))
+                if abs(adv - exp) > slop:
+                    glyph_name = cmap[codepoint]
+                    glyph_id = font.getGlyphID(glyph_name)
+                    warn("Advances",
+                         "The advance of U+%04x (%s, glyph %d) is %d, but expected %d." %
+                         (codepoint, glyph_name, glyph_id, adv, exp))
+            else:
+                # note name switch, since the higher divisor returns the lower value
+                high_exp = int(round(float(expected) / low_divisor))
+                low_exp =  int(round(float(expected) / high_divisor))
+                if not (low_exp - slop <= adv <= high_exp + slop):
+                    glyph_name = cmap[codepoint]
+                    glyph_id = font.getGlyphID(glyph_name)
+                    warn("Advances",
+                         "The advance of U+%04x (%s, glyph %d) is %, but expected between"
+                         "%d and %d." % (codepoint, glyph_name, glyph_id, adv, low_exp,
+                                         high_exp))
+
+
+        digit_char = ord('0')
+        period_char = ord('.')
+        comma_char = ord(',')
+        space_char = ord(' ')
+
+        if digit_char in cmap:
+            digit_width = get_horizontal_advance(digit_char)
+            for i in range(10):
+                digit_char = ord('0') + i
+                width = get_horizontal_advance(digit_char)
+                if width != digit_width:
+                    warn("Advances",
+                         "The advance of '%s' (%d) is different from that of '0' (%d)." %
+                         (digit_char, width, digit_width))
+
+        if period_char in cmap:
+            period_width = get_horizontal_advance(period_char)
+            if comma_char in cmap:
+                expect_width(comma_char, period_width)
+        if 0x00a0 in cmap: # no-break space
+            space_width = get_horizontal_advance(space_char);
+            expect_width(0x00a0, space_width)
+        em_width = font['head'].unitsPerEm
+        expect_width(0x2000, em_width, 2) # en_quad
+        expect_width(0x2001, em_width)    # em_quad
+        expect_width(0x2002, em_width, 2) # en_space
+        expect_width(0x2003, em_width)    # em_space
+        expect_width(0x2004, em_width, 3) # three-per-em space
+        expect_width(0x2005, em_width, 4) # four-per-em space
+        expect_width(0x2006, em_width, 6) # six-per-em space
+        if digit_char in cmap:
+            expect_width(0x2007, digit_width) # figure space
+        if period_char in cmap:
+            expect_width(0x2008, period_width) # punctuation space
+        # see http://unicode.org/charts/PDF/U2000.pdf, but microsoft (below)
+        # says French uses 1/8 em.
+        expect_width(0x2009, em_width, 5, 6) # thin space
+        # see http://www.microsoft.com/typography/developers/fdsspec/spaces.htm
+        expect_width(0x200A, em_width, 10, 16) # hair space
+        expect_width(0x200B, 0) # zero width space
+
+
     def check_stems(cmap):
         if not 'glyf' in font:
             return
@@ -1423,7 +1509,7 @@ def check_font(file_name,
                 if lsb != 0:
                     warn("Stem",
                          "The glyph for U+%04X (%s) is supposed to have a stem "
-                         "connecting to the left, but it's left side bearing "
+                         "connecting to the left, but its left side bearing "
                          "is %d instead of 0."
                          % (code, unicode_data.name(code), lsb))
             if code in joins_to_right:
@@ -1542,6 +1628,7 @@ def check_font(file_name,
     check_gpos_and_gsub_tables()
     check_for_bidi_pairs(cmap)
     check_hints()
+    check_explicit_advances()
     check_stems(cmap)
 
     # This must be done at the very end, since the subsetter may change the font
