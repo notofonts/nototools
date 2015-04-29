@@ -56,15 +56,15 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
   cldr_repo = os.path.abspath(cldr_repo)
 
   noto_cldr = os.path.join(noto_repo, 'third_party/cldr')
-  _check_dir_exists(noto_cldr)
-  _check_dir_exists(cldr_repo)
+  tool_utils.check_dir_exists(noto_cldr)
+  tool_utils.check_dir_exists(cldr_repo)
 
   if not tool_utils.git_is_clean(noto_repo):
     print 'Please fix'
     return
 
   if update:
-    svn_update(cldr_repo)
+    tool_utils.svn_update(cldr_repo)
 
   # get version of cldr.  unfortunately, this doesn't know from tags,
   # and no matter what tag you have checked out, it shows the latest revision
