@@ -159,6 +159,15 @@ def get_cmap(font):
     return {}
 
 
+def get_variation_sequence_cmap(font):
+    """Return the variation selector cmap, if available."""
+    cmap_table = font['cmap']
+    for table in cmap_table.tables:
+        if table.format == 14:
+            return table
+    return None
+
+
 UNICODE_CMAPS = {(4, 0, 3), (4, 3, 1), (12, 3, 10)}
 
 def delete_from_cmap(font, chars):
@@ -177,3 +186,10 @@ def add_to_cmap(font, mapping):
         if (table.format, table.platformID, table.platEncID) in UNICODE_CMAPS:
             for code, glyph in mapping.iteritems():
                 table.cmap[code] = glyph
+
+
+def get_glyph_horizontal_advance(font, glyph_id):
+    """Returns the horiz advance of the glyph id."""
+    hmtx_table = font['hmtx'].metrics
+    adv, lsb = hmtx_table[glyph_id]
+    return adv
