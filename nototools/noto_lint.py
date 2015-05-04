@@ -1020,20 +1020,19 @@ def check_font(file_name,
         OS2_SEL_USE_TYPO_METRICS_MASK = 1 << 7
         OS2_SEL_WWS_MASK = 1 << 8
         # debug
-        if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
-            print "fsSelection italic"
-        if os2_table.fsSelection & OS2_SEL_BOLD_MASK:
-            print "fsSelection bold"
+        # if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
+        #     print "fsSelection italic"
+        # if os2_table.fsSelection & OS2_SEL_BOLD_MASK:
+        #     print "fsSelection bold"
         if os2_table.fsSelection & OS2_SEL_REGULAR_MASK:
-            print "fsSelection regular"
             if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
                 warn("OS/2",
                      "fsSelection Regular bit is set, so the Italic bit should be clear.")
             if os2_table.fsSelection & OS2_SEL_BOLD_MASK:
                 warn("OS/2",
                      "fsSelection Regular bit is set, so the Bold bit should be clear.")
-        if os2_table.fsSelection & OS2_SEL_WWS_MASK:
-            print "fsSelection wws"
+        # if os2_table.fsSelection & OS2_SEL_WWS_MASK:
+        #     print "fsSelection wws"
 
         if os2_table.fsSelection & OS2_SEL_USE_TYPO_METRICS_MASK:
             warn("OS/2",
