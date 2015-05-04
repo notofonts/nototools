@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10712 $"/>
-		<generation date="$Date: 2014-08-01 10:07:43 -0700 (Fri, 01 Aug 2014) $"/>
+		<version number="$Revision: 11290 $"/>
+		<generation date="$Date: 2015-02-22 02:15:45 -0800 (Sun, 22 Feb 2015) $"/>
 		<language type="root"/>
 	</identity>
 	<localeDisplayNames>
@@ -330,23 +330,23 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateFormats>
 					<dateFormatLength type="full">
 						<dateFormat>
-							<pattern>U MMMM d, EEEE</pattern>
+							<pattern>r(U) MMMM d, EEEE</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="long">
 						<dateFormat>
-							<pattern>U MMMM d</pattern>
+							<pattern>r(U) MMMM d</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern>U MMM d</pattern>
+							<pattern>r MMM d</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
 						<dateFormat>
 							<!-- using y here to be short in locales that may not understand U anyway -->
-							<pattern>y-MM-dd</pattern>
+							<pattern>r-MM-dd</pattern>
 						</dateFormat>
 					</dateFormatLength>
 				</dateFormats>
@@ -378,10 +378,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="d">d</dateFormatItem>
 						<dateFormatItem id="E">ccc</dateFormatItem>
 						<dateFormatItem id="Ed">d, E</dateFormatItem>
-						<dateFormatItem id="Gy">U</dateFormatItem>
-						<dateFormatItem id="GyMMM">U MMM</dateFormatItem>
-						<dateFormatItem id="GyMMMd">U MMM d</dateFormatItem>
-						<dateFormatItem id="GyMMMEd">U MMM d, E</dateFormatItem>
+						<dateFormatItem id="Gy">r U</dateFormatItem>
+						<dateFormatItem id="GyMMM">r(U) MMM</dateFormatItem>
+						<dateFormatItem id="GyMMMd">r MMM d</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">r(U) MMM d, E</dateFormatItem>
 						<dateFormatItem id="h">h a</dateFormatItem>
 						<dateFormatItem id="H">HH</dateFormatItem>
 						<dateFormatItem id="hm">h:mm a</dateFormatItem>
@@ -395,17 +395,21 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="MMMd">MMM d</dateFormatItem>
 						<dateFormatItem id="MMMEd">MMM d, E</dateFormatItem>
 						<dateFormatItem id="ms">mm:ss</dateFormatItem>
-						<dateFormatItem id="y">U</dateFormatItem>
-						<dateFormatItem id="yMd">y-MM-dd</dateFormatItem>
-						<dateFormatItem id="yyyy">U</dateFormatItem>
-						<dateFormatItem id="yyyyM">y-MM</dateFormatItem>
-						<dateFormatItem id="yyyyMd">y-MM-dd</dateFormatItem>
-						<dateFormatItem id="yyyyMEd">y-MM-dd, E</dateFormatItem>
-						<dateFormatItem id="yyyyMMM">U MMM</dateFormatItem>
-						<dateFormatItem id="yyyyMMMd">U MMM d</dateFormatItem>
-						<dateFormatItem id="yyyyMMMEd">U MMM d, E</dateFormatItem>
-						<dateFormatItem id="yyyyQQQ">U QQQ</dateFormatItem>
-						<dateFormatItem id="yyyyQQQQ">U QQQQ</dateFormatItem>
+						<dateFormatItem id="UM">U MM</dateFormatItem>
+						<dateFormatItem id="UMd">U MM-d</dateFormatItem>
+						<dateFormatItem id="UMMM">U MMM</dateFormatItem>
+						<dateFormatItem id="UMMMd">U MMM d</dateFormatItem>
+						<dateFormatItem id="y">r(U)</dateFormatItem>
+						<dateFormatItem id="yMd">r-MM-dd</dateFormatItem>
+						<dateFormatItem id="yyyy">r(U)</dateFormatItem>
+						<dateFormatItem id="yyyyM">r-MM</dateFormatItem>
+						<dateFormatItem id="yyyyMd">r-MM-dd</dateFormatItem>
+						<dateFormatItem id="yyyyMEd">r-MM-dd, E</dateFormatItem>
+						<dateFormatItem id="yyyyMMM">r(U) MMM</dateFormatItem>
+						<dateFormatItem id="yyyyMMMd">r MMM d</dateFormatItem>
+						<dateFormatItem id="yyyyMMMEd">r(U) MMM d, E</dateFormatItem>
+						<dateFormatItem id="yyyyQQQ">r(U) QQQ</dateFormatItem>
+						<dateFormatItem id="yyyyQQQQ">r(U) QQQQ</dateFormatItem>
 					</availableFormats>
 					<appendItems>
 						<appendItem request="Day">{0} ({2}: {1})</appendItem>
@@ -1234,6 +1238,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="hms">h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h:mm:ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">HH:mm:ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h:mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">HH:mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">MM-dd</dateFormatItem>
 						<dateFormatItem id="MEd">MM-dd, E</dateFormatItem>
@@ -4250,6 +4258,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="temperature-fahrenheit">
 				<displayName>°F</displayName>
 				<unitPattern count="other">{0}°F</unitPattern>
+			</unit>
+			<unit type="temperature-generic">
+				<displayName>°</displayName>
+				<unitPattern count="other">{0}°</unitPattern>
 			</unit>
 			<unit type="temperature-kelvin">
 				<displayName>K</displayName>

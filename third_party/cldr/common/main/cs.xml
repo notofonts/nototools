@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="cs"/>
 	</identity>
 	<localeDisplayNames>
@@ -1815,15 +1815,20 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</quarters>
 				<dayPeriods>
 					<dayPeriodContext type="format">
-						<dayPeriodWidth type="narrow">
-							<dayPeriod type="am">AM</dayPeriod>
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am">dop.</dayPeriod>
 							<dayPeriod type="noon">pol.</dayPeriod>
-							<dayPeriod type="pm">PM</dayPeriod>
+							<dayPeriod type="pm">odp.</dayPeriod>
+						</dayPeriodWidth>
+						<dayPeriodWidth type="narrow">
+							<dayPeriod type="am">dop.</dayPeriod>
+							<dayPeriod type="noon">pol.</dayPeriod>
+							<dayPeriod type="pm">odp.</dayPeriod>
 						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
-							<dayPeriod type="am">AM</dayPeriod>
+							<dayPeriod type="am">dopoledne</dayPeriod>
 							<dayPeriod type="noon">poledne</dayPeriod>
-							<dayPeriod type="pm">PM</dayPeriod>
+							<dayPeriod type="pm">odpoledne</dayPeriod>
 						</dayPeriodWidth>
 					</dayPeriodContext>
 				</dayPeriods>
@@ -2599,7 +2604,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<relative type="1">příští sobotu</relative>
 			</field>
 			<field type="dayperiod">
-				<displayName>AM/PM</displayName>
+				<displayName>dop./odp.</displayName>
 			</field>
 			<field type="hour">
 				<displayName>Hodina</displayName>
@@ -2749,15 +2754,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (+1)</regionFormat>
 			<regionFormat type="standard">{0} (+0)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Čchung-čching</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Charbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kašghar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Neznámé město</exemplarCity>
 			</zone>

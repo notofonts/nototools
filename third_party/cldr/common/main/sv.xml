@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11033 $"/>
-		<generation date="$Date: 2014-10-17 10:32:11 -0700 (Fri, 17 Oct 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="sv"/>
 	</identity>
 	<localeDisplayNames>
@@ -197,7 +197,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="gay">gayo</language>
 			<language type="gba">gbaya</language>
 			<language type="gbz" draft="contributed">zoroastrisk dari</language>
-			<language type="gd">höglandsskotska</language>
+			<language type="gd">skotsk gäliska</language>
 			<language type="gez">etiopiska</language>
 			<language type="gil">gilbertiska</language>
 			<language type="gl">galiciska</language>
@@ -694,7 +694,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Maya">mayahieroglyfer</script>
 			<script type="Mend" draft="contributed">mende</script>
 			<script type="Merc" draft="contributed">kursiv-meroitiska</script>
-			<script type="Mero">meriotiska</script>
+			<script type="Mero">meroitiska</script>
 			<script type="Mlym">malayalam</script>
 			<script type="Modi" draft="contributed">modiska</script>
 			<script type="Mong">mongoliska</script>
@@ -1633,10 +1633,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						</intervalFormatItem>
 						<intervalFormatItem id="h">
 							<greatestDifference id="a">h a – h a</greatestDifference>
-							<greatestDifference id="h">h-h a</greatestDifference>
+							<greatestDifference id="h">h–h a</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="H">
-							<greatestDifference id="H">HH-HH</greatestDifference>
+							<greatestDifference id="H">HH–HH</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hm">
 							<greatestDifference id="a">h:mm a – h:mm a</greatestDifference>
@@ -2069,6 +2069,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="hms">h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h:mm:ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">HH:mm:ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h:mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">HH:mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">d/M</dateFormatItem>
 						<dateFormatItem id="MEd">E d/M</dateFormatItem>
@@ -2890,15 +2894,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (sommartid)</regionFormat>
 			<regionFormat type="standard">{0} (normaltid)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Chongqing</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kashgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>okänd stad</exemplarCity>
 			</zone>

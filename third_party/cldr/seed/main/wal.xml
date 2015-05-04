@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10753 $"/>
-		<generation date="$Date: 2014-08-11 09:10:03 -0700 (Mon, 11 Aug 2014) $"/>
+		<version number="$Revision: 11157 $"/>
+		<generation date="$Date: 2015-01-28 16:23:07 -0800 (Wed, 28 Jan 2015) $"/>
 		<language type="wal"/>
 	</identity>
 	<localeDisplayNames>
@@ -100,8 +100,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="JP" draft="unconfirmed">ጃፓን</territory>
 			<territory type="KH" draft="unconfirmed">ካምቦዲያ</territory>
 			<territory type="KM" draft="unconfirmed">ኮሞሮስ</territory>
-			<territory type="KP" draft="unconfirmed">ደቡብ ኮሪያ</territory>
-			<territory type="KR" draft="unconfirmed">ሰሜን ኮሪያ</territory>
+			<territory type="KP" draft="unconfirmed">ሰሜን ኮሪያ</territory>
+			<territory type="KR" draft="unconfirmed">ደቡብ ኮሪያ</territory>
 			<territory type="KW" draft="unconfirmed">ክዌት</territory>
 			<territory type="LB" draft="unconfirmed">ሊባኖስ</territory>
 			<territory type="LT" draft="unconfirmed">ሊቱዌኒያ</territory>

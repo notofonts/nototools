@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10895 $"/>
-		<generation date="$Date: 2014-09-01 11:57:54 -0700 (Mon, 01 Sep 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="pl"/>
 	</identity>
 	<localeDisplayNames>
@@ -914,7 +914,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GD">Grenada</territory>
 			<territory type="GE">Gruzja</territory>
 			<territory type="GF">Gujana Francuska</territory>
-			<territory type="GG">Wyspa Guernsey</territory>
+			<territory type="GG">Guernsey</territory>
 			<territory type="GH">Ghana</territory>
 			<territory type="GI">Gibraltar</territory>
 			<territory type="GL">Grenlandia</territory>
@@ -946,7 +946,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="IR">Iran</territory>
 			<territory type="IS">Islandia</territory>
 			<territory type="IT">Włochy</territory>
-			<territory type="JE">Wyspa Jersey</territory>
+			<territory type="JE">Jersey</territory>
 			<territory type="JM">Jamajka</territory>
 			<territory type="JO">Jordania</territory>
 			<territory type="JP">Japonia</territory>
@@ -1055,7 +1055,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="TA">Tristan da Cunha</territory>
 			<territory type="TC">Turks i Caicos</territory>
 			<territory type="TD">Czad</territory>
-			<territory type="TF">Francuskie Terytoria Południowe</territory>
+			<territory type="TF">Francuskie Terytoria Południowe i Antarktyczne</territory>
 			<territory type="TG">Togo</territory>
 			<territory type="TH">Tajlandia</territory>
 			<territory type="TJ">Tadżykistan</territory>
@@ -1266,6 +1266,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</codePatterns>
 	</localeDisplayNames>
 	<contextTransforms>
+		<contextTransformUsage type="day-format-except-narrow">
+			<contextTransform type="stand-alone">titlecase-firstword</contextTransform>
+		</contextTransformUsage>
+		<contextTransformUsage type="day-standalone-except-narrow">
+			<contextTransform type="stand-alone">titlecase-firstword</contextTransform>
+		</contextTransformUsage>
 		<contextTransformUsage type="month-format-except-narrow">
 			<contextTransform type="stand-alone">titlecase-firstword</contextTransform>
 		</contextTransformUsage>
@@ -1961,7 +1967,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern>d MMM y</pattern>
+							<pattern>dd.MM.y</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
@@ -2022,33 +2028,41 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Ehms">E, h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="EHms">E, HH:mm:ss</dateFormatItem>
 						<dateFormatItem id="Gy">y G</dateFormatItem>
-						<dateFormatItem id="GyMMM">MMM y G</dateFormatItem>
-						<dateFormatItem id="GyMMMd">d MMM y G</dateFormatItem>
-						<dateFormatItem id="GyMMMEd">E, d MMM y G</dateFormatItem>
+						<dateFormatItem id="GyMMM">MM.y G</dateFormatItem>
+						<dateFormatItem id="GyMMMd">d.MM.y G</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">E, d.MM.y G</dateFormatItem>
+						<dateFormatItem id="GyMMMM">LLLL y G</dateFormatItem>
+						<dateFormatItem id="GyMMMMd">d MMMM y G</dateFormatItem>
+						<dateFormatItem id="GyMMMMEd">E, d MMMM y G</dateFormatItem>
 						<dateFormatItem id="h">h a</dateFormatItem>
 						<dateFormatItem id="H">HH</dateFormatItem>
 						<dateFormatItem id="hm">h:mm a</dateFormatItem>
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="hms">h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h:mm:ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">HH:mm:ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h:mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">HH:mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">d.MM</dateFormatItem>
 						<dateFormatItem id="MEd">E, d.MM</dateFormatItem>
-						<dateFormatItem id="MMdd">d.MM</dateFormatItem>
 						<dateFormatItem id="MMM">LLL</dateFormatItem>
-						<dateFormatItem id="MMMd">d MMM</dateFormatItem>
-						<dateFormatItem id="MMMEd">E, d MMM</dateFormatItem>
+						<dateFormatItem id="MMMd">d.MM</dateFormatItem>
+						<dateFormatItem id="MMMEd">E, d.MM</dateFormatItem>
 						<dateFormatItem id="MMMMd">d MMMM</dateFormatItem>
+						<dateFormatItem id="MMMMEd">E, d MMMM</dateFormatItem>
 						<dateFormatItem id="ms">mm:ss</dateFormatItem>
 						<dateFormatItem id="y">y</dateFormatItem>
 						<dateFormatItem id="yM">MM.y</dateFormatItem>
 						<dateFormatItem id="yMd">d.MM.y</dateFormatItem>
 						<dateFormatItem id="yMEd">E, d.MM.y</dateFormatItem>
-						<dateFormatItem id="yMM">MM.y</dateFormatItem>
-						<dateFormatItem id="yMMM">LLL y</dateFormatItem>
-						<dateFormatItem id="yMMMd">d MMM y</dateFormatItem>
-						<dateFormatItem id="yMMMEd">E, d MMM y</dateFormatItem>
+						<dateFormatItem id="yMMM">MM.y</dateFormatItem>
+						<dateFormatItem id="yMMMd">d.MM.y</dateFormatItem>
+						<dateFormatItem id="yMMMEd">E, d.MM.y</dateFormatItem>
 						<dateFormatItem id="yMMMM">LLLL y</dateFormatItem>
+						<dateFormatItem id="yMMMMd">d MMMM y</dateFormatItem>
+						<dateFormatItem id="yMMMMEd">E, d MMMM y</dateFormatItem>
 						<dateFormatItem id="yQQQ">QQQ y</dateFormatItem>
 						<dateFormatItem id="yQQQQ">QQQQ y</dateFormatItem>
 					</availableFormats>
@@ -2107,12 +2121,20 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M">LLL–LLL</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMd">
-							<greatestDifference id="d" draft="contributed">d–d MMM</greatestDifference>
-							<greatestDifference id="M" draft="contributed">d MMM – d MMM</greatestDifference>
+							<greatestDifference id="d">dd.MM–dd.MM</greatestDifference>
+							<greatestDifference id="M">dd.MM–dd.MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMMEd">
-							<greatestDifference id="d">E, d MMM – E, d MMM</greatestDifference>
-							<greatestDifference id="M" draft="contributed">E, d MMM – E, d MMM</greatestDifference>
+							<greatestDifference id="d">E, dd.MM – E, dd.MM</greatestDifference>
+							<greatestDifference id="M">E, dd.MM – E, dd.MM</greatestDifference>
+						</intervalFormatItem>
+						<intervalFormatItem id="MMMMd">
+							<greatestDifference id="d" draft="contributed">d–d MMMM</greatestDifference>
+							<greatestDifference id="M" draft="contributed">d MMMM – d MMMM</greatestDifference>
+						</intervalFormatItem>
+						<intervalFormatItem id="MMMMEd">
+							<greatestDifference id="d">E, d MMMM – E, d MMMM</greatestDifference>
+							<greatestDifference id="M" draft="contributed">E, d MMMM – E, d MMMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="y">
 							<greatestDifference id="y">y–y</greatestDifference>
@@ -2132,22 +2154,32 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="y" draft="contributed">E, dd.MM.y – E, dd.MM.y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMM">
-							<greatestDifference id="M" draft="contributed">LLL–LLL y</greatestDifference>
-							<greatestDifference id="y" draft="contributed">LLL y – LLL y</greatestDifference>
+							<greatestDifference id="M" draft="contributed">MM.y – MM.y</greatestDifference>
+							<greatestDifference id="y" draft="contributed">MM.y – MM.y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d" draft="contributed">d–d MMM y</greatestDifference>
-							<greatestDifference id="M" draft="contributed">d MMM – d MMM y</greatestDifference>
-							<greatestDifference id="y" draft="contributed">d MMM y – d MMM y</greatestDifference>
+							<greatestDifference id="d" draft="contributed">dd–dd.MM.y</greatestDifference>
+							<greatestDifference id="M" draft="contributed">dd.MM–dd.MM.y</greatestDifference>
+							<greatestDifference id="y" draft="contributed">dd.MM.y–dd.MM.y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMEd">
-							<greatestDifference id="d" draft="contributed">E, d – E, d MMM y</greatestDifference>
-							<greatestDifference id="M" draft="contributed">E, d MMM – E, d MMM y</greatestDifference>
-							<greatestDifference id="y" draft="contributed">E, d MMM y – E, d MMM y</greatestDifference>
+							<greatestDifference id="d" draft="contributed">E, dd.MM.y – E, dd.MM.y</greatestDifference>
+							<greatestDifference id="M" draft="contributed">E, dd.MM.y – E, dd.MM.y</greatestDifference>
+							<greatestDifference id="y" draft="contributed">E, dd.MM.y – E, dd.MM.y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMM">
 							<greatestDifference id="M" draft="contributed">LLLL–LLLL y</greatestDifference>
 							<greatestDifference id="y" draft="contributed">LLLL y – LLLL y</greatestDifference>
+						</intervalFormatItem>
+						<intervalFormatItem id="yMMMMd">
+							<greatestDifference id="d" draft="contributed">d–d MMMM y</greatestDifference>
+							<greatestDifference id="M" draft="contributed">d MMMM – d MMMM y</greatestDifference>
+							<greatestDifference id="y" draft="contributed">d MMMM y – d MMMM y</greatestDifference>
+						</intervalFormatItem>
+						<intervalFormatItem id="yMMMMEd">
+							<greatestDifference id="d" draft="contributed">E, d – E, d MMMM y</greatestDifference>
+							<greatestDifference id="M" draft="contributed">E, d MMMM – E, d MMMM y</greatestDifference>
+							<greatestDifference id="y" draft="contributed">E, d MMMM y – E, d MMMM y</greatestDifference>
 						</intervalFormatItem>
 					</intervalFormats>
 				</dateTimeFormats>
@@ -2981,15 +3013,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (czas letni)</regionFormat>
 			<regionFormat type="standard">{0} (czas standardowy)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Czunking</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity draft="contributed">Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kaszgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>Nieznane</exemplarCity>
 			</zone>

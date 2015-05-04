@@ -6,14 +6,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10701 $"/>
-		<generation date="$Date: 2014-07-30 13:14:57 -0700 (Wed, 30 Jul 2014) $"/>
+		<version number="$Revision: 11072 $"/>
+		<generation date="$Date: 2014-12-04 15:58:51 -0800 (Thu, 04 Dec 2014) $"/>
 		<language type="tmh"/>
 		<script type="Tfng"/>
 	</identity>
 	<characters>
-		<exemplarCharacters draft="unconfirmed">[ ⵀ ⵗ ⴹ ⴼ ⴶ ⵂ ⵌ ⴾ ⵍ ⵎ ⵏ ⵑ ⵆ ⵔ ⵙ ⵛ ⵜ ⵓ ⵈ ⵢ ⵉ ⵤ ⴰ ]</exemplarCharacters>
-		<exemplarCharacters type="auxiliary" draft="unconfirmed">[ ⵣ ]</exemplarCharacters>
+		<exemplarCharacters draft="unconfirmed">[ⴰ ⴶ ⴹ ⴼ ⴾ ⵀ ⵂ ⵆ ⵈ ⵉ ⵌ ⵍ ⵎ ⵏ ⵑ ⵓ ⵔ ⵗ ⵙ ⵛ ⵜ ⵢ ⵤ]</exemplarCharacters>
+		<exemplarCharacters type="auxiliary" draft="unconfirmed">[ⵣ]</exemplarCharacters>
 	</characters>
 </ldml>
 

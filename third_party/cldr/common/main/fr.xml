@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11346 $"/>
+		<generation date="$Date: 2015-03-04 22:47:17 -0800 (Wed, 04 Mar 2015) $"/>
 		<language type="fr"/>
 	</identity>
 	<localeDisplayNames>
@@ -169,7 +169,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="eo">espéranto</language>
 			<language type="es">espagnol</language>
 			<language type="es_419">espagnol latino-américain</language>
-			<language type="es_ES">espagnol d’Europe</language>
+			<language type="es_ES">espagnol européen</language>
 			<language type="es_MX">espagnol mexicain</language>
 			<language type="esu" draft="unconfirmed">youpik central</language>
 			<language type="et">estonien</language>
@@ -218,7 +218,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="got">gotique</language>
 			<language type="grb">grebo</language>
 			<language type="grc">grec ancien</language>
-			<language type="gsw">alémanique</language>
+			<language type="gsw">suisse allemand</language>
 			<language type="gu">gujarati</language>
 			<language type="guc" draft="unconfirmed">wayuu</language>
 			<language type="gur" draft="unconfirmed">gurenne</language>
@@ -454,7 +454,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="ps" alt="variant">pashto</language>
 			<language type="pt">portugais</language>
 			<language type="pt_BR">portugais brésilien</language>
-			<language type="pt_PT">portugais d’Europe</language>
+			<language type="pt_PT">portugais européen</language>
 			<language type="qu">quechua</language>
 			<language type="quc">k’iche’</language>
 			<language type="qug" draft="unconfirmed">quichua du Haut-Chimborazo</language>
@@ -924,7 +924,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GP">Guadeloupe</territory>
 			<territory type="GQ">Guinée équatoriale</territory>
 			<territory type="GR">Grèce</territory>
-			<territory type="GS">Îles Géorgie du Sud et Sandwich du Sud</territory>
+			<territory type="GS">Géorgie du Sud et îles Sandwich du Sud</territory>
 			<territory type="GT">Guatemala</territory>
 			<territory type="GU">Guam</territory>
 			<territory type="GW">Guinée-Bissau</territory>
@@ -977,7 +977,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="MC">Monaco</territory>
 			<territory type="MD">Moldavie</territory>
 			<territory type="ME">Monténégro</territory>
-			<territory type="MF">Saint-Martin (partie française)</territory>
+			<territory type="MF">Saint-Martin</territory>
 			<territory type="MG">Madagascar</territory>
 			<territory type="MH">Îles Marshall</territory>
 			<territory type="MK">Macédoine</territory>
@@ -1019,7 +1019,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="PK">Pakistan</territory>
 			<territory type="PL">Pologne</territory>
 			<territory type="PM">Saint-Pierre-et-Miquelon</territory>
-			<territory type="PN">Pitcairn</territory>
+			<territory type="PN">Îles Pitcairn</territory>
 			<territory type="PR">Porto Rico</territory>
 			<territory type="PS">Territoires palestiniens</territory>
 			<territory type="PS" alt="short">Palestine</territory>
@@ -1286,7 +1286,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<type type="tibt" key="numbers">chiffres tibétains</type>
 			<type type="traditional" key="collation">Ordre traditionnel</type>
 			<type type="traditional" key="numbers" draft="contributed">Chiffres traditionnels</type>
-			<type type="unihan" key="collation">Ordre par radical et nombre de traits</type>
+			<type type="unihan" key="collation">Ordre de tri radical-traits</type>
 			<type type="upper" key="colCaseFirst" draft="contributed">Trier avec les majuscules d’abord</type>
 			<type type="vaii" key="numbers" draft="contributed">Chiffres en vaï</type>
 			<type type="yes" key="colBackwards" draft="contributed">Trier les caractères accentués dans l’ordre inverse</type>
@@ -2159,7 +2159,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M">dd/MM – dd/MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MEd">
-							<greatestDifference id="d">E dd/MM - E dd/MM</greatestDifference>
+							<greatestDifference id="d">E dd/MM – E dd/MM</greatestDifference>
 							<greatestDifference id="M">E dd/MM – E dd/MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMM">
@@ -2431,7 +2431,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 						</dayPeriodWidth>
 						<dayPeriodWidth type="narrow">
 							<dayPeriod type="afternoon" draft="unconfirmed">ap.-m.</dayPeriod>
-							<dayPeriod type="am" draft="contributed">AM</dayPeriod>
+							<dayPeriod type="am" draft="contributed">a</dayPeriod>
 							<dayPeriod type="morning">matin</dayPeriod>
 							<dayPeriod type="night">soir</dayPeriod>
 							<dayPeriod type="noon">midi</dayPeriod>
@@ -2565,6 +2565,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="hms">h:mm:ss a</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h:mm:ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">HH:mm:ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h:mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">HH:mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">d/M</dateFormatItem>
 						<dateFormatItem id="MEd">E d/M</dateFormatItem>
@@ -2589,7 +2593,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<intervalFormats>
 						<intervalFormatFallback>{0} – {1}</intervalFormatFallback>
 						<intervalFormatItem id="d">
-							<greatestDifference id="d">d-d</greatestDifference>
+							<greatestDifference id="d">d–d</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="h">
 							<greatestDifference id="a">h a – h a</greatestDifference>
@@ -2628,11 +2632,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 						</intervalFormatItem>
 						<intervalFormatItem id="Md">
 							<greatestDifference id="d">dd/MM – dd/MM</greatestDifference>
-							<greatestDifference id="M">dd/MM - dd/MM</greatestDifference>
+							<greatestDifference id="M">dd/MM – dd/MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MEd">
-							<greatestDifference id="d">E dd/MM - E dd/MM</greatestDifference>
-							<greatestDifference id="M">E dd/MM - E dd/MM</greatestDifference>
+							<greatestDifference id="d">E dd/MM – E dd/MM</greatestDifference>
+							<greatestDifference id="M">E dd/MM – E dd/MM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="MMM">
 							<greatestDifference id="M">MMM–MMM</greatestDifference>
@@ -3564,15 +3568,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (heure d’été)</regionFormat>
 			<regionFormat type="standard">{0} (heure standard)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Chongqing</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kachgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>zone inconnue</exemplarCity>
 			</zone>
@@ -6425,9 +6420,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
 			<currency type="FKP">
-				<displayName>livre des Falkland</displayName>
-				<displayName count="one">livre des Falkland</displayName>
-				<displayName count="other">livres des Falkland</displayName>
+				<displayName>livre des îles Malouines</displayName>
+				<displayName count="one">livre des îles Malouines</displayName>
+				<displayName count="other">livres des îles Malouines</displayName>
 				<symbol>£FK</symbol>
 			</currency>
 			<currency type="FRF">
@@ -7840,9 +7835,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} calories</unitPattern>
 			</unit>
 			<unit type="energy-foodcalorie">
-				<displayName>grandes calories</displayName>
-				<unitPattern count="one">{0} grande calorie</unitPattern>
-				<unitPattern count="other">{0} grandes calories</unitPattern>
+				<displayName>kilocalories</displayName>
+				<unitPattern count="one">{0} kilocalorie</unitPattern>
+				<unitPattern count="other">{0} kilocalories</unitPattern>
 			</unit>
 			<unit type="energy-joule">
 				<displayName>joules</displayName>
@@ -8452,9 +8447,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="other">{0} cal</unitPattern>
 			</unit>
 			<unit type="energy-foodcalorie">
-				<displayName>Cal</displayName>
-				<unitPattern count="one">{0} Cal</unitPattern>
-				<unitPattern count="other">{0} Cal</unitPattern>
+				<displayName>kcal</displayName>
+				<unitPattern count="one">{0} kcal</unitPattern>
+				<unitPattern count="other">{0} kcal</unitPattern>
 			</unit>
 			<unit type="energy-joule">
 				<displayName>J</displayName>

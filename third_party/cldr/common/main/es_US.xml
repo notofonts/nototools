@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10819 $"/>
-		<generation date="$Date: 2014-08-14 20:53:08 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11323 $"/>
+		<generation date="$Date: 2015-02-26 13:25:28 -0800 (Thu, 26 Feb 2015) $"/>
 		<language type="es"/>
 		<territory type="US"/>
 	</identity>
@@ -100,10 +100,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</numbers>
 	<units>
 		<unitLength type="narrow">
-			<unit type="temperature-celsius">
-				<unitPattern count="one">{0}°C</unitPattern>
-				<unitPattern count="other">{0}°C</unitPattern>
-			</unit>
 			<unit type="temperature-fahrenheit">
 				<unitPattern count="one">{0}°</unitPattern>
 				<unitPattern count="other">{0}°</unitPattern>

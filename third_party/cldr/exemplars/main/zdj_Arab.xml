@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10701 $"/>
-		<generation date="$Date: 2014-07-30 13:14:57 -0700 (Wed, 30 Jul 2014) $"/>
+		<version number="$Revision: 11072 $"/>
+		<generation date="$Date: 2014-12-04 15:58:51 -0800 (Thu, 04 Dec 2014) $"/>
 		<language type="zdj"/>
 		<script type="Arab"/>
 	</identity>
@@ -18,7 +18,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</orientation>
 	</layout>
 	<characters>
-		<exemplarCharacters draft="unconfirmed">[\u064E \u0064F \u08F7 \u0650 \u08F9 \u0652 ا ب ت ج ڃ چ د ݚ ر ز س ش غ ق ک گ ل م ن ه و ي]</exemplarCharacters>
+		<exemplarCharacters draft="unconfirmed">[\u064E \u0650 \u0652 \u08F7 \u08F9 d f ا ب ت ج ڃ چ د ݚ ر ز س ش غ ق ک گ ل م ن ه و ي]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary" draft="unconfirmed">[\u200C\u200D\u200E\u200F]</exemplarCharacters>
 	</characters>
 </ldml>

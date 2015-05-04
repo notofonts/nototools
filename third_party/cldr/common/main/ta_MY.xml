@@ -6,50 +6,24 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 11174 $"/>
+		<generation date="$Date: 2015-02-10 19:20:32 -0800 (Tue, 10 Feb 2015) $"/>
 		<language type="ta"/>
 		<territory type="MY"/>
 	</identity>
 	<dates>
 		<timeZoneNames>
-			<metazone type="Brunei">
-				<long>
-					<standard>புருணை டாரு சலாம் நேரம்</standard>
-				</long>
-			</metazone>
 			<metazone type="India">
 				<short>
 					<standard>∅∅∅</standard>
 				</short>
 			</metazone>
-			<metazone type="Indonesia_Central">
-				<long>
-					<standard>மத்திய இந்தோனேசிய நேரம்</standard>
-				</long>
-			</metazone>
-			<metazone type="Indonesia_Eastern">
-				<long>
-					<standard>கிழக்கத்திய இந்தோனேசிய நேரம்</standard>
-				</long>
-			</metazone>
-			<metazone type="Indonesia_Western">
-				<long>
-					<standard>மேற்கத்திய இந்தோனேசிய நேரம்</standard>
-				</long>
-			</metazone>
 			<metazone type="Malaysia">
-				<long>
-					<standard>மலேசிய நேரம்</standard>
-				</long>
 				<short>
 					<standard>MYT</standard>
 				</short>
 			</metazone>
 			<metazone type="Singapore">
-				<long>
-					<standard>சிங்கப்பூர் நேரம்</standard>
-				</long>
 				<short>
 					<standard>SGT</standard>
 				</short>
@@ -80,7 +54,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</currencyFormats>
 		<currencies>
 			<currency type="MYR">
-				<displayName>மலேசிய ரிங்கிட்</displayName>
 				<symbol>RM</symbol>
 			</currency>
 			<currency type="SGD">

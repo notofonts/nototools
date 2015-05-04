@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11333 $"/>
+		<generation date="$Date: 2015-03-01 14:07:08 -0800 (Sun, 01 Mar 2015) $"/>
 		<language type="fi"/>
 	</identity>
 	<localeDisplayNames>
@@ -924,7 +924,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="FO">Färsaaret</territory>
 			<territory type="FR">Ranska</territory>
 			<territory type="GA">Gabon</territory>
-			<territory type="GB">Yhdistynyt kuningaskunta</territory>
+			<territory type="GB">Iso-Britannia</territory>
 			<territory type="GB" alt="short">Britannia</territory>
 			<territory type="GD">Grenada</territory>
 			<territory type="GE">Georgia</territory>
@@ -1071,7 +1071,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="TA">Tristan da Cunha</territory>
 			<territory type="TC">Turks- ja Caicossaaret</territory>
 			<territory type="TD">Tšad</territory>
-			<territory type="TF">Ranskan ulkopuoliset eteläiset alueet</territory>
+			<territory type="TF">Ranskan eteläiset alueet</territory>
 			<territory type="TG">Togo</territory>
 			<territory type="TH">Thaimaa</territory>
 			<territory type="TJ">Tadžikistan</territory>
@@ -1486,17 +1486,17 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateTimeFormats>
 					<dateTimeFormatLength type="full">
 						<dateTimeFormat>
-							<pattern>{1} {0}</pattern>
+							<pattern>{1} 'klo' {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="long">
 						<dateTimeFormat>
-							<pattern>{1} {0}</pattern>
+							<pattern>{1} 'klo' {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="medium">
 						<dateTimeFormat>
-							<pattern>{1} {0}</pattern>
+							<pattern>{1} 'klo' {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="short">
@@ -1941,17 +1941,17 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateTimeFormats>
 					<dateTimeFormatLength type="full">
 						<dateTimeFormat>
-							<pattern>{1} {0}</pattern>
+							<pattern>{1} 'klo' {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="long">
 						<dateTimeFormat>
-							<pattern>{1} {0}</pattern>
+							<pattern>{1} 'klo' {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="medium">
 						<dateTimeFormat>
-							<pattern>{1} {0}</pattern>
+							<pattern>{1} 'klo' {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="short">
@@ -1977,6 +1977,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Hm">H.mm</dateFormatItem>
 						<dateFormatItem id="hms">h.mm.ss a</dateFormatItem>
 						<dateFormatItem id="Hms">H.mm.ss</dateFormatItem>
+						<dateFormatItem id="hmsv">h.mm.ss a v</dateFormatItem>
+						<dateFormatItem id="Hmsv">H.mm.ss v</dateFormatItem>
+						<dateFormatItem id="hmv">h.mm a v</dateFormatItem>
+						<dateFormatItem id="Hmv">H.mm v</dateFormatItem>
 						<dateFormatItem id="M">L</dateFormatItem>
 						<dateFormatItem id="Md">d.M.</dateFormatItem>
 						<dateFormatItem id="MEd">E d.M.</dateFormatItem>
@@ -2650,15 +2654,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} (kesäaika)</regionFormat>
 			<regionFormat type="standard">{0} (normaaliaika)</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity draft="contributed">Chongqing</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity draft="contributed">Harbin</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kašgar</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>tuntematon</exemplarCity>
 			</zone>

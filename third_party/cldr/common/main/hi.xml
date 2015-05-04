@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10809 $"/>
-		<generation date="$Date: 2014-08-14 13:10:07 -0700 (Thu, 14 Aug 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="hi"/>
 	</identity>
 	<localeDisplayNames>
@@ -188,7 +188,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="hai">हैडा</language>
 			<language type="haw">हवाई</language>
 			<language type="he">हिब्रू</language>
-			<language type="hi">हिंदी</language>
+			<language type="hi">हिन्दी</language>
 			<language type="hil">हिलिगेनन</language>
 			<language type="hit">हिताइत</language>
 			<language type="hmn">ह्मॉंग</language>
@@ -1274,7 +1274,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M">E, d MMM – E, d MMM</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="y">
-							<greatestDifference id="y">y-y G</greatestDifference>
+							<greatestDifference id="y">y–y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yM">
 							<greatestDifference id="M">M/y – M/y G</greatestDifference>
@@ -1295,7 +1295,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="y">MMM y – MMM y G</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">d - d MMM y G</greatestDifference>
+							<greatestDifference id="d">d – d MMM y G</greatestDifference>
 							<greatestDifference id="M">d MMM – d MMM y G</greatestDifference>
 							<greatestDifference id="y">d MMM y – d MMM y G</greatestDifference>
 						</intervalFormatItem>
@@ -1744,7 +1744,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="y">MMM y – MMM y</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yMMMd">
-							<greatestDifference id="d">d-d MMM y</greatestDifference>
+							<greatestDifference id="d">d–d MMM y</greatestDifference>
 							<greatestDifference id="M">d MMM – d MMM y</greatestDifference>
 							<greatestDifference id="y">d MMM y – d MMM y</greatestDifference>
 						</intervalFormatItem>
@@ -2546,15 +2546,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight">{0} डेलाइट समय</regionFormat>
 			<regionFormat type="standard">{0} मानक समय</regionFormat>
 			<fallbackFormat>{1} ({0})</fallbackFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>चोंगकिंग</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>हर्बिन</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>काश्गर</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>अज्ञात शहर</exemplarCity>
 			</zone>
@@ -4853,9 +4844,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>AOA</symbol>
 			</currency>
 			<currency type="ARS">
-				<displayName>अर्जेंटीनी पीसो</displayName>
-				<displayName count="one">अर्जेंटीनी पीसो</displayName>
-				<displayName count="other">अर्जेंटीनी पीसो</displayName>
+				<displayName>अर्जेंटीनी पेसो</displayName>
+				<displayName count="one">अर्जेंटीनी पेसो</displayName>
+				<displayName count="other">अर्जेंटीनी पेसो</displayName>
 				<symbol>ARS</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -4996,9 +4987,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>CHF</symbol>
 			</currency>
 			<currency type="CLP">
-				<displayName>चिली पीसो</displayName>
-				<displayName count="one">चिली पीसो</displayName>
-				<displayName count="other">चिली पीसो</displayName>
+				<displayName>चिली पेसो</displayName>
+				<displayName count="one">चिली पेसो</displayName>
+				<displayName count="other">चिली पेसो</displayName>
 				<symbol>CLP</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5010,9 +5001,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol alt="narrow" draft="contributed">¥</symbol>
 			</currency>
 			<currency type="COP">
-				<displayName>कोलंबियाई पीसो</displayName>
-				<displayName count="one">कोलंबियाई पीसो</displayName>
-				<displayName count="other">कोलंबियाई पीसो</displayName>
+				<displayName>कोलंबियाई पेसो</displayName>
+				<displayName count="one">कोलंबियाई पेसो</displayName>
+				<displayName count="other">कोलंबियाई पेसो</displayName>
 				<symbol>COP</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5027,15 +5018,15 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>सर्बिय का ढीनार</displayName>
 			</currency>
 			<currency type="CUC">
-				<displayName>क्यूबाई परिवर्तनीय पीसो</displayName>
-				<displayName count="one">क्यूबाई परिवर्तनीय पीसो</displayName>
-				<displayName count="other">क्यूबाई परिवर्तनीय पीसो</displayName>
+				<displayName>क्यूबाई परिवर्तनीय पेसो</displayName>
+				<displayName count="one">क्यूबाई परिवर्तनीय पेसो</displayName>
+				<displayName count="other">क्यूबाई परिवर्तनीय पेसो</displayName>
 				<symbol>CUC</symbol>
 			</currency>
 			<currency type="CUP">
-				<displayName>क्यूबाई पीसो</displayName>
-				<displayName count="one">क्यूबाई पीसो</displayName>
-				<displayName count="other">क्यूबाई पीसो</displayName>
+				<displayName>क्यूबाई पेसो</displayName>
+				<displayName count="one">क्यूबाई पेसो</displayName>
+				<displayName count="other">क्यूबाई पेसो</displayName>
 				<symbol>CUP</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5070,9 +5061,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>DKK</symbol>
 			</currency>
 			<currency type="DOP">
-				<displayName>डोमिनिकन पीसो</displayName>
-				<displayName count="one">डोमिनिकन पीसो</displayName>
-				<displayName count="other">डोमिनिकन पीसो</displayName>
+				<displayName>डोमिनिकन पेसो</displayName>
+				<displayName count="one">डोमिनिकन पेसो</displayName>
+				<displayName count="other">डोमिनिकन पेसो</displayName>
 				<symbol>DOP</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5448,9 +5439,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>MWK</symbol>
 			</currency>
 			<currency type="MXN">
-				<displayName>मैक्सिकन पीसो</displayName>
-				<displayName count="one">मैक्सिकन पीसो</displayName>
-				<displayName count="other">मैक्सिकन पीसो</displayName>
+				<displayName>मैक्सिकन पेसो</displayName>
+				<displayName count="one">मैक्सिकन पेसो</displayName>
+				<displayName count="other">मैक्सिकन पेसो</displayName>
 				<symbol>MX$</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
@@ -5530,9 +5521,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<symbol>PGK</symbol>
 			</currency>
 			<currency type="PHP">
-				<displayName>फ़िलिपीनी पीसो</displayName>
-				<displayName count="one">फ़िलिपीनी पीसो</displayName>
-				<displayName count="other">फ़िलिपीनी पीसो</displayName>
+				<displayName>फ़िलिपीनी पेसो</displayName>
+				<displayName count="one">फ़िलिपीनी पेसो</displayName>
+				<displayName count="other">फ़िलिपीनी पेसो</displayName>
 				<symbol>PHP</symbol>
 				<symbol alt="narrow" draft="contributed">₱</symbol>
 			</currency>
@@ -5784,9 +5775,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName draft="contributed">अमेरीकी डालर (आज)</displayName>
 			</currency>
 			<currency type="UYU">
-				<displayName>उरुग्वियन पीसो</displayName>
-				<displayName count="one">उरुग्वियन पीसो</displayName>
-				<displayName count="other">उरुग्वियन पीसो</displayName>
+				<displayName>उरुग्वियन पेसो</displayName>
+				<displayName count="one">उरुग्वियन पेसो</displayName>
+				<displayName count="other">उरुग्वियन पेसो</displayName>
 				<symbol>UYU</symbol>
 				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>

@@ -25,6 +25,7 @@ import string
 import subprocess
 
 import notoconfig
+import tool_utils
 
 CLDR_SUBDIRS = [
   'common/main',
@@ -37,7 +38,7 @@ CLDR_FILES = [
   'common/supplemental/supplementalData.xml']
 
 README_TEMPLATE = """URL: http://unicode.org/cldr/trac/export/$version/trunk
-Version: r$version
+Version: r$version $tag
 License: Unicode
 License File: LICENSE
 
@@ -48,84 +49,29 @@ Local Modifications:
 No Modifications.
 """
 
-@contextlib.contextmanager
-def temp_chdir(path):
-  """Usage: with temp_chdir(path):
-    do_something
-  """
-  saved_dir = os.getcwd()
-  try:
-    os.chdir(path)
-    yield
-  finally:
-    os.chdir(saved_dir)
-
-
-def _check_dir_exists(dirpath):
-  if not os.path.isdir(dirpath):
-    raise ValueError('%s does not exist or is not a directory' % dirpath)
-
-
-def git_get_branch(repo):
-  with temp_chdir(repo):
-    return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD']).strip()
-
-
-def git_is_clean(repo):
-  """Ensure there are no unstaged or uncommitted changes in the repo."""
-
-  result = True
-  with temp_chdir(repo):
-    subprocess.check_call(['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
-    if subprocess.call(['git', 'diff-files', '--quiet', '--ignore-submodules', '--']):
-      print 'There are unstaged changes in the noto branch:'
-      subprocess.call(['git', 'diff-files', '--name-status', '-r', '--ignore-submodules', '--'])
-      result = False
-    if subprocess.call(
-        ['git', 'diff-index', '--cached', '--quiet', 'HEAD', '--ignore-submodules', '--']):
-      print 'There are uncommitted changes in the noto branch:'
-      subprocess.call(
-        ['git', 'diff-index', '--cached', '--name-status', '-r', 'HEAD', '--ignore-submodules', '--'])
-      result = False
-  return result
-
-
-def svn_get_version(repo):
-  with temp_chdir(repo):
-    version_string = subprocess.check_output(['svnversion', '-c']).strip()
-    colon_index = version_string.find(':')
-    if colon_index >= 0:
-      version_string = version_string[colon_index + 1:]
-  return version_string
-
-
-def svn_update(repo):
-  with temp_chdir(repo):
-    subprocess.check_call(['svn', 'up'], stderr=subprocess.STDOUT)
-
-
-def update_cldr(noto_repo, cldr_repo, update=False):
+def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
   """Copy needed directories/files from cldr_repo to noto_repo/third_party/cldr."""
 
   noto_repo = os.path.abspath(noto_repo)
   cldr_repo = os.path.abspath(cldr_repo)
 
   noto_cldr = os.path.join(noto_repo, 'third_party/cldr')
-  _check_dir_exists(noto_cldr)
-  _check_dir_exists(cldr_repo)
+  tool_utils.check_dir_exists(noto_cldr)
+  tool_utils.check_dir_exists(cldr_repo)
 
-  if not git_is_clean(noto_repo):
+  if not tool_utils.git_is_clean(noto_repo):
     print 'Please fix'
     return
 
   if update:
-    svn_update(cldr_repo)
+    tool_utils.svn_update(cldr_repo)
 
-  # get version of cldr
-  cldr_version = svn_get_version(cldr_repo)
+  # get version of cldr.  Unfortunately, this doesn't know about tags.
+  cldr_version = tool_utils.svn_get_version(cldr_repo)
 
   # prepare and create README.third_party
-  readme_text = string.Template(README_TEMPLATE).substitute(version=cldr_version)
+  readme_text = string.Template(README_TEMPLATE).substitute(version=cldr_version,
+                                                            tag=cldr_tag)
   with open(os.path.join(noto_cldr, 'README.third_party'), 'w') as f:
     f.write(readme_text)
 
@@ -145,25 +91,30 @@ def update_cldr(noto_repo, cldr_repo, update=False):
     shutil.copy(src, dst)
 
   # git can now add everything, even removed files
-  with temp_chdir(noto_cldr):
+  with tool_utils.temp_chdir(noto_cldr):
     subprocess.check_call(['git', 'add', '--', '.'])
 
   # print commit message
-  print 'Update CLDR data to SVN r%s.' % cldr_version
+  tag_string = (' tag %s' % cldr_tag) if cldr_tag else ''
+  print 'Update CLDR data to SVN r%s%s.' % (cldr_version, tag_string)
 
 
 def main():
-  values = notoconfig.values
+  default_noto = notoconfig.values.get('noto')
+  default_cldr = notoconfig.values.get('cldr')
+
   parser = argparse.ArgumentParser()
-  parser.add_argument('--cldr', help='directory of local cldr svn repo',
-                      default=values.get('cldr', None))
-  parser.add_argument('--noto', help='directory of local noto git repo',
-                      default=values.get('noto', None))
+  parser.add_argument('--cldr', help='directory of local cldr svn repo (default %s)' %
+                      default_cldr, default=default_cldr)
+  parser.add_argument('--update_cldr', help='update cldr before running', action='store_true')
+  parser.add_argument('--cldr_tag', help='tag name to use for cldr (default empty)', default='')
+  parser.add_argument('--noto', help='directory of local noto git repo (default %s)' %
+                      default_noto, default=default_noto)
   parser.add_argument('--branch', help='confirm current branch of noto git repo')
   args = parser.parse_args()
 
   if not args.cldr or not args.noto:
-    print "need both cldr and not repository information"
+    print "need both cldr and noto repository information"
     return
 
   if args.branch:
@@ -172,7 +123,8 @@ def main():
       print "Expected branch '%s' but %s is in branch '%s'." % (args.branch, args.noto, cur_branch)
       return
 
-  update_cldr(args.noto, args.cldr)
+  update_cldr(args.noto, args.cldr, args.update_cldr, args.cldr_tag)
+
 
 if __name__ == '__main__':
     main()

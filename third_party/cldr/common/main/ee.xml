@@ -6,8 +6,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11042 $"/>
-		<generation date="$Date: 2014-10-31 10:11:19 -0700 (Fri, 31 Oct 2014) $"/>
+		<version number="$Revision: 11294 $"/>
+		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
 		<language type="ee"/>
 	</identity>
 	<localeDisplayNames>
@@ -1146,7 +1146,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="H">HH–HH</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hm">
-							<greatestDifference id="a">a 'ga' h:mm - a 'ga' h:mm</greatestDifference>
+							<greatestDifference id="a">a 'ga' h:mm – a 'ga' h:mm</greatestDifference>
 							<greatestDifference id="h">a 'ga' h:mm - 'ga' h:mm</greatestDifference>
 							<greatestDifference id="m">a 'ga' h:mm – 'ga' h:mm</greatestDifference>
 						</intervalFormatItem>
@@ -1582,7 +1582,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="H">HH–HH</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="hm">
-							<greatestDifference id="a">a 'ga' h:mm - a 'ga' h:mm</greatestDifference>
+							<greatestDifference id="a">a 'ga' h:mm – a 'ga' h:mm</greatestDifference>
 							<greatestDifference id="h">a 'ga' h:mm - 'ga' h:mm</greatestDifference>
 							<greatestDifference id="m">a 'ga' h:mm – 'ga' h:mm</greatestDifference>
 						</intervalFormatItem>
@@ -2074,9 +2074,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>kɔsiɖa me ŋkeke</displayName>
 			</field>
 			<field type="sun">
-				<relative type="-1">kɔsiɖa si va yi</relative>
-				<relative type="0">kɔsiɖa sia</relative>
-				<relative type="1">kɔsiɖa si gbɔ na</relative>
+				<relative type="-1">kɔsiɖagbe si va yi</relative>
+				<relative type="0">kɔsiɖa sia gbe</relative>
+				<relative type="1">kɔsiɖagbe si gbɔ na</relative>
 			</field>
 			<field type="mon">
 				<relative type="-1">dzoɖa si va yi</relative>
@@ -2152,15 +2152,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<timeZoneNames>
 			<hourFormat draft="unconfirmed">+HH:mm;-HH:mm</hourFormat>
 			<regionFormat draft="contributed">{0} gaƒoƒo</regionFormat>
-			<zone type="Asia/Chongqing">
-				<exemplarCity>Tsongking nutomegaƒoƒome</exemplarCity>
-			</zone>
-			<zone type="Asia/Harbin">
-				<exemplarCity>Harbin nutomegaƒoƒome</exemplarCity>
-			</zone>
-			<zone type="Asia/Kashgar">
-				<exemplarCity>Kashgar nutomegaƒoƒome</exemplarCity>
-			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>du manya</exemplarCity>
 			</zone>
