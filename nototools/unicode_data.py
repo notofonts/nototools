@@ -49,7 +49,7 @@ _core_properties_data = {}
 _defined_characters = set()
 _script_code_to_long_name = {}
 _script_long_name_to_code = {}
-
+_lower_to_upper_case = {}
 
 def load_data():
     """Loads the data files needed for the module.
@@ -119,6 +119,20 @@ def combining(char):
         return _combining_class_data[char]
     except KeyError:
         return 0
+
+
+def to_upper(char):
+    """Returns the upper case for a lower case character.
+    This is not full upper casing, but simply reflects the 1-1
+    mapping in UnicodeData.txt."""
+    load_data()
+    cp = _char_to_int(char)
+    try :
+      if _general_category_data[cp] == 'Ll':
+        return unichr(_lower_to_upper_case[cp])
+    except KeyError:
+      pass
+    return char
 
 
 def canonical_decomposition(char):
@@ -403,6 +417,11 @@ def _load_unicode_data_txt():
         decomposition = ''.join(decomposition)
 
         bidi_mirroring = (line[9] == 'Y')
+        if general_category == 'Ll':
+          upcode = line[12]
+          if upcode:
+            upper_case = int(upcode, 16)
+            _lower_to_upper_case[code] = upper_case
 
         if char_name.endswith("First>"):
             last_range_opener = code
@@ -503,4 +522,3 @@ def _load_bidi_mirroring_txt():
         char = int(char, 16)
         bmg = int(bmg, 16)
         _bidi_mirroring_glyph_data[char] = bmg
-
