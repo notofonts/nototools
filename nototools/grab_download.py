@@ -158,7 +158,3 @@ def invoke_main(src_vendor, name_date_re, extract_fn, default_params = {}):
     filelist = args.srcs
 
   grab_files(args.dstdir, filelist, src_vendor, name_date_re, extract_fn)
-
-
-if __name__ == "__main__":
-    main()
