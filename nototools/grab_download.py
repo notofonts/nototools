@@ -58,7 +58,7 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
 
     name = result.group(1)
     date = '_'.join([d for d in result.group(2,3,4)])
-    drop_dir = os.path.join(dst, 'drops', date)
+    drop_dir = os.path.join(dst, 'drops', name + '_' + date)
 
     zip_dir = os.path.join(dst, 'zips')
     zip_filename = os.path.join(zip_dir, filename)
