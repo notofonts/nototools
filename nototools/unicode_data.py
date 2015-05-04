@@ -37,6 +37,7 @@ _data_is_loaded = False
 _property_value_aliases_data = {}
 _character_names_data = {}
 _general_category_data = {}
+_combining_class_data = {}
 _decomposition_data = {}
 _bidi_mirroring_characters = set()
 _script_data = {}
@@ -108,6 +109,16 @@ def category(char):
         return _general_category_data[char]
     except KeyError:
         return "Cn"  # Unassigned
+
+
+def combining(char):
+    """Returns the canonical combining class of a character."""
+    load_data()
+    char = _char_to_int(char)
+    try:
+        return _combining_class_data[char]
+    except KeyError:
+        return 0
 
 
 def canonical_decomposition(char):
@@ -381,6 +392,7 @@ def _load_unicode_data_txt():
         code = int(line[0], 16)
         char_name = line[1]
         general_category = line[2]
+        combining_class = int(line[3])
 
         decomposition = line[5]
         if decomposition.startswith('<'):
@@ -399,12 +411,14 @@ def _load_unicode_data_txt():
             if "Surrogate" not in char_name:
                 for char in xrange(last_range_opener, code+1):
                     _general_category_data[char] = general_category
+                    _combining_class_data[char] = combining_class
                     if bidi_mirroring:
                         _bidi_mirroring_characters.add(char)
                     _defined_characters.add(char)
         else:
             _character_names_data[code] = char_name
             _general_category_data[code] = general_category
+            _combining_class_data[code] = combining_class
             if bidi_mirroring:
                 _bidi_mirroring_characters.add(code)
             _decomposition_data[code] = decomposition

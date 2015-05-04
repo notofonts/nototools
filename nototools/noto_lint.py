@@ -346,6 +346,7 @@ FONT_STYLES = [
     "Kufi",
     "Naskh",
     "Nastaliq",
+    "Emoji",
 ]
 
 CJK_FONT_STYLES = [
@@ -402,6 +403,7 @@ CJK_VARIANT_NAMES = {
 HARD_CODED_FONT_INFO = {
     "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
     "DroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
+    "NotoEmoji-Regular.ttf": ("", "Qaae", None, "Regular"),
     "NotoNaskh-Regular.ttf": ("Naskh", "Arab", None, "Regular"),
     "NotoNaskh-Bold.ttf": ("Naskh", "Arab", None, "Bold"),
     "NotoNaskhUI-Regular.ttf": ("Naskh", "Arab", "UI", "Regular"),
@@ -510,7 +512,11 @@ def check_font(file_name,
         names = font_data.get_name_records(font)
 
         # Check family name
-        expected_family_name = 'Noto ' + style
+        expected_family_name = 'Noto'
+        if style:
+            # emoji has no style
+            # the name comes from the script alone
+            expected_family_name += ' ' + style
         if script != 'Latn':
             if style == 'Nastaliq':
                 expected_family_name += ' Urdu'

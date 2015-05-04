@@ -74,6 +74,8 @@ NAME_CORRECTIONS = {
     'UIKhmer': 'KhmerUI',
     'UI Lao': 'Lao UI',
     'UILao': 'LaoUI',
+    'SansEmoji': 'Emoji',
+    'Sans Emoji': 'Emoji',
 }
 
 TRADEMARK_LINE = u'Noto is a trademark of Google Inc.'
@@ -97,11 +99,13 @@ def fix_name_table(font):
         record = name_records[name_id]
         for source in NAME_CORRECTIONS:
             if source in record:
+                oldrecord = record
                 record = record.replace(source, NAME_CORRECTIONS[source])
+                break
         if record != name_records[name_id]:
             font_data.set_name_record(font, name_id, record)
-            print 'Updated name table record #%d to "%s"' % (
-                name_id, record)
+            print 'Updated name table record #%d from "%s" to "%s"' % (
+                name_id, oldrecord, record)
             modified = True
 
     if name_records[7] != TRADEMARK_LINE:
@@ -109,10 +113,7 @@ def fix_name_table(font):
       modified = True
       print 'Updated name table record 7 to "%s"' % TRADEMARK_LINE
 
-    if name_records.has_key(16):
-        font_data.set_name_record(font, 16, None)
-        print 'Name table record #16 dropped'
-        modified = True
+    # TODO: check preferred family/subfamily(16&17)
 
     return modified
 
@@ -189,7 +190,11 @@ def fix_path(file_path, is_hinted):
     # fix Naskh, assume Arabic if unspecified
     file_path = re.sub(r'NotoNaskh(-|UI-)', r'NotoNaskhArabic\1', file_path)
 
+    # fix SansEmoji
+    file_path = re.sub('NotoSansEmoji', 'NotoEmoji', file_path)
+
     return file_path
+
 
 def fix_os2_unicoderange(font):
     os2_bitmap = font_data.get_os2_unicoderange_bitmap(font)
@@ -200,6 +205,27 @@ def fix_os2_unicoderange(font):
         print ('Set unicoderanges: ' + bitmap_string)
         return True
     return False
+
+
+def fix_linegap(font):
+    modified = False
+    hhea_table = font["hhea"]
+    if hhea_table.lineGap != 0:
+        print 'hhea lineGap was %s, setting to 0' % hhea_table.lineGap
+        hhea_table.lineGap = 0
+        modified = True
+    vhea_table = font.get("vhea")
+    if vhea_table and vhea_table.lineGap != 0:
+        print 'vhea lineGap was %s, setting to 0' % vhea_table.lineGap
+        vhea_table.lineGap = 0
+        modified = True
+    os2_table = font["OS/2"]
+    if os2_table.sTypoLineGap != 0:
+        print 'os/2 sTypoLineGap was %d, setting to 0' % os2_table.sTypoLineGap
+        os2_table.sTypoLineGap = 0
+        modified = True
+    return modified
+
 
 def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
     """Fix font under src_root and write to similar path under dst_root, modulo
@@ -218,6 +244,7 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
     modified |= fix_name_table(font)
     modified |= fix_attachlist(font)
     modified |= fix_os2_unicoderange(font)
+    modified |= fix_linegap(font)
 
     tables_to_drop = TABLES_TO_DROP
     if not is_hinted:
@@ -242,6 +269,7 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
         font.save(dst_file)
         print 'Wrote %s' % dst_file
 
+
 def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
     src_root = path.abspath(src_root)
     dst_root = path.abspath(dst_root)
@@ -255,14 +283,19 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
             is_hinted = root.endswith('/hinted') or '_hinted' in file
             fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified)
 
+
 def main():
+
+    default_src_root = notoconfig.values.get('alpha')
+    default_dst_root = notoconfig.values.get('autofix')
+
     parser = argparse.ArgumentParser()
     parser.add_argument('name_pat', help='regex for files to fix, '
-                        'searches relative path from root')
-    parser.add_argument('--src_root', help='root of src files',
-                        default=notoconfig.values.get('alpha'))
-    parser.add_argument('--dst_root', help='root of destination',
-                        default=notoconfig.values.get('autofix'))
+                        'searches relative path from src root')
+    parser.add_argument('--src_root', help='root of src files (default %s)' %
+                        default_src_root, default=default_src_root)
+    parser.add_argument('--dst_root', help='root of destination (default %s)' %
+                        default_dst_root, default=default_dst_root)
     parser.add_argument('--save_unmodified', help='save even unmodified files',
                         action='store_true')
     args = parser.parse_args()
@@ -275,13 +308,9 @@ def main():
         print '%s does not exist or is not a directory' % args.src_root
         return
 
-    if not args.dst_root:
-        # not on command line and not in user's .notoconfig
-        args.dst_root = path.join(path.dirname(args.src_root), 'modified')
     if not path.isdir(args.dst_root):
-        if path.exists(args.dst_root):
-            print '%s exists and is not a directory' % args.dst_root
-            return
+        print '%s does not exist or is not a directory' % args.dst_root
+        return
 
     fix_fonts(args.src_root, args.dst_root, args.name_pat, args.save_unmodified)
 

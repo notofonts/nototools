@@ -126,7 +126,7 @@ HARFBUZZ_DIR = os.getenv('HOME') + os.sep + 'harfbuzz'
 HB_SHAPE_PATH = HARFBUZZ_DIR + os.sep + 'util' + os.sep + 'hb-shape'
 
 
-def run_harfbuzz_on_text(text, font_file_name, language):
+def run_harfbuzz_on_text(text, font_file_name, language, extra_parameters=None):
     """Runs HarfBuzz on input text and return JSON shaping information."""
     hb_parameters = [
         HB_SHAPE_PATH,
@@ -136,6 +136,9 @@ def run_harfbuzz_on_text(text, font_file_name, language):
 
     if language:
         hb_parameters.append('--language=%s' % language)
+
+    if extra_parameters is not None:
+        hb_parameters += extra_parameters
 
     hb_process = subprocess.Popen(
         hb_parameters,
@@ -178,7 +181,7 @@ def test_text_vertical_extents(
 
         min_height, max_height = get_line_extents_from_json(
             output_line, font_file_name)
-        
+
         if min_height is None:
             continue
         if min_height < min_allowed or max_height > max_allowed:
