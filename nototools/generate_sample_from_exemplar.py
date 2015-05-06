@@ -314,9 +314,10 @@ def get_script_to_exemplar_data_map():
         no_latin = True
       else:
         no_latin = False
-      # exclude exemplar strings, and restrict to letters
+      # exclude exemplar strings, and restrict to letters and digits
       filtered_exemplar_list = [cp for cp in exemplar_list if len(cp) == 1 and
-                                unicode_data.category(cp)[0] in 'L' and
+                                (unicode_data.category(cp)[0] in 'L' or
+                                 unicode_data.category(cp) == 'Nd') and
                                 not (cp in 'df' and no_latin)]
 
       # some exemplar lists don't surround strings with curly braces, and end up
@@ -349,7 +350,8 @@ def get_script_to_exemplar_data_map():
       continue
 
     # restrict to letters
-    filtered_exemplar_list = [cp for cp in exemplar_list if unicode_data.category(cp)[0] in 'L']
+    filtered_exemplar_list = [cp for cp in exemplar_list if unicode_data.category(cp)[0] in 'L'
+                              or unicode_data.category(cp) in 'Nd']
     if len(filtered_exemplar_list) != len(exemplar_list) and _VERBOSE:
       print 'filtered some characters from %s' % src
     loc_to_exemplar_info[loc_tag] = (lsrv, src, tuple(filtered_exemplar_list))
@@ -580,6 +582,20 @@ def sort_for_script(cp_list, script):
   return sorted(cp_list, cmp=col.compare)
 
 
+def addcase(sample, script):
+  cased_sample = []
+  for cp in sample:
+    ucp = unicode_data.to_upper(cp)
+    if ucp != cp and ucp not in sample: # Copt has cased chars paired in the block
+      cased_sample.append(ucp)
+  if cased_sample:
+    cased_sample = ' '.join(cased_sample)
+    if _VERBOSE:
+      print 'add case for %s' % script
+    return sample + '\n' + cased_sample
+  return sample
+
+
 def generate_sample_for_script(script, loc_map):
   num_locales = len(loc_map)
 
@@ -591,6 +607,7 @@ def generate_sample_for_script(script, loc_map):
         script, tag, 'first 60 of ' if ex_len > 60 else '', ex_len)
     # don't sort, rely on exemplar order
     sample = ' '.join(exemplars[:60])
+    sample = addcase(sample, script)
     return sample, info
 
   script_tag = '-' + script
@@ -601,6 +618,7 @@ def generate_sample_for_script(script, loc_map):
         script, num_locales, len(char_to_lang_map),
         ', '.join([loc.replace(script_tag, '') for loc in loc_map]))
     sample = ' '.join(sort_for_script(list(char_to_lang_map), script))
+    sample = addcase(sample, script)
     return sample, info
 
   # show_rarely_used_char_info(script, loc_map, char_to_lang_map)
@@ -623,19 +641,21 @@ def generate_sample_for_script(script, loc_map):
 
   # show_selected_rare_chars(selected)
 
-  chosen_chars = sorted(list(chars_by_num_langs)[-40:])
+  chosen_chars = list(chars_by_num_langs)[-60:]
   rare_extension = []
   for _, chars in selected:
     avail_chars = [cp for cp in chars if cp not in chosen_chars and
                    cp not in rare_extension]
     rare_extension.extend(sorted(avail_chars)[:4]) # vietnamese dominates latin otherwise
-    if len(rare_extension) > 20: # 60 - 40
+    if len(rare_extension) > 20:
       break
+  chosen_chars = chosen_chars[:60 - len(rare_extension)]
   chosen_chars.extend(rare_extension)
   info = ('%s (%d locales)\n'
          'from most common exemplars plus chars specific to most-read languages' % (
              script, num_locales))
   sample = ' '.join(sort_for_script(chosen_chars, script))
+  sample = addcase(sample, script)
   return sample, info
 
 
@@ -668,7 +688,7 @@ def generate_samples(dstdir, imgdir, summary):
       print 'writing data %s' % filename
       filepath = os.path.join(dstdir, filename)
       with codecs.open(filepath, 'w', 'utf-8') as f:
-        f.write(sample)
+        f.write(sample + '\n')
 
 
 def main():
