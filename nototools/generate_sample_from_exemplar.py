@@ -183,22 +183,22 @@ def get_exemplar(language, script):
 likely_subtag_data = {}
 
 def parse_likely_subtags():
-    data_file = path.join(
-        CLDR_DIR, 'common', 'supplemental', 'likelySubtags.xml')
-    tree = ElementTree.parse(data_file)
+  data_file = path.join(
+    CLDR_DIR, 'common', 'supplemental', 'likelySubtags.xml')
+  tree = ElementTree.parse(data_file)
 
-    for tag in tree.findall('likelySubtags/likelySubtag'):
-        from_tag = tag.get('from').replace('_', '-')
-        to_tag = tag.get('to').split('_')
-        likely_subtag_data[from_tag] = to_tag
+  for tag in tree.findall('likelySubtags/likelySubtag'):
+    from_tag = tag.get('from').replace('_', '-')
+    to_tag = tag.get('to').split('_')
+    likely_subtag_data[from_tag] = to_tag
 
-    likely_subtag_data.update(extra_locale_data.LIKELY_SUBTAGS)
+  likely_subtag_data.update(extra_locale_data.LIKELY_SUBTAGS)
 
 
 def find_likely_script(language):
-    if not likely_subtag_data:
-        parse_likely_subtags()
-    return likely_subtag_data[language][1]
+  if not likely_subtag_data:
+    parse_likely_subtags()
+  return likely_subtag_data[language][1]
 
 
 # technically, language tags are case-insensitive, but the CLDR data is cased
@@ -315,10 +315,16 @@ def get_script_to_exemplar_data_map():
       else:
         no_latin = False
       # exclude exemplar strings, and restrict to letters and digits
-      filtered_exemplar_list = [cp for cp in exemplar_list if len(cp) == 1 and
-                                (unicode_data.category(cp)[0] in 'L' or
-                                 unicode_data.category(cp) == 'Nd') and
-                                not (cp in 'df' and no_latin)]
+      def accept_cp(cp):
+        if len(cp) != 1:
+          return False
+        cat = unicode_data.category(cp)
+        if cat[0] != 'L' and cat != 'Nd':
+          return False
+        if no_latin and cp in 'df':
+          return False
+        return True
+      filtered_exemplar_list = filter(accept_cp, exemplar_list)
 
       # some exemplar lists don't surround strings with curly braces, and end up
       # with duplicate characters.  Flag these
@@ -350,8 +356,10 @@ def get_script_to_exemplar_data_map():
       continue
 
     # restrict to letters
-    filtered_exemplar_list = [cp for cp in exemplar_list if unicode_data.category(cp)[0] in 'L'
-                              or unicode_data.category(cp) in 'Nd']
+    def accept_cp(cp):
+      cat = unicode_data.category(cp)
+      return cat[0] == 'L' or cat == 'Nd'
+    filtered_exemplar_list = filter(accept_cp, exemplar_list)
     if len(filtered_exemplar_list) != len(exemplar_list) and _VERBOSE:
       print 'filtered some characters from %s' % src
     loc_to_exemplar_info[loc_tag] = (lsrv, src, tuple(filtered_exemplar_list))
@@ -444,10 +452,12 @@ def show_char_use_info(script, chars_by_num_langs, char_to_lang_map):
   for cp in chars_by_num_langs:
     langs = char_to_lang_map[cp]
     count = len(langs)
-    print u'char %s\u200e (%x): %d %s%s' % (
-        cp, ord(cp), count, ', '.join(sorted(
-            [loc.replace(script_tag, '') for loc in langs[:12]])),
-        '...' if count > 12 else '')
+    limit = 12
+    without_script = [loc.replace(script_tag, '') for loc in langs[:limit]]
+    without_script_str = ', '.join(sorted(without_script))
+    if count > limit:
+      without_script_str += '...'
+    print u'char %s\u200e (%x): %d %s' % (cp, ord(cp), count, without_script_str)
   print 'total chars listed: %d' % len(char_to_lang_map)
 
 
@@ -680,7 +690,7 @@ def generate_samples(dstdir, imgdir, summary):
     if imgdir:
       path = os.path.join(imgdir, '%s.png' % script)
       print 'writing image %s.png' % script
-      rtl = script in['Hebr', 'Arab']
+      rtl = script in ['Arab', 'Hebr', 'Nkoo', 'Syrc', 'Tfng', 'Thaa']
       create_image.create_png(sample, path, font_size=34, line_spacing=40, width=800, rtl=rtl)
 
     if dstdir:

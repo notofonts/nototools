@@ -127,11 +127,11 @@ def to_upper(char):
     mapping in UnicodeData.txt."""
     load_data()
     cp = _char_to_int(char)
-    try :
-      if _general_category_data[cp] == 'Ll':
-        return unichr(_lower_to_upper_case[cp])
+    try:
+        if _general_category_data[cp] == 'Ll':
+            return unichr(_lower_to_upper_case[cp])
     except KeyError:
-      pass
+        pass
     return char
 
 
