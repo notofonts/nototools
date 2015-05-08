@@ -30,13 +30,15 @@
 import re
 
 class FontInfo(object):
-  def __init__(self, filename, name, style, script, variant, weight, hinted, vendor, version):
+  def __init__(self, filename, name, style, script, variant, weight, monospace,
+               hinted, vendor, version):
     self.filename = filename
     self.name = name
     self.style = style
     self.script = script
     self.variant = variant
     self.weight = weight
+    self.monospace = monospace
     self.hinted = hinted
     self.vendor = vendor
     self.version = version
@@ -166,16 +168,18 @@ class TestSpec(object):
     copyright
     family
     subfamily
-    full_name
+    full
     version
       hinted_suffix
-      match_head_table_version
-      looks_like_number
+      match_head
+      out_of_range
+      expected_pattern
     postscript
     trademark
     manufacturer
-    vendor
     designer
+    description
+    vendor_url
     designer_url
     license
     license_url
@@ -188,8 +192,8 @@ class TestSpec(object):
     required
     script_required
     private_use
-    non_chars
-    disallowed -- ascii
+    non_characters
+    disallowed_ascii
   head -- head table tests
     hhea
       ascent
@@ -205,7 +209,6 @@ class TestSpec(object):
       winascent
       windescent
       achvendid
-      weight_name
       weight_class
       fsselection
       unicoderange
@@ -224,11 +227,11 @@ class TestSpec(object):
     extrema -- on-curve extrema
     duplicate -- duplicate points
   gdef -- gdef tests
-    glyphclassdef
+    classdef
       not_present -- table is missing but there are mark glyphs
       unlisted -- mark glyph is present and expected to be listed
-      combining_unlisted -- mark glyph is combining but not listed as combining
-      not_combining -- mark glyph is not combining but listed as combining
+      combining_mismatch -- mark glyph is combining but not listed as combining
+      not_combining_mismatch -- mark glyph is not combining but listed as combining
     attachlist
       duplicates
       out_of_order
@@ -242,12 +245,19 @@ class TestSpec(object):
     gsub
       missing
   bidi -- tests bidi pairs, properties
-    rtlm -- rtlm GSUB feature applied to non-private-use or non-mirrored character
-    pair -- 'ompl' mirrored pair not in cmap but original is
-    non_ompl -- non-ompl bidi char does not have rtml GSUB feature
-  hmtx
-    expected -- checks for expected advance relationships in whitespace, dashes
-  glyf -- ogham?
+    rtlm_non_mirrored -- rtlm GSUB feature applied to private-use or non-mirrored character
+    ompl_rtlm -- rtlm GSUB feature applied to ompl char
+    ompl_missing_pair -- ompl sibling not in cmap
+    rtlm_unlisted -- non-ompl bidi char does not have rtlm GSUB feature
+  hints
+    unexpected_tables -- unhinted fonts shouldn't have hint tables
+    missing_bytecode -- hinted tt fonts should have bytecodes
+    unexpected_bytecode -- unhinted tt fonts should not have bytecodes
+  advances
+    digits -- checks that ASCII digits have same advance as digit zero
+    comma_period -- checks that comma and period have same advance
+    whitespace -- checks for expected advance relationships in whitespace
+  stem -- stem widths
     left_joiner -- non-zero lsb
     right_joiner -- rsb not -70
   reachable
@@ -318,7 +328,7 @@ class TestSpec(object):
     result -= self.touched_tags
     result |= self.enabled_tags
 
-  line_rx = re.compile(r'\s*(enable|disable)\s*([a-z/]+).*')
+  line_rx = re.compile(r'\s*(enable|disable)\s*([0-9a-z/]+).*')
   def modify_line(self, line):
     m = self.line_rx.match(line)
     if not m:
@@ -351,7 +361,18 @@ class TestSpec(object):
       output.extend(sorted(disable_list))
     return '\n'.join(output)
 
-class SpecList(object):
+
+class LintTests(object):
+  def __init__(self, tag_set):
+    self.tag_set = tag_set
+
+  def check(self, tag):
+    if tag not in TestSpec.tag_set:
+      raise ValueError('unrecognized tag ' + tag)
+    return tag in self.tag_set
+
+
+class LintSpec(object):
 
   def __init__(self):
     self.specs = []
@@ -359,20 +380,24 @@ class SpecList(object):
   def add_spec(self, font_condition, test_spec):
     self.specs.append((font_condition, test_spec))
 
-  def get_test_set(self, font_info):
+  def get_tests(self, font_info):
     result = set()
     result |= TestSpec.tag_set
     for spec in self.specs:
       if spec[0].accepts(font_info):
         spec[1].apply(result)
-    return frozenset(result)
+    return LintTests(frozenset(result))
 
   def __repr__(self):
     return 'spec:\n' + '\nspec:\n'.join(str(spec) for spec in self.specs)
 
 
-def parse_spec(spec):
-  spec_list = SpecList()
+def parse_spec(spec, lint_spec=None):
+  if not lint_spec:
+    lint_spec = LintSpec()
+  if not spec:
+    return lint_spec
+
   cur_condition = FontCondition()
   cur_test_spec = TestSpec()
   have_test = False
@@ -385,7 +410,7 @@ def parse_spec(spec):
       continue
     if line == 'condition':
       if have_test:
-        spec_list.add_spec(cur_condition.copy(), cur_test_spec)
+        lint_spec.add_spec(cur_condition.copy(), cur_test_spec)
         cur_test_spec = TestSpec()
         have_test = False
       cur_condition = FontCondition()
@@ -394,14 +419,14 @@ def parse_spec(spec):
       have_test = True
     else:
       if have_test:
-        spec_list.add_spec(cur_condition.copy(), cur_test_spec)
+        lint_spec.add_spec(cur_condition.copy(), cur_test_spec)
         cur_test_spec = TestSpec()
         have_test = False
       cur_condition.modify_line(line)
   if have_test:
-    spec_list.add_spec(cur_condition, cur_test_spec)
+    lint_spec.add_spec(cur_condition, cur_test_spec)
 
-  return spec_list
+  return lint_spec
 
 
 def parse_spec_file(filename):
@@ -423,7 +448,7 @@ def main():
 
   print 'test spec:'
   print test_spec
-  spec_list = parse_spec(test_spec)
+  lint_spec = parse_spec(test_spec)
   font_infos = [
     FontInfo('NotoSans-Regular.ttf', 'Noto', 'Sans', 'LGC', '', 'Regular', True,
              'Monotype', '1.02'),
@@ -436,7 +461,7 @@ def main():
     ]
   for fi in font_infos:
     print fi
-    tests =  spec_list.get_test_set(fi)
+    tests =  lint_spec.get_test_set(fi)
     for test in ['paths/extrema', 'name/copyright']:
       print 'run test %s: %s' % (test, 'yes' if test in tests else 'no')
 

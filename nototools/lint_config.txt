@@ -1,5 +1,7 @@
-# configuration for lint tests
-configuration
-  vendor Monotype
-  disable intersections:extrema
+# we've not checked this before
+disable head/os2/unicoderange
+
+vendor Monotype
+disable paths # no extrema
+
 
