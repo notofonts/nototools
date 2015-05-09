@@ -16,17 +16,18 @@
 
 """Custom configuration of lint for font instances."""
 
-# the structure is a list of conditions and tests.  a condition says when to apply
-# the following test.  these are processed in order and are cumulative, and
+# The structure is a list of conditions and tests.  A condition says when to apply
+# the following test.  These are processed in order and are cumulative, and
 # where there is a conflict the last instructions win.
 
-# both conditions and tests can vary in specifity, a condition can for example simply
+# Both conditions and tests can vary in specifity, a condition can for example simply
 # indicate all fonts by a vendor, or indicate a particuar version of a particular font.
 
 # At the end of the day, we have a particular font, and want to know which tests to
 # run and which failures to ignore or report.  lint_config builds up a structure from
-# a customization file that makes allows this api.
+# a customization file that allows this api.
 
+import argparse
 import re
 
 class FontInfo(object):
@@ -224,8 +225,8 @@ class TestSpec(object):
       ymax
       ymin
   paths -- outline tests
-    extrema -- on-curve extrema
-    duplicate -- duplicate points
+    extrema -- missing on-curve extrema
+    intersection -- self-intersecting paths
   gdef -- gdef tests
     classdef
       not_present -- table is missing but there are mark glyphs
@@ -308,7 +309,22 @@ class TestSpec(object):
   def _get_tag_set(self, tag):
     result = set()
     if not tag in self.tag_set:
-      raise ValueError('unknown tag: %s' % tag)
+      unique_tag = None
+      # try to find a unique tag with this as a segment
+      for t in TestSpec.tag_set:
+        ix = t.find(tag)
+        if ix != -1:
+          if ix > 0 and t[ix-1] not in '/_':
+            continue
+          ix += len(tag)
+          if ix < len(t) and t[ix] not in '/_':
+            continue
+          if unique_tag:
+            raise ValueError('multiple matches for partial tag')
+          unique_tag = t
+      if not unique_tag:
+        raise ValueError('unknown tag: %s' % tag)
+      tag = unique_tag
     for candidate in self.tag_set:
       if candidate.startswith(tag):
         result.add(candidate)
@@ -365,11 +381,24 @@ class TestSpec(object):
 class LintTests(object):
   def __init__(self, tag_set):
     self.tag_set = tag_set
+    self.run_log = set()
+    self.skip_log = set()
 
   def check(self, tag):
     if tag not in TestSpec.tag_set:
       raise ValueError('unrecognized tag ' + tag)
-    return tag in self.tag_set
+    run = tag in self.tag_set
+    if run:
+      self.run_log.add(tag)
+    else:
+      self.skip_log.add(tag)
+    return run
+
+  def runlog(self):
+    return self.run_log
+
+  def skiplog(self):
+    return self.skip_log
 
 
 class LintSpec(object):
@@ -408,21 +437,30 @@ def parse_spec(spec, lint_spec=None):
     line = line.strip()
     if not line:
       continue
-    if line == 'condition':
-      if have_test:
-        lint_spec.add_spec(cur_condition.copy(), cur_test_spec)
-        cur_test_spec = TestSpec()
-        have_test = False
-      cur_condition = FontCondition()
-    elif line.startswith('enable') or line.startswith('disable'):
-      cur_test_spec.modify_line(line)
-      have_test = True
-    else:
-      if have_test:
-        lint_spec.add_spec(cur_condition.copy(), cur_test_spec)
-        cur_test_spec = TestSpec()
-        have_test = False
-      cur_condition.modify_line(line)
+    for segment in line.split(';'):
+      segment = segment.strip()
+      if segment == 'condition':
+        if have_test:
+          lint_spec.add_spec(cur_condition.copy(), cur_test_spec)
+          cur_test_spec = TestSpec()
+          have_test = False
+        cur_condition = FontCondition()
+      elif segment.startswith('enable '):
+        segment = segment[len('enable '):]
+        for seg in segment.split(','):
+          cur_test_spec.enable(seg.strip())
+        have_test = True
+      elif segment.startswith('disable '):
+        segment = segment[len('disable '):]
+        for seg in segment.split(','):
+          cur_test_spec.disable(seg.strip())
+        have_test = True
+      else:
+        if have_test:
+          lint_spec.add_spec(cur_condition.copy(), cur_test_spec)
+          cur_test_spec = TestSpec()
+          have_test = False
+        cur_condition.modify_line(segment)
   if have_test:
     lint_spec.add_spec(cur_condition, cur_test_spec)
 
@@ -433,37 +471,15 @@ def parse_spec_file(filename):
   with open(filename) as f:
     return parse_spec(f.read())
 
+
 def main():
-  test_spec="""
-  # this is a test
-  vendor Monotype
-  disable paths/extrema # they prefer not to handle this
-  filename NotoSans-Regular.ttf
-  version 1.02
-  enable paths/extrema # we agreed this was ok for this font and version
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--tags', help='list all tags supported by the parser', action='store_true')
+  args = parser.parse_args()
 
-  condition
-  filename NotoSansCJK-Regular.ttc
-  disable name # no name tests for CJK regular"""
-
-  print 'test spec:'
-  print test_spec
-  lint_spec = parse_spec(test_spec)
-  font_infos = [
-    FontInfo('NotoSans-Regular.ttf', 'Noto', 'Sans', 'LGC', '', 'Regular', True,
-             'Monotype', '1.02'),
-    FontInfo('NotoSans-Regular.ttf', 'Noto', 'Sans', 'LGC', '', 'Regular', True,
-             'Monotype', '1.03'),
-    FontInfo('NotoSans-Bold.ttf', 'Noto', 'Sans', 'LGC', '', 'Regular', True,
-             'Monotype', '1.02'),
-    FontInfo('NotoSansCJK-Regular.ttc', 'Noto', 'Sans', 'CJK', '', 'Regular', True,
-             'Adobe', '1.000')
-    ]
-  for fi in font_infos:
-    print fi
-    tests =  lint_spec.get_test_set(fi)
-    for test in ['paths/extrema', 'name/copyright']:
-      print 'run test %s: %s' % (test, 'yes' if test in tests else 'no')
+  if args.tags:
+    for tag in sorted(TestSpec.tag_set):
+      print tag
 
 if __name__ == '__main__':
     main()
