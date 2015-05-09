@@ -427,7 +427,7 @@ DESCENT = -600
 _last_printed_file_name = None
 
 def check_font(file_name,
-               lint_spec,
+               lint_spec, runlog=False, skiplog=False,
                csv_flag=False, info_flag=False, check_legal=True,
                extrema_details=True):
 
@@ -1125,7 +1125,7 @@ def check_font(file_name,
             else:
                 hhea_table = font["hhea"]
                 if tests.check('bounds/font/ymax') and font_ymax > hhea_table.ascent:
-                    warn("Bounds", "Real yMax %d, but it should be less"
+                    warn("Bounds", "Real yMax %d, but it should be less "
                          "than or equal to the value of Ascent in 'hhea' table, "
                          "which is %d." % (font_ymax, hhea_table.ascent))
                 if tests.check('bounds/font/ymin') and font_ymin < hhea_table.descent:
@@ -1174,7 +1174,7 @@ def check_font(file_name,
 
                             curves_in_contour.append(curve)
 
-                            if not test_extrema:
+                            if not check_extrema:
                               continue
                             out_of_box = curve_has_off_curve_extrema(curve)
                             if out_of_box > 0:
@@ -1192,7 +1192,7 @@ def check_font(file_name,
                     start_point = end_point + 1
                     all_contours.append(curves_in_contour)
 
-                if test_intersection and curves_intersect(all_contours):
+                if check_intersection and curves_intersect(all_contours):
                     warn("Intersection",
                          "The glyph '%s' has intersecting "
                          "outlines." % glyph_name)
@@ -1719,6 +1719,23 @@ def check_font(file_name,
     warn("info",
          "supported characters: " + printable_unicode_range(cmap.keys()))
 
+    if runlog:
+        log = sorted(tests.runlog())
+        count = len(log)
+        if count:
+          print 'Ran %d test%s:\n  %s' (count, 's' if count != 1 else '',
+                                        '\n  '.join(log))
+        else:
+          print 'Ran no tests.'
+    if skiplog:
+        log = sorted(tests.skiplog())
+        count = len(log)
+        if len(log):
+          print 'Skipped %d test%s:\n  %s' (count, 's' if count != 1 else '',
+                                            '\n  '.join(log))
+        else:
+          print 'Skipped no tests'
+
     # TODO(roozbeh):
     # * Check that hintedness based on data in the glyf table
     #   matches metadata (file location, header data)
@@ -1781,6 +1798,15 @@ def main():
         "--config",
         help="extra config spec to process after config file",
         metavar='lint_spec')
+    parser.add_argument(
+        "--runlog",
+        help="show tags of run tests",
+        action="store_true")
+    parser.add_argument(
+        "--skiplog",
+        help="show tags of skipped tests",
+        action="store_true")
+
     arguments = parser.parse_args()
 
     lint_spec = get_lint_spec(arguments.config_file, arguments.config)
@@ -1792,6 +1818,8 @@ def main():
     for font_file_name in arguments.font_files:
         check_font(font_file_name,
                    lint_spec,
+                   arguments.runlog,
+                   arguments.skiplog,
                    arguments.csv,
                    arguments.info,
                    not arguments.nolegal,
