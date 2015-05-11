@@ -1506,11 +1506,12 @@ def check_font(file_name,
                          "%d and %d." % (codepoint, glyph_name, glyph_id, adv, low_exp,
                                          high_exp))
 
-
         digit_char = ord('0')
         period_char = ord('.')
         comma_char = ord(',')
         space_char = ord(' ')
+        tab_char = ord('\t')
+        nbsp_char = 0x00a0
 
         if digit_char in cmap:
             digit_width = get_horizontal_advance(digit_char)
@@ -1529,9 +1530,14 @@ def check_font(file_name,
                 expect_width(comma_char, period_width)
 
         if tests.check('advances/whitespace'):
-            if 0x00a0 in cmap: # no-break space
+            if tab_char in cmap or nbsp_char in cmap:
                 space_width = get_horizontal_advance(space_char);
-                expect_width(0x00a0, space_width)
+                if tab_char in cmap:
+                    # see https://www.microsoft.com/typography/otspec/recom.htm
+                    expect_width(tab_char, space_width)
+                if nbsp_char in cmap:
+                    expect_width(nbsp_char, space_width)
+
             em_width = font['head'].unitsPerEm
             expect_width(0x2000, em_width, 2) # en_quad
             expect_width(0x2001, em_width)    # em_quad
