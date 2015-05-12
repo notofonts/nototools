@@ -428,7 +428,7 @@ _last_printed_file_name = None
 
 def check_font(file_name,
                lint_spec, runlog=False, skiplog=False,
-               csv_flag=False, info_flag=False, check_legal=True,
+               csv_flag=False, info_flag=False,
                extrema_details=True):
 
     def warn(category, message, details=True):
@@ -1502,7 +1502,7 @@ def check_font(file_name,
                     glyph_name = cmap[codepoint]
                     glyph_id = font.getGlyphID(glyph_name)
                     warn("Advances",
-                         "The advance of U+%04x (%s, glyph %d) is %, but expected between"
+                         "The advance of U+%04x (%s, glyph %d) is %d, but expected between"
                          "%d and %d." % (codepoint, glyph_name, glyph_id, adv, low_exp,
                                          high_exp))
 
@@ -1636,7 +1636,7 @@ def check_font(file_name,
 
     is_cjk = False
     is_mono = False
-    is_hinted = False
+
     just_the_file_name = file_name.split("/")[-1]
     fontname_regex = (
         "Noto"
@@ -1729,7 +1729,7 @@ def check_font(file_name,
         log = sorted(tests.runlog())
         count = len(log)
         if count:
-          print 'Ran %d test%s:\n  %s' (count, 's' if count != 1 else '',
+          print 'Ran %d test%s:\n  %s' % (count, 's' if count != 1 else '',
                                         '\n  '.join(log))
         else:
           print 'Ran no tests.'
@@ -1737,7 +1737,7 @@ def check_font(file_name,
         log = sorted(tests.skiplog())
         count = len(log)
         if len(log):
-          print 'Skipped %d test%s:\n  %s' (count, 's' if count != 1 else '',
+          print 'Skipped %d test/group%s:\n  %s' % (count, 's' if count != 1 else '',
                                             '\n  '.join(log))
         else:
           print 'Skipped no tests'
@@ -1775,10 +1775,6 @@ def main():
     parser.add_argument(
         "--info",
         help="includes informational messages in the output",
-        action="store_true")
-    parser.add_argument(
-        "--nolegal",
-        help="ignores mismatches in copyright and trademark fields",
         action="store_true")
     parser.add_argument(
         "--suppress_extrema_details",
@@ -1828,7 +1824,6 @@ def main():
                    arguments.skiplog,
                    arguments.csv,
                    arguments.info,
-                   not arguments.nolegal,
                    arguments.extrema_details)
 
     if not arguments.csv:

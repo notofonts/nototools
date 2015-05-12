@@ -122,7 +122,7 @@ class FontCondition(object):
       value = re.compile(value)
     self.__dict__[condition_name] = (fn, value)
 
-  line_re = re.compile('([^ \t]+)\\s+([^ \t]+)(.*)?')
+  line_re = re.compile(r'([^ \t]+)\s+([^ \t]+)(.*)?')
   def modify_line(self, line):
     line = line.strip()
     m = self.line_re.match(line)
@@ -344,6 +344,7 @@ class TestSpec(object):
     result -= self.touched_tags
     result |= self.enabled_tags
 
+  # TODO(dougfelt): remove modify_line if no longer used
   line_rx = re.compile(r'\s*(enable|disable)\s*([0-9a-z/]+).*')
   def modify_line(self, line):
     m = self.line_rx.match(line)
