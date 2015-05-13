@@ -41,6 +41,7 @@ def parse_hex_values(hexlist):
     raise ValueError('duplicate values in list: %s' % hexlist)
   return result
 
+
 class CpSetFilter(object):
   """Tests whether a code point is in a set."""
 
@@ -327,7 +328,7 @@ class TestSpec(object):
     return tag_data
 
   tag_data = _process_data(data)
-  tag_set = frozenset([tag for tag in tag_data])
+  tag_set = frozenset(tag_data.keys())
 
   def __init__(self):
     self.touched_tags = set()

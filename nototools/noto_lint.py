@@ -807,9 +807,8 @@ def check_font(file_name,
         # characters of script Common or Inherited
 
         if char_filter:
-            # Can you create a class that's a predicate?
-            old_needed_size = len(needed_chars)
-            needed_chars = set(itertools.ifilter(lambda x:char_filter.accept(x), needed_chars))
+            # old_needed_size = len(needed_chars)
+            needed_chars = set(itertools.ifilter(char_filter.accept, needed_chars))
             # TODO(dougfelt): figure out how to make this info available without messing up output
             # print 'filter needed char size: %d -> %d' % (old_needed_size, len(needed_chars))
 
