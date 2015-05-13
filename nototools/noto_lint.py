@@ -1094,24 +1094,28 @@ def check_font(file_name,
                 continue
 
             if is_ui or deemed_ui:
-                if tests.check('bounds/glyph/ui_ymax') and ymax is not None and ymax > MAX_UI_HEIGHT:
+                if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
+                    ymax is not None and ymax > MAX_UI_HEIGHT):
                     warn(
                         "Bounds",
                         "Real yMax for glyph %d (%s) is %d, which is more than "
                         "%d." % (glyph_index, glyph_name, ymax, MAX_UI_HEIGHT))
-                if tests.check('bounds/glyph/ui_ymin') and ymin is not None and ymin < MIN_UI_HEIGHT:
+                if (tests.checkvalue('bounds/glyph/ui_ymin', glyph_index) and
+                    ymin is not None and ymin < MIN_UI_HEIGHT):
                     warn(
                         "Bounds",
                         "Real yMin for glyph %d (%s) is %d, which is less than "
                         "%d." % (glyph_index, glyph_name, ymin, MIN_UI_HEIGHT))
 
-            if tests.check('bounds/glyph/ymax') and ymax is not None and ymax > us_win_ascent:
+            if (tests.checkvalue('bounds/glyph/ymax', glyph_index) and ymax is not None and
+                ymax > us_win_ascent):
                 warn(
                     "Bounds",
                     "Real yMax for glyph %d (%s) is %d, which is higher than "
                     "the font's usWinAscent (%d), resulting in clipping." %
                     (glyph_index, glyph_name, ymax, us_win_ascent))
-            if tests.check('bounds/glyph/ymin') and ymin is not None and ymin < -us_win_descent:
+            if (tests.checkvalue('bounds/glyph/ymin', glyph_index) and ymin is not None and
+                ymin < -us_win_descent):
                 warn(
                     "Bounds",
                     "Real yMin for glyph %d (%s) is %d, which is lower than "

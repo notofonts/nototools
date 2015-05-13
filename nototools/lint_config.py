@@ -31,27 +31,43 @@ import argparse
 import re
 
 
-def parse_hex_values(hexlist):
-  """Returns a set of hex values from a list of hex numbers separated by space."""
+def parse_int_values(intlist, is_hex):
+  """Returns a set of ints from a list of hex numbers or ranges separated by space.
+  A range is two hex values separated by hyphen with no intervening spaces."""
   result = set()
-  value_list = hexlist.split(' ')
+  count = 0
+  base = 16 if is_hex else 10
+  value_list = intlist.split(' ')
   for val in value_list:
-    result.add(int(val, 16))
-  if len(result) != len(value_list):
-    raise ValueError('duplicate values in list: %s' % hexlist)
+    if '-' in val: # assume range
+      val_list = val.split('-')
+      if len(val_list) != 2:
+        raise ValueError('could not parse range from \'%s\'' % val)
+      lo = int(val_list[0], base)
+      hi = int(val_list[1], base)
+      if lo >= hi:
+        raise ValueError('val range must have high > low')
+      result.update(range(lo, hi + 1))
+      count += hi - lo + 1
+    else:
+      result.add(int(val, base))
+      count += 1
+  if len(result) != count:
+    raise ValueError('duplicate values in %s, expected count is %d but result is %s' % (
+        hexlist, count, result))
   return result
 
 
-class CpSetFilter(object):
-  """Tests whether a code point is in a set."""
+class IntSetFilter(object):
+  """Tests whether an int (glyph or code point) is in a set."""
 
-  def __init__(self, accept_if_in, cpset):
+  def __init__(self, accept_if_in, intset):
     self.accept_if_in = accept_if_in
-    self.cpset = cpset
-    print 'accept_if_in: %s' % accept_if_in
+    self.intset = intset
+    # print 'IntSetFilter %s %s' % ('only' if accept_if_in else 'except', intset)
 
   def accept(self, cp):
-    return self.accept_if_in == (cp in self.cpset)
+    return self.accept_if_in == (cp in self.intset)
 
 
 class FontInfo(object):
@@ -239,10 +255,10 @@ class TestSpec(object):
       unicoderange
   bounds -- glyf limits etc
     glyph
-      ui_ymax
-      ui_ymin
-      ymax
-      ymin
+      ui_ymax except|only cp|gid
+      ui_ymin except|only cp|gid
+      ymax except|only cp|gid
+      ymin except|only cp|gid
     font
       ui_ymax
       ui_ymin
@@ -292,12 +308,12 @@ class TestSpec(object):
   # 0: zero or more spaces
   # 1: tag, lower case alphanumeric plus underscore
   # 2: optional relation regex, delimited by whitespace'
-  # 3: optional (with relation) value type regex, currently only 'cp'
+  # 3: optional (with relation) value type regex, delimited by whitespace'
   # 4: optional '--' followed by comment to end of line
   def _process_data(data):
     """data is a hierarchy of tags. any level down to root can be enabled or disabled.  this
     builds a representation of the tag hierarchy from the text description."""
-    _data_line_re = re.compile(r'(\s*)([a-z0-9_]+)(?:\s+([^\s]+)\s+(cp))?\s*(?:--\s*(.+)\s*)?$')
+    _data_line_re = re.compile(r'(\s*)([a-z0-9_]+)(?:\s+([^\s]+)\s+([^\s]+))?\s*(?:--\s*(.+)\s*)?$')
     tag_data = {}
     indent = (0, '', None)
     for line in data.splitlines():
@@ -361,18 +377,18 @@ class TestSpec(object):
 
   def _set_enable_options(self, tag, relation, arg_type, arg):
     allowed_options = TestSpec.tag_data[tag]
-    if not allowed_options:
+    if not allowed_options[0]:
       raise ValueError('tag %s does not allow options' % tag)
-    print 'allowed options', allowed_options
     if not re.match(allowed_options[0], relation):
       raise ValueError('tag %s does not allow relation %s' % (tag, relation))
     if not re.match(allowed_options[1], arg_type):
       raise ValueError('tag %s and relation %s does not allow arg type %s' % (
           tag, relation, arg_type))
 
-    if arg_type == 'cp':
-      cp_set = parse_hex_values(arg)
-      self.tag_options[tag] = CpSetFilter(relation != 'except', cp_set)
+    if arg_type == 'cp' or arg_type == 'gid':
+      is_hex = arg_type == 'cp'
+      int_set = parse_int_values(arg, is_hex)
+      self.tag_options[tag] = IntSetFilter(relation != 'except', int_set)
     else:
       raise ValueError('illegal state - unable to handle recognized arg_type %s' % arg_type)
 
@@ -386,7 +402,7 @@ class TestSpec(object):
     self.touched_tags |= tags
     self.enabled_tags |= tags
 
-  tag_rx = re.compile(r'\s*([0-9a-z/_]+)(?:\s+(except|only)\s+(cp)\s+(.*))?\s*')
+  tag_rx = re.compile(r'\s*([0-9a-z/_]+)(?:\s+(except|only)\s+(cp|gid)\s+(.*))?\s*$')
   def enable_tag(self, tag_seg):
     m = self.tag_rx.match(tag_seg)
     if not m:
@@ -463,6 +479,12 @@ class LintTests(object):
       self.run_log.add(tag)
     else:
       self.skip_log.add(tag)
+    return run
+
+  def checkvalue(self, tag, value):
+    run = self.check(tag)
+    if run and tag in self.tag_filters:
+      run = self.tag_filters[tag].accept(value)
     return run
 
   def runlog(self):
