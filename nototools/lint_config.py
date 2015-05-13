@@ -30,6 +30,29 @@
 import argparse
 import re
 
+
+def parse_hex_values(hexlist):
+  """Returns a set of hex values from a list of hex numbers separated by space."""
+  result = set()
+  value_list = hexlist.split(' ')
+  for val in value_list:
+    result.add(int(val, 16))
+  if len(result) != len(value_list):
+    raise ValueError('duplicate values in list: %s' % hexlist)
+  return result
+
+class CpSetFilter(object):
+  """Tests whether a code point is in a set."""
+
+  def __init__(self, accept_if_in, cpset):
+    self.accept_if_in = accept_if_in
+    self.cpset = cpset
+    print 'accept_if_in: %s' % accept_if_in
+
+  def accept(self, cp):
+    return self.accept_if_in == (cp in self.cpset)
+
+
 class FontInfo(object):
   def __init__(self, filename, name, style, script, variant, weight, monospace,
                hinted, vendor, version):
@@ -191,7 +214,7 @@ class TestSpec(object):
       format_12_has_bmp
       format_4_subset_of_12
     required
-    script_required
+    script_required except|only cp
     private_use
     non_characters
     disallowed_ascii
@@ -264,26 +287,30 @@ class TestSpec(object):
   reachable
   """
 
+  # fields are:
+  # 0: zero or more spaces
+  # 1: tag, lower case alphanumeric plus underscore
+  # 2: optional relation regex, delimited by whitespace'
+  # 3: optional (with relation) value type regex, currently only 'cp'
+  # 4: optional '--' followed by comment to end of line
   def _process_data(data):
     """data is a hierarchy of tags. any level down to root can be enabled or disabled.  this
     builds a representation of the tag hierarchy from the text description."""
-    tag_list = []
+    _data_line_re = re.compile(r'(\s*)([a-z0-9_]+)(?:\s+([^\s]+)\s+(cp))?\s*(?:--\s*(.+)\s*)?$')
+    tag_data = {}
     indent = (0, '', None)
     for line in data.splitlines():
-      if not line:
+      if not line.strip():
         continue
-      ix = line.find('--')
-      if ix != -1:
-        comment = line[:ix+2].strip()
-        line = line[:ix].rstrip()
-      else:
-        comment = ''
-      line_indent = 0
-      for i in range(len(line)):
-        if line[i] != ' ':
-          line_indent = i
-          break
-      line = line.strip()
+      m = _data_line_re.match(line)
+      if not m:
+        raise ValueError('failed to match line: \'%s\'' % line)
+      line_indent = m.group(1)
+      tag_part = m.group(2)
+      relation = m.group(3)
+      arg_type = m.group(4)
+      comment = m.group(5)
+
       while line_indent <= indent[0]:
         if indent[2]:
           indent = indent[2]
@@ -291,20 +318,21 @@ class TestSpec(object):
           break
       tag = indent[1]
       if tag:
-        tag += '/' + line
+        tag += '/' + tag_part
       else:
-        tag = line
-      tag_list.append((tag, comment))
+        tag = tag_part
+      tag_data[tag] = (relation, arg_type, comment)
       if line_indent > indent[0]:
         indent = (line_indent, tag, indent)
-    return tag_list
+    return tag_data
 
-  tags = _process_data(data)
-  tag_set = frozenset([tag for tag,_ in tags])
+  tag_data = _process_data(data)
+  tag_set = frozenset([tag for tag in tag_data])
 
   def __init__(self):
     self.touched_tags = set()
     self.enabled_tags = set()
+    self.tag_options = {}
 
   def _get_tag_set(self, tag):
     result = set()
@@ -330,28 +358,63 @@ class TestSpec(object):
         result.add(candidate)
     return result
 
-  def enable(self, tag):
+  def _set_enable_options(self, tag, relation, arg_type, arg):
+    allowed_options = TestSpec.tag_data[tag]
+    if not allowed_options:
+      raise ValueError('tag %s does not allow options' % tag)
+    print 'allowed options', allowed_options
+    if not re.match(allowed_options[0], relation):
+      raise ValueError('tag %s does not allow relation %s' % (tag, relation))
+    if not re.match(allowed_options[1], arg_type):
+      raise ValueError('tag %s and relation %s does not allow arg type %s' % (
+          tag, relation, arg_type))
+
+    if arg_type == 'cp':
+      cp_set = parse_hex_values(arg)
+      self.tag_options[tag] = CpSetFilter(relation != 'except', cp_set)
+    else:
+      raise ValueError('illegal state - unable to handle recognized arg_type %s' % arg_type)
+
+  def enable(self, tag, relation=None, arg_type=None, arg=None):
     tags = self._get_tag_set(tag)
+    if relation != None:
+      if len(tags) > 1:
+        raise ValueError('options cannot be applied to multiple tags')
+      tag = next(iter(tags))
+      self._set_enable_options(tag, relation, arg_type, arg)
     self.touched_tags |= tags
     self.enabled_tags |= tags
+
+  tag_rx = re.compile(r'\s*([0-9a-z/_]+)(?:\s+(except|only)\s+(cp)\s+(.*))?\s*')
+  def enable_tag(self, tag_seg):
+    m = self.tag_rx.match(tag_seg)
+    if not m:
+      raise ValueError('TestSpec could not parse ' + tag_spec)
+    self.enable(m.group(1), relation=m.group(2), arg_type=m.group(3), arg=m.group(4))
 
   def disable(self, tag):
     tags = self._get_tag_set(tag)
     self.touched_tags |= tags
     self.enabled_tags -= tags
 
-  def apply(self, result):
+  def apply_spec(self, result, options):
     result -= self.touched_tags
     result |= self.enabled_tags
+    for tag in self.touched_tags:
+      options.pop(tag, None)
+    for tag in self.enabled_tags:
+      if tag in self.tag_options:
+        options[tag] = self.tag_options[tag]
+
 
   # TODO(dougfelt): remove modify_line if no longer used
-  line_rx = re.compile(r'\s*(enable|disable)\s*([0-9a-z/]+).*')
+  line_rx = re.compile(r'\s*(enable|disable)\s+([0-9a-z/]+)(?:\s+(except)\s+(cp)\s+(.*))?\s*')
   def modify_line(self, line):
     m = self.line_rx.match(line)
     if not m:
       raise ValueError('TestSpec could not parse ' + line)
     if m.group(1) == 'enable':
-      self.enable(m.group(2))
+      self.enable(m.group(2), m.group(3), m.group(4), m.group(5))
     else:
       self.disable(m.group(2))
 
@@ -380,10 +443,16 @@ class TestSpec(object):
 
 
 class LintTests(object):
-  def __init__(self, tag_set):
+  def __init__(self, tag_set, tag_filters):
     self.tag_set = tag_set
+    self.tag_filters = tag_filters
     self.run_log = set()
     self.skip_log = set()
+
+  def get_filter(self, tag):
+    if tag not in TestSpec.tag_set:
+      raise ValueError('unrecognized tag ' + tag)
+    return self.tag_filters.get(tag, None)
 
   def check(self, tag):
     if tag not in TestSpec.tag_set:
@@ -412,11 +481,13 @@ class LintSpec(object):
 
   def get_tests(self, font_info):
     result = set()
+    options = {}
     result |= TestSpec.tag_set
-    for spec in self.specs:
-      if spec[0].accepts(font_info):
-        spec[1].apply(result)
-    return LintTests(frozenset(result))
+    for condition, spec in self.specs:
+      if condition.accepts(font_info):
+        spec.apply_spec(result, options)
+
+    return LintTests(frozenset(result), options)
 
   def __repr__(self):
     return 'spec:\n' + '\nspec:\n'.join(str(spec) for spec in self.specs)
@@ -449,7 +520,7 @@ def parse_spec(spec, lint_spec=None):
       elif segment.startswith('enable '):
         segment = segment[len('enable '):]
         for seg in segment.split(','):
-          cur_test_spec.enable(seg.strip())
+          cur_test_spec.enable_tag(seg.strip())
         have_test = True
       elif segment.startswith('disable '):
         segment = segment[len('disable '):]
@@ -476,11 +547,28 @@ def parse_spec_file(filename):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--tags', help='list all tags supported by the parser', action='store_true')
+  parser.add_argument('--comments', help='list tags with comments when present', action='store_true')
+  parser.add_argument('--filters', help='list tags with filters when present', action='store_true')
   args = parser.parse_args()
 
-  if args.tags:
-    for tag in sorted(TestSpec.tag_set):
+  if not (args.tags or args.comments or args.filters):
+    print 'nothing to do.'
+    return
+
+  for tag in sorted(TestSpec.tag_set):
+    data = TestSpec.tag_data[tag]
+    comment = args.comments and data[2]
+    if args.filters and (data[0] or data[1]):
+      filter = ' '.join(data[:2])
+    else:
+      filter = None
+    show_tag = args.tags or comment or filter
+    if show_tag:
       print tag
+      if filter:
+        print '  ' + filter
+      if comment:
+        print '  -- ' + comment
 
 if __name__ == '__main__':
     main()

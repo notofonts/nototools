@@ -763,7 +763,7 @@ def check_font(file_name,
             warn("License",
                  "License URL doesn't match template: '%s'." % names[14])
 
-    def _check_needed_chars(cmap):
+    def _check_needed_chars(cmap, char_filter):
         # TODO(roozbeh): check the glyph requirements for controls specified at
         # https://www.microsoft.com/typography/otspec/recom.htm
 
@@ -805,6 +805,13 @@ def check_font(file_name,
 
         # TODO: also check character coverage against Unicode blocks for
         # characters of script Common or Inherited
+
+        if char_filter:
+            # Can you create a class that's a predicate?
+            old_needed_size = len(needed_chars)
+            needed_chars = set(itertools.ifilter(lambda x:char_filter.accept(x), needed_chars))
+            # TODO(dougfelt): figure out how to make this info available without messing up output
+            # print 'filter needed char size: %d -> %d' % (old_needed_size, len(needed_chars))
 
         missing_chars = needed_chars - set(cmap.keys())
         if missing_chars:
@@ -893,7 +900,7 @@ def check_font(file_name,
                              % code)
 
         if not is_cjk and tests.check('cmap/script_required'):
-            _check_needed_chars(cmap)
+            _check_needed_chars(cmap, tests.get_filter('cmap/script_required'))
 
         if tests.check('cmap/private_use'):
             privates_in_cmap = {char for char in cmap
