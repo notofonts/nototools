@@ -1361,9 +1361,9 @@ def check_font(file_name,
         ]
         if not is_cjk and unicode_data.human_readable_script_name(script) in whitelist:
             return
-        if tests.check('complex/gpos') and "GPOS" not in font:
+        if tests.check('complex/gpos/missing') and ("GPOS" not in font):
             warn("GPOS", "There is no GPOS table in the font.")
-        if tests.check('complex/gsub') and "GSUB" not in font:
+        if tests.check('complex/gsub/missing') and ("GSUB" not in font):
             warn("GSUB", "There is no GSUB table in the font.")
         #TODO: Add more script-specific checks
 
@@ -1637,6 +1637,7 @@ def check_font(file_name,
         scripts = {script.translate(None, '_ ') for script in scripts}
         return '|'.join(scripts)
 
+    ### actual start of check_font fn
 
     # python 2.7 does not have nonlocal, so hack around it
     suppressed_err_count = [0]

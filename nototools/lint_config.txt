@@ -3,5 +3,11 @@ disable head/os2/unicoderange
 
 vendor Monotype
 disable paths # no extrema
+disable trademark # we can swat this ourselves
 
+filename like Avestan
+disable gpos/missing
+
+filename like Bengali
+enable script_required except cp 951-952
 

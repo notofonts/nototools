@@ -108,7 +108,7 @@ class FontCondition(object):
     def test_in(lhs, rhs):
       return lhs in rhs
     def test_like(lhs, rhs):
-      return rhs.match(lhs)
+      return rhs.search(lhs) != None
 
     return {
       '<': test_lt,
@@ -365,7 +365,7 @@ class TestSpec(object):
           if ix < len(t) and t[ix] not in '/_':
             continue
           if unique_tag:
-            raise ValueError('multiple matches for partial tag')
+            raise ValueError('multiple matches for partial tag %s' % tag)
           unique_tag = t
       if not unique_tag:
         raise ValueError('unknown tag: %s' % tag)
@@ -492,6 +492,23 @@ class LintTests(object):
 
   def skiplog(self):
     return self.skip_log
+
+  def __repr__(self):
+    lines = []
+    if not (self.run_log or self.skip_log):
+      for tag in sorted(self.tag_set):
+        tag_filter = self.tag_filters.get(tag, None)
+        if tag_filter:
+          lines.append('%s %s' % (tag, tag_filter))
+        else:
+          lines.append(tag)
+    if self.run_log:
+      lines.add('run:')
+      lines.append('  ' + t for t in self.run_log)
+    if self.skip_log:
+      lines.add('skipped:')
+      lines.append('  ' + t for t in self.skip_log)
+    return '\n'.join(lines)
 
 
 class LintSpec(object):
