@@ -47,6 +47,27 @@ from nototools import unicode_data
 NOTO_URL = "http://code.google.com/p/noto/"
 NOTO_NEW_URL = "http://www.google.com/get/noto/"
 
+def all_scripts():
+    """Extends unicode scripts with pseudo-script 'Urdu'."""
+    result = set(unicode_data.all_scripts())
+    result.add('Urdu')
+    return frozenset(result)
+
+
+def human_readable_script_name(script):
+    """Supports 'Urdu' pseudo-script."""
+    if script == 'Urdu':
+        return 'Urdu'
+    return unicode_data.human_readable_script_name(script)
+
+
+def script_code(compact_script):
+    """Supports 'Urdu' pseudo-script."""
+    if compact_script == 'Urdu':
+        return 'Urdu'
+    return unicode_data.script_code(compact_script)
+
+
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
     parts_list = []
@@ -472,7 +493,7 @@ def check_font(file_name,
 
         if csv_flag:
             print ('%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
-                unicode_data.human_readable_script_name(script),
+                human_readable_script_name(script),
                 style,
                 variant if variant else '',
                 weight,
@@ -525,11 +546,7 @@ def check_font(file_name,
             # the name comes from the script alone
             expected_family_name += ' ' + style
         if script != 'Latn':
-            if style == 'Nastaliq':
-                expected_family_name += ' Urdu'
-            else:
-                expected_family_name += (
-                    ' ' + unicode_data.human_readable_script_name(script))
+            expected_family_name += ' ' + human_readable_script_name(script)
         if variant:
             expected_family_name += ' ' + variant
         if weight == 'BoldItalic':
@@ -1359,7 +1376,7 @@ def check_font(file_name,
           "Vai",
           "Yi",
         ]
-        if not is_cjk and unicode_data.human_readable_script_name(script) in whitelist:
+        if not is_cjk and human_readable_script_name(script) in whitelist:
             return
         if tests.check('complex/gpos/missing') and ("GPOS" not in font):
             warn("GPOS", "There is no GPOS table in the font.")
@@ -1620,21 +1637,15 @@ def check_font(file_name,
         unreachable_glyphs = all_glyphs - subsetter.glyphs_all
         if unreachable_glyphs:
             warn("Reachabily",
-                 "The following glyphs are unreachable in the font: %s." %
-                 ", ".join(sorted(unreachable_glyphs)))
+                 "The following %d glyphs are unreachable in the font: %s." %
+                 (len(unreachable_glyphs), ", ".join(sorted(unreachable_glyphs))))
 
     def make_compact_scripts_regex(scripts=None):
         """Creates a regular expression that accepts all compact scripts names.
         """
         if scripts == None:
-            scripts = unicode_data.all_scripts()
-        scripts = {unicode_data.human_readable_script_name(script)
-                   for script in scripts}
-        # Capitalize N'Ko properly
-        if 'Nko' in scripts:
-            scripts.remove('Nko')
-            scripts.add('NKo')
-        scripts = {script.translate(None, '_ ') for script in scripts}
+            scripts = all_scripts()
+        scripts = {human_readable_script_name(script).translate(None, '_ ') for script in scripts}
         return '|'.join(scripts)
 
     ### actual start of check_font fn
@@ -1661,12 +1672,10 @@ def check_font(file_name,
     if match:
         style, compact_script, variant, weight = match.groups()
         if compact_script:
-            script = unicode_data.script_code(compact_script)
-            assert script != "Zzzz"
+          script = script_code(compact_script)
+          assert script != "Zzzz"
         elif style in ["Sans", "Serif"]:
             script = "Latn"  # LGC really
-        elif style in ["Nastaliq"]:
-            script = "Arab"
         else:
             style, script, variant, weight = HARD_CODED_FONT_INFO[
                 just_the_file_name]
