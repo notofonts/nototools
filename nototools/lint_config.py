@@ -351,8 +351,8 @@ class TestSpec(object):
     self.enabled_tags = set()
     self.tag_options = {}
 
-  def _get_tag_set(self, tag):
-    result = set()
+  def _get_single_tag(self, tag):
+    """Resolve tag to a single node"""
     if not tag in self.tag_set:
       unique_tag = None
       # try to find a unique tag with this as a segment
@@ -370,9 +370,30 @@ class TestSpec(object):
       if not unique_tag:
         raise ValueError('unknown tag: %s' % tag)
       tag = unique_tag
+    return tag
+
+  def _get_tag_set(self, tag):
+    """Resolve tag to a single node, and return it and all of its descendants."""
+    if tag == '*':
+      return TestSpec.tag_set
+    tag = self._get_single_tag(tag)
+    result = set()
     for candidate in self.tag_set:
       if candidate.startswith(tag):
         result.add(candidate)
+    return result
+
+  def _get_ancestor_tag_set(self, tag):
+    """Resolve tag to a single node, and return all of its ancestors."""
+    result = set()
+    if tag != '*':
+      tag = self._get_single_tag(tag)
+      while tag:
+        ix = tag.rfind('/')
+        if ix == -1:
+          break
+        tag = tag[:ix]
+        result.add(tag)
     return result
 
   def _set_enable_options(self, tag, relation, arg_type, arg):
@@ -400,6 +421,7 @@ class TestSpec(object):
       tag = next(iter(tags))
       self._set_enable_options(tag, relation, arg_type, arg)
     self.touched_tags |= tags
+    tags |= self._get_ancestor_tag_set(tag)
     self.enabled_tags |= tags
 
   tag_rx = re.compile(r'\s*([0-9a-z/_]+)(?:\s+(except|only)\s+(cp|gid)\s+(.*))?\s*$')
