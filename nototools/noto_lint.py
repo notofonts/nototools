@@ -842,8 +842,6 @@ def check_font(file_name,
 
 
     def check_cmap_table():
-        if not tests.check('cmap'):
-            return
         cmap_table = font['cmap']
         cmaps = {}
         expected_tables = [(4, 3, 1), (12, 3, 10)]
