@@ -32,7 +32,14 @@ from nototools import notoconfig
 from nototools import tool_utils
 from nototools import unicode_data
 
-from icu import Locale, Collator
+
+try:
+  from icu import Locale, Collator
+  print 'will use icu locale-specific order'
+  _HAVE_ICU = True
+except ImportError as e:
+  print 'will use default locale sort order'
+  _HAVE_ICU = False
 
 NOTO_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 
@@ -587,9 +594,14 @@ def sort_for_script(cp_list, script):
   if not lang:
     print 'cannot sort for script, no lang for %s' % script
     return cp_list
-  loc = Locale(lang + '_' + script)
-  col = Collator.createInstance(loc)
-  return sorted(cp_list, cmp=col.compare)
+  if _HAVE_ICU:
+    from icu import Locale, Collator
+    loc = Locale(lang + '_' + script)
+    col = Collator.createInstance(loc)
+    return sorted(cp_list, cmp=col.compare)
+  else:
+    import locale
+    return sorted(cp_list, cmp=locale.strcoll)
 
 
 def addcase(sample, script):
@@ -605,6 +617,9 @@ def addcase(sample, script):
     return sample + '\n' + cased_sample
   return sample
 
+
+# exclude some religious characters/phrases
+_EXCLUDE_CHARS = frozenset([u'\u0950', u'\ufdfa', u'\ufdfd']) # deva OM, Arabic pbuh, bismillah
 
 def generate_sample_for_script(script, loc_map):
   num_locales = len(loc_map)
@@ -650,12 +665,13 @@ def generate_sample_for_script(script, loc_map):
       locs_with_rare_chars, shared_lang_threshold, char_to_lang_map)
 
   # show_selected_rare_chars(selected)
+  chars_by_num_langs = [cp for cp in chars_by_num_langs if cp not in _EXCLUDE_CHARS]
 
   chosen_chars = list(chars_by_num_langs)[-60:]
   rare_extension = []
   for _, chars in selected:
     avail_chars = [cp for cp in chars if cp not in chosen_chars and
-                   cp not in rare_extension]
+                   cp not in rare_extension and cp not in _EXCLUDE_CHARS]
     rare_extension.extend(sorted(avail_chars)[:4]) # vietnamese dominates latin otherwise
     if len(rare_extension) > 20:
       break
