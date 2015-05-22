@@ -17,11 +17,20 @@ ZIP=$(shell which zip)
 RM=$(shell which rm)
 LN=$(shell which ln)
 MKDIR=$(shell which mkdir)
+
+SCALETOOL=./nototools/scale.py
+SUBSETTOOL=./nototools/subset.py
+
 TODAY=$(shell date "+%Y-%m-%d")
+
 TARBALLDIR=packages
 ZIPDIR=packages
+ANDROIDDIR=packages/android
 HINTEDFONTDIR=./fonts/individual/hinted
 UNHINTEDFONTDIR=./fonts/individual/unhinted
+
+UNHINTEDFONTS=$(shell find $(UNHINTEDFONTDIR) -name "*.ttf")
+ANDROIDFONTS=$(UNHINTEDFONTS:$(UNHINTEDFONTDIR)/%=$(ANDROIDDIR)/%)
 
 all: tarball zip
 
@@ -48,6 +57,20 @@ unhintedzip: $(UNHINTEDFONTDIR)/*.ttf cleanunhintedzip $(ZIPDIR)
 	$(ZIP) $(ZIPDIR)/NotoFonts-unhinted-$(TODAY).zip $(UNHINTEDFONTDIR)/Noto*.ttf LICENSE
 	cd $(ZIPDIR); ln -s NotoFonts-unhinted-$(TODAY).zip NotoFonts-unhinted-latest.zip
 
+android: $(ANDROIDFONTS)
+
+$(ANDROIDDIR)/%.ttf: $(UNHINTEDFONTDIR)/%.ttf
+	@$(MKDIR) -p $(ANDROIDDIR)
+	@echo Compressing $(notdir $<)
+	@if [[ $< == *"TamilUI"* || $< == *"MalayalamUI"* ]]; then \
+	    subsetted=$$(mktemp); \
+	    $(SUBSETTOOL) $< $$subsetted; \
+	    echo Scaling $(notdir $<); \
+	    $(SCALETOOL) 0.9 $$subsetted $@; \
+	else \
+	    $(SUBSETTOOL) $< $@; \
+	fi
+
 clean: cleantarball cleanzip
 
 cleantarball: cleanhintedtarball cleanunhintedtarball
@@ -69,3 +92,6 @@ cleanhintedzip:
 cleanunhintedzip:
 	$(RM) -f $(ZIPDIR)/NotoFonts-unhinted-$(TODAY).zip
 	$(RM) -f $(ZIPDIR)/NotoFonts-unhinted-latest.zip
+
+cleanandroid:
+	$(RM) -rf $(ANDROIDDIR)

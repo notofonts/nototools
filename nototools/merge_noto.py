@@ -37,7 +37,7 @@ def make_puncless_font_name(script):
 def make_font_file_name(script, weight, directory='individual/unhinted'):
     filename = '%s/%s-%s.ttf' % (
         directory, make_puncless_font_name(script), weight)
-    return '/usr/local/google/home/roozbeh/noto/fonts/' + filename
+    return filename
 
 
 def add_ui_alternative(table, target):
