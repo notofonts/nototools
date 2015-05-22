@@ -1,0 +1,7 @@
+# we've not checked this before
+disable head/os2/unicoderange
+
+vendor Monotype
+disable paths # no extrema
+
+
