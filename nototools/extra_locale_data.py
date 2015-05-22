@@ -419,3 +419,26 @@ PARENT_LOCALES = {
 NATIVE_NAMES = {
     'mn-Mong': u'ᠮᠣᠨᠭᠭᠣᠯ ᠬᠡᠯᠡ',
 }
+
+EXEMPLARS = {
+#  'ain-Jpan': r'[\u30a0-\u30ff \u31f0-\u31ff]',
+  'und-Avst': r'[\U010b00-\U010b35]',
+  'und-Bali': r'[\u1b05-\u1b33]',
+  'und-Bamu': r'[\ua6a0-\ua6ef]',
+  'und-Cham': r'[\uaa00-\uaa28 \uaa50-\uaa59]',
+  'und-Copt': r'[\u2c80-\u2cb1]',
+  'und-Egyp': r'[\U013000-\U01303f]',
+  'und-Java': r'[\ua984-\ua9b2]',
+  'und-Kali': r'[\ua90a-\ua925 \ua900-\ua909]',
+  'und-Lana': r'[\u1a20-\u1a4c]',
+  'und-Lepc': r'[\u1c00-\u1c23]',
+  'und-Linb': r'[\U010000-\U01000b \U010080-\U01009f]',
+  'und-Mand': r'[\u0840-\u0858]',
+  'und-Mtei': r'[\uabc0-\uabe2]',
+  'und-Orkh': r'[\U010c00-\U010c48]',
+  'und-Saur': r'[\ua882-\ua8b3]',
+  'und-Sund': r'[\u1b83-\u1ba0]',
+  'und-Tavt': r'[\uaa80-\uaaaf \uaadb-\uaadf]',
+  'und-Ugar': r'[\U010380-\U01039d \U01039f]',
+  'und-Xsux': r'[\U012000-\U01202f]'
+}
