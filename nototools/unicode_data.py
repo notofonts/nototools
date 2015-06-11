@@ -272,6 +272,28 @@ def script_code(script_name):
     return "Zzzz"  # Unknown
 
 
+def web_script_code(script_name):
+    """Web version of script_code based on generate_website_data.  This
+    returns an unrecognized script_name if it is 4 letters long or fails,
+    unlike script_code which returns 'Zzzz'."""
+    # TODO(dougfelt): see if we can drop this and just use script_code
+
+    load_data()
+    script = None
+    if script_name in _script_long_name_to_code:
+        script = _script_long_name_to_code[script_name]
+    else:
+        for lname in _script_long_name_to_code:
+            if lname.replace('_', '').lower() == script_name.lower():
+                script = _script_long_name_to_code[lname]
+                break
+    if not script:
+        script = script_name
+        if len(script) != 4:
+            raise ValueError("script code '%s' is not the right length." % script)
+    return script
+
+
 _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
     'Nkoo': 'NKo',
     'Qaae': 'Emoji',
