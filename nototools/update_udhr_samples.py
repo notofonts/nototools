@@ -33,8 +33,8 @@ import urllib
 import xml.etree.ElementTree as ET
 import zipfile
 
-import notoconfig
-import tool_utils
+from nototools import notoconfig
+from nototools import tool_utils
 
 DIR_URL = 'http://unicode.org/udhr/d'
 UDHR_XML_ZIP_NAME = 'udhr_xml.zip'
@@ -208,7 +208,7 @@ def filter_bcp_to_code(bcp_to_code):
 
 def get_code_to_attrib(src_dir):
   code_to_attrib = {}
-  code_file = 'ohchr_attributions.tsv'
+  code_file = 'attributions.tsv'
   with open(os.path.join(src_dir, code_file)) as f:
     for line in f.readlines():
       line = line.strip()
@@ -219,12 +219,12 @@ def get_code_to_attrib(src_dir):
   return code_to_attrib
 
 
-def get_bcp_to_code_attrib(src_dir):
+def get_bcp_to_code_attrib(src_dir, ohchr_dir):
   """Get the final bcp-to-code mapping."""
   bcp_to_code, code_to_ohchr = parse_index(src_dir)
   bcp_to_code = filter_bcp_to_code(add_likely_scripts(fix_index(bcp_to_code)))
 
-  code_to_attrib = get_code_to_attrib(src_dir)
+  code_to_attrib = get_code_to_attrib(ohchr_dir)
 
   bcp_to_code_attrib = {}
   for bcp, code in bcp_to_code.iteritems():
@@ -232,6 +232,7 @@ def get_bcp_to_code_attrib(src_dir):
     attr = code_to_attrib.get(ohchr)
     if not attr:
       attr = 'none'
+      print '%s (%s) not in ohchr attribution data' % (code, ohchr)
     bcp_to_code_attrib[bcp] = (code, attr)
 
   return bcp_to_code_attrib
@@ -258,15 +259,22 @@ def extract_para(src_path):
 
 
 def fix_sample(sample, bcp):
-  """Fix samples that have known fixable issues, currently only Hans."""
-  new_sample = sample
+  """Fix samples that have known fixable issues."""
+  new_sample = None
   if bcp == 'zh-Hans':
     new_sample = sample.replace(u',', u'\uff0c')
-    if new_sample == sample:
-      print 'sample for %s was not changed' % bcp
-    else:
-      print 'changed sample for %s' % bcp
+  elif bcp == 'hu-Latn':
+    new_sample = sample.replace(u'Minden.', y'Minden')
+
+  if not new_sample:
+    return sample
+
+  if new_sample == sample:
+    print 'sample for %s was not changed' % bcp
+  else:
+    print 'changed sample for %s' % bcp
   return new_sample
+
 
 
 def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
@@ -468,29 +476,22 @@ def update_repo(repo_samples, new_samples):
 
 
 def main():
-  values = notoconfig.values
-  noto = values.get('noto', None)
-  if noto:
-    noto = os.path.abspath(os.path.expanduser(noto))
-
   fetch = '/tmp/udhr/zip'
-  udhr = '[noto]/third_party/udhr'
-  samples = '[noto]/sample_texts'
+  udhr = '[tools]/third_party/udhr'
+  samples = '[tools]/sample_texts'
 
   epilog = """The general flow is as follows:
-  1) first, use extract_ohchr_attributions.py to extract attribution data
-     to 'ohchr_attributions.tsv' and put into noto/third_party/udhr
-  2) use --uu to fetch and stage changes to noto/third_party/udhr
-  3) use --us --sample_dir=/tmp/foo to generate samples
+  1) ensure attributions.tsv is in [tools]/third_party/ohchr, using
+     extract_ohchr_attributions.py.
+  2) use -uu to fetch and stage changes to [tools]/third_party/udhr
+  3) use -us --sample_dir=/tmp/foo to generate samples
   4) use -c --sample_dir=/tmp/foo to compare the staged samples
   5) tweak the mapping, use -m to see that it's doing what we want
-  6) use --us to generate the samples and stage them to noto/sample_texts
+  6) use --us to generate the samples and stage them to [tools]/sample_texts
   """
 
   parser = argparse.ArgumentParser(epilog=epilog,
     formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('--noto_dir', help='root of noto repo (default %s)' % noto,
-                      metavar='dir', default=noto)
   parser.add_argument('--fetch_dir', help='directory into which to fetch xml.zip '
                       '(default %s)' % fetch, metavar='dir', default=fetch)
   parser.add_argument('--udhr_dir', help='location into which to unpack udhr files '
@@ -500,9 +501,9 @@ def main():
   parser.add_argument('-f', '--fetch', help='fetch files from unicode.org/udhr to fetch dir',
                       action='store_true')
   parser.add_argument('-uu', '--update_udhr', help='unpack from fetched files to clean udhr dir\n'
-                      '(will stage if under noto)', action='store_true')
+                      '(will stage if in repo)', action='store_true')
   parser.add_argument('-us', '--update_sample', help='extract samples from udhr to sample dir, '
-                      'using the bcp to code mapping\n(will stage if under noto)',
+                      'using the bcp to code mapping\n(will stage if in repo)',
                       action='store_true')
   parser.add_argument('-m', '--mapping', help='print the bcp to code mapping generated from the '
                       'udhr dir', action='store_true')
@@ -526,17 +527,8 @@ def main():
     print 'nothing to do.'
     return
 
-  if args.noto_dir:
-      args.noto_dir = os.path.realpath(os.path.abspath(os.path.expanduser(args.noto_dir)))
-
   def fix_noto_prefix(argname):
-    noto_prefix = '[noto]/'
-    val = getattr(args, argname)
-    if val.startswith(noto_prefix):
-      if not args.noto_dir:
-        parser.error('%s depends on --noto_dir, which is not defined' % argname)
-      val = os.path.join(args.noto_dir, val[len(noto_prefix):])
-    setattr(args, argname, val)
+    setattr(args, argname, tool_utils.resolve_path(getattr(args, argname)))
 
   if args.update_udhr or args.update_sample or args.mapping:
     fix_noto_prefix('udhr_dir')
@@ -556,14 +548,15 @@ def main():
       fetch_udhr(args.fetch_dir)
 
     if args.update_udhr:
-      in_repo = args.udhr_dir.startswith(args.noto_dir + '/')
+      in_repo = args.udhr_dir == tool_utils.resolve_path(udhr)
       update_udhr(args.udhr_dir, args.fetch_dir, in_repo)
 
     if args.update_sample or args.mapping:
-      bcp_to_code_attrib = get_bcp_to_code_attrib(args.udhr_dir + '/')
+      ohchr_dir = tool_utils.resolve_path('[tools]/third_party/ohchr')
+      bcp_to_code_attrib = get_bcp_to_code_attrib(args.udhr_dir, ohchr_dir)
 
     if args.update_sample:
-      in_repo = args.sample_dir.startswith(args.noto_dir)
+      in_repo = args.sample_dir == tool_utils.resolve_path(samples)
       update_samples(args.sample_dir, args.udhr_dir, bcp_to_code_attrib, in_repo)
 
     if args.mapping:

@@ -47,7 +47,10 @@ def resolve_path(path):
   m = noto_re.match(path)
   if m:
     base, rest = m.groups()
-    base = notoconfig.values.get('noto_' + base)
+    key = 'noto_' + base
+    if not key in notoconfig.values:
+      raise ValueError('notoconfig has no entry for %s' % key)
+    base = notoconfig.values.get(key)
     path = os.path.join(base, rest)
   path = os.path.expanduser(path)
   path = os.path.abspath(path)
