@@ -286,6 +286,7 @@ def to_float_tuples(curve):
 
 def curves_intersect(contour_list):
     """Takes a list of contours and tells if any two curves in them intersect.
+    Returns a message string with an error, or an empty string if ok.
     """
     all_contours = []
     for contour in contour_list:
@@ -304,13 +305,11 @@ def curves_intersect(contour_list):
     for contour_pieces in all_contours:
         for piece in contour_pieces:
             if piece[0] == piece[-1]:
-                # print 'curve back', piece
-                return True
+                return 'start and end segments match: %s' % piece
 
     all_pieces = sum(all_contours, [])
     if len(set(all_pieces)) != len(all_pieces):
-        # print 'repetition'
-        return True  # No piece should be repeated
+        print 'some pieces are duplicates' # No piece should be repeated
 
     adjacent_pairs = set()
     for contour_pieces in all_contours:
@@ -328,10 +327,9 @@ def curves_intersect(contour_list):
         # on to C, we won't catch it.
         ok_to_intersect_at_ends = frozenset({piece1, piece2}) in adjacent_pairs
         if curve_pieces_intersect(piece1, piece2, ok_to_intersect_at_ends):
-            # print 'intersection', piece1, piece2
-            return True
+            return 'intersection %s and %s' % (piece1, piece2)
 
-    return False
+    return ''
 
 
 def font_version(font):
@@ -1030,7 +1028,7 @@ def check_font(file_name,
                      (os2_table.usWinAscent, hhea_table.ascent))
             if tests.check('head/os2/windescent') and os2_table.usWinDescent != -hhea_table.descent:
                 warn("OS/2",
-                     "Value of sTypoDescender in 'OS/2' table (%d) is different "
+                     "Value of usWinDescent in 'OS/2' table (%d) is different "
                      "from the opposite of value of Descent in 'hhea' table (%d), "
                      "but they should be opposites." %
                      (os2_table.usWinDescent, hhea_table.descent))
@@ -1217,10 +1215,12 @@ def check_font(file_name,
                     start_point = end_point + 1
                     all_contours.append(curves_in_contour)
 
-                if check_intersection and curves_intersect(all_contours):
-                    warn("Intersection",
-                         "The glyph '%s' has intersecting "
-                         "outlines." % glyph_name)
+                if check_intersection:
+                    result = curves_intersect(all_contours)
+                    if result:
+                        warn("Intersection",
+                             "The glyph '%s' has intersecting "
+                             "outlines: %s" % (glyph_name, result))
 
     def check_gdef_table(cmap):
         """Validate the GDEF table."""

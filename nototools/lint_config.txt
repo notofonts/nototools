@@ -2,8 +2,8 @@
 disable head/os2/unicoderange
 
 vendor Monotype
-disable paths # no extrema
 disable trademark # we can swat this ourselves
+disable extrema
 
 filename like Avestan
 disable gpos/missing
@@ -11,3 +11,23 @@ disable gpos/missing
 filename like Bengali
 enable script_required except cp 951-952
 
+condition
+vendor Adobe
+
+# Adobe's position is that these (mathematical) characters are intended to be used with CJK
+# in an LTR environment.  For true bidi text (that would naturally trigger bidi) these
+# characters should come from a font designed for bidi.  So there is no need in this font
+# for the mirrored glyphs.
+disable bidi
+
+# The v1.003 fonts align the windows ascent/descent with the hhea values, but not the
+# typographic ascender
+version == 1.003
+disable head/os2/ascender, head/os2/descender
+
+# Adobe says "None of the zero-width glyphs are involved with attachment"
+disable gdef/classdef/not_present
+
+# Adobe says that most of the glyphs are indeed reachable, so perhaps the linter/ttx is
+# at fault?
+disable reachable
