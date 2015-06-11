@@ -57,8 +57,6 @@ FONT_DIR = path.join(ROOT, 'noto-fonts')
 
 OUTPUT_DIR = path.join(ROOT, 'website_data')
 
-print '\n'.join([ROOT, TOOLS_DIR, CJK_DIR, FONT_DIR, '', OUTPUT_DIR])
-
 CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 LAT_LONG_DIR = path.join(TOOLS_DIR, 'third_party', 'dspl')
 SAMPLE_TEXT_DIR = path.join(TOOLS_DIR, 'sample_texts')
