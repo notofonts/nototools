@@ -43,19 +43,28 @@ from nototools import font_data
 from nototools import unicode_data
 from nototools import tool_utils
 
-NOTO_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
+# CJK_DIR is in newnoto/noto-cjk
+# license is at this root
+# FONT_DIR is in newnoto/noto-fonts, subdirs are alpha, hinted, unhinted
+# license is at this root
+# EMOJI is not here...
 
-OUTPUT_DIR = path.join(NOTO_DIR, 'website_data')
-CLDR_DIR = path.join(NOTO_DIR, 'third_party', 'cldr')
-LAT_LONG_DIR = path.join(NOTO_DIR, 'third_party', 'dspl')
-SAMPLE_TEXT_DIR = path.join(NOTO_DIR, 'sample_texts')
+ROOT = path.abspath(path.join(path.dirname(__file__), os.pardir, os.pardir))
 
-FONT_DIR = path.join(NOTO_DIR, 'fonts')
-INDIVIDUAL_FONT_DIR = path.join(FONT_DIR, 'individual')
-CJK_DIR = path.join(NOTO_DIR, 'third_party', 'noto_cjk')
+TOOLS_DIR = path.join(ROOT, 'nototools')
+CJK_DIR = path.join(ROOT, 'noto-cjk')
+FONT_DIR = path.join(ROOT, 'noto-fonts')
 
-APACHE_LICENSE_LOC = path.join(NOTO_DIR, 'LICENSE')
-SIL_LICENSE_LOC = path.join(NOTO_DIR, 'third_party', 'noto_cjk', 'LICENSE')
+OUTPUT_DIR = path.join(ROOT, 'website_data')
+
+print '\n'.join([ROOT, TOOLS_DIR, CJK_DIR, FONT_DIR, '', OUTPUT_DIR])
+
+CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
+LAT_LONG_DIR = path.join(TOOLS_DIR, 'third_party', 'dspl')
+SAMPLE_TEXT_DIR = path.join(TOOLS_DIR, 'sample_texts')
+
+APACHE_LICENSE_LOC = path.join(FONT_DIR, 'LICENSE')
+SIL_LICENSE_LOC = path.join(CJK_DIR, 'LICENSE')
 
 ODD_SCRIPTS = {
     'CJKjp': 'Jpan',
@@ -106,8 +115,8 @@ def find_fonts():
 
     unicode_data.load_data()
 
-    for directory in [path.join(INDIVIDUAL_FONT_DIR, 'hinted'),
-                      path.join(INDIVIDUAL_FONT_DIR, 'unhinted'),
+    for directory in [path.join(FONT_DIR, 'hinted'),
+                      path.join(FONT_DIR, 'unhinted'),
                       path.join(FONT_DIR, 'alpha'),
                       CJK_DIR]:
         for filename in os.listdir(directory):
@@ -121,8 +130,9 @@ def find_fonts():
                 style = variant = platform = None
             else:
                 if not (
-                    filename == 'NotoSansCJK.ttc' or  # All-comprehensive CJK
+                    filename == 'NotoSansCJK.ttc.zip' or  # All-comprehensive CJK
                     filename.endswith('.ttx') or
+                    filename.endswith('.git') or
                     filename.startswith('README.') or
                     filename in ['COPYING', 'LICENSE', 'NEWS', 'HISTORY']):
                     raise ValueError("unexpected filename in %s: '%s'." %
@@ -914,6 +924,8 @@ def generate_ttc_zips_with_7za():
         newsize = os.stat(zip_path).st_size
         print "Wrote " + zip_path
         print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
+    shutil.copy2(path.join(CJK_DIR, 'NotoSansCJK.ttc.zip'),
+                 path.join(pkg_dir, 'NotoSansCJK.ttc.zip'))
 
 
 def generate_sample_images(data_object):
@@ -956,10 +968,10 @@ def generate_sample_images(data_object):
 
 
 def create_package_object(fonts, target_platform):
+    CLOUD_LOC = 'http://storage.googleapis.com/noto-website/pkgs/'
     comp_zip_file = create_zip('Noto', target_platform, fonts)
-
     package = {}
-    package['url'] = comp_zip_file
+    package['url'] = CLOUD_LOC + comp_zip_file
     package['size'] = os.stat(
         path.join(OUTPUT_DIR, 'pkgs', comp_zip_file)).st_size
     return package
