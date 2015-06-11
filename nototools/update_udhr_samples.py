@@ -33,8 +33,8 @@ import urllib
 import xml.etree.ElementTree as ET
 import zipfile
 
-from nototools import notoconfig
-from nototools import tool_utils
+import notoconfig
+import tool_utils
 
 DIR_URL = 'http://unicode.org/udhr/d'
 UDHR_XML_ZIP_NAME = 'udhr_xml.zip'
@@ -264,7 +264,7 @@ def fix_sample(sample, bcp):
   if bcp == 'zh-Hans':
     new_sample = sample.replace(u',', u'\uff0c')
   elif bcp == 'hu-Latn':
-    new_sample = sample.replace(u'Minden.', y'Minden')
+    new_sample = sample.replace(u'Minden.', u'Minden')
 
   if not new_sample:
     return sample
@@ -528,7 +528,8 @@ def main():
     return
 
   def fix_noto_prefix(argname):
-    setattr(args, argname, tool_utils.resolve_path(getattr(args, argname)))
+    newval = tool_utils.resolve_path(getattr(args, argname))
+    setattr(args, argname, newval)
 
   if args.update_udhr or args.update_sample or args.mapping:
     fix_noto_prefix('udhr_dir')
