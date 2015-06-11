@@ -69,8 +69,11 @@
 
 
 import argparse
+import codecs
 import HTMLParser as html
 import re
+
+from nototools import tool_utils
 
 class ParseOhchr(html.HTMLParser):
   def __init__(self, trace=False):
@@ -173,6 +176,12 @@ class ParseOhchr(html.HTMLParser):
     pass
 
 def get_ohchr_status(ohchr_code, lang, attrib):
+  """Decide the status based on the attribution text.
+
+  'original' are in the public domain and need no attribution.
+  'UN' are official UN translations and should be attributed as such.
+  'other' are not official UN translations and should be attributed as such."""
+
   if ohchr_code in ['eng', 'frn', 'spn', 'rus', 'chn', 'arz']:
     return 'original'
   if (attrib.find('United Nations') != -1 or
@@ -180,23 +189,39 @@ def get_ohchr_status(ohchr_code, lang, attrib):
     return 'UN'
   return 'other'
 
-def parse_ohchr_html_file(htmlfile):
+def parse_ohchr_html_file(htmlfile, outfile):
   parser = ParseOhchr(False)
   with open(htmlfile) as f:
     parser.feed(f.read())
 
+  lines = []
   for ohchr_code, lang, attrib in parser.results():
     s = get_ohchr_status(ohchr_code, lang, attrib)
-    print '\t'.join([ohchr_code, s, lang, attrib])
+    lines.append('\t'.join([ohchr_code, s, lang, attrib]))
+  data = '\n'.join(lines) + '\n'
 
+  print 'outfile: "%s"' % outfile
+  if not outfile or outfile == '-':
+    print data
+  else:
+    with open(outfile, 'w') as f:
+      f.write(data)
 
 def main():
+  default_input = '[tools]/third_party/ohchr/ohchr_all.html'
+  default_output = '[tools]/third_party/ohchr/attributions.tsv'
+
   parser = argparse.ArgumentParser()
-  parser.add_argument('--file', help='input ohchr html file', metavar='file', required=True,
-                      dest='htmlfile')
+  parser.add_argument('--src', help='input ohchr html file (default %s)' % default_input,
+                      default=default_input, metavar='file', dest='htmlfile')
+  parser.add_argument('--dst', help='output tsv file (default %s)' % default_output,
+                      default=default_output, metavar='file', dest='outfile')
   args = parser.parse_args()
 
-  parse_ohchr_html_file(args.htmlfile)
+  htmlfile = tool_utils.resolve_path(args.htmlfile)
+  outfile = tool_utils.resolve_path(args.outfile)
+
+  parse_ohchr_html_file(htmlfile, outfile)
 
 if __name__ == '__main__':
     main()
