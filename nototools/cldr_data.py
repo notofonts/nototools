@@ -109,6 +109,19 @@ def _parse_supplemental_data():
       lang_script = lang + '-' + script
       _REGION_TO_LANG_SCRIPTS[territory].add(lang_script)
 
+  # Use likely subtag data mapping script to lang to extend lang_to_scripts.
+  known_scripts = set()
+  for scripts in _LANG_TO_SCRIPTS.values():
+    known_scripts |= scripts
+
+  for script in known_scripts:
+    und_scr = 'und-' + script
+    if und_scr in _LIKELY_SUBTAGS:
+      lang = _LIKELY_SUBTAGS[und_scr][0]
+      if lang != 'und' and script not in _LANG_TO_SCRIPTS[lang]:
+        print 'lang to scripts missing script %s for %s' % (script, lang)
+        _LANG_TO_SCRIPTS[lang].add(script)
+
   # Use extra locale data's likely subtag info to change the supplemental
   # data we got from the language and territory elements.
   # 1) Add the script to the scripts for the language
@@ -185,6 +198,7 @@ def get_likely_script(language):
   except KeyError:
     print 'No likely script for %s' % language
     return 'Zzzz'
+
 
 def get_likely_subtags(lang_tag):
   _parse_likely_subtags()

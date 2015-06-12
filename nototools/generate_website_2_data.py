@@ -272,6 +272,7 @@ def get_families(fonts):
 
 
 def get_script_to_family_ids(family_map):
+  """The keys in the returned map are all the supported scripts."""
   script_to_family_ids = collections.defaultdict(set)
   for key in family_map:
     script = family_map[key].rep_member.script
@@ -283,7 +284,21 @@ def get_script_to_family_ids(family_map):
   return script_to_family_ids
 
 
-def get_used_lang_data():
+def get_used_lang_data(supported_scripts):
+  """Returns a mapping from lang to a tuple of:
+  - a set of scripts used in some region
+  - a set of scripts not used in any region"""
+
+  # we rely on the lang to script mapping, and its a problem if we
+  # can map scripts to langs and not have the inverse map, so let's
+  # catch those.
+  default_lang_to_script = {}
+  for script in supported_scripts:
+    lang = cldr_data.get_likely_subtags('und-' + script)[0]
+    if lang != 'und':
+      default_lang_to_script[lang] = script
+
+  unsupported_scripts = set()
   lang_data = {}
   used_lang_scripts = collections.defaultdict(set)
   for region in cldr_data.known_regions():
@@ -295,13 +310,30 @@ def get_used_lang_data():
     else:
       for lang_script in lang_scripts:
         lang, script = lang_script.split('-')
+        if script not in supported_scripts:
+          if script not in unsupported_scripts:
+            print 'used script %s is not supported' % script
+            unsupported_scripts.add(script)
         if script == 'Kana':
           print 'remap %s to use Jpan' % lang_script
           script = 'Jpan'
         used_lang_scripts[lang].add(script)
 
   for lang in cldr_data.known_langs():
-    all_scripts = cldr_data.lang_to_scripts(lang)
+    all_scripts = set(cldr_data.lang_to_scripts(lang))
+    all_scripts &= supported_scripts
+
+    # sanity check
+    if lang in default_lang_to_script:
+      script = default_lang_to_script[lang]
+      if script not in all_scripts:
+        print 'cldr data does not have script %s for lang %s' % (script, lang)
+        all_scripts.add(script)
+
+    if not all_scripts:
+      print 'no supported scripts for lang %s' % lang
+      continue
+
     used_scripts = used_lang_scripts[lang]
     if not used_scripts:
       script = cldr_data.get_likely_script(lang)
@@ -484,46 +516,49 @@ def ensure_script(lang_tag):
   return lang_tag + '-' + script
 
 
-def get_sample_data(family_id_to_lang_tags, families):
-  """Return a tuple of:
-  - mapping from family id to default lang tag
-  - mapping from lang tag to tuple of:
-    - rtl
-    - sample text
-    - attribution"""
-
+def get_family_id_to_default_lang_tag(family_id_to_lang_tags):
+  """Return a mapping from family id to default lang tag, for families
+  that have multiple lang tags.  This is based on likely subtags and
+  the script of the family (Latn for LGC).
+  """
   family_id_to_default_lang_tag = {}
-  lang_tag_to_info = {}
   for family_id, lang_tags in family_id_to_lang_tags.iteritems():
-    script = families[family_id].rep_member.script
-    if script == 'LGC':
+    parts = family_id.split('-')
+    if len(parts) == 1:
+      # 'sans' or 'serif'
       script = 'Latn'
+    else:
+      script = parts[1].capitalize()
     lang = cldr_data.get_likely_subtags('und-' + script)[0]
     if lang == 'und':
       lang_tag = 'und' + '-' + script
     elif lang not in lang_tags:
       lang_tag = lang + '-' + script
+      if lang_tag not in lang_tags:
+        print 'Akk, lang and lang_scr \'%s\' not listed for family %s' % (
+            lang_tag, family_id)
     else:
       lang_tag = lang
-
-    if not lang_tag in lang_tags:
-      print 'lang and lang_scr \'%s\' not listed for family %s' % (
-          lang_tag, family_id)
-      tags = lang_tags | {lang_tag}
-    else:
-      tags = lang_tags
-
     family_id_to_default_lang_tag[family_id] = lang_tag
-    for lang_tag in tags:
-      if not lang_tag in lang_tag_to_info:
-        rtl = cldr_data.is_rtl(lang_tag)
-        sample, attrib = get_sample_and_attrib(ensure_script(lang_tag))
-        lang_tag_to_info[lang_tag] = (rtl, sample, attrib)
+  return family_id_to_default_lang_tag
 
-  for key in sorted(lang_tag_to_info):
-    print '%s -> %s' % (key, lang_tag_to_info[key])
 
-  return family_id_to_default_lang_tag, lang_tag_to_info
+def get_used_lang_tags(family_langs, default_langs):
+  return set(family_langs) | set(default_langs)
+
+
+def get_sample_data(used_lang_tags):
+  """Return a mapping from lang tag to tuple of:
+    - rtl
+    - sample text
+    - attribution
+  """
+  lang_tag_to_info = {}
+  for lang_tag in used_lang_tags:
+    rtl = cldr_data.is_rtl(lang_tag)
+    sample, attrib = get_sample_and_attrib(ensure_script(lang_tag))
+    lang_tag_to_info[lang_tag] = (rtl, sample, attrib)
+  return lang_tag_to_info
 
 
 lat_long_data = {}
@@ -1253,13 +1288,16 @@ class WebGen(object):
 
     self.write_json(data_obj, 'data')
 
-  def build_family_json(self, family_id, family, lang_tags, regions, css_info):
+  def build_family_json(self, family_id, family, lang_tags, regions, css_info,
+                        default_lang_tag):
     family_obj = {}
     category = get_css_generic_family(family.name)
     if category:
       family_obj['category'] = category
     if lang_tags:
       family_obj['langs'] = sorted(lang_tags)
+    if default_lang_tag:
+      family_objs['defaultLang'] = default_lang_tag
     if regions:
       family_obj['regions'] = sorted(regions)
     if family.charset:
@@ -1275,13 +1313,15 @@ class WebGen(object):
     self.write_json(family_obj, family_id)
 
   def build_families_json(self, families, family_id_to_lang_tags,
-                          family_id_to_regions, family_css_info):
+                          family_id_to_regions, family_css_info,
+                          family_id_to_default_lang_tag):
     result = {}
     for k, v in families.iteritems():
       lang_tags = family_id_to_lang_tags[k]
+      default_lang_tag = family_id_to_default_lang_tag[k]
       regions = family_id_to_regions[k]
       css_info = family_css_info[k]
-      self.build_family_json(k, v, lang_tags, regions, css_info)
+      self.build_family_json(k, v, lang_tags, regions, css_info, default_lang_tag)
 
   def build_misc_json(self, sample_data, region_data):
     _, lang_info = sample_data
@@ -1367,7 +1407,9 @@ class WebGen(object):
     families = get_families(fonts)
 
     script_to_family_ids = get_script_to_family_ids(families)
-    used_lang_data = get_used_lang_data()
+
+    supported_scripts = set(script_to_family_ids.keys())
+    used_lang_data = get_used_lang_data(supported_scripts)
 
     lang_tag_to_family_ids = get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids)
 
@@ -1391,7 +1433,11 @@ class WebGen(object):
     family_id_to_lang_tags = get_family_id_to_lang_tags(lang_tag_to_family_ids, families)
     family_id_to_regions = get_family_id_to_regions(region_to_family_ids, families)
 
-    sample_data = get_sample_data(family_id_to_lang_tags, families)
+    family_id_to_default_lang_tag = get_family_id_to_default_lang_tag(
+        family_id_to_lang_tags)
+    used_lang_tags = get_used_lang_tags(
+        lang_tag_to_family_ids.keys(), family_id_to_default_lang_tag.values())
+    sample_data = get_sample_data(used_lang_tags)
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
     return
 

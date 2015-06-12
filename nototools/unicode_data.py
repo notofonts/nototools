@@ -291,6 +291,8 @@ def web_script_code(script_name):
         script = script_name
         if len(script) != 4:
             raise ValueError("script code '%s' is not the right length." % script)
+        else:
+            print 'default script code to name \'%s\'' % script
     return script
 
 
