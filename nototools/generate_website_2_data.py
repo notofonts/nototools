@@ -41,18 +41,21 @@ from nototools import coverage
 from nototools import create_image
 from nototools import extra_locale_data
 from nototools import font_data
-from nototools import unicode_data
+from nototools import notoconfig
 from nototools import tool_utils
+from nototools import unicode_data
 
-NOTO_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
+TOOLS_DIR = notoconfig.values['noto_tools']
+FONTS_DIR = notoconfig.values['noto_fonts']
+CJK_DIR = notoconfig.values['noto_cjk']
 
-CLDR_DIR = path.join(NOTO_DIR, 'third_party', 'cldr')
+CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
-LAT_LONG_DIR = path.join(NOTO_DIR, 'third_party', 'dspl')
-SAMPLE_TEXT_DIR = path.join(NOTO_DIR, 'sample_texts')
+LAT_LONG_DIR = path.join(TOOLS_DIR, 'third_party', 'dspl')
+SAMPLE_TEXT_DIR = path.join(TOOLS_DIR, 'sample_texts')
 
-APACHE_LICENSE_LOC = path.join(NOTO_DIR, 'LICENSE')
-SIL_LICENSE_LOC = path.join(NOTO_DIR, 'third_party', 'noto_cjk', 'LICENSE')
+APACHE_LICENSE_LOC = path.join(FONTS_DIR, 'LICENSE')
+SIL_LICENSE_LOC = path.join(CJK_DIR, 'LICENSE')
 
 ODD_SCRIPTS = {
   'CJKjp': 'Jpan',
@@ -107,7 +110,7 @@ def noto_font_path_to_info(font_path):
     family = 'Sans'
     script = 'Emoji'
 
-  is_cjk = filedir.endswith('noto_cjk')
+  is_cjk = filedir.endswith('noto-cjk')
 
   if script in ['JP', 'KR', 'TC', 'SC']:
     subset = script
@@ -161,10 +164,10 @@ def get_noto_fonts():
   all_fonts = []
 
   font_dirs = [
-    path.join(NOTO_DIR, 'fonts', 'individual', 'hinted'),
-    path.join(NOTO_DIR, 'fonts', 'individual', 'unhinted'),
-    path.join(NOTO_DIR, 'fonts', 'alpha'),
-    path.join(NOTO_DIR, 'third_party', 'noto_cjk')]
+    path.join(FONTS_DIR, 'hinted'),
+    path.join(FONTS_DIR, 'unhinted'),
+    path.join(FONTS_DIR, 'alpha'),
+    CJK_DIR]
 
   for font_dir in font_dirs:
     for filename in os.listdir(font_dir):
@@ -173,7 +176,7 @@ def get_noto_fonts():
       filepath = path.join(font_dir, filename)
       notoinfo = noto_font_path_to_info(filepath)
       if not notoinfo:
-        if not (filename == 'NotoSansCJK.ttc' or
+        if not (filename == 'NotoSansCJK.ttc.zip' or
                 filename == 'NotoNastaliqUrduDraft.ttf' or
                 filename.endswith('.ttx')):
           raise ValueError("unexpected filename in %s: '%s'." %
@@ -365,24 +368,18 @@ def get_family_id_to_regions(region_to_family_ids, families):
 
 
 def get_charset_info(charset):
-  """returns a js regex for chars in the bmp, and a list of start/limit pairs
-  for chars outside the bmp."""
+  """Returns an encoding of the charset as pairs of lengths of runs of chars to skip and
+  chars to include.  Each length is written as length - 1 in hex-- except when length ==
+  1, which is written as the empty string-- and separated from the next length by a comma.
+  Thus successive commas indicate a length of 1, a 1 indicates a length of 2, and so on.
+  Since the minimum representable length is 1, the base is -1 so that the first run (a
+  skip) of 1 can be output as a comma to then start the first included character at 0 if
+  need be.  Only as many pairs of values as are needed to encode the last run of included
+  characters."""
 
   ranges = coverage.convert_set_to_ranges(charset)
-  bmp_ranges = []
-  sup_ranges = []
   prev = -1
   range_list = []
-
-  def add_bmp_range(start, end):
-    if start == end:
-      bmp_ranges.append(r'\u%04x' % start)
-    else:
-      bmp_ranges.append(r'\u%04x-\u%04x' % (start, end))
-
-  def add_sup_range(start, end):
-    sup_ranges.append((start, end))
-
   for start, end in ranges:
     range_len = start - 1 - prev
     if range_len > 0:
@@ -395,38 +392,96 @@ def get_charset_info(charset):
     else:
       range_list.append('')
     prev = end + 1
-
-    if start < 0x10000:
-      if end < 0x10000:
-        add_bmp_range(start, end)
-      else:
-        add_bmp_range(start, 0xffff)
-        add_sup_range(0x10000, end)
-    else:
-      add_sup_range(start, end)
-  bmp_expr = '[' + ''.join(bmp_ranges) + ']' if bmp_ranges else None
-
-  return bmp_expr, sup_ranges, ','.join(range_list)
+  return ','.join(range_list)
 
 
-def get_sample_for_lang_tag(lang_tag):
+def get_exemplar(lang_scr):
+  locl = lang_scr
+  while locl != 'root':
+    for directory in ['common', 'seed', 'exemplars']:
+      exemplar = get_exemplar_from_file(
+          path.join(directory, 'main', locl.replace('-', '_') + '.xml'))
+      if exemplar:
+        return exemplar
+    locl = cldr_data.parent_locale(locl)
+  return None
+
+
+def get_sample_from_sample_file(lang_scr):
+  filepath = path.join(SAMPLE_TEXT_DIR, lang_scr + '.txt')
+  if path.exists(filepath):
+    return unicode(open(filepath).read().strip(), 'UTF-8')
+  return None
+
+
+ATTRIBUTION_DATA = {}
+
+def get_attribution(lang_scr):
+  if not ATTRIBUTION_DATA:
+    attribution_path = path.join(TOOLS_DIR, 'sample_texts', 'attributions.txt')
+    with open(attribution_path, 'r') as f:
+      data = f.readlines()
+    for line in data:
+      line = line.strip()
+      if not line or line[0] == '#':
+        continue
+      tag, attrib = line.split(':')
+      ATTRIBUTION_DATA[tag.strip()] = attrib.strip()
+  try:
+    return ATTRIBUTION_DATA[lang_scr]
+  except KeyError:
+    print 'no attribution for %s' % lang_scr
+    return 'none'
+
+
+EXEMPLAR_CUTOFF_SIZE = 50
+
+def sample_text_from_exemplar(exemplar):
+  exemplar = [c for c in exemplar
+                if unicode_data.category(c[0])[0] in 'LNPS']
+  exemplar = exemplar[:EXEMPLAR_CUTOFF_SIZE]
+  return ' '.join(exemplar)
+
+
+def get_sample_and_attrib(lang_scr):
   """Return a tuple of:
   - a short sample text string
-  - an attribution key, either 'un' for UNHDR, 'pd' for public domain, or 'no'"""
-  # TODO(dougfelt) implement this using uhdr data and script blocks
-  if '-' in lang_tag:
-    lang, script = lang_tag.split('-')
-  else:
-    lang = lang_tag
-    try:
-      script = cldr_data.get_likely_script(lang)
-    except KeyError:
-      print 'no likely script for lang %s' % lang
-      return '', 'no'
+  - an attribution key, one of
+    UN: official UN translation, needs attribution
+    other: not an official UN translation, needs non-attribution
+    original: public domain translation, does not need attribution
+    none: we have no attribution info on this, does not need attribution"""
+  assert '-' in lang_scr
 
-  sample = get_sample_text(lang, script)
-  # no attribution data yet
-  return sample, 'no'
+  sample_text = get_sample_from_sample_file(lang_scr)
+  if sample_text is not None:
+    attr = get_attribution(lang_scr)
+    return sample_text, attr
+
+  exemplar = get_exemplar(lang_scr)
+  if exemplar is not None:
+    return sample_text_from_exemplar(exemplar), 'none'
+
+  _, script = lang_scr.split('-')
+  sample_text = get_sample_from_sample_file('und' + script)
+  if sample_text is not None:
+    return sample_text, 'none'
+
+  print 'No sample for %s' % lang_scr
+  return '', 'none'
+
+
+def ensure_script(lang_tag):
+  """If lang_tag has no script, use get_likely_script to add one.
+  If that fails, return an empty tag."""
+  if '-' in lang_tag:
+    return lang_tag
+  try:
+    script = cldr_data.get_likely_script(lang_tag)
+  except KeyError:
+    print 'no likely script for lang %s' % lang_tag
+    return ''
+  return lang_tag + '-' + script
 
 
 def get_sample_data(family_id_to_lang_tags, families):
@@ -436,6 +491,7 @@ def get_sample_data(family_id_to_lang_tags, families):
     - rtl
     - sample text
     - attribution"""
+
   family_id_to_default_lang_tag = {}
   lang_tag_to_info = {}
   for family_id, lang_tags in family_id_to_lang_tags.iteritems():
@@ -461,10 +517,49 @@ def get_sample_data(family_id_to_lang_tags, families):
     for lang_tag in tags:
       if not lang_tag in lang_tag_to_info:
         rtl = cldr_data.is_rtl(lang_tag)
-        sample, attribution = get_sample_for_lang_tag(lang_tag)
-        lang_tag_to_info[lang_tag] = (rtl, sample, attribution)
+        sample, attrib = get_sample_and_attrib(ensure_script(lang_tag))
+        lang_tag_to_info[lang_tag] = (rtl, sample, attrib)
+
+  for key in sorted(lang_tag_to_info):
+    print '%s -> %s' % (key, lang_tag_to_info[key])
 
   return family_id_to_default_lang_tag, lang_tag_to_info
+
+
+lat_long_data = {}
+
+def read_lat_long_data():
+  with open(path.join(LAT_LONG_DIR, 'countries.csv')) as lat_long_file:
+    for row in csv.reader(lat_long_file):
+      region, latitude, longitude, _ = row
+      if region == 'country':
+          continue  # Skip the header
+      if not latitude:
+          continue  # Empty latitude
+      latitude = float(latitude)
+      longitude = float(longitude)
+      lat_long_data[region] = (latitude, longitude)
+
+  # From the English Wikipedia and The World Factbook at
+  # https://www.cia.gov/library/publications/the-world-factbook/fields/2011.html
+  lat_long_data.update({
+      'AC': (-7-56/60, -14-22/60),  # Ascension Island
+      'AX': (60+7/60, 19+54/60),  # Åland Islands
+      'BL': (17+54/60, -62-50/60),  # Saint Barthélemy
+      'BQ': (12+11/60, -68-14/60),  # Caribbean Netherlands
+      'CP': (10+18/60, -109-13/60),  # Clipperton Island
+      'CW': (12+11/60, -69),  # Curaçao
+      'DG': (7+18/60+48/3600, 72+24/60+40/3600),  # Diego Garcia
+       # Ceuta and Melilla, using Ceuta
+      'EA': (35+53/60+18/3600, -5-18/60-56/3600),
+      'IC': (28.1, -15.4),  # Canary Islands
+      'MF': (18+4/60+31/3600, -63-3/60-36/3600),  # Saint Martin
+      'SS': (8, 30),  # South Sudan
+      'SX': (18+3/60, -63-3/60),  # Sint Maarten
+      'TA': (-37-7/60, -12-17/60),  # Tristan da Cunha
+       # U.S. Outlying Islands, using Johnston Atoll
+      'UM': (16+45/60, -169-31/60),
+  })
 
 
 def get_region_lat_lng_data(regions):
@@ -550,96 +645,11 @@ def get_exemplar_from_file(cldr_file_path):
     return None
 
 
-def get_exemplar(language, script):
-    locl = language + '-' + script
-    while locl != 'root':
-        for directory in ['common', 'seed', 'exemplars']:
-            exemplar = get_exemplar_from_file(
-                path.join(directory, 'main', locl.replace('-', '_')+'.xml'))
-            if exemplar:
-                return exemplar
-        locl = cldr_data.parent_locale(locl)
-    return None
-
-
-def get_sample_from_sample_file(language, script):
-    filepath = path.join(SAMPLE_TEXT_DIR, language+'-'+script+'.txt')
-    if path.exists(filepath):
-        return unicode(open(filepath).read().strip(), 'UTF-8')
-    return None
-
-
-
-
-EXEMPLAR_CUTOFF_SIZE = 50
-
-def sample_text_from_exemplar(exemplar):
-    exemplar = [c for c in exemplar
-                  if unicode_data.category(c[0])[0] in 'LNPS']
-    exemplar = exemplar[:EXEMPLAR_CUTOFF_SIZE]
-    return ' '.join(exemplar)
-
-
-def get_sample_text(language, script):
-    """Returns a sample text string for a given language and script."""
-
-    sample_text = get_sample_from_sample_file(language, script)
-    if sample_text is not None:
-        return sample_text
-
-    exemplar = get_exemplar(language, script)
-    if exemplar is not None:
-        return sample_text_from_exemplar(exemplar)
-
-    sample_text = get_sample_from_sample_file('und', script)
-    if sample_text is not None:
-        return sample_text
-
-    print 'language=%s script=%s' % (language, script)
-    return 'No sample for %s-%s' % (language, script)
-
-
-lat_long_data = {}
-
-def read_lat_long_data():
-    with open(path.join(LAT_LONG_DIR, 'countries.csv')) as lat_long_file:
-        for row in csv.reader(lat_long_file):
-            region, latitude, longitude, _ = row
-            if region == 'country':
-                continue  # Skip the header
-            if not latitude:
-                continue  # Empty latitude
-            latitude = float(latitude)
-            longitude = float(longitude)
-            lat_long_data[region] = (latitude, longitude)
-
-    # From the English Wikipedia and The World Factbook at
-    # https://www.cia.gov/library/publications/the-world-factbook/fields/2011.html
-    lat_long_data.update({
-        'AC': (-7-56/60, -14-22/60),  # Ascension Island
-        'AX': (60+7/60, 19+54/60),  # Åland Islands
-        'BL': (17+54/60, -62-50/60),  # Saint Barthélemy
-        'BQ': (12+11/60, -68-14/60),  # Caribbean Netherlands
-        'CP': (10+18/60, -109-13/60),  # Clipperton Island
-        'CW': (12+11/60, -69),  # Curaçao
-        'DG': (7+18/60+48/3600, 72+24/60+40/3600),  # Diego Garcia
-         # Ceuta and Melilla, using Ceuta
-        'EA': (35+53/60+18/3600, -5-18/60-56/3600),
-        'IC': (28.1, -15.4),  # Canary Islands
-        'MF': (18+4/60+31/3600, -63-3/60-36/3600),  # Saint Martin
-        'SS': (8, 30),  # South Sudan
-        'SX': (18+3/60, -63-3/60),  # Sint Maarten
-        'TA': (-37-7/60, -12-17/60),  # Tristan da Cunha
-         # U.S. Outlying Islands, using Johnston Atoll
-        'UM': (16+45/60, -169-31/60),
-    })
-
-
 def sorted_langs(langs):
-    return sorted(
-        set(langs),
-        key=lambda code: locale.strxfrm(
-            get_english_language_name(code).encode('UTF-8')))
+  return sorted(
+    set(langs),
+    key=lambda code: locale.strxfrm(
+        get_english_language_name(code).encode('UTF-8')))
 
 
 all_used_lang_scrs = set()
@@ -1253,14 +1263,7 @@ class WebGen(object):
     if regions:
       family_obj['regions'] = sorted(regions)
     if family.charset:
-      # TODO(dougfelt): figure out best format for range info
-      bmp_info, supp_info, range_info = get_charset_info(family.charset)
-      if bmp_info:
-        family_obj['rangesBmp'] = bmp_info
-      if supp_info:
-        family_obj['rangesSup'] = supp_info
-      if range_info:
-        family_obj['ranges'] = range_info
+      family_obj['ranges'] = get_charset_info(family.charset)
     fonts_obj = []
     for font in family.hinted_members or family.unhinted_members:
       fonts_obj.append({
@@ -1313,13 +1316,13 @@ class WebGen(object):
     self.write_json(meta_obj, 'meta')
 
   def build_family_images(self, family, lang_tag, lang_tag_to_info):
-    rtl, sample_text, attrib = lang_tag_to_info[lang_tag]
+    is_rtl, sample_text, attrib = lang_tag_to_info[lang_tag]
     family_id = family.rep_member.key
     is_cjk = family.rep_member.is_cjk
     for font in family.hinted_members or family.unhinted_members:
       weight = css_weight(font.weight)
-      slope = css_style(font.slope)
-      image_file_name = '%s_%s_%d_%s.svg' % (family_id, lang_tag, weight, slope)
+      style = css_style(font.slope)
+      image_file_name = '%s_%s_%d_%s.svg' % (family_id, lang_tag, weight, style)
       if is_cjk:
         family_suffix = ' ' + font.weight
       else:
@@ -1329,9 +1332,7 @@ class WebGen(object):
         # Don't rebuild images when continuing.
         print "Continue: assuming image file '%s' is valid." % image_location
         continue
-      print 'create %s family: %s lang: %s \'%s\'' % (
-          image_file_name, family.name + family_suffix, lang_tag, sample_text)
-      continue
+      print 'create %s' % image_file_name
       create_image.create_svg(
           sample_text,
           image_location,
@@ -1369,18 +1370,36 @@ class WebGen(object):
     used_lang_data = get_used_lang_data()
 
     lang_tag_to_family_ids = get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids)
+
+    # kufi hot patches:
+    # - Kufi is broken for Urdu Heh goal (issue #34)
+    # - Kufi doesn't support all characters needed for Khowar
+    # - Kufi doesn't support all characters needed for Kashmiri
+    for lang in ['ur', 'khw', 'ks-Arab', 'ks']:
+      if not lang in lang_tag_to_family_ids:
+        print 'patch kufi: %s not found' % lang
+      else:
+        lang_tag_to_family_ids[lang] -= {'kufi-arab'}
+        if not lang_tag_to_family_ids:
+          print 'patched kufi: %s, no fonts remaining'
+          del lang_tag_to_family_ids[lang]
+        else:
+          print 'patched kufi: %s -> %s' % (lang, lang_tag_to_family_ids[lang])
+
     region_to_family_ids = get_region_to_family_ids(script_to_family_ids)
 
     family_id_to_lang_tags = get_family_id_to_lang_tags(lang_tag_to_family_ids, families)
     family_id_to_regions = get_family_id_to_regions(region_to_family_ids, families)
 
+    sample_data = get_sample_data(family_id_to_lang_tags, families)
+    region_data = get_region_lat_lng_data(region_to_family_ids.keys())
+    return
+
+    # build outputs
     family_zip_info = self.build_zips(families)
     universal_zip_info = self.build_universal_zips(families)
 
     family_css_info = self.build_css(families)
-
-    sample_data = get_sample_data(family_id_to_lang_tags, families)
-    region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
     self.build_data_json(families, family_zip_info, universal_zip_info,
                          family_id_to_lang_tags, family_id_to_regions,
@@ -1397,13 +1416,13 @@ class WebGen(object):
 def main():
     """Outputs data files for the noto website."""
 
-    default_target = path.join(NOTO_DIR, 'website_data')
+    default_target = '/tmp/website2'
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--clean',  help='clean target directory',
                         action='store_true')
     parser.add_argument('-t', '--target', help='target dir, default %s' %
-                        default_target, default=default_target)
+                        default_target, default=default_target, metavar='dir')
     args = parser.parse_args();
 
     webgen = WebGen(args.target, args.clean)

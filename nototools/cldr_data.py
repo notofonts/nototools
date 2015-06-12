@@ -22,8 +22,8 @@ import xml.etree.cElementTree as ElementTree
 
 from nototools import extra_locale_data
 
-NOTO_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
-CLDR_DIR = path.join(NOTO_DIR, 'third_party', 'cldr')
+TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
+CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
 # Maps from a less-specific tag to tuple of lang, script, region
 # Keys either have a lang or 'und'.  If lang, then script or region.  If und,
