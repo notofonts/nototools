@@ -310,18 +310,20 @@ def get_used_lang_data(supported_scripts):
     else:
       for lang_script in lang_scripts:
         lang, script = lang_script.split('-')
+        if script == 'Kana':
+          print 'remap %s to use Jpan' % lang_script
+          script = 'Jpan'
         if script not in supported_scripts:
           if script not in unsupported_scripts:
             print 'used script %s is not supported' % script
             unsupported_scripts.add(script)
-        if script == 'Kana':
-          print 'remap %s to use Jpan' % lang_script
-          script = 'Jpan'
         used_lang_scripts[lang].add(script)
 
   for lang in cldr_data.known_langs():
     all_scripts = set(cldr_data.lang_to_scripts(lang))
     all_scripts &= supported_scripts
+    if lang in ['ryu', 'ain']:
+      all_scripts.add('Jpan')
 
     # sanity check
     if lang in default_lang_to_script:
@@ -350,6 +352,7 @@ def get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids):
   for lang in used_lang_data:
     used_scripts, unused_scripts = used_lang_data[lang]
     add_script = len(used_scripts) > 1
+    default_script = iter(used_scripts).next() if len(used_scripts) == 1 else None
     for script in used_scripts:
       if not script in script_to_family_ids:
         print 'unsupported script %s for lang %s' % (script, lang)
@@ -357,6 +360,15 @@ def get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids):
         family_ids = script_to_family_ids[script]
         tag = lang + '-' + script if add_script else lang
         lang_tag_to_family_ids[tag].update(family_ids)
+    add_script = add_script or len (used_scripts | unused_scripts) > 1
+    for script in unused_scripts:
+      if not script in script_to_family_ids:
+        print 'unsupported unused script %s for lang %s' % (script, lang)
+      else:
+        family_ids = script_to_family_ids[script]
+        tag = lang + '-' + script if add_script else leng
+        lang_tag_to_family_ids[tag].update(family_ids)
+
   return lang_tag_to_family_ids
 
 
@@ -495,7 +507,7 @@ def get_sample_and_attrib(lang_scr):
     return sample_text_from_exemplar(exemplar), 'none'
 
   _, script = lang_scr.split('-')
-  sample_text = get_sample_from_sample_file('und' + script)
+  sample_text = get_sample_from_sample_file('und-' + script)
   if sample_text is not None:
     return sample_text, 'none'
 
@@ -547,18 +559,18 @@ def get_used_lang_tags(family_langs, default_langs):
   return set(family_langs) | set(default_langs)
 
 
-def get_sample_data(used_lang_tags):
+def get_lang_tag_to_sample_data(used_lang_tags):
   """Return a mapping from lang tag to tuple of:
     - rtl
     - sample text
     - attribution
   """
-  lang_tag_to_info = {}
+  lang_tag_to_sample_data = {}
   for lang_tag in used_lang_tags:
     rtl = cldr_data.is_rtl(lang_tag)
     sample, attrib = get_sample_and_attrib(ensure_script(lang_tag))
-    lang_tag_to_info[lang_tag] = (rtl, sample, attrib)
-  return lang_tag_to_info
+    lang_tag_to_sample_data[lang_tag] = (rtl, sample, attrib)
+  return lang_tag_to_sample_data
 
 
 lat_long_data = {}
@@ -1142,7 +1154,7 @@ class WebGen(object):
     with codecs.open(filepath, 'w', encoding='UTF-8') as f:
       json.dump(obj, f, ensure_ascii=False, separators=(',', ':'))
 
-    filepath = path.join(self.js, name + '-pretty.json')
+    filepath = path.join(self.js, 'pretty', name + '-pretty.json')
     with codecs.open(filepath, 'w', encoding='UTF-8') as f:
       json.dump(obj, f, ensure_ascii=False, separators=(',', ': '),
                      indent=4, sort_keys=True)
@@ -1297,13 +1309,17 @@ class WebGen(object):
     if lang_tags:
       family_obj['langs'] = sorted(lang_tags)
     if default_lang_tag:
-      family_objs['defaultLang'] = default_lang_tag
+      family_obj['defaultLang'] = default_lang_tag
     if regions:
       family_obj['regions'] = sorted(regions)
     if family.charset:
       family_obj['ranges'] = get_charset_info(family.charset)
     fonts_obj = []
-    for font in family.hinted_members or family.unhinted_members:
+    members = []
+    members.extend(family.hinted_members or family.unhinted_members)
+    members.sort(key=lambda f: str(css_weight(f.weight)) + '-' +
+                                   ('b' if css_style(f.slope) == 'italic' else 'a'))
+    for font in members:
       fonts_obj.append({
         'style': css_style(font.slope),
         'weight': css_weight(font.weight)
@@ -1313,8 +1329,8 @@ class WebGen(object):
     self.write_json(family_obj, family_id)
 
   def build_families_json(self, families, family_id_to_lang_tags,
-                          family_id_to_regions, family_css_info,
-                          family_id_to_default_lang_tag):
+                          family_id_to_default_lang_tag,
+                          family_id_to_regions, family_css_info):
     result = {}
     for k, v in families.iteritems():
       lang_tags = family_id_to_lang_tags[k]
@@ -1324,10 +1340,10 @@ class WebGen(object):
       self.build_family_json(k, v, lang_tags, regions, css_info, default_lang_tag)
 
   def build_misc_json(self, sample_data, region_data):
-    _, lang_info = sample_data
+    lang_info = sample_data
     meta_obj = {}
     langs_obj = {}
-    for lang in lang_info:
+    for lang in sorted(lang_info):
       rtl, sample, attrib = lang_info[lang]
       lang_obj = {
           'sample' : sample,
@@ -1355,8 +1371,7 @@ class WebGen(object):
     meta_obj['region'] = regions_obj
     self.write_json(meta_obj, 'meta')
 
-  def build_family_images(self, family, lang_tag, lang_tag_to_info):
-    is_rtl, sample_text, attrib = lang_tag_to_info[lang_tag]
+  def build_family_images(self, family, lang_tag, is_rtl, sample_text, attrib):
     family_id = family.rep_member.key
     is_cjk = family.rep_member.is_cjk
     for font in family.hinted_members or family.unhinted_members:
@@ -1385,18 +1400,19 @@ class WebGen(object):
           weight=weight,
           style=style)
 
-  def build_images(self, families, family_id_to_lang_tags, sample_data):
-    family_id_to_default_lang, lang_tag_to_info = sample_data
-
+  def build_images(self, families, family_id_to_lang_tags, family_id_to_default_lang_tag,
+                   lang_tag_to_sample_info):
     for family_id, family in families.iteritems():
       print 'Generating images for %s...' % family.name
-      default_lang = family_id_to_default_lang[family_id]
+      default_lang = family_id_to_default_lang_tag[family_id]
       lang_tags = family_id_to_lang_tags[family_id]
       if not default_lang in lang_tags:
         print 'build extra default image for lang %s' % default_lang
-        self.build_family_images(family, default_lang, lang_tag_to_info)
+        lang_tags = list(lang_tags)
+        lang_tags.append(default_lang)
       for lang_tag in lang_tags:
-        self.build_family_images(family, lang_tag, lang_tag_to_info)
+        is_rtl, sample_text, attrib = lang_tag_to_sample_info[lang_tag]
+        self.build_family_images(family, lang_tag, is_rtl, sample_text, attrib)
 
   def generate(self):
     if self.clean:
@@ -1410,6 +1426,13 @@ class WebGen(object):
 
     supported_scripts = set(script_to_family_ids.keys())
     used_lang_data = get_used_lang_data(supported_scripts)
+
+    langs_to_delete = []
+    for lang in used_lang_data.keys():
+      if not cldr_data.get_english_language_name(lang):
+        langs_to_delete.append(lang)
+    for lang in langs_to_delete:
+      del used_lang_data[lang]
 
     lang_tag_to_family_ids = get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids)
 
@@ -1437,9 +1460,8 @@ class WebGen(object):
         family_id_to_lang_tags)
     used_lang_tags = get_used_lang_tags(
         lang_tag_to_family_ids.keys(), family_id_to_default_lang_tag.values())
-    sample_data = get_sample_data(used_lang_tags)
+    lang_tag_to_sample_data = get_lang_tag_to_sample_data(used_lang_tags)
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
-    return
 
     # build outputs
     family_zip_info = self.build_zips(families)
@@ -1452,11 +1474,13 @@ class WebGen(object):
                          lang_tag_to_family_ids, region_to_family_ids)
 
     self.build_families_json(families, family_id_to_lang_tags,
+                             family_id_to_default_lang_tag,
                              family_id_to_regions, family_css_info)
 
-    self.build_misc_json(sample_data, region_data)
+    self.build_misc_json(lang_tag_to_sample_data, region_data)
 
-    self.build_images(families, family_id_to_lang_tags, sample_data)
+    self.build_images(families, family_id_to_lang_tags,
+                      family_id_to_default_lang_tag, lang_tag_to_sample_data)
 
 
 def main():

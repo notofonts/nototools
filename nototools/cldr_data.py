@@ -351,12 +351,17 @@ def get_english_language_name(lang_scr):
   try:
     return _ENGLISH_LANGUAGE_NAMES[lang_scr]
   except KeyError:
-    lang, script = lang_scr.split('-')
-    name = '%s (%s script)' % (
-        _ENGLISH_LANGUAGE_NAMES[lang],
-        _ENGLISH_SCRIPT_NAMES[script])
-    print "Constructing name '%s' for %s." % (name, lang_scr)
-    return name
+    if '-' in lang_scr:
+      lang, script = lang_scr.split('-')
+      try:
+        langName = _ENGLISH_LANGUAGE_NAMES[lang]
+        name = '%s (%s script)' % (langName, _ENGLISH_SCRIPT_NAMES[script])
+        print "Constructing name '%s' for %s." % (name, lang_scr)
+        return name
+      except KeyError:
+        pass
+  print 'No English name for lang \'%s\'' % lang_scr
+  return None
 
 
 def get_english_region_name(region):
