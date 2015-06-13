@@ -286,7 +286,7 @@ def to_float_tuples(curve):
 
 def curves_intersect(contour_list):
     """Takes a list of contours and tells if any two curves in them intersect.
-    Returns a message string with an error, or an empty string if ok.
+    Returns a message string with an error, or None if ok.
     """
     all_contours = []
     for contour in contour_list:
@@ -329,7 +329,7 @@ def curves_intersect(contour_list):
         if curve_pieces_intersect(piece1, piece2, ok_to_intersect_at_ends):
             return 'intersection %s and %s' % (piece1, piece2)
 
-    return ''
+    return None
 
 
 def font_version(font):
@@ -435,6 +435,7 @@ HARD_CODED_FONT_INFO = {
     "NotoSansKufiArabic-Regular.ttf": ("Kufi", "Arab", None, "Regular"),
     "NotoSansKufiArabic-Bold.ttf": ("Kufi", "Arab", None, "Bold"),
     "NotoSansSymbols-Regular.ttf": ("Sans", "Zsym", None, "Regular"),
+    "NotoNastaliqUrduDraft.ttf": ("Nastaliq", "Urdu", None, "Regular")
 }
 
 MAX_UI_HEIGHT = 2163
