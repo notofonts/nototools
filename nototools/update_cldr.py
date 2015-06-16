@@ -90,9 +90,8 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
     dst = os.path.join(noto_cldr, f)
     shutil.copy(src, dst)
 
-  # git can now add everything, even removed files
-  with tool_utils.temp_chdir(noto_cldr):
-    subprocess.check_call(['git', 'add', '--', '.'])
+  # stage changes in cldr dir
+  tool_utils.git_add_all(noto_cldr)
 
   # print commit message
   tag_string = (' tag %s' % cldr_tag) if cldr_tag else ''
@@ -114,11 +113,11 @@ def main():
   args = parser.parse_args()
 
   if not args.cldr or not args.noto:
-    print "need both cldr and noto repository information"
+    print "Missing either or both of cldr and noto locations."
     return
 
   if args.branch:
-    cur_branch = git_get_branch(args.noto)
+    cur_branch = tool_utils.git_get_branch(args.noto)
     if cur_branch != args.branch:
       print "Expected branch '%s' but %s is in branch '%s'." % (args.branch, args.noto, cur_branch)
       return

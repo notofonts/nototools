@@ -17,10 +17,13 @@
 import contextlib
 import datetime
 import os
+import re
 import shutil
 import subprocess
 import time
 import zipfile
+
+from nototools import notoconfig
 
 @contextlib.contextmanager
 def temp_chdir(path):
@@ -33,6 +36,26 @@ def temp_chdir(path):
     yield
   finally:
     os.chdir(saved_dir)
+
+
+noto_re = re.compile(r'\[(tools|fonts|emoji|cjk)\]/(.*)')
+def resolve_path(path):
+  """Resolve a path that might use noto path shorthand."""
+
+  if not path or path == '-':
+    return None
+  m = noto_re.match(path)
+  if m:
+    base, rest = m.groups()
+    key = 'noto_' + base
+    if not key in notoconfig.values:
+      raise ValueError('notoconfig has no entry for %s' % key)
+    base = notoconfig.values.get(key)
+    path = os.path.join(base, rest)
+  path = os.path.expanduser(path)
+  path = os.path.abspath(path)
+  path = os.path.realpath(path)
+  return path
 
 
 def check_dir_exists(dirpath):
