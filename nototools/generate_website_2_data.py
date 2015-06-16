@@ -289,6 +289,9 @@ def get_used_lang_data(supported_scripts):
   - a set of scripts used in some region
   - a set of scripts not used in any region"""
 
+  DEBUG_LANGS = ['tab', 'yrk', 'xum', 'ude', 'mro', 'syi',
+                 'lzh', 'ryu', 'syl', 'ain', 'pra', 'bh']
+
   # we rely on the lang to script mapping, and its a problem if we
   # can map scripts to langs and not have the inverse map, so let's
   # catch those.
@@ -297,6 +300,8 @@ def get_used_lang_data(supported_scripts):
     lang = cldr_data.get_likely_subtags('und-' + script)[0]
     if lang != 'und':
       default_lang_to_script[lang] = script
+      if lang in DEBUG_LANGS:
+        print 'likely subtags: lang %s has likely script %s' % (lang, script)
 
   unsupported_scripts = set()
   lang_data = {}
@@ -313,6 +318,8 @@ def get_used_lang_data(supported_scripts):
         if script == 'Kana':
           print 'remap %s to use Jpan' % lang_script
           script = 'Jpan'
+        if lang in DEBUG_LANGS:
+          print 'region lang_scr: lang %s has script %s' % (lang, script)
         if script not in supported_scripts:
           if script not in unsupported_scripts:
             print 'used script %s is not supported' % script
@@ -321,6 +328,10 @@ def get_used_lang_data(supported_scripts):
 
   for lang in cldr_data.known_langs():
     all_scripts = set(cldr_data.lang_to_scripts(lang))
+    if lang in DEBUG_LANGS:
+      print 'known lang_scr: lang %s has script %s' % (lang, all_scripts)
+    old_all_scripts = set(all_scripts)
+
     all_scripts &= supported_scripts
     if lang in ['ryu', 'ain']:
       all_scripts.add('Jpan')
@@ -333,7 +344,7 @@ def get_used_lang_data(supported_scripts):
         all_scripts.add(script)
 
     if not all_scripts:
-      print 'no supported scripts for lang %s' % lang
+      print 'no supported scripts among %s for lang %s' % (old_all_scripts, lang)
       continue
 
     used_scripts = used_lang_scripts[lang]

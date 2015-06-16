@@ -152,6 +152,7 @@ LIKELY_SUBTAGS = {
     'mic': ('mic', 'Latn', 'CA'),  # Micmac
     'mnc': ('mnc', 'Mong', 'CN'),  # Manchu
     'mns': ('mns', 'Cyrl', 'RU'),  # Mansi
+    'mro': ('mro', 'Mroo', 'BD'),  # Mru (dlf, also Latn?)
     'mtr': ('mtr', 'Deva', 'IN'),  # Mewari
     'mus': ('mus', 'Latn', 'US'),  # Creek
     'mwl': ('mwl', 'Latn', 'PT'),  # Mirandese
@@ -191,6 +192,8 @@ LIKELY_SUBTAGS = {
     'skr': ('skr', 'Arab', 'PK'),  # Seraiki
     'sou': ('sou', 'Thai', 'TH'),  # Southern Thai
     'swv': ('swv', 'Deva', 'IN'),  # Shekhawati
+    'tab': ('tab', 'Cyrl', 'RU'),  # Tabassaran (dlf)
+    'ude': ('ude', 'Cyrl', 'RU'),  # Udihe (dlf)
     'uga': ('uga', 'Ugar', 'ZZ'),  # Ugaritic
     'vep': ('vep', 'Latn', 'RU'),  # Veps
     'vmw': ('vmw', 'Latn', 'MZ'),  # Makhuwa
@@ -198,7 +201,9 @@ LIKELY_SUBTAGS = {
     'wbq': ('wbq', 'Telu', 'IN'),  # Waddar
     'wls': ('wls', 'Latn', 'WF'),  # Wallisian
     'wtm': ('wtm', 'Deva', 'IN'),  # Mewati
+    'yrk': ('yrk', 'Cyrl', 'RU'),  # Nenets (dlf)
     'xnr': ('xnr', 'Deva', 'IN'),  # Kangri
+    'xum': ('xum', 'Ital', 'ZZ'),  # Umbrian (dlf)
     'zdj': ('zdj', 'Arab', 'KM'),  # Ngazidja Comorian
 }
 
@@ -322,6 +327,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'mnw': u'Mon',
     'moe': u'Montagnais',
     'mrd': u'Western Magar',
+    'mro': u'Mru',
     'mtr': u'Mewari',
     'mvy': u'Indus Kohistani',
     'mwk': u'Kita Maninkakan',
@@ -369,7 +375,9 @@ ENGLISH_LANGUAGE_NAMES = {
     'srx': u'Sirmauri',
     'swv': u'Shekhawati',
     'sxn': u'Sangir',
+    'syi': u'Seki',
     'syl': u'Sylheti',
+    'tab': u'Tabassaran',
     'taj': u'Eastern Tamang',
     'tbw': u'Tagbanwa',
     'tdd': u'Tai Nüa',
@@ -384,6 +392,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'tsj': u'Tshangla',
     'ttj': u'Tooro',
     'tts': u'Northeastern Thai',
+    'ude': u'Udihe',
     'uli': u'Ulithian',
     'unr': u'Mundari',
     'unx': u'Munda',
@@ -404,6 +413,8 @@ ENGLISH_LANGUAGE_NAMES = {
     'xpr': u'Parthian',
     'xsa': u'Sabaean',
     'xsr': u'Sherpa',
+    'xum': u'Umbrian',
+    'yrk': u'Nenets',
     'yua': u'Yucatec Maya',
     'zdj': u'Ngazidja Comorian',
     'zmi': u'Negeri Sembilan Malay',
