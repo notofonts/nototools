@@ -41,9 +41,9 @@ except ImportError as e:
   print 'will use default locale sort order'
   _HAVE_ICU = False
 
-NOTO_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
+NOTO_TOOLS = path.abspath(path.join(path.dirname(__file__), os.pardir))
 
-CLDR_DIR = path.join(NOTO_DIR, 'third_party', 'cldr')
+CLDR_DIR = path.join(NOTO_TOOLS, 'third_party', 'cldr')
 
 _VERBOSE = False
 
@@ -362,13 +362,17 @@ def get_script_to_exemplar_data_map():
             src, loc_tag, loc_to_exemplar_info[loc_tag][1])
       continue
 
-    # restrict to letters
+    # restrict to letters, except for zsym
     def accept_cp(cp):
       cat = unicode_data.category(cp)
       return cat[0] == 'L' or cat == 'Nd'
-    filtered_exemplar_list = filter(accept_cp, exemplar_list)
-    if len(filtered_exemplar_list) != len(exemplar_list) and _VERBOSE:
-      print 'filtered some characters from %s' % src
+    # DEBUG
+    if 'Zsym' not in loc_tag:
+      filtered_exemplar_list = filter(accept_cp, exemplar_list)
+      if len(filtered_exemplar_list) != len(exemplar_list) and _VERBOSE:
+        print 'filtered some characters from %s' % src
+    else:
+      filtered_exemplar_list = exemplar_list
     loc_to_exemplar_info[loc_tag] = (lsrv, src, tuple(filtered_exemplar_list))
 
   return script_map
@@ -718,8 +722,7 @@ def generate_samples(dstdir, imgdir, summary):
 
 
 def main():
-  noto = notoconfig.values.get('noto')
-  default_dstdir = os.path.join(noto, 'sample_texts')
+  default_dstdir = os.path.join(NOTO_TOOLS, 'sample_texts')
 
   parser = argparse.ArgumentParser()
   parser.add_argument('--dstdir', help='where to write samples (default %s)' %
