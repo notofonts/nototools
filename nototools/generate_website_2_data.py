@@ -1144,9 +1144,10 @@ def create_package_object(fonts, target_platform):
 
 class WebGen(object):
 
-  def __init__(self, target, clean):
+  def __init__(self, target, clean, pretty_json):
     self.target = target
     self.clean = clean
+    self.pretty_json = pretty_json
 
     self.pkgs = path.join(target, 'pkgs')
     self.fonts = path.join(target, 'fonts')
@@ -1180,6 +1181,8 @@ class WebGen(object):
     mkdirs(self.css_fonts)
     mkdirs(self.images_samples)
     mkdirs(self.js)
+    if self.pretty_json:
+      mkdirs(path.join(self.js, 'pretty'))
 
   def create_zip(self, name, fonts):
     zipname = name + '.zip'
@@ -1504,9 +1507,11 @@ def main():
                         action='store_true')
     parser.add_argument('-t', '--target', help='target dir, default %s' %
                         default_target, default=default_target, metavar='dir')
+    parser.add_argument('-pj', '--pretty_json', help='generate additional pretty json',
+                        action='store_true')
     args = parser.parse_args();
 
-    webgen = WebGen(args.target, args.clean)
+    webgen = WebGen(args.target, args.clean, args.pretty_json)
     webgen.generate()
     return
 
