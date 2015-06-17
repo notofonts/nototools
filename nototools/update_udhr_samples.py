@@ -189,10 +189,12 @@ def add_likely_scripts(bcp_to_code):
   return result
 
 
-# These have been fixed in the noto repo.  We do not want to replace them with
-# the UDHR samples, which (as of now, anyway) do not reflect these improvements.
+# These have been fixed/changed in the noto repo.  We do not want to replace them
+# with the UDHR samples, which (as of now, anyway) do not reflect these
+# improvements. Our th-Thai is a more colloquial translation than the formal one
+# in the UDHR repo.
 EXCLUDE_BCP = frozenset([
-  'fa-Arab', 'ar-Arab'])
+  'fa-Arab', 'ar-Arab', 'th-Thai'])
 
 # The data for these is bad.  The kwi.xml has no article 1 text (only '[?]')
 # and the cbi.xml article 1 text has '. mitya, tsenr)1in ' in it, which just looks
@@ -320,7 +322,6 @@ def fix_sample(sample, bcp):
   return new_sample
 
 
-
 def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   """Create samples in sample_dir from the sources in udhr_dir,
   based on the bcp_to_code mapping.  Stage if sample_dir is in the
@@ -359,6 +360,10 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
       sample_attrib_list.append('%s: %s' % (bcp, attrib))
       count += 1
   print 'Created %d samples' % count
+
+  # Some existing samples that we don't overwrite are not in bcp_to_code_attrib,
+  # so they're not listed.  Readers of the attributions.txt file will need to
+  # default these to 'none'.
   attrib_data = '\n'.join(comments + sorted(sample_attrib_list))
   with open(os.path.join(sample_dir, 'attributions.txt'), 'w') as f:
     f.write(attrib_data)
