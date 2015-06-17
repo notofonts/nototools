@@ -332,6 +332,8 @@ def _parse_english_labels():
 
   _ENGLISH_LANGUAGE_NAMES = _xml_to_dict(ldn.find('languages'))
   _ENGLISH_SCRIPT_NAMES = _xml_to_dict(ldn.find('scripts'))
+  # Shorten name of Cans for display purposes-- match the name of the font used for Cans.
+  _ENGLISH_SCRIPT_NAMES['Cans'] = 'Canadian Aboriginal'
   _ENGLISH_TERRITORY_NAMES = _xml_to_dict(ldn.find('territories'))
 
   # Add languages used that miss names
