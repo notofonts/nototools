@@ -101,10 +101,15 @@ def noto_font_path_to_info(font_path):
 
   filedir, filename = os.path.split(font_path)
   match = _NOTO_FONT_NAME_REGEX.match(filename)
-  if not match:
+  if match:
+    family, mono, script, variant, weight, slope, fmt = match.groups()
+  elif filename == 'NotoNastaliqUrduDraft.ttf':
+    family, mono, script, variant, weight, slope, fmt = (
+        'Nastaliq', None, 'Aran', None, 'Regular', None, 'ttf')
+  else:
+    if filename not in ['NotoSansCJK.ttc.zip']:
+      print '%s did not match font regex' % filename
     return None
-
-  family, mono, script, variant, weight, slope, fmt = match.groups()
 
   if family == 'Emoji':
     family = 'Sans'
@@ -177,7 +182,6 @@ def get_noto_fonts():
       notoinfo = noto_font_path_to_info(filepath)
       if not notoinfo:
         if not (filename == 'NotoSansCJK.ttc.zip' or
-                filename == 'NotoNastaliqUrduDraft.ttf' or
                 filename.endswith('.ttx')):
           raise ValueError("unexpected filename in %s: '%s'." %
                            (font_dir, filename))
@@ -289,71 +293,73 @@ def get_used_lang_data(supported_scripts):
   - a set of scripts used in some region
   - a set of scripts not used in any region"""
 
-  DEBUG_LANGS = ['tab', 'yrk', 'xum', 'ude', 'mro', 'syi',
-                 'lzh', 'ryu', 'syl', 'ain', 'pra', 'bh']
-
-  # we rely on the lang to script mapping, and its a problem if we
-  # can map scripts to langs and not have the inverse map, so let's
-  # catch those.
-  default_lang_to_script = {}
+  # Get additional scripts for a lang by using get_likely_subtags from script to
+  # lang.  This might not be the same as the likely script for a lang, but it does
+  # indicate the language can be written in the script, or so we assume.
+  lang_to_additional_script = {}
   for script in supported_scripts:
     lang = cldr_data.get_likely_subtags('und-' + script)[0]
     if lang != 'und':
-      default_lang_to_script[lang] = script
-      if lang in DEBUG_LANGS:
-        print 'likely subtags: lang %s has likely script %s' % (lang, script)
+      lang_to_additional_script[lang] = script
 
   unsupported_scripts = set()
   lang_data = {}
   used_lang_scripts = collections.defaultdict(set)
   for region in cldr_data.known_regions():
-    if region == 'ZZ':
-      continue
     lang_scripts = cldr_data.region_to_lang_scripts(region)
-    if not lang_scripts:
-      print 'region %s has no lang_script info' % region
-    else:
-      for lang_script in lang_scripts:
-        lang, script = lang_script.split('-')
-        if script == 'Kana':
-          print 'remap %s to use Jpan' % lang_script
-          script = 'Jpan'
-        if lang in DEBUG_LANGS:
-          print 'region lang_scr: lang %s has script %s' % (lang, script)
-        if script not in supported_scripts:
-          if script not in unsupported_scripts:
-            print 'used script %s is not supported' % script
-            unsupported_scripts.add(script)
-        used_lang_scripts[lang].add(script)
+    for lang_script in lang_scripts:
+      lang, script = lang_script.split('-')
+      if script == 'Kana':
+        print 'remap %s to use Jpan' % lang_script
+        script = 'Jpan'
+      if script not in supported_scripts:
+        unsupported_scripts.add(script)
+      used_lang_scripts[lang].add(script)
 
-  for lang in cldr_data.known_langs():
-    all_scripts = set(cldr_data.lang_to_scripts(lang))
-    if lang in DEBUG_LANGS:
-      print 'known lang_scr: lang %s has script %s' % (lang, all_scripts)
-    old_all_scripts = set(all_scripts)
+  if unsupported_scripts:
+    print 'used scripts that are not supported: %s' % ', '.join(sorted(unsupported_scripts))
 
-    all_scripts &= supported_scripts
+  known_langs = set(cldr_data.known_langs())
+  for lang in lang_to_additional_script:
+    if not lang in known_langs:
+      print 'lang %s not in known langs' % lang
+      known_langs.add(lang)
+
+  for lang in known_langs:
     if lang in ['ryu', 'ain']:
-      all_scripts.add('Jpan')
+      all_scripts = set(['Jpan'])
+    else:
+      all_scripts = set(cldr_data.lang_to_scripts(lang))
 
-    # sanity check
-    if lang in default_lang_to_script:
-      script = default_lang_to_script[lang]
+    # add additional scripts for lang
+    if lang in lang_to_additional_script:
+      script = lang_to_additional_script[lang]
       if script not in all_scripts:
         print 'cldr data does not have script %s for lang %s' % (script, lang)
         all_scripts.add(script)
 
-    if not all_scripts:
-      print 'no supported scripts among %s for lang %s' % (old_all_scripts, lang)
+    if not all_scripts & supported_scripts:
+      print 'no supported scripts among %s for lang %s' % (all_scripts, lang)
       continue
 
     used_scripts = used_lang_scripts[lang]
     if not used_scripts:
       script = cldr_data.get_likely_script(lang)
-      used_scripts = set([script])
+      if script != 'Zzzz':
+        used_scripts = set([script])
 
     unused_scripts = all_scripts - used_scripts
     lang_data[lang] = (used_scripts, unused_scripts)
+
+  # Patch out langs whose sample data Noto doesn't support
+  # A bunch of these resolve to the same sample.  Would be easier to check if I just had
+  # sample names independent of language names, but then harder to remove the languages.
+  for lang in ['abq', 'ady', 'aii-Cyrl', 'av', 'bua', 'chm']:
+    if not lang in lang_data:
+      print 'patched out lang %s not present' % lang
+    else:
+      print 'patch out lang %s' % lang
+      del lang_data[lang]
 
   return lang_data
 
@@ -377,8 +383,30 @@ def get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids):
         print 'unsupported unused script %s for lang %s' % (script, lang)
       else:
         family_ids = script_to_family_ids[script]
-        tag = lang + '-' + script if add_script else leng
+        tag = lang + '-' + script if add_script else lang
         lang_tag_to_family_ids[tag].update(family_ids)
+
+  # Map thsese to Nastaliq
+  for lang_tag in ['bal', 'hnd', 'hno', 'ks', 'lah', 'pa-Arab', 'skr', 'ur']:
+    if not lang_tag in lang_tag_to_family_ids:
+      print 'Map nastaliq: %s not found' % lang_tag
+    else:
+      lang_tag_to_family_ids[lang_tag].add('nastaliq-aran')
+
+  # Kufi patches:
+  # - Kufi is broken for Urdu Heh goal (issue #34)
+  # - Kufi doesn't support all characters needed for Khowar
+  # - Kufi doesn't support all characters needed for Kashmiri
+  for lang_tag in ['ur', 'khw', 'ks', 'ks-Arab']:
+    if not lang_tag in lang_tag_to_family_ids:
+      print 'patch kufi: %s not found' % lang_tag
+    else:
+      lang_tag_to_family_ids[lang_tag] -= {'kufi-arab'}
+      if not lang_tag_to_family_ids:
+        print 'patched kufi: %s, no fonts remaining' % lang_tag
+        del lang_tag_to_family_ids[lang_tag]
+      else:
+        print 'patched kufi: %s -> %s' % (lang_tag, lang_tag_to_family_ids[lang_tag])
 
   return lang_tag_to_family_ids
 
@@ -452,14 +480,19 @@ def get_charset_info(charset):
 
 def get_exemplar(lang_scr):
   locl = lang_scr
+  # don't use exemplars encoded without script if the requested script is not
+  # the default
+  _, script = lang_scr.split('-')
   while locl != 'root':
     for directory in ['common', 'seed', 'exemplars']:
       exemplar = get_exemplar_from_file(
           path.join(directory, 'main', locl.replace('-', '_') + '.xml'))
       if exemplar:
-        return exemplar
+        return exemplar, 'ex-' + directory + '-' + locl
     locl = cldr_data.parent_locale(locl)
-  return None
+    if locl == 'root' or cldr_data.get_likely_subtags(locl)[1] != script:
+      break
+  return None, None
 
 
 def get_sample_from_sample_file(lang_scr):
@@ -505,25 +538,29 @@ def get_sample_and_attrib(lang_scr):
     UN: official UN translation, needs attribution
     other: not an official UN translation, needs non-attribution
     original: public domain translation, does not need attribution
-    none: we have no attribution info on this, does not need attribution"""
+    none: we have no attribution info on this, does not need attribution
+  - source key"""
   assert '-' in lang_scr
+  DEBUG = lang_scr.startswith('tab-')
 
   sample_text = get_sample_from_sample_file(lang_scr)
   if sample_text is not None:
     attr = get_attribution(lang_scr)
-    return sample_text, attr
+    src_key = 'txt-' + lang_scr
+    return sample_text, attr, src_key
 
-  exemplar = get_exemplar(lang_scr)
+  exemplar, src_key = get_exemplar(lang_scr)
   if exemplar is not None:
-    return sample_text_from_exemplar(exemplar), 'none'
+    return sample_text_from_exemplar(exemplar), 'none', src_key
 
   _, script = lang_scr.split('-')
-  sample_text = get_sample_from_sample_file('und-' + script)
+  src_key = 'und-' + script
+  sample_text = get_sample_from_sample_file(src_key)
   if sample_text is not None:
-    return sample_text, 'none'
+    return sample_text, 'none', src_key
 
   print 'No sample for %s' % lang_scr
-  return '', 'none'
+  return '', 'none', 'none'
 
 
 def ensure_script(lang_tag):
@@ -553,8 +590,16 @@ def get_family_id_to_default_lang_tag(family_id_to_lang_tags):
     else:
       script = parts[1].capitalize()
     lang = cldr_data.get_likely_subtags('und-' + script)[0]
+    if script in ['Kthi', 'Khar', 'Brah']:
+      print 'likely lang for %s is %s' % (script, lang)
     if lang == 'und':
-      lang_tag = 'und' + '-' + script
+      # special case
+      if script == 'Latn':
+        lang_tag = 'en'
+      elif script == 'Aran':
+        lang_tag = 'ur'
+      else:
+        lang_tag = 'und' + '-' + script
     elif lang not in lang_tags:
       lang_tag = lang + '-' + script
       if lang_tag not in lang_tags:
@@ -579,8 +624,8 @@ def get_lang_tag_to_sample_data(used_lang_tags):
   lang_tag_to_sample_data = {}
   for lang_tag in used_lang_tags:
     rtl = cldr_data.is_rtl(lang_tag)
-    sample, attrib = get_sample_and_attrib(ensure_script(lang_tag))
-    lang_tag_to_sample_data[lang_tag] = (rtl, sample, attrib)
+    sample, attrib, src_key = get_sample_and_attrib(ensure_script(lang_tag))
+    lang_tag_to_sample_data[lang_tag] = (rtl, sample, attrib, src_key)
   return lang_tag_to_sample_data
 
 
@@ -712,21 +757,6 @@ def sorted_langs(langs):
 
 all_used_lang_scrs = set()
 
-def create_regions_object():
-    if not lat_long_data:
-        read_lat_long_data()
-    regions = {}
-    for territory in territory_info:
-        region_obj = {}
-        region_obj['name'] = english_territory_name[territory]
-        region_obj['lat'], region_obj['lng'] = lat_long_data[territory]
-        region_obj['langs'] = sorted_langs(territory_info[territory])
-        all_used_lang_scrs.update(territory_info[territory])
-        regions[territory] = region_obj
-
-    return regions
-
-
 def charset_supports_text(charset, text):
     if charset is NotImplemented:
         return False
@@ -736,7 +766,7 @@ def charset_supports_text(charset, text):
 
 family_to_langs = collections.defaultdict(set)
 
-def create_langs_object():
+def _xx_create_langs_object():
     langs = {}
     for lang_scr in sorted(set(written_in_scripts) | all_used_lang_scrs):
         lang_object = {}
@@ -818,16 +848,7 @@ def get_font_family_name(font_file):
     return name
 
 
-def charset_to_ranges(font_charset):
-    # Ignore basic common characters
-    charset = font_charset - {0x00, 0x0D, 0x20, 0xA0, 0xFEFF}
-    ranges = coverage.convert_set_to_ranges(charset)
-
-    output_list = []
-    for start, end in ranges:
-        output_list.append(('%04X' % start, '%04X' % end))
-    return output_list
-
+# ==========================
 
 def get_css_generic_family(family):
     if family in {'Noto Naskh', 'Noto Serif', 'Tinos'}:
@@ -867,203 +888,6 @@ def css_style(style_value):
         return 'italic'
 
 
-def fonts_are_basically_the_same(font1, font2):
-    """Returns true if the fonts are the same, except perhaps hint or platform.
-    """
-    return (font1.family == font2.family and
-            font1.script == font2.script and
-            font1.variant == font2.variant and
-            font1.weight == font2.weight and
-            font1.style == font2.style)
-
-
-def compress_png(pngpath):
-    subprocess.call(['optipng', '-o7', '-quiet', pngpath])
-
-
-def compress(filepath, compress_function):
-    print 'Compressing %s.' % filepath
-    oldsize = os.stat(filepath).st_size
-    compress_function(filepath)
-    newsize = os.stat(filepath).st_size
-    print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
-
-
-zip_contents_cache = {}
-
-def create_zip(major_name, target_platform, fonts):
-    # Make sure no file name repeats
-    assert len({path.basename(font.filepath) for font in fonts}) == len(fonts)
-
-    all_hint_statuses = {font.hint_status for font in fonts}
-    if len(all_hint_statuses) == 1:
-        hint_status = list(all_hint_statuses)[0]
-    else:
-        hint_status = 'various'
-
-    if target_platform == 'other':
-        if hint_status == 'various':
-            # This may only be the comprehensive package
-            assert len(fonts) > 50
-            suffix = ''
-        elif hint_status == 'unhinted':
-            suffix = '-unhinted'
-        else:  # hint_status == 'hinted'
-            suffix = '-hinted'
-    elif target_platform == 'windows':
-        if hint_status in ['various', 'hinted']:
-            if 'windows' in {font.platform for font in fonts}:
-                suffix = '-windows'
-            else:
-                suffix = '-hinted'
-        else:  # hint_status == 'unhinted':
-            suffix = '-unhinted'
-    else:  # target_platform == 'linux'
-        if len(fonts) > 50 or hint_status in ['various', 'hinted']:
-            suffix = '-hinted'
-        else:
-            suffix = '-unhinted'
-
-    zip_basename = '%s%s.zip' % (major_name, suffix)
-
-    zippath = path.join(OUTPUT_DIR, 'pkgs', zip_basename)
-    frozen_fonts = frozenset(fonts)
-    if path.isfile(zippath):  # Skip if the file already exists
-        # When continuing, we assume that if it exists, it is good
-        if zip_basename not in zip_contents_cache:
-            print("Continue: assuming built %s is valid" % zip_basename)
-            zip_contents_cache[zip_basename] = frozen_fonts
-        else:
-            assert zip_contents_cache[zip_basename] == frozen_fonts
-        return zip_basename
-    else:
-        assert frozen_fonts not in zip_contents_cache.values()
-        zip_contents_cache[zip_basename] = frozen_fonts
-        pairs = []
-        license_types = set()
-        for font in fonts:
-            pairs.append((font.filepath, path.basename(font.filepath)))
-            license_types.add(font.license_type)
-        if 'apache' in license_types:
-            pairs.append((APACHE_LICENSE_LOC, 'LICENSE.txt'))
-        if 'sil' in license_types:
-            pairs.append((SIL_LICENSE_LOC, 'LICENSE_CJK.txt'))
-        tool_utils.generate_zip_with_7za_from_filepairs(pairs, zippath)
-    return zip_basename
-
-
-def copy_font(source_file):
-    source_dir, source_basename = path.split(source_file)
-    target_dir = path.join(OUTPUT_DIR, 'fonts')
-    if source_dir.endswith('/hinted'):
-        target_dir = path.join(target_dir, 'hinted')
-    shutil.copy(source_file, path.join(OUTPUT_DIR, target_dir))
-    return '../fonts/' + source_basename
-
-
-def create_css(key, family_name, fonts):
-    csspath = path.join(OUTPUT_DIR, 'css', 'fonts', key + '.css')
-    with open(csspath, 'w') as css_file:
-        for font in fonts:
-            font_url = copy_font(font.filepath)
-            css_file.write(
-                '@font-face {\n'
-                '  font-family: "%s";\n'
-                '  font-weight: %d;\n'
-                '  font-style: %s;\n'
-                '  src: url(%s) format("truetype");\n'
-                '}\n' % (
-                    family_name,
-                    css_weight(font.weight),
-                    css_style(font.slope),
-                    font_url)
-            )
-    return '%s.css' % key
-
-
-def create_families_object(target_platform):
-    all_keys = set([font.key for font in all_fonts])
-    families = {}
-    all_font_files = set()
-    for key in all_keys:
-        family_object = {}
-        members = {font for font in all_fonts
-                   if font.key == key and font.variant != 'UI'
-                                      and font.filepath.endswith('tf')}
-
-        if not members:
-            mbrs = {font for font in all_fonts if font.key == key}
-            raise ValueError("no members for %s from %s" % (key, [f.filepath for f in mbrs]))
-
-        members_to_drop = set()
-        for font in members:
-            if font.platform == target_platform:
-                # If there are any members matching the target platform, they
-                # take priority: drop alternatives
-                members_to_drop.update(
-                    {alt for alt in members
-                     if fonts_are_basically_the_same(font, alt) and
-                        font.platform != alt.platform})
-            elif font.platform is not None:
-                # This is a font for another platform
-                members_to_drop.add(font)
-        members -= members_to_drop
-
-        if target_platform in ['windows', 'linux']:
-            desired_hint_status = 'hinted'
-        else:
-            desired_hint_status = 'unhinted'
-
-        # If there are any members matching the desired hint status, they take
-        # priority: drop alternatives
-        members_to_drop = set()
-        for font in members:
-            if font.hint_status == desired_hint_status:
-                members_to_drop.update(
-                    {alt for alt in members
-                     if fonts_are_basically_the_same(font, alt) and
-                        font.hint_status != alt.hint_status})
-        members -= members_to_drop
-
-        all_font_files |= members
-
-        rep_members = {font for font in members
-                        if font.weight == 'Regular' and font.style is None}
-
-        if len(rep_members) != 1:
-            raise ValueError("Do not have a single regular font (%s) for key: %s (from %s)." %
-                             (len(rep_members), key, [f.filepath for f in members]))
-        rep_member = rep_members.pop()
-
-        font_family_name = get_font_family_name(rep_member.filepath)
-        if font_family_name.endswith('Regular'):
-            font_family_name = font_family_name.rsplit(' ', 1)[0]
-        family_object['name'] = font_family_name
-
-        family_object['pkg'] = create_zip(
-            font_family_name.replace(' ', ''), target_platform, members)
-
-        family_object['langs'] = sorted_langs(family_to_langs[rep_member.key])
-
-        family_object['category'] = get_css_generic_family(rep_member.family)
-        family_object['css'] = create_css(key, font_family_name, members)
-        family_object['ranges'] = charset_to_ranges(rep_member.charset)
-
-        font_list = []
-        for font in members:
-            font_list.append({
-                'style': css_style(font.style),
-                'weight': css_weight(font.weight),
-            })
-        if len(font_list) not in [1, 2, 4, 7]:
-            print key, font_list
-        assert len(font_list) in [1, 2, 4, 7]
-        family_object['fonts'] = font_list
-
-        families[key] = family_object
-    return families, all_font_files
-
-
 def generate_ttc_zips_with_7za():
     """Generate zipped versions of the ttc files and put in pkgs directory."""
 
@@ -1090,57 +914,6 @@ def generate_ttc_zips_with_7za():
         print "Wrote " + zip_path
         print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
 
-
-def generate_sample_images(data_object):
-    image_dir = path.join(OUTPUT_DIR, 'images', 'samples')
-    for family_key in data_object['family']:
-        family_obj = data_object['family'][family_key]
-        font_family_name = family_obj['name']
-        print 'Generating images for %s...' % font_family_name
-        is_cjk_family = (
-            family_key.endswith('-hans') or
-            family_key.endswith('-hant') or
-            family_key.endswith('-jpan') or
-            family_key.endswith('-kore'))
-        for lang_scr in family_obj['langs']:
-            lang_obj = data_object['lang'][lang_scr]
-            sample_text = lang_obj['sample']
-            is_rtl = lang_obj['rtl']
-            for instance in family_obj['fonts']:
-                weight, style = instance['weight'], instance['style']
-                image_file_name = path.join(
-                    image_dir,
-                    '%s_%s_%d_%s.png' % (family_key, lang_scr, weight, style))
-                if is_cjk_family:
-                    family_suffix = ' ' + css_weight_to_string(weight)
-                else:
-                    family_suffix = ''
-                image_location = path.join(image_dir, image_file_name)
-                if path.isfile(image_location):
-                    # Don't rebuild images when continuing.
-                    print "Continue: assuming image file '%s' is valid." % image_location
-                    continue
-                create_image.create_png(
-                    sample_text,
-                    image_location,
-                    family=font_family_name+family_suffix,
-                    language=lang_scr,
-                    rtl=is_rtl,
-                    weight=weight, style=style)
-                compress(image_location, compress_png)
-
-
-def create_package_object(fonts, target_platform):
-    comp_zip_file = create_zip('Noto', target_platform, fonts)
-
-    package = {}
-    package['url'] = comp_zip_file
-    package['size'] = os.stat(
-        path.join(OUTPUT_DIR, 'pkgs', comp_zip_file)).st_size
-    return package
-
-
-# ==========================
 
 class WebGen(object):
 
@@ -1436,45 +1209,84 @@ class WebGen(object):
     fonts = get_noto_fonts()
     families = get_families(fonts)
 
+    # for family_id, family in sorted(families.iteritems()):
+    #   print family_id, family.rep_member.script
+
     script_to_family_ids = get_script_to_family_ids(families)
+    # for script, family_ids in sorted(script_to_family_ids.iteritems()):
+    #   print script, family_ids
 
     supported_scripts = set(script_to_family_ids.keys())
     used_lang_data = get_used_lang_data(supported_scripts)
+    if True:
+      for lang, data in sorted(used_lang_data.iteritems()):
+        used = ', '.join(data[0])
+        unused = ', '.join(data[1])
+        if unused:
+          unused = '(' + unused + ')'
+          if used:
+            unused = ' ' + unused
+        print '%s: %s%s' % (lang, used, unused)
 
     langs_to_delete = []
     for lang in used_lang_data.keys():
       if not cldr_data.get_english_language_name(lang):
         langs_to_delete.append(lang)
-    for lang in langs_to_delete:
-      del used_lang_data[lang]
+    if langs_to_delete:
+      print 'deleting languages with no english name: %s' % langs_to_delete
+      for lang in langs_to_delete:
+        del used_lang_data[lang]
 
     lang_tag_to_family_ids = get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids)
-
-    # kufi hot patches:
-    # - Kufi is broken for Urdu Heh goal (issue #34)
-    # - Kufi doesn't support all characters needed for Khowar
-    # - Kufi doesn't support all characters needed for Kashmiri
-    for lang in ['ur', 'khw', 'ks-Arab', 'ks']:
-      if not lang in lang_tag_to_family_ids:
-        print 'patch kufi: %s not found' % lang
-      else:
-        lang_tag_to_family_ids[lang] -= {'kufi-arab'}
-        if not lang_tag_to_family_ids:
-          print 'patched kufi: %s, no fonts remaining'
-          del lang_tag_to_family_ids[lang]
-        else:
-          print 'patched kufi: %s -> %s' % (lang, lang_tag_to_family_ids[lang])
 
     region_to_family_ids = get_region_to_family_ids(script_to_family_ids)
 
     family_id_to_lang_tags = get_family_id_to_lang_tags(lang_tag_to_family_ids, families)
+    print 'family id to lang tags'
+    for family_id, lang_tags in sorted(family_id_to_lang_tags.iteritems()):
+      print '%s: %s' % (family_id, ','.join(sorted(lang_tags)))
+
     family_id_to_regions = get_family_id_to_regions(region_to_family_ids, families)
 
     family_id_to_default_lang_tag = get_family_id_to_default_lang_tag(
         family_id_to_lang_tags)
+    print 'family id to default lang tag'
+    for family_id, lang_tag in family_id_to_default_lang_tag.iteritems():
+      print family_id, lang_tag
+
     used_lang_tags = get_used_lang_tags(
         lang_tag_to_family_ids.keys(), family_id_to_default_lang_tag.values())
     lang_tag_to_sample_data = get_lang_tag_to_sample_data(used_lang_tags)
+
+    # find the samples that can't be displayed.
+    tested_keys = set()
+    failed_keys = set()
+    for lang_tag in sorted(lang_tag_to_sample_data):
+      sample_info = lang_tag_to_sample_data[lang_tag]
+      sample = sample_info[1]
+      sample_key = sample_info[3]
+
+      for family_id in sorted(lang_tag_to_family_ids[lang_tag]):
+        full_key = sample_key + '-' + family_id
+        if full_key in tested_keys:
+          if full_key in failed_keys:
+            print 'failed sample %s lang %s' % (full_key, lang_tag)
+          continue
+
+        failed_cps = set()
+        tested_keys.add(full_key)
+        charset = families[family_id].charset
+        for cp in sample:
+          if ord(cp) in [0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010]:
+            continue
+          if ord(cp) not in charset:
+            failed_cps.add(ord(cp))
+        if failed_cps:
+          print 'sample %s cannot be displayed in %s (lang %s):\n  %s' % (
+              sample_key, family_id, lang_tag,
+              '\n  '.join('%04x (%s)' % (cp, unichr(cp)) for cp in sorted(failed_cps)))
+          failed_keys.add(full_key)
+
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
     # build outputs
@@ -1513,54 +1325,6 @@ def main():
 
     webgen = WebGen(args.target, args.clean, args.pretty_json)
     webgen.generate()
-    return
-
-
-    # for target_platform in ['windows', 'linux', 'other']:
-    # debug
-    for target_platform in ['linux']:
-        print 'Target platform %s:' % target_platform
-
-        output_object = {}
-        print 'Generating data objects and CSS...'
-        output_object['region'] = create_regions_object()
-        output_object['lang'] = create_langs_object()
-
-        output_object['family'], all_font_files = create_families_object(
-            target_platform)
-
-        print 'Creating comprehensive zip file...'
-        output_object['pkg'] = create_package_object(
-            all_font_files, target_platform)
-
-        ############### Hot patches ###############
-        # Kufi is broken for Urdu Heh goal
-        # See issue #34
-        output_object['lang']['ur']['families'].remove('noto-kufi-arab')
-        output_object['family']['noto-kufi-arab']['langs'].remove('ur')
-
-        # Kufi doesn't support all characters needed for Khowar
-        output_object['lang']['khw']['families'].remove('noto-kufi-arab')
-        output_object['family']['noto-kufi-arab']['langs'].remove('khw')
-
-        # Kufi doesn't support all characters needed for Kashmiri
-        output_object['lang']['ks-Arab']['families'].remove('noto-kufi-arab')
-        output_object['family']['noto-kufi-arab']['langs'].remove('ks-Arab')
-        ############### End of hot patches ########
-
-        # Debug
-        if False and target_platform == 'linux':
-            generate_sample_images(output_object)
-
-
-        if target_platform == 'other':
-            json_file_name = 'data.json'
-        else:
-            json_file_name = 'data-%s.json' % target_platform
-        json_path = path.join(OUTPUT_DIR, 'js', json_file_name)
-        with codecs.open(json_path, 'w', encoding='UTF-8') as json_file:
-            json.dump(output_object, json_file,
-                      ensure_ascii=False, separators=(',', ':'))
 
     # Compress the ttc files.  Requires 7za on the build machine.
     # debug
