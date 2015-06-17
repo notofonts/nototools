@@ -416,6 +416,9 @@ def get_region_to_family_ids(script_to_family_ids):
   for region in cldr_data.known_regions():
     if region == 'ZZ':
       continue
+    if len(region) > 2:
+      print 'skipping region %s' % region
+      continue
     lang_scripts = cldr_data.region_to_lang_scripts(region)
     for lang_script in lang_scripts:
       lang, script = lang_script.split('-')
@@ -581,6 +584,9 @@ def get_family_id_to_default_lang_tag(family_id_to_lang_tags):
   that have multiple lang tags.  This is based on likely subtags and
   the script of the family (Latn for LGC).
   """
+  # TODO(dougfelt): this reintroduces language tags that we'd previously filtered
+  # out.  We should not be doing this here.  Figure out a better way to handle this.
+
   family_id_to_default_lang_tag = {}
   for family_id, lang_tags in family_id_to_lang_tags.iteritems():
     parts = family_id.split('-')
@@ -590,8 +596,11 @@ def get_family_id_to_default_lang_tag(family_id_to_lang_tags):
     else:
       script = parts[1].capitalize()
     lang = cldr_data.get_likely_subtags('und-' + script)[0]
+    # CLDR has no names for these, and two are collectives, so it's simpler to omit them.
     if script in ['Kthi', 'Khar', 'Brah']:
-      print 'likely lang for %s is %s' % (script, lang)
+      print 'likely lang for %s is %s, replace with und' % (script, lang)
+      lang = 'und'
+
     if lang == 'und':
       # special case
       if script == 'Latn':
@@ -888,33 +897,6 @@ def css_style(style_value):
         return 'italic'
 
 
-def generate_ttc_zips_with_7za():
-    """Generate zipped versions of the ttc files and put in pkgs directory."""
-
-    # The font family code skips the ttc files, but we want them in the
-    # package directory. Instead of mucking with the family code to add the ttcs
-    # and then exclude them from the other handling, we'll just handle them
-    # separately.
-    # For now at least, the only .ttc fonts are the CJK fonts
-
-    pkg_dir = path.join(OUTPUT_DIR, 'pkgs')
-    tool_utils.ensure_dir_exists(pkg_dir)
-    filenames = [path.basename(f) for f in os.listdir(CJK_DIR) if f.endswith('.ttc')]
-    for filename in filenames:
-        zip_basename = filename + '.zip'
-        zip_path = path.join(pkg_dir, zip_basename)
-        if path.isfile(zip_path):
-            print("Continue: assuming built %s is valid." % zip_basename)
-            continue
-        oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
-        pairs = [(path.join(CJK_DIR, filename), filename),
-                 (SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
-        tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
-        newsize = os.stat(zip_path).st_size
-        print "Wrote " + zip_path
-        print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
-
-
 class WebGen(object):
 
   def __init__(self, target, clean, pretty_json):
@@ -939,10 +921,11 @@ class WebGen(object):
     with codecs.open(filepath, 'w', encoding='UTF-8') as f:
       json.dump(obj, f, ensure_ascii=False, separators=(',', ':'))
 
-    filepath = path.join(self.js, 'pretty', name + '-pretty.json')
-    with codecs.open(filepath, 'w', encoding='UTF-8') as f:
-      json.dump(obj, f, ensure_ascii=False, separators=(',', ': '),
-                     indent=4, sort_keys=True)
+    if self.pretty_json:
+      filepath = path.join(self.js, 'pretty', name + '-pretty.json')
+      with codecs.open(filepath, 'w', encoding='UTF-8') as f:
+        json.dump(obj, f, ensure_ascii=False, separators=(',', ': '),
+                       indent=4, sort_keys=True)
 
   def ensure_target_dirs_exist(self):
     def mkdirs(p):
@@ -1061,12 +1044,16 @@ class WebGen(object):
     data_obj['family'] = families_obj
 
     langs_obj = {}
-    for lang in sorted(lang_tag_to_family_ids):
+    # Dont list 'und-' lang tags, these are for default samples and not listed in the UI
+    lang_tags = [lang for lang in lang_tag_to_family_ids if not lang.startswith('und-')]
+    lang_tags = sorted(lang_tags, key=lambda l: cldr_data.get_english_language_name(l))
+    for lang in lang_tags:
       lang_obj = {}
-      lang_obj['name'] = cldr_data.get_english_language_name(lang)
+      english_name = cldr_data.get_english_language_name(lang)
+      lang_obj['name'] = english_name
       lang_obj['families'] = sorted(lang_tag_to_family_ids[lang])
       native_name = cldr_data.get_native_language_name(lang)
-      if native_name:
+      if native_name and native_name != english_name:
         lang_obj['keywords'] = [native_name]
       langs_obj[lang] = lang_obj
     data_obj['lang'] = langs_obj
@@ -1131,7 +1118,7 @@ class WebGen(object):
     meta_obj = {}
     langs_obj = {}
     for lang in sorted(lang_info):
-      rtl, sample, attrib = lang_info[lang]
+      rtl, sample, attrib, sample_key = lang_info[lang]
       lang_obj = {
           'sample' : sample,
           'attrib' : attrib
@@ -1198,27 +1185,61 @@ class WebGen(object):
         lang_tags = list(lang_tags)
         lang_tags.append(default_lang)
       for lang_tag in lang_tags:
-        is_rtl, sample_text, attrib = lang_tag_to_sample_info[lang_tag]
+        is_rtl, sample_text, attrib, sample_key = lang_tag_to_sample_info[lang_tag]
         self.build_family_images(family, lang_tag, is_rtl, sample_text, attrib)
+
+  def build_ttc_zips(self):
+    """Generate zipped versions of the ttc files and put in pkgs directory."""
+
+    # The font family code skips the ttc files, but we want them in the
+    # package directory. Instead of mucking with the family code to add the ttcs
+    # and then exclude them from the other handling, we'll just handle them
+    # separately.
+    # For now at least, the only .ttc fonts are the CJK fonts
+
+    filenames = [path.basename(f) for f in os.listdir(CJK_DIR) if f.endswith('.ttc')]
+    for filename in filenames:
+      zip_basename = filename + '.zip'
+      zip_path = path.join(self.pkgs, zip_basename)
+      if path.isfile(zip_path):
+          print("Continue: assuming built %s is valid." % zip_basename)
+          continue
+      oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
+      pairs = [(path.join(CJK_DIR, filename), filename),
+               (SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+      tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
+      newsize = os.stat(zip_path).st_size
+      print "Wrote " + zip_path
+      print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
 
   def generate(self):
     if self.clean:
       self.clean_target_dir()
     self.ensure_target_dirs_exist()
 
+    # debug/print
+    # ['families', 'script_to_family_ids', 'used_lang_data',
+    #  'family_id_to_lang_tags', 'family_id_to_default_lang_tag']
+    debug = frozenset([])
+
     fonts = get_noto_fonts()
     families = get_families(fonts)
 
-    # for family_id, family in sorted(families.iteritems()):
-    #   print family_id, family.rep_member.script
+    if 'families' in debug:
+      print '\nfamilies'
+      for family_id, family in sorted(families.iteritems()):
+        print family_id, family.rep_member.script
 
     script_to_family_ids = get_script_to_family_ids(families)
-    # for script, family_ids in sorted(script_to_family_ids.iteritems()):
-    #   print script, family_ids
+    if 'script_to_family_ids' in debug:
+      print '\nscript to family ids'
+      for script, family_ids in sorted(script_to_family_ids.iteritems()):
+        print script, family_ids
 
     supported_scripts = set(script_to_family_ids.keys())
     used_lang_data = get_used_lang_data(supported_scripts)
-    if True:
+    if 'used_lang_data' in debug:
+      print '\nused lang data'
       for lang, data in sorted(used_lang_data.iteritems()):
         used = ', '.join(data[0])
         unused = ', '.join(data[1])
@@ -1242,17 +1263,19 @@ class WebGen(object):
     region_to_family_ids = get_region_to_family_ids(script_to_family_ids)
 
     family_id_to_lang_tags = get_family_id_to_lang_tags(lang_tag_to_family_ids, families)
-    print 'family id to lang tags'
-    for family_id, lang_tags in sorted(family_id_to_lang_tags.iteritems()):
-      print '%s: %s' % (family_id, ','.join(sorted(lang_tags)))
+    if 'family_id_to_lang_tags' in debug:
+      print '\nfamily id to lang tags'
+      for family_id, lang_tags in sorted(family_id_to_lang_tags.iteritems()):
+        print '%s: %s' % (family_id, ','.join(sorted(lang_tags)))
 
     family_id_to_regions = get_family_id_to_regions(region_to_family_ids, families)
 
     family_id_to_default_lang_tag = get_family_id_to_default_lang_tag(
         family_id_to_lang_tags)
-    print 'family id to default lang tag'
-    for family_id, lang_tag in family_id_to_default_lang_tag.iteritems():
-      print family_id, lang_tag
+    if 'family_id_to_default_lang_tag' in debug:
+      print '\nfamily id to default lang tag'
+      for family_id, lang_tag in family_id_to_default_lang_tag.iteritems():
+        print family_id, lang_tag
 
     used_lang_tags = get_used_lang_tags(
         lang_tag_to_family_ids.keys(), family_id_to_default_lang_tag.values())
@@ -1261,6 +1284,7 @@ class WebGen(object):
     # find the samples that can't be displayed.
     tested_keys = set()
     failed_keys = set()
+    family_langs_to_remove = {}
     for lang_tag in sorted(lang_tag_to_sample_data):
       sample_info = lang_tag_to_sample_data[lang_tag]
       sample = sample_info[1]
@@ -1271,6 +1295,9 @@ class WebGen(object):
         if full_key in tested_keys:
           if full_key in failed_keys:
             print 'failed sample %s lang %s' % (full_key, lang_tag)
+            if family_id not in family_langs_to_remove:
+              family_langs_to_remove[family_id] = set()
+            family_langs_to_remove[family_id].add(lang_tag)
           continue
 
         failed_cps = set()
@@ -1286,13 +1313,27 @@ class WebGen(object):
               sample_key, family_id, lang_tag,
               '\n  '.join('%04x (%s)' % (cp, unichr(cp)) for cp in sorted(failed_cps)))
           failed_keys.add(full_key)
+          if family_id not in family_langs_to_remove:
+            family_langs_to_remove[family_id] = set()
+          family_langs_to_remove[family_id].add(lang_tag)
+
+    for family_id in sorted(family_langs_to_remove):
+      langs_to_remove = family_langs_to_remove[family_id]
+      print 'remove from %s: %s' % (family_id, ','.join(sorted(langs_to_remove)))
+
+      family_id_to_lang_tags[family_id] -= langs_to_remove
+      default_lang_tag = family_id_to_default_lang_tag[family_id]
+      if default_lang_tag in langs_to_remove:
+        print '!removing default lang tag %s for family %s' % (
+            default_lang_tag, family_id)
+      for lang in langs_to_remove:
+        lang_tag_to_family_ids[lang] -= set([family_id])
 
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
     # build outputs
     family_zip_info = self.build_zips(families)
     universal_zip_info = self.build_universal_zips(families)
-
     family_css_info = self.build_css(families)
 
     self.build_data_json(families, family_zip_info, universal_zip_info,
@@ -1307,6 +1348,9 @@ class WebGen(object):
 
     self.build_images(families, family_id_to_lang_tags,
                       family_id_to_default_lang_tag, lang_tag_to_sample_data)
+
+    # build outputs not used by the json but linked to from the web page
+    self.build_ttc_zips()
 
 
 def main():
@@ -1325,10 +1369,6 @@ def main():
 
     webgen = WebGen(args.target, args.clean, args.pretty_json)
     webgen.generate()
-
-    # Compress the ttc files.  Requires 7za on the build machine.
-    # debug
-    # generate_ttc_zips_with_7za()
 
 
 if __name__ == '__main__':
