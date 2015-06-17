@@ -366,7 +366,7 @@ def get_script_to_exemplar_data_map():
     def accept_cp(cp):
       cat = unicode_data.category(cp)
       return cat[0] == 'L' or cat == 'Nd'
-    # DEBUG
+
     if 'Zsym' not in loc_tag:
       filtered_exemplar_list = filter(accept_cp, exemplar_list)
       if len(filtered_exemplar_list) != len(exemplar_list) and _VERBOSE:
@@ -622,8 +622,31 @@ def addcase(sample, script):
   return sample
 
 
-# exclude some religious characters/phrases
-_EXCLUDE_CHARS = frozenset([u'\u0950', u'\ufdfa', u'\ufdfd']) # deva OM, Arabic pbuh, bismillah
+def _generate_excluded_characters():
+  # Some of these exclusions are desired, and some are reluctantly applied because
+  # Noto currently does not support some characters.  We use the generated
+  # data as fallback samples on a per-script and not per-font basis, which is also
+  # a problem.
+
+  # Religious characters
+  # deva OM, Arabic pbuh, bismillah
+  codepoints = [0x950, 0xfdfa, 0xfdfd]
+
+  # Cyrillic characters not in sans or serif
+  codepoints.append(0x2e2f)
+  for cp in range(0xa640, 0xa680):
+    codepoints.append(cp)
+
+  # Arabic character not in kufi
+  codepoints.append(0x08a0)
+
+  chars = set()
+  for cp in codepoints:
+    chars.add(unichr(cp))
+  return frozenset(chars)
+
+_EXCLUDE_CHARS = _generate_excluded_characters()
+
 
 def generate_sample_for_script(script, loc_map):
   num_locales = len(loc_map)
