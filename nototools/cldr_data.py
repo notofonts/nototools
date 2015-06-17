@@ -201,6 +201,8 @@ def get_likely_script(language):
 
 
 def get_likely_subtags(lang_tag):
+  if not lang_tag:
+    raise ValueError('empty lang tag')
   _parse_likely_subtags()
   try:
     return _LIKELY_SUBTAGS[lang_tag]
