@@ -433,6 +433,45 @@ def get_region_to_family_ids(script_to_family_ids):
   return region_to_family_ids
 
 
+def get_lang_tag_sort_order(lang_tags):
+  """Return a sort order for lang_tags based on the english name, but clustering related
+  languages."""
+  def lang_key(lang_tag):
+    name = cldr_data.get_english_language_name(lang_tag)
+    if name.endswith (' script)'):
+      ix = name.rfind('(') - 1
+      script_sfx = ' ' + name[ix + 2: len(name) - 8]
+      name = name[:ix]
+    else:
+      script_sfx = ''
+
+    key = name
+    for prefix in ['Ancient', 'Central', 'Eastern', 'Lower', 'Middle', 'North',
+                   'Northern', 'Old', 'Southern', 'Southwestern', 'Upper',
+                   'West', 'Western']:
+      if name.startswith(prefix + ' '):
+        key = name[len(prefix) + 1:] + ' ' + name[:len(prefix)]
+        break
+
+    for cluster in ['Arabic', 'French', 'Chinese', 'English', 'German', 'Hindi',
+                    'Malay', 'Nahuatl', 'Tamazight', 'Thai']:
+      if name.find(cluster) != -1:
+        key = cluster + '-' + name
+        break
+
+    return key + script_sfx
+
+  sorted_tags = list(lang_tags)
+  sorted_tags.sort(key=lang_key)
+  n = 0
+  tag_order = {}
+  for tag in sorted_tags:
+    print '%10s: %s' % (tag, cldr_data.get_english_language_name(tag))
+    tag_order[tag] = n
+    n += 1
+  return tag_order
+
+
 def get_family_id_to_lang_tags(lang_tag_to_family_ids, families):
   family_id_to_lang_tags = {}
   for family_id in families:
@@ -757,94 +796,6 @@ def get_exemplar_from_file(cldr_file_path):
     return None
 
 
-def sorted_langs(langs):
-  return sorted(
-    set(langs),
-    key=lambda code: locale.strxfrm(
-        get_english_language_name(code).encode('UTF-8')))
-
-
-all_used_lang_scrs = set()
-
-def charset_supports_text(charset, text):
-    if charset is NotImplemented:
-        return False
-    needed_codepoints = {ord(char) for char in set(text)}
-    return needed_codepoints <= charset
-
-
-family_to_langs = collections.defaultdict(set)
-
-def _xx_create_langs_object():
-    langs = {}
-    for lang_scr in sorted(set(written_in_scripts) | all_used_lang_scrs):
-        lang_object = {}
-        if '-' in lang_scr:
-            language, script = lang_scr.split('-')
-        else:
-            language = lang_scr
-            try:
-                script = find_likely_script(language)
-            except KeyError:
-                print "no likely script for %s" % language
-                continue
-
-        lang_object['name'] = get_english_language_name(lang_scr)
-        native_name = get_native_language_name(lang_scr)
-        if native_name is not None:
-            lang_object['nameNative'] = native_name
-
-        lang_object['rtl'] = is_script_rtl(script)
-
-        if script == 'Kana':
-            script = 'Jpan'
-
-        if script not in supported_scripts:
-            # Scripts we don't have fonts for yet
-            print('No font supports the %s script (%s) needed for the %s language.'
-                  % (english_script_name[script], script, lang_object['name']))
-            assert script in {
-                'Bass',  # Bassa Vah
-                'Lina',  # Linear A
-                'Mani',  # Manichaean
-                'Merc',  # Meroitic Cursive
-                'Narb',  # Old North Arabian
-                'Orya',  # Oriya
-                'Plrd',  # Miao
-                'Sora',  # Sora Sompeng
-                'Thaa',  # Thaana
-                'Tibt',  # Tibetan
-            }
-
-            lang_object['families'] = []
-        else:
-            sample_text = get_sample_text(language, script)
-            lang_object['sample'] = sample_text
-
-            if script in {'Latn', 'Grek', 'Cyrl'}:
-                query_script = ''
-            else:
-                query_script = script
-
-            # FIXME(roozbeh): Figure out if the language is actually supported
-            # by the font + Noto LGC. If it's not, don't claim support.
-            fonts = [font for font in fonts if font.script == query_script]
-
-            # For certain languages of Pakistan, add Nastaliq font
-            if lang_scr in {'bal', 'hnd', 'hno', 'ks-Arab', 'lah',
-                            'pa-Arab', 'skr', 'ur'}:
-                fonts += [font for font in fonts if font.script == 'Aran']
-
-            family_keys = set([font.key for font in fonts])
-
-            lang_object['families'] = sorted(family_keys)
-            for family in family_keys:
-                family_to_langs[family].add(lang_scr)
-
-        langs[lang_scr] = lang_object
-    return langs
-
-
 def get_font_family_name(font_file):
     font = ttLib.TTFont(font_file)
     name_record = font_data.get_name_records(font)
@@ -906,10 +857,9 @@ class WebGen(object):
 
     self.pkgs = path.join(target, 'pkgs')
     self.fonts = path.join(target, 'fonts')
-    self.fonts_hinted = path.join(target, 'fonts', 'hinted')
-    self.css_fonts = path.join(target, 'css', 'fonts')
-    self.images_samples = path.join(target, 'images', 'samples')
-    self.js = path.join(target, 'js')
+    self.css = path.join(target, 'css')
+    self.samples = path.join(target, 'samples')
+    self.data = path.join(target, 'data')
 
   def clean_target_dir(self):
     if path.exists(self.target):
@@ -917,15 +867,15 @@ class WebGen(object):
         shutil.rmtree(self.target)
 
   def write_json(self, obj, name):
-    filepath = path.join(self.js, name + '.json')
+    filepath = path.join(self.data, name + '.json')
     with codecs.open(filepath, 'w', encoding='UTF-8') as f:
       json.dump(obj, f, ensure_ascii=False, separators=(',', ':'))
 
     if self.pretty_json:
-      filepath = path.join(self.js, 'pretty', name + '-pretty.json')
+      filepath = path.join(self.data, 'pretty', name + '-pretty.json')
       with codecs.open(filepath, 'w', encoding='UTF-8') as f:
         json.dump(obj, f, ensure_ascii=False, separators=(',', ': '),
-                       indent=4, sort_keys=True)
+                       indent=4)
 
   def ensure_target_dirs_exist(self):
     def mkdirs(p):
@@ -933,12 +883,12 @@ class WebGen(object):
         os.makedirs(p)
     mkdirs(self.target)
     mkdirs(self.pkgs)
-    mkdirs(self.fonts_hinted)
-    mkdirs(self.css_fonts)
-    mkdirs(self.images_samples)
-    mkdirs(self.js)
+    mkdirs(self.css)
+    mkdirs(self.fonts)
+    mkdirs(self.samples)
+    mkdirs(self.data)
     if self.pretty_json:
-      mkdirs(path.join(self.js, 'pretty'))
+      mkdirs(path.join(self.data, 'pretty'))
 
   def create_zip(self, name, fonts):
     zipname = name + '.zip'
@@ -989,11 +939,12 @@ class WebGen(object):
     basename = path.basename(fontpath)
     dst = path.join(self.fonts, basename)
     shutil.copy(fontpath, dst)
+    return basename
 
   def build_family_css(self, key, family):
     fonts = family.hinted_members or family.unhinted_members
     css_name = key + '.css'
-    csspath = path.join(self.css_fonts, css_name)
+    csspath = path.join(self.css, css_name)
     font_size = 0
     with open(csspath, 'w') as css_file:
       for font in fonts:
@@ -1022,14 +973,21 @@ class WebGen(object):
   def build_data_json(self, families, family_zip_info, universal_zip_info,
                       family_id_to_lang_tags, family_id_to_regions,
                       lang_tag_to_family_ids, region_to_family_ids):
-    data_obj = {}
-    families_obj = {}
-    for k, family in families.iteritems():
+
+    data_obj = collections.OrderedDict()
+    families_obj = collections.OrderedDict()
+    # Sort families by English name, except 'Noto Sans' and 'Noto Serif' come first
+    family_ids = [family_id for family_id in families if family_id != 'sans' and family_id != 'serif']
+    family_ids = sorted(family_ids, key=lambda f: families[f].name)
+    sorted_ids = ['sans', 'serif']
+    sorted_ids.extend(family_ids)
+    for k in sorted_ids:
+      family = families[k]
       family_obj = {}
       family_obj['name'] = family.name
 
       name, hinted_size, unhinted_size = family_zip_info[k]
-      pkg_obj = {}
+      pkg_obj = collections.OrderedDict()
       if hinted_size:
         pkg_obj['hinted'] = hinted_size
       if unhinted_size:
@@ -1043,12 +1001,15 @@ class WebGen(object):
       families_obj[k] = family_obj
     data_obj['family'] = families_obj
 
-    langs_obj = {}
+    data_obj['familyOrder'] = sorted_ids
+
+    langs_obj = collections.OrderedDict()
     # Dont list 'und-' lang tags, these are for default samples and not listed in the UI
     lang_tags = [lang for lang in lang_tag_to_family_ids if not lang.startswith('und-')]
+
     lang_tags = sorted(lang_tags, key=lambda l: cldr_data.get_english_language_name(l))
     for lang in lang_tags:
-      lang_obj = {}
+      lang_obj = collections.OrderedDict()
       english_name = cldr_data.get_english_language_name(lang)
       lang_obj['name'] = english_name
       lang_obj['families'] = sorted(lang_tag_to_family_ids[lang])
@@ -1058,30 +1019,31 @@ class WebGen(object):
       langs_obj[lang] = lang_obj
     data_obj['lang'] = langs_obj
 
-    regions_obj = {}
-    for region in sorted(region_to_family_ids):
-      region_obj = {}
+    regions_obj = collections.OrderedDict()
+    for region in sorted(region_to_family_ids,
+                         key=lambda r: cldr_data.get_english_region_name(r)):
+      region_obj = collections.OrderedDict()
       region_obj['families'] = sorted(region_to_family_ids[region])
       region_obj['keywords'] = [cldr_data.get_english_region_name(region)]
       regions_obj[region] = region_obj
     data_obj['region'] = regions_obj
 
-    pkg_obj = {
-      'hinted': universal_zip_info[1],
-      'unhinted': universal_zip_info[2]
-    }
+    pkg_obj = collections.OrderedDict()
+    pkg_obj['hinted'] = universal_zip_info[1]
+    pkg_obj['unhinted'] = universal_zip_info[2]
     data_obj['pkgSize'] = pkg_obj
 
     self.write_json(data_obj, 'data')
 
   def build_family_json(self, family_id, family, lang_tags, regions, css_info,
                         default_lang_tag):
-    family_obj = {}
+    family_obj = collections.OrderedDict()
     category = get_css_generic_family(family.name)
     if category:
       family_obj['category'] = category
     if lang_tags:
-      family_obj['langs'] = sorted(lang_tags)
+       # maintain provided sort order
+      family_obj['langs'] = lang_tags
     if default_lang_tag:
       family_obj['defaultLang'] = default_lang_tag
     if regions:
@@ -1094,20 +1056,21 @@ class WebGen(object):
     members.sort(key=lambda f: str(css_weight(f.weight)) + '-' +
                                    ('b' if css_style(f.slope) == 'italic' else 'a'))
     for font in members:
-      fonts_obj.append({
-        'style': css_style(font.slope),
-        'weight': css_weight(font.weight)
-      })
+      weight_style = collections.OrderedDict()
+      weight_style['weight'] = css_weight(font.weight)
+      weight_style['style'] = css_style(font.slope)
+      fonts_obj.append(weight_style)
     family_obj['fonts'] = fonts_obj
     family_obj['fontSize'] = css_info
     self.write_json(family_obj, family_id)
 
   def build_families_json(self, families, family_id_to_lang_tags,
                           family_id_to_default_lang_tag,
-                          family_id_to_regions, family_css_info):
-    result = {}
+                          family_id_to_regions, family_css_info,
+                          lang_sort_order):
     for k, v in families.iteritems():
-      lang_tags = family_id_to_lang_tags[k]
+      lang_tags = list(family_id_to_lang_tags[k])
+      lang_tags.sort(key=lambda l: lang_sort_order[l])
       default_lang_tag = family_id_to_default_lang_tag[k]
       regions = family_id_to_regions[k]
       css_info = family_css_info[k]
@@ -1115,14 +1078,14 @@ class WebGen(object):
 
   def build_misc_json(self, sample_data, region_data):
     lang_info = sample_data
-    meta_obj = {}
-    langs_obj = {}
+    meta_obj = collections.OrderedDict()
+
+    langs_obj = collections.OrderedDict()
     for lang in sorted(lang_info):
       rtl, sample, attrib, sample_key = lang_info[lang]
-      lang_obj = {
-          'sample' : sample,
-          'attrib' : attrib
-          }
+      lang_obj = collections.OrderedDict()
+      lang_obj['sample'] = sample
+      lang_obj['attrib'] = attrib
       if rtl:
         lang_obj['rtl'] = rtl
       langs_obj[lang] = lang_obj
@@ -1132,17 +1095,18 @@ class WebGen(object):
     def trim_decimals(num):
       return float('%1.2f' % num)
 
-    regions_obj = {}
-    for region in region_data:
+    regions_obj = collections.OrderedDict()
+    for region in sorted(region_data):
       lat, lng = region_data[region]
       lat = trim_decimals(lat)
       lng = trim_decimals(lng)
-      region_obj = {
-          'lat': lat,
-          'lng': lng
-      }
+      region_obj = collections.OrderedDict()
+      region_obj['lat'] = lat
+      region_obj['lng'] = lng
       regions_obj[region] = region_obj
+
     meta_obj['region'] = regions_obj
+
     self.write_json(meta_obj, 'meta')
 
   def build_family_images(self, family, lang_tag, is_rtl, sample_text, attrib):
@@ -1156,7 +1120,7 @@ class WebGen(object):
         family_suffix = ' ' + font.weight
       else:
         family_suffix = ''
-      image_location = path.join(self.images_samples, image_file_name)
+      image_location = path.join(self.samples, image_file_name)
       if path.isfile(image_location):
         # Don't rebuild images when continuing.
         print "Continue: assuming image file '%s' is valid." % image_location
@@ -1169,8 +1133,9 @@ class WebGen(object):
           language=lang_tag,
           rtl=is_rtl,
           width=685,
-          font_size=20,
-          line_spacing=32,
+          # text is coming out bigger than we expect, perhaps this is why?
+          font_size=int(20 * (72.0/96.0)),
+          line_spacing=int(32 * (72.0/96.0)),
           weight=weight,
           style=style)
 
@@ -1331,6 +1296,8 @@ class WebGen(object):
 
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
+    lang_tag_sort_order = get_lang_tag_sort_order(lang_tag_to_family_ids.keys())
+
     # build outputs
     family_zip_info = self.build_zips(families)
     universal_zip_info = self.build_universal_zips(families)
@@ -1342,7 +1309,8 @@ class WebGen(object):
 
     self.build_families_json(families, family_id_to_lang_tags,
                              family_id_to_default_lang_tag,
-                             family_id_to_regions, family_css_info)
+                             family_id_to_regions, family_css_info,
+                             lang_tag_sort_order)
 
     self.build_misc_json(lang_tag_to_sample_data, region_data)
 

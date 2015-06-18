@@ -360,7 +360,6 @@ def get_english_language_name(lang_scr):
       try:
         langName = _ENGLISH_LANGUAGE_NAMES[lang]
         name = '%s (%s script)' % (langName, _ENGLISH_SCRIPT_NAMES[script])
-        print "Constructing name '%s' for %s." % (name, lang_scr)
         return name
       except KeyError:
         pass
