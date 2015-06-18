@@ -189,10 +189,12 @@ def add_likely_scripts(bcp_to_code):
   return result
 
 
-# These have been fixed in the noto repo.  We do not want to replace them with
-# the UDHR samples, which (as of now, anyway) do not reflect these improvements.
+# These have been fixed/changed in the noto repo.  We do not want to replace them
+# with the UDHR samples, which (as of now, anyway) do not reflect these
+# improvements. Our th-Thai is a more colloquial translation than the formal one
+# in the UDHR repo.
 EXCLUDE_BCP = frozenset([
-  'fa-Arab', 'ar-Arab'])
+  'fa-Arab', 'ar-Arab', 'th-Thai'])
 
 # The data for these is bad.  The kwi.xml has no article 1 text (only '[?]')
 # and the cbi.xml article 1 text has '. mitya, tsenr)1in ' in it, which just looks
@@ -204,6 +206,49 @@ def filter_bcp_to_code(bcp_to_code):
   """Exclude entries for samples improved in noto/sample_texts and for bad samples."""
   return {k: v for k, v in bcp_to_code.iteritems()
           if k not in EXCLUDE_BCP and v not in EXCLUDE_CODES}
+
+
+# Pick a default sample to use when only lang and script are provided.
+OPTION_MAP = {
+    'ak-Latn': 'ak-Latn-asante',
+    'de-Latn': 'de-Latn-1996',
+    'el-Grek': 'el-Grek-monoton',
+    'ha-Latn': 'ha-Latn-NG',
+    'ht-Latn': 'ht-Latn-kreyol',
+    'ny-Latn': 'ny-Latn-chechewa',
+    'pt-Latn': 'pt-Latn-BR'
+}
+
+def add_default_lang_script(bcp_to_code):
+  """When we query this data, typically we have only language and script.  Some of
+  the bcp codes have variants or regions as well.  Select one of these to be the
+  default when we have only language and script."""
+
+  options = collections.defaultdict(set)
+  long_keys = {}
+  for key in bcp_to_code:
+    tags = key.split('-')
+    if len(tags) > 2:
+      long_keys[key] = tags
+  for key in sorted(long_keys):
+    tags = long_keys[key]
+    lang_scr = tags[0] + '-' + tags[1]
+    if lang_scr in bcp_to_code:
+      print 'have default for long tag %s: %s' % (key, bcp_to_code[lang_scr])
+    else:
+      options[lang_scr].add(key)
+  for lang_scr in sorted(options):
+    print '%s options: %s' % (lang_scr, options[lang_scr])
+    if not lang_scr in OPTION_MAP:
+      print 'missing from option map: %s' % lang_scr
+    elif not OPTION_MAP[lang_scr] in options[lang_scr]:
+      print 'selected option for %s (%s) not available' % (
+          lang_scr, OPTION_MAP[lang_scr])
+    else:
+      value = bcp_to_code[OPTION_MAP[lang_scr]]
+      print 'adding %s for %s' % (value, lang_scr)
+      bcp_to_code[lang_scr] = value
+  return bcp_to_code
 
 
 def get_code_to_attrib(src_dir):
@@ -223,6 +268,7 @@ def get_bcp_to_code_attrib(src_dir, ohchr_dir):
   """Get the final bcp-to-code mapping."""
   bcp_to_code, code_to_ohchr = parse_index(src_dir)
   bcp_to_code = filter_bcp_to_code(add_likely_scripts(fix_index(bcp_to_code)))
+  bcp_to_code = add_default_lang_script(bcp_to_code)
 
   code_to_attrib = get_code_to_attrib(ohchr_dir)
 
@@ -276,7 +322,6 @@ def fix_sample(sample, bcp):
   return new_sample
 
 
-
 def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   """Create samples in sample_dir from the sources in udhr_dir,
   based on the bcp_to_code mapping.  Stage if sample_dir is in the
@@ -287,13 +332,14 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   if in_repo and os.path.isdir(sample_dir) and not tool_utils.git_is_clean(sample_dir):
     raise ValueError('Please clean %s.' % sample_dir)
 
-  sample_attrib_list = [
-    '# Attributions for sample excerpts:\n',
-    '#   original - original, in the public domain\n',
-    '#   UN - UN, OHCHR, or affiliate\n',
-    '#   other - not UN or OHCHR, but on ohchr site\n',
-    '#   none - from unicode.org/udhr site, no attribution\n'
+  comments = [
+    '# Attributions for sample excerpts:',
+    '#   original - in the public domain, no attribution',
+    '#   UN - UN, OHCHR, or affiliate, attribute to UN',
+    '#   other - not a UN translation',
+    '#   none - not on ohchr, not a UN translation'
   ]
+  sample_attrib_list = []
   sample_dir = tool_utils.ensure_dir_exists(sample_dir)
   count = 0
   for bcp, (code, attrib) in bcp_to_code_attrib.iteritems():
@@ -311,11 +357,14 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
       with codecs.open(dst_path, 'w', 'utf8') as f:
         f.write(sample)
       print 'created sample %s from %s' % (dst_file, src_file)
-      sample_attrib_list.append('%s: %s\n' % (bcp, attrib))
+      sample_attrib_list.append('%s: %s' % (bcp, attrib))
       count += 1
   print 'Created %d samples' % count
 
-  attrib_data = ''.join(sample_attrib_list)
+  # Some existing samples that we don't overwrite are not in bcp_to_code_attrib,
+  # so they're not listed.  Readers of the attributions.txt file will need to
+  # default these to 'none'.
+  attrib_data = '\n'.join(comments + sorted(sample_attrib_list))
   with open(os.path.join(sample_dir, 'attributions.txt'), 'w') as f:
     f.write(attrib_data)
 
@@ -501,9 +550,9 @@ def main():
   parser.add_argument('-f', '--fetch', help='fetch files from unicode.org/udhr to fetch dir',
                       action='store_true')
   parser.add_argument('-uu', '--update_udhr', help='unpack from fetched files to clean udhr dir\n'
-                      '(will stage if in repo)', action='store_true')
+                      '(will stage if in repo and not no_stage)', action='store_true')
   parser.add_argument('-us', '--update_sample', help='extract samples from udhr to sample dir, '
-                      'using the bcp to code mapping\n(will stage if in repo)',
+                      'using the bcp to code mapping\n(will stage if in repo and not no_stage)',
                       action='store_true')
   parser.add_argument('-m', '--mapping', help='print the bcp to code mapping generated from the '
                       'udhr dir', action='store_true')
@@ -517,6 +566,7 @@ def main():
                       metavar='opt', nargs='+')
   parser.add_argument('-ts', '--test_script', help='test script of samples in sample dir',
                       action='store_true')
+  parser.add_argument('-n', '--no_stage', help='do not stage changes in repo', action='store_true')
 
   args = parser.parse_args()
 
@@ -550,7 +600,7 @@ def main():
 
     if args.update_udhr:
       in_repo = args.udhr_dir == tool_utils.resolve_path(udhr)
-      update_udhr(args.udhr_dir, args.fetch_dir, in_repo)
+      update_udhr(args.udhr_dir, args.fetch_dir, in_repo and not args.no_stage)
 
     if args.update_sample or args.mapping:
       ohchr_dir = tool_utils.resolve_path('[tools]/third_party/ohchr')
@@ -558,7 +608,8 @@ def main():
 
     if args.update_sample:
       in_repo = args.sample_dir == tool_utils.resolve_path(samples)
-      update_samples(args.sample_dir, args.udhr_dir, bcp_to_code_attrib, in_repo)
+      update_samples(args.sample_dir, args.udhr_dir, bcp_to_code_attrib,
+                     in_repo and not args.no_stage)
 
     if args.mapping:
       print_bcp_to_code_attrib(bcp_to_code_attrib)

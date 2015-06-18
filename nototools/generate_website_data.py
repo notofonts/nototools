@@ -608,6 +608,7 @@ def create_langs_object():
                 'Lina',  # Linear A
                 'Mani',  # Manichaean
                 'Merc',  # Meroitic Cursive
+                'Mroo',  # Mro
                 'Narb',  # Old North Arabian
                 'Orya',  # Oriya
                 'Plrd',  # Miao
