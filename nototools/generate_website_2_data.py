@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 #
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2015 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -216,6 +216,18 @@ def get_noto_fonts():
       all_fonts.append(font)
 
   return all_fonts
+
+
+def get_font_family_name(font_file):
+    font = ttLib.TTFont(font_file)
+    name_record = font_data.get_name_records(font)
+    try:
+      name = name_record[16]
+    except KeyError:
+      name = name_record[1]
+      if name.endswith('Regular'):
+        name = name.rsplit(' ', 1)[0]
+    return name
 
 
 Family = collections.namedtuple(
@@ -705,23 +717,6 @@ def get_region_lat_lng_data(regions):
     read_lat_long_data()
   return lat_long_data
 
-
-# ==========================
-
-
-def get_font_family_name(font_file):
-    font = ttLib.TTFont(font_file)
-    name_record = font_data.get_name_records(font)
-    try:
-      name = name_record[16]
-    except KeyError:
-      name = name_record[1]
-      if name.endswith('Regular'):
-        name = name.rsplit(' ', 1)[0]
-    return name
-
-
-# ==========================
 
 def get_css_generic_family(family):
     if family in {'Noto Naskh', 'Noto Serif', 'Tinos'}:
