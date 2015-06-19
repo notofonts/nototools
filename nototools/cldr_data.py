@@ -17,6 +17,7 @@
 import collections
 import os
 from os import path
+import re
 import unicode_data
 import xml.etree.cElementTree as ElementTree
 
@@ -41,6 +42,7 @@ def _parse_likely_subtags():
     from_tag = tag.get('from').replace('_', '-')
     to_tag = tag.get('to').split('_')
     _LIKELY_SUBTAGS[from_tag] = to_tag
+    # print 'likely subtag from %s -> %s' % (from_tag, to_tag)
 
   _LIKELY_SUBTAGS.update(extra_locale_data.LIKELY_SUBTAGS)
 
@@ -132,7 +134,7 @@ def _parse_supplemental_data():
     region = tags[2]
     lang_scripts = _LANG_TO_SCRIPTS[lang]
     if script not in lang_scripts:
-      print 'likely subtags lang %s has script %s but supplemental only has [%s]' % (
+      print 'extra likely subtags lang %s has script %s but supplemental only has [%s]' % (
           lang, script, ', '.join(sorted(lang_scripts)))
       if len(lang_scripts) == 1:
         replacement = set([script])
@@ -143,7 +145,7 @@ def _parse_supplemental_data():
     lang_script = lang + '-' + script
     # skip ZZ region
     if region != 'ZZ' and lang_script not in _REGION_TO_LANG_SCRIPTS[region]:
-      print '%s not in lang_scripts for %s, adding' % (
+      print 'extra lang_script %s not in cldr for %s, adding' % (
           lang_script, region)
       _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
 
@@ -191,24 +193,29 @@ def region_to_lang_scripts(region_tag):
     return None
 
 
-def get_likely_script(language):
-  _parse_likely_subtags()
-  try:
-    return _LIKELY_SUBTAGS[language][1]
-  except KeyError:
-    print 'No likely script for %s' % language
-    return 'Zzzz'
+def get_likely_script(lang_tag):
+  return get_likely_subtags(lang_tag)[1]
 
 
 def get_likely_subtags(lang_tag):
   if not lang_tag:
     raise ValueError('empty lang tag')
   _parse_likely_subtags()
-  try:
-    return _LIKELY_SUBTAGS[lang_tag]
-  except KeyError:
-    print 'no likely subtag for %s' % lang_tag
-    return ('und', 'Zzzz', 'ZZ')
+  tag = lang_tag
+  while True:
+    try:
+      return _LIKELY_SUBTAGS[tag]
+    except KeyError:
+      ix = tag.rfind('-')
+      if ix == -1:
+        break
+      tag = tag[:ix]
+      if tag == 'und':
+        # stop default to 'en' for unknown scripts
+        break
+
+  print 'no likely subtag for %s' % lang_tag
+  return ('und', 'Zzzz', 'ZZ')
 
 
 _SCRIPT_METADATA = {}
@@ -363,7 +370,7 @@ def get_english_language_name(lang_scr):
         return name
       except KeyError:
         pass
-  print 'No English name for lang \'%s\'' % lang_scr
+  print 'No English name for \'%s\'' % lang_scr
   return None
 
 
@@ -378,20 +385,25 @@ def get_english_region_name(region):
 
 def _read_character_at(source, pointer):
   """Reads a code point or a backslash-u-escaped code point."""
-  assert source[pointer] not in ' -{}'
+  while pointer < len(source) and source[pointer] == ' ':
+    pointer += 1
+
+  if pointer >= len(source):
+    raise IndexError('pointer %d out of range 0-%d' % (pointer, len(source)))
+
   if source[pointer] == '\\':
-    if source[pointer + 1] == 'u':
-      end_of_hex = pointer + 2
+    if source[pointer+1].upper() == 'U':
+      end_of_hex = pointer+2
       while (end_of_hex < len(source)
-         and source[end_of_hex].upper() in '0123456789ABCDEF'):
+           and source[end_of_hex].upper() in '0123456789ABCDEF'):
         end_of_hex += 1
-      assert end_of_hex-(pointer + 2) in {4, 5, 6}
-      hex_code = source[pointer + 2:end_of_hex]
+      assert end_of_hex-(pointer+2) in {4, 5, 6}
+      hex_code = source[pointer+2:end_of_hex]
       return end_of_hex, unichr(int(hex_code, 16))
     else:
-      return pointer + 2, source[pointer + 1]
+      return pointer+2, source[pointer+1]
   else:
-    return pointer + 1, source[pointer]
+    return pointer+1, source[pointer]
 
 
 def unicode_set_string_to_list(us_str):
@@ -399,7 +411,7 @@ def unicode_set_string_to_list(us_str):
     assert us_str[-1] == ']'
     us_str = us_str[1:-1]
 
-  return_list = []
+  result = []
   pointer = 0
   while pointer < len(us_str):
     if us_str[pointer] in ' ':
@@ -410,19 +422,188 @@ def unicode_set_string_to_list(us_str):
       while us_str[mc_ptr] != '}':
         mc_ptr, char = _read_character_at(us_str, mc_ptr)
         multi_char += char
-      return_list.append(multi_char)
-      pointer = mc_ptr + 1
+      result.append(multi_char)
+      pointer = mc_ptr+1
     elif us_str[pointer] == '-':
-      previous = return_list[-1]
+      while pointer + 1 < len(us_str) and us_str[pointer + 1] == ' ':
+        continue
+      if pointer + 1 == len(us_str): # hyphen before ']' is special
+        result.append('-')
+        break
+      previous = result[-1]
       assert len(previous) == 1  # can't have ranges with strings
       previous = ord(previous)
 
-      pointer, last = _read_character_at(us_str, pointer + 1)
+      pointer, last = _read_character_at(us_str, pointer+1)
       assert last not in [' ', '\\', '{', '}', '-']
       last = ord(last)
-      return_list += [unichr(code) for code in range(previous + 1, last + 1)]
+      result += [unichr(code) for code in range(previous+1, last+1)]
     else:
-      pointer, char = read_character_at(us_str, pointer)
-      return_list.append(char)
+      pointer, char = _read_character_at(us_str, pointer)
+      result.append(char)
 
-  return return_list
+  return result
+
+
+_exemplar_from_file_cache = {}
+
+def get_exemplar_from_file(cldr_file_path):
+  try:
+    return _exemplar_from_file_cache[cldr_file_path]
+  except KeyError:
+    pass
+
+  data_file = path.join(CLDR_DIR, cldr_file_path)
+  try:
+    root = ElementTree.parse(data_file).getroot()
+  except IOError:
+    _exemplar_from_file_cache[cldr_file_path] = None
+    return None
+
+  exemplars = None
+  for tag in root.iter('exemplarCharacters'):
+    if 'type' in tag.attrib:
+      continue
+    exemplars = unicode_set_string_to_list(tag.text)
+    break
+
+  _exemplar_from_file_cache[cldr_file_path] = exemplars
+  return exemplars
+
+
+_exemplar_from_extra_data_cache = {}
+
+def get_exemplar_from_extra_data(loc_tag):
+  try:
+    return _exemplar_from_extra_data_cache[loc_tag]
+  except KeyError:
+    pass
+
+  try:
+    exemplar_string = extra_locale_data.EXEMPLARS[loc_tag]
+    exemplars = unicode_set_string_to_list(exemplar_string)
+  except KeyError:
+    exemplars = None
+
+  _exemplar_from_extra_data_cache[loc_tag] = exemplars
+  return exemplars
+
+
+# Technically, language tags are case-insensitive, but the CLDR data is cased,
+# this leaves out lots of edge cases of course.  Sometimes we use lower case
+# script tags so this allows that, but it requires the lang tag to be lower case
+# and the region tag to be all upper case.
+LSRV_RE = re.compile(r'^([a-z]{2,3})(?:[_-]([A-Za-z][a-z]{3}))?'
+                     r'(?:[_-]([A-Z]{2}|\d{3}))?(?:[_-]([A-Z]{5,8}))?$')
+
+def get_exemplar_and_source(loc_tag):
+  # don't use exemplars encoded without script if the requested script is not
+  # the default
+  m = LSRV_RE.match(loc_tag)
+  script = m.group(1) if m else None
+  while loc_tag != 'root':
+    for directory in ['common', 'seed', 'exemplars']:
+      exemplar = get_exemplar_from_file(
+        path.join(directory, 'main', loc_tag.replace('-', '_') + '.xml'))
+      if exemplar:
+        return exemplar, directory + '-' + loc_tag
+    exemplar = get_exemplar_from_extra_data(loc_tag)
+    if exemplar:
+      return exemplar, 'extra-' + loc_tag
+    loc_tag = parent_locale(loc_tag)
+    if loc_tag == 'root' or (script and get_likely_subtags(loc_tag)[1] != script):
+      break
+  return None, None
+
+
+def loc_tag_to_lsrv(loc_tag):
+  """Convert a locale tag to a tuple of lang, script, region, and variant.
+  Supplies likely script if missing."""
+  m = LSRV_RE.match(loc_tag)
+  if not m:
+    print 'regex did not match locale \'%s\'' % loc_tag
+    return None
+  lang = m.group(1)
+  script = m.group(2)
+  region = m.group(3)
+  variant = m.group(4)
+
+  if not script:
+    tag = lang
+    if region:
+      tag += '-' + region
+    try:
+      script = get_likely_script(tag)
+    except KeyError:
+      try:
+        script = get_likely_script(lang)
+      except KeyError:
+        pass
+  return (lang, script, region, variant)
+
+
+def lsrv_to_loc_tag(lsrv):
+  return '-'.join([tag for tag in lsrv if tag])
+
+
+_lang_scr_to_lit_pops = {}
+
+def _init_lang_scr_to_lit_pops():
+  data_file = path.join(
+      CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml')
+  root = ElementTree.parse(data_file).getroot()
+
+  tmp_map = collections.defaultdict(list)
+  for territory in root.findall('territoryInfo/territory'):
+    region = territory.attrib['type']
+    population = int(territory.attrib['population'])
+    lit_percent = float(territory.attrib['literacyPercent']) / 100.0
+    for lang_pop in territory.findall('languagePopulation'):
+      lang = lang_pop.attrib['type']
+      pop_percent = float(lang_pop.attrib['populationPercent']) / 100.0
+      if 'writingPercent' in lang_pop.attrib:
+        lang_lit_percent = float(lang_pop.attrib['writingPercent']) / 100.0
+      else:
+        lang_lit_percent = lit_percent
+
+      locale = loc_tag_to_lsrv(lang + '_' + region)
+      lang_scr = '-'.join([locale[0], locale[1]])
+      lit_pop = int(population * pop_percent * lang_lit_percent)
+      tmp_map[lang_scr].append((region, lit_pop))
+
+  # make it a bit more useful by sorting the value list in order of decreasing population
+  # and converting the list to a tuple
+  for lang_scr, values in tmp_map.iteritems():
+    _lang_scr_to_lit_pops[lang_scr] = tuple(sorted(values, key=lambda (r, p): (-p, r)))
+
+
+def get_lang_scr_to_lit_pops():
+  """Return a mapping from lang_scr to a list of tuples of region and population sorted
+  in descending order by population."""
+  if not _lang_scr_to_lit_pops:
+    _init_lang_scr_to_lit_pops()
+  return _lang_scr_to_lit_pops;
+
+
+def lang_scr_to_lit_pops(lang_scr):
+  try:
+    return get_lang_scr_to_lit_pops()[lang_scr]
+  except KeyError:
+    return None
+
+
+def lang_scr_to_global_lit_pop(lang_scr):
+  lit_pops = lang_scr_to_lit_pops(lang_scr)
+  if not lit_pops:
+    return 0
+  return sum(p for _, p in lit_pops)
+
+
+def get_lang_scrs_by_decreasing_global_lit_pop():
+  lit_pops = get_lang_scr_to_lit_pops()
+  result = []
+  for lang_scr in lit_pops:
+    global_pop = sum(p for _, p in lit_pops[lang_scr])
+    result.append((global_pop, lang_scr))
+  result.sort(reverse=True)
+  return result

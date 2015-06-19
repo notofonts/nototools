@@ -438,6 +438,10 @@ def get_lang_tag_sort_order(lang_tags):
   languages."""
   def lang_key(lang_tag):
     name = cldr_data.get_english_language_name(lang_tag)
+    if not name:
+      print 'no name for %s' % lang_tag
+      return None
+
     if name.endswith (' script)'):
       ix = name.rfind('(') - 1
       script_sfx = ' ' + name[ix + 2: len(name) - 8]
@@ -466,7 +470,7 @@ def get_lang_tag_sort_order(lang_tags):
   n = 0
   tag_order = {}
   for tag in sorted_tags:
-    print '%10s: %s' % (tag, cldr_data.get_english_language_name(tag))
+    # print '%10s: %s' % (tag, cldr_data.get_english_language_name(tag))
     tag_order[tag] = n
     n += 1
   return tag_order
@@ -520,23 +524,6 @@ def get_charset_info(charset):
   return ','.join(range_list)
 
 
-def get_exemplar(lang_scr):
-  locl = lang_scr
-  # don't use exemplars encoded without script if the requested script is not
-  # the default
-  _, script = lang_scr.split('-')
-  while locl != 'root':
-    for directory in ['common', 'seed', 'exemplars']:
-      exemplar = get_exemplar_from_file(
-          path.join(directory, 'main', locl.replace('-', '_') + '.xml'))
-      if exemplar:
-        return exemplar, 'ex-' + directory + '-' + locl
-    locl = cldr_data.parent_locale(locl)
-    if locl == 'root' or cldr_data.get_likely_subtags(locl)[1] != script:
-      break
-  return None, None
-
-
 def get_sample_from_sample_file(lang_scr):
   filepath = path.join(SAMPLE_TEXT_DIR, lang_scr + '.txt')
   if path.exists(filepath):
@@ -564,7 +551,7 @@ def get_attribution(lang_scr):
     return 'none'
 
 
-EXEMPLAR_CUTOFF_SIZE = 50
+EXEMPLAR_CUTOFF_SIZE = 60
 
 def sample_text_from_exemplar(exemplar):
   exemplar = [c for c in exemplar
@@ -591,7 +578,7 @@ def get_sample_and_attrib(lang_scr):
     src_key = 'txt-' + lang_scr
     return sample_text, attr, src_key
 
-  exemplar, src_key = get_exemplar(lang_scr)
+  exemplar, src_key = cldr_data.get_exemplar_and_source(lang_scr)
   if exemplar is not None:
     return sample_text_from_exemplar(exemplar), 'none', src_key
 
@@ -721,80 +708,6 @@ def get_region_lat_lng_data(regions):
 
 # ==========================
 
-def read_character_at(source, pointer):
-    assert source[pointer] not in ' -{}'
-    if source[pointer] == '\\':
-        if source[pointer+1] == 'u':
-            end_of_hex = pointer+2
-            while (end_of_hex < len(source)
-                   and source[end_of_hex].upper() in '0123456789ABCDEF'):
-                end_of_hex += 1
-            assert end_of_hex-(pointer+2) in {4, 5, 6}
-            hex_code = source[pointer+2:end_of_hex]
-            return end_of_hex, unichr(int(hex_code, 16))
-        else:
-            return pointer+2, source[pointer+1]
-    else:
-        return pointer+1, source[pointer]
-
-
-def exemplar_string_to_list(exstr):
-    assert exstr[0] == '['
-    exstr = exstr[1:]
-    if exstr[-1] == ']':
-        exstr = exstr[:-1]
-
-    return_list = []
-    pointer = 0
-    while pointer < len(exstr):
-        if exstr[pointer] in ' ':
-            pointer += 1
-        elif exstr[pointer] == '{':
-            multi_char = ''
-            mc_ptr = pointer+1
-            while exstr[mc_ptr] != '}':
-                mc_ptr, char = read_character_at(exstr, mc_ptr)
-                multi_char += char
-            return_list.append(multi_char)
-            pointer = mc_ptr+1
-        elif exstr[pointer] == '-':
-            previous = return_list[-1]
-            assert len(previous) == 1  # can't have ranges with strings
-            previous = ord(previous)
-
-            pointer, last = read_character_at(exstr, pointer+1)
-            assert last not in [' ', '\\', '{', '}', '-']
-            last = ord(last)
-            return_list += [unichr(code) for code in range(previous+1, last+1)]
-        else:
-            pointer, char = read_character_at(exstr, pointer)
-            return_list.append(char)
-
-    return return_list
-
-
-exemplar_from_file_cache = {}
-
-def get_exemplar_from_file(cldr_file_path):
-    try:
-        return exemplar_from_file_cache[cldr_file_path]
-    except KeyError:
-        pass
-
-    data_file = path.join(CLDR_DIR, cldr_file_path)
-    try:
-        root = ElementTree.parse(data_file).getroot()
-    except IOError:
-        exemplar_from_file_cache[cldr_file_path] = None
-        return None
-    for tag in root.iter('exemplarCharacters'):
-        if 'type' in tag.attrib:
-            continue
-        exemplar_from_file_cache[cldr_file_path] = exemplar_string_to_list(
-            tag.text)
-        return exemplar_from_file_cache[cldr_file_path]
-    return None
-
 
 def get_font_family_name(font_file):
     font = ttLib.TTFont(font_file)
@@ -850,10 +763,15 @@ def css_style(style_value):
 
 class WebGen(object):
 
-  def __init__(self, target, clean, pretty_json):
+  def __init__(self, target, clean, pretty_json, no_zips=False, no_images=False, no_css=False, no_data=False, no_build=False):
     self.target = target
     self.clean = clean
     self.pretty_json = pretty_json
+    self.no_zips = no_zips
+    self.no_images = no_images
+    self.no_css = no_css
+    self.no_data = no_data
+    self.no_build = no_build or (no_zips and no_images and no_css and no_data)
 
     self.pkgs = path.join(target, 'pkgs')
     self.fonts = path.join(target, 'fonts')
@@ -1180,7 +1098,9 @@ class WebGen(object):
   def generate(self):
     if self.clean:
       self.clean_target_dir()
-    self.ensure_target_dirs_exist()
+
+    if not self.no_build:
+      self.ensure_target_dirs_exist()
 
     # debug/print
     # ['families', 'script_to_family_ids', 'used_lang_data',
@@ -1298,27 +1218,46 @@ class WebGen(object):
 
     lang_tag_sort_order = get_lang_tag_sort_order(lang_tag_to_family_ids.keys())
 
+    if self.no_build:
+      print 'skipping build output'
+      return
+
     # build outputs
-    family_zip_info = self.build_zips(families)
-    universal_zip_info = self.build_universal_zips(families)
-    family_css_info = self.build_css(families)
+    if self.no_zips:
+      print 'skipping zip output'
+    else:
+      family_zip_info = self.build_zips(families)
+      universal_zip_info = self.build_universal_zips(families)
 
-    self.build_data_json(families, family_zip_info, universal_zip_info,
-                         family_id_to_lang_tags, family_id_to_regions,
-                         lang_tag_to_family_ids, region_to_family_ids)
+      # build outputs not used by the json but linked to from the web page
+      self.build_ttc_zips()
 
-    self.build_families_json(families, family_id_to_lang_tags,
-                             family_id_to_default_lang_tag,
-                             family_id_to_regions, family_css_info,
-                             lang_tag_sort_order)
+    if self.no_css:
+      print 'skipping css output'
+    else:
+      family_css_info = self.build_css(families)
 
-    self.build_misc_json(lang_tag_to_sample_data, region_data)
+    if self.no_data or self.no_zips or self.no_css:
+      reason = '' if self.no_data else 'no zips' if self.no_zips else 'no css'
+      print 'skipping data output%s' % reason
+    else:
+      self.build_data_json(families, family_zip_info, universal_zip_info,
+                           family_id_to_lang_tags, family_id_to_regions,
+                           lang_tag_to_family_ids, region_to_family_ids)
 
-    self.build_images(families, family_id_to_lang_tags,
-                      family_id_to_default_lang_tag, lang_tag_to_sample_data)
+      self.build_families_json(families, family_id_to_lang_tags,
+                               family_id_to_default_lang_tag,
+                               family_id_to_regions, family_css_info,
+                               lang_tag_sort_order)
 
-    # build outputs not used by the json but linked to from the web page
-    self.build_ttc_zips()
+      self.build_misc_json(lang_tag_to_sample_data, region_data)
+
+    if self.no_images:
+      print 'skipping image output'
+    else:
+      self.build_images(families, family_id_to_lang_tags,
+                        family_id_to_default_lang_tag, lang_tag_to_sample_data)
+
 
 
 def main():
@@ -1333,9 +1272,17 @@ def main():
                         default_target, default=default_target, metavar='dir')
     parser.add_argument('-pj', '--pretty_json', help='generate additional pretty json',
                         action='store_true')
+    parser.add_argument('-nz', '--no_zips', help='skip zip generation', action='store_true')
+    parser.add_argument('-ni', '--no_images', help='skip image generation', action='store_true')
+    parser.add_argument('-nd', '--no_data', help='skip data generation', action='store_true')
+    parser.add_argument('-nc', '--no_css', help='skip css generation', action='store_true')
+    parser.add_argument('-n', '--no_build', help='skip build of zip, image, data, and css',
+                        action='store_true')
     args = parser.parse_args();
 
-    webgen = WebGen(args.target, args.clean, args.pretty_json)
+    webgen = WebGen(args.target, args.clean, args.pretty_json,
+                    no_zips=args.no_zips, no_images=args.no_images, no_css=args.no_css,
+                    no_data=args.no_data, no_build=args.no_build)
     webgen.generate()
 
 
