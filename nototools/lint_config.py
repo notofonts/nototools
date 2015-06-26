@@ -31,6 +31,61 @@ import argparse
 import re
 
 
+spec_format = """
+A spec defines a list of conditions to be run in sequence.  A condition consists of
+a filter, which determines whether a font matches the condition, and a list of tests, which
+determines what tests to run on that font and what exceptions to make.  By default
+all tests are run on all fonts.
+
+Conditions are created by a list of filter and test instructions.  A new condition is
+started either by the term 'condition' or by adding a filter after one or more tests
+have been defined, there is an initial open condition at the start that accepts all
+fonts.  Filters on the same property do not accumulate, instead the previous filter
+for that property is replaced.  Similarly, tests on the same tag do not accumulate.
+
+'#' starts a comment to the next '\\n'
+'\\n' and ';' separate <instruction>
+
+instruction:
+  'condition' -- starts a new condition
+  'filename | name | script | variant | weight | hinted | vendor | verson' <filter> -- adds a filter
+  'enable | disable' <test_list> -- adds tests
+
+filter:
+  '*' -- reset filter
+  <numeric_filter> <number>
+  <string_filter> <string_value>
+  'in' <string_list>
+  <string> -- string equality test
+
+numeric_filter:
+  '< | <= | == | != | >= | >' -- compare decimal values
+
+string_filter:
+  'is' -- string equality
+  'like' -- value is a regex, true if it matches target anywhere
+
+string_list: -- one or more strings separated by comma
+  <string>+
+
+test_list: -- one or more tests separated by comma
+  <test>+
+
+test:
+  <test_tag> | <test_tag> <relation> <value_type> <value_list>
+
+test_tag: -- name of a test node (see tags)
+
+relation:
+  'except | only' -- whether to include or exclude values matched by the selector
+
+value_type:
+  'cp | gid' -- type of select values the tag takes, cp values are hex, gid are decimal
+
+value_list: -- numbers or ranges separated by whitespace, no space around hyphen
+  (<number> | <number>'-'<number>)+
+"""
+
 def parse_int_values(intlist, is_hex):
   """Returns a set of ints from a list of hex numbers or ranges separated by space.
   A range is two hex values separated by hyphen with no intervening spaces."""
@@ -205,6 +260,9 @@ class FontCondition(object):
 
 class TestSpec(object):
   data = """
+  filename -- filename tests
+    script
+    name
   name -- name table tests
     copyright
     family
@@ -255,10 +313,10 @@ class TestSpec(object):
       unicoderange
   bounds -- glyf limits etc
     glyph
-      ui_ymax except|only cp|gid
-      ui_ymin except|only cp|gid
-      ymax except|only cp|gid
-      ymin except|only cp|gid
+      ui_ymax except|only gid
+      ui_ymin except|only gid
+      ymax except|only gid
+      ymin except|only gid
     font
       ui_ymax
       ui_ymin
@@ -270,9 +328,9 @@ class TestSpec(object):
   gdef -- gdef tests
     classdef
       not_present -- table is missing but there are mark glyphs
-      unlisted -- mark glyph is present and expected to be listed
-      combining_mismatch -- mark glyph is combining but not listed as combining
-      not_combining_mismatch -- mark glyph is not combining but listed as combining
+      unlisted except|only cp -- mark glyph is present and expected to be listed
+      combining_mismatch except|only cp -- mark glyph is combining but not listed as combining
+      not_combining_mismatch except|only cp -- mark glyph is not combining but listed as combining
     attachlist
       duplicates
       out_of_order
@@ -301,7 +359,7 @@ class TestSpec(object):
   stem -- stem widths
     left_joiner -- non-zero lsb
     right_joiner -- rsb not -70
-  reachable
+  reachable except|only gid
   """
 
   # fields are:
@@ -399,19 +457,19 @@ class TestSpec(object):
   def _set_enable_options(self, tag, relation, arg_type, arg):
     allowed_options = TestSpec.tag_data[tag]
     if not allowed_options[0]:
-      raise ValueError('tag %s does not allow options' % tag)
+      raise ValueError('tag \'%s\' does not allow options' % tag)
     if not re.match(allowed_options[0], relation):
-      raise ValueError('tag %s does not allow relation %s' % (tag, relation))
+      raise ValueError('tag \'%s\' does not allow relation \'%s\'' % (tag, relation))
     if not re.match(allowed_options[1], arg_type):
-      raise ValueError('tag %s and relation %s does not allow arg type %s' % (
+      raise ValueError('tag \'%s\' and relation \'%s\' does not allow arg type %s' % (
           tag, relation, arg_type))
 
     if arg_type == 'cp' or arg_type == 'gid':
       is_hex = arg_type == 'cp'
       int_set = parse_int_values(arg, is_hex)
-      self.tag_options[tag] = IntSetFilter(relation != 'except', int_set)
+      self.tag_options[tag] = (arg_type, IntSetFilter(relation != 'except', int_set))
     else:
-      raise ValueError('illegal state - unable to handle recognized arg_type %s' % arg_type)
+      raise ValueError('illegal state - unrecognized arg_type \'%s\'' % arg_type)
 
   def enable(self, tag, relation=None, arg_type=None, arg=None):
     tags = self._get_tag_set(tag)
@@ -447,7 +505,7 @@ class TestSpec(object):
 
 
   # TODO(dougfelt): remove modify_line if no longer used
-  line_rx = re.compile(r'\s*(enable|disable)\s+([0-9a-z/]+)(?:\s+(except)\s+(cp)\s+(.*))?\s*')
+  line_rx = re.compile(r'\s*(enable|disable)\s+([0-9a-z/]+)(?:\s+(except|only)\s+(cp|gid)\s+(.*))?\s*')
   def modify_line(self, line):
     m = self.line_rx.match(line)
     if not m:
@@ -503,10 +561,17 @@ class LintTests(object):
       self.skip_log.add(tag)
     return run
 
+  def valuetype(self, tag):
+    """If the tag filters values, return the type of the value ('gid' or 'cp')
+    being filtered, or None."""
+    if tag in self.tag_filters:
+      return self.tag_filters[tag][0]
+    return None
+
   def checkvalue(self, tag, value):
     run = self.check(tag)
     if run and tag in self.tag_filters:
-      run = self.tag_filters[tag].accept(value)
+      run = self.tag_filters[tag][1].accept(value)
     return run
 
   def runlog(self):
@@ -611,10 +676,15 @@ def main():
   parser.add_argument('--tags', help='list all tags supported by the parser', action='store_true')
   parser.add_argument('--comments', help='list tags with comments when present', action='store_true')
   parser.add_argument('--filters', help='list tags with filters when present', action='store_true')
+  parser.add_argument('--spec', help='prints the syntax', action='store_true')
   args = parser.parse_args()
 
-  if not (args.tags or args.comments or args.filters):
+  if not (args.tags or args.comments or args.filters or args.spec):
     print 'nothing to do.'
+    return
+
+  if args.spec:
+    print spec_format
     return
 
   for tag in sorted(TestSpec.tag_set):

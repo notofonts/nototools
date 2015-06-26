@@ -305,7 +305,7 @@ def curves_intersect(contour_list):
     for contour_pieces in all_contours:
         for piece in contour_pieces:
             if piece[0] == piece[-1]:
-                return 'start and end segments match: %s' % piece
+                return 'start and end segments match: %s' % str(piece[0])
 
     all_pieces = sum(all_contours, [])
     if len(set(all_pieces)) != len(all_pieces):
@@ -539,7 +539,7 @@ def check_font(file_name,
         names = font_data.get_name_records(font)
 
         # Check family name
-        expected_family_name = 'Noto'
+        expected_family_name = family
         if style:
             # emoji has no style
             # the name comes from the script alone
@@ -801,7 +801,7 @@ def check_font(file_name,
             needed_chars = unicode_data.defined_characters(scr=script)
             needed_chars -= _symbol_set()
 
-        needed_chars &= unicode_data.defined_characters(version=6.0)
+        needed_chars &= unicode_data.defined_characters(version=char_version)
 
         if style != 'Nastaliq':
             try:
@@ -1251,12 +1251,13 @@ def check_font(file_name,
                 for code in mark_glyphs:
                     glyph = cmap[code]
                     if glyph not in class_def:
-                        if tests.check('gdef/classdef/unlisted'):
+                        if tests.checkvalue('gdef/classdef/unlisted', code):
                             warn("Glyph Class",
                                  "Glyph %s (U+%04X %s) is a combining mark, but is not "
                                  "assigned a value in the GDEF/GlyphClassDef table."
                                  % (glyph, code, unicode_data.name(code)))
-                    elif tests.check('gdef/classdef/combining_mismatch') and class_def[glyph] != 3:
+                    elif (tests.checkvalue('gdef/classdef/combining_mismatch', code) and
+                          class_def[glyph] != 3):
                         warn("Glyph Class",
                              "Glyph %s (U+%04X %s) is a combining mark, but is "
                              "defined as class %d (%s) in the GDEF/GlyphClassDef "
@@ -1269,9 +1270,10 @@ def check_font(file_name,
 
             if class_def and not is_indic:
                 for code in cmap:
-                    if cmap[code] in class_def:
-                        klass = class_def[cmap[code]]
-                        if (tests.check('gdef/classdef/not_combining_mismatch') and
+                    glyph = cmap[code]
+                    if glyph in class_def:
+                        klass = class_def[glyph]
+                        if (tests.checkvalue('gdef/classdef/not_combining_mismatch', code) and
                             klass == 3
                             and unicode_data.category(code) != "Mn"
                             and code not in noto_data.ACCEPTABLE_AS_COMBINING):
@@ -1628,6 +1630,10 @@ def check_font(file_name,
         """
         if not tests.check('reachable'):
             return
+
+        test_filter = tests.get_filter('reachable')
+        glyph_name_to_id = font.getReverseGlyphMap().copy()
+
         all_glyphs = set(font.getGlyphOrder())
         subsetter = subset.Subsetter()
         subsetter.populate(unicodes=cmap.keys())
@@ -1635,9 +1641,19 @@ def check_font(file_name,
 
         unreachable_glyphs = all_glyphs - subsetter.glyphs_all
         if unreachable_glyphs:
-            warn("Reachabily",
-                 "The following %d glyphs are unreachable in the font: %s." %
-                 (len(unreachable_glyphs), ", ".join(sorted(unreachable_glyphs))))
+            reported_glyphs = set()
+            reported_list = []
+            for glyph_name in unreachable_glyphs:
+                glyph_id = glyph_name_to_id[glyph_name]
+                if not test_filter or test_filter.accept(glyph_id):
+                    if glyph_name not in reported_glyphs:
+                        reported_glyphs.add(glyph_name)
+                        reported_list.append((glyph_name, glyph_id))
+            if reported_list:
+                report_info = ', '.join('%s (%d)' % t for t in sorted(reported_list))
+                warn("Reachabily",
+                     "The following %d glyphs are unreachable in the font: %s." %
+                     (len(reported_glyphs), report_info))
 
     def make_compact_scripts_regex(scripts=None):
         """Creates a regular expression that accepts all compact scripts names.
@@ -1658,10 +1674,14 @@ def check_font(file_name,
     is_cjk = False
     is_mono = False
 
+    filename_error = ''
+    # by default, don't require characters after this version
+    char_version = 6.0
+
     just_the_file_name = file_name.split("/")[-1]
     fontname_regex = (
-        "Noto"
-        + "(?P<style>" + "|".join(FONT_STYLES) + ")"
+        "(Noto|Tinos|Arimo)"
+        + "(?P<style>" + "|".join(FONT_STYLES) + ")?"
         + "(?P<script>" + make_compact_scripts_regex() + ")?"
         + "(?P<variant>" + "|".join(FONT_VARIANTS) + ")?"
         + "-"
@@ -1669,18 +1689,19 @@ def check_font(file_name,
         + ".ttf$")
     match = re.match(fontname_regex, just_the_file_name)
     if match:
-        style, compact_script, variant, weight = match.groups()
+        family, style, compact_script, variant, weight = match.groups()
         if compact_script:
           script = script_code(compact_script)
           assert script != "Zzzz"
         elif style in ["Sans", "Serif"]:
             script = "Latn"  # LGC really
+        elif family != 'Noto':
+          script = "Latn" # LGC for Tinos and Arimo
         else:
             style, script, variant, weight = HARD_CODED_FONT_INFO[
                 just_the_file_name]
-            warn("File name",
-                 "Style %s also needs a script mentioned in the "
-                 "file name." % style)
+            if style != '': # Emoji, OK for it to not have script
+              filename_error = 'script'
     else:
         cjkfontname_regex = (
         "Noto"
@@ -1691,6 +1712,7 @@ def check_font(file_name,
         + "(?P<weight>" + "|".join(CJK_FONT_WEIGHTS) + ")"
         + ".otf$")
         match = re.match(cjkfontname_regex, just_the_file_name)
+        family = 'Noto'
         if match:
             style, mono, variant, weight = match.groups()
             script = None
@@ -1699,13 +1721,16 @@ def check_font(file_name,
         else:
             style, script, variant, weight = HARD_CODED_FONT_INFO[
                 just_the_file_name]
-            warn("File name",
-                 "File name '%s' does not match the Noto font naming guidelines."
-                 % just_the_file_name)
+            filename_error = 'name'
 
     is_hinted = "/hinted" in file_name or "_hinted" in file_name
 
     is_ui = (variant == "UI")
+
+    is_noto = family == 'Noto'
+    if not is_noto:
+      # for Arimo and Tinos, require coverage up to Unicode 8
+      char_version = 8.0
 
     is_indic = script in {
         "Deva", "Beng", "Guru", "Gujr", "Orya",
@@ -1715,7 +1740,7 @@ def check_font(file_name,
 
     fi = lint_config.FontInfo(
         filename=just_the_file_name,
-        name='Noto',
+        name=family,
         style=style,
         script=script,
         variant=variant,
@@ -1725,6 +1750,17 @@ def check_font(file_name,
         vendor='Adobe' if is_cjk else 'Monotype',
         version=printable_font_revision(font, accuracy=3 if is_cjk else 2))
     tests = lint_spec.get_tests(fi)
+
+    if filename_error:
+        if filename_error == 'script' and tests.check('filename/script'):
+            warn("File name",
+                 "Style %s also needs a script mentioned in the "
+                 "file name." % style)
+        elif filename_error == 'name' and tests.check('filename/name'):
+            warn("File name",
+                 "File name '%s' does not match the Noto font naming guidelines."
+                 % just_the_file_name)
+
 
     check_name_table()
     cmap = check_cmap_table()
