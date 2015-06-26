@@ -317,8 +317,8 @@ def all_scripts():
     return frozenset(_script_code_to_long_name.keys())
 
 
-_DATA_DIR_PATH = path.abspath(
-    path.join(path.dirname(__file__), os.pardir, "third_party", "ucd"))
+_DATA_DIR_PATH = path.join(path.abspath(path.dirname(__file__)),
+                           os.pardir, "third_party", "ucd")
 
 
 def open_unicode_data_file(data_file_name):
