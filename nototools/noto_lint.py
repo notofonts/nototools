@@ -47,6 +47,11 @@ from nototools import unicode_data
 NOTO_URL = "http://code.google.com/p/noto/"
 NOTO_NEW_URL = "http://www.google.com/get/noto/"
 
+# from wikipedia windows 1252 page.  As of windows 98.
+WIN_ANSI_CODEPOINTS = (
+    '0000-007f 00A0-00ff 20ac 201a 0192 201e 2026 2020 2021 02c6 2030 0160 2039 0152 017d'
+    '2018 2019 201c 201d 2022 2013 2014 02dc 2122 0161 203a 0153 017e 0178')
+
 def all_scripts():
     """Extends unicode scripts with pseudo-script 'Urdu'."""
     result = set(unicode_data.all_scripts())
@@ -1094,6 +1099,20 @@ def check_font(file_name,
         glyf_table = font['glyf']
         us_win_ascent = font['OS/2'].usWinAscent
         us_win_descent = font['OS/2'].usWinDescent
+        typo_ascent = font['OS/2'].sTypoAscender
+        typo_descent = font['OS/2'].sTypoDescender
+
+        # Build win ansi glyph set.  These we compare against usWinAscent/Descent, the
+        # rest we compare against sTypoAscender/Descender. Of course, these should be
+        # the same, and it's still ok for glyphs to exceed the typo ascender/descender--
+        # but it should be exceptional.
+        tmp_gids = set()
+        cmap = font_data.get_cmap(font)
+        for cp in lint_config.parse_int_values(WIN_ANSI_CODEPOINTS, True):
+          if cp in cmap:
+            tmp_gids.add(font.getGlyphID(cmap[cp], requireReal=True))
+        win_ansi_gids = frozenset(tmp_gids)
+
         font_ymin = None
         font_ymax = None
         for glyph_index in range(len(glyf_table.glyphOrder)):
@@ -1106,6 +1125,18 @@ def check_font(file_name,
 
             if not tests.check('bounds/glyph'):
                 continue
+
+            is_win_ansi = glyph_index in win_ansi_gids
+            if is_win_ansi:
+              ascent_limit = us_win_ascent
+              ascent_name = 'usWinAscent'
+              descent_limit = -us_win_descent
+              descent_name = 'usWinDescent'
+            else:
+              ascent_limit = typo_ascent
+              ascent_name = 'sTypoAscent'
+              descent_limit = typo_descent
+              descent_name = 'sTypoDescent'
 
             if is_ui or deemed_ui:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
@@ -1122,19 +1153,19 @@ def check_font(file_name,
                         "%d." % (glyph_index, glyph_name, ymin, MIN_UI_HEIGHT))
 
             if (tests.checkvalue('bounds/glyph/ymax', glyph_index) and ymax is not None and
-                ymax > us_win_ascent):
+                ymax > ascent_limit):
                 warn(
                     "Bounds",
                     "Real yMax for glyph %d (%s) is %d, which is higher than "
-                    "the font's usWinAscent (%d), resulting in clipping." %
-                    (glyph_index, glyph_name, ymax, us_win_ascent))
+                    "the font's %s (%d), resulting in clipping." %
+                    (glyph_index, glyph_name, ymax, ascent_name, ascent_limit))
             if (tests.checkvalue('bounds/glyph/ymin', glyph_index) and ymin is not None and
                 ymin < -us_win_descent):
                 warn(
                     "Bounds",
                     "Real yMin for glyph %d (%s) is %d, which is lower than "
-                    "the font's usWinDescent (%d), resulting in clipping." %
-                    (glyph_index, glyph_name, ymin, us_win_descent))
+                    "the font's %s (%d), resulting in clipping." %
+                    (glyph_index, glyph_name, ymin, descent_name, descent_limit))
 
         if tests.check('bounds/font'):
             if is_ui or deemed_ui:
@@ -1487,10 +1518,10 @@ def check_font(file_name,
                              "The font is supposed to be unhinted, but "
                              "glyph '%s' has hints." % glyph_name)
                 else:
-                    if tests.check('hints/missing_bytecode') and not bytecode:
+                    if not bytecode and tests.checkvalue('hints/missing_bytecode', glyph_index):
                         warn("Hints",
                              "The font is supposed to be hinted, but "
-                             "glyph '%s' doesn't have hints." % glyph_name)
+                             "glyph '%s' (%d) doesn't have hints." % (glyph_name, glyph_index))
 
 
     def check_explicit_advances():

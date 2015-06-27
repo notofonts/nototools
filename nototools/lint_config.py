@@ -350,7 +350,7 @@ class TestSpec(object):
     rtlm_unlisted -- non-ompl bidi char does not have rtlm GSUB feature
   hints
     unexpected_tables -- unhinted fonts shouldn't have hint tables
-    missing_bytecode -- hinted tt fonts should have bytecodes
+    missing_bytecode except|only gid -- hinted tt fonts should have bytecodes
     unexpected_bytecode -- unhinted tt fonts should not have bytecodes
   advances
     digits -- checks that ASCII digits have same advance as digit zero
