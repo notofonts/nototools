@@ -26,6 +26,7 @@ import re
 import shutil
 import xml.etree.cElementTree as ElementTree
 
+from nototools import cldr_data
 from nototools import create_image
 from nototools import extra_locale_data
 from nototools import notoconfig
@@ -47,240 +48,6 @@ CLDR_DIR = path.join(NOTO_TOOLS, 'third_party', 'cldr')
 
 _VERBOSE = False
 
-def read_character_at(source, pointer):
-  while pointer < len(source) and source[pointer] == ' ':
-    pointer += 1
-
-  if pointer >= len(source):
-    raise IndexError('pointer %d out of range 0-%d' % (pointer, len(source)))
-
-  if source[pointer] == '\\':
-    if source[pointer+1].upper() == 'U':
-      end_of_hex = pointer+2
-      while (end_of_hex < len(source)
-           and source[end_of_hex].upper() in '0123456789ABCDEF'):
-        end_of_hex += 1
-      assert end_of_hex-(pointer+2) in {4, 5, 6}
-      hex_code = source[pointer+2:end_of_hex]
-      return end_of_hex, unichr(int(hex_code, 16))
-    else:
-      return pointer+2, source[pointer+1]
-  else:
-    return pointer+1, source[pointer]
-
-
-def exemplar_string_to_list(exstr):
-  assert exstr[0] == '['
-  exstr = exstr[1:]
-  if exstr[-1] == ']':
-    exstr = exstr[:-1]
-
-  exemplar_list = []
-  pointer = 0
-  while pointer < len(exstr):
-    if exstr[pointer] in ' ':
-      pointer += 1
-    elif exstr[pointer] == '{':
-      multi_char = ''
-      mc_ptr = pointer+1
-      while exstr[mc_ptr] != '}':
-        mc_ptr, char = read_character_at(exstr, mc_ptr)
-        multi_char += char
-      exemplar_list.append(multi_char)
-      pointer = mc_ptr+1
-    elif exstr[pointer] == '-':
-      while pointer + 1 < len(exstr) and exstr[pointer + 1] == ' ':
-        continue
-      if pointer + 1 == len(exstr): # hyphen before ']' is special
-        exemplar_list.append('-')
-        break
-      previous = exemplar_list[-1]
-      assert len(previous) == 1  # can't have ranges with strings
-      previous = ord(previous)
-
-      pointer, last = read_character_at(exstr, pointer+1)
-      assert last not in [' ', '\\', '{', '}', '-']
-      last = ord(last)
-      exemplar_list += [unichr(code) for code in range(previous+1, last+1)]
-    else:
-      pointer, char = read_character_at(exstr, pointer)
-      exemplar_list.append(char)
-
-  return exemplar_list
-
-
-_exemplar_from_file_cache = {}
-
-def get_exemplar_from_file_cache(cldr_file_path):
-  try:
-    return _exemplar_from_file_cache[cldr_file_path]
-  except KeyError:
-    pass
-
-  exemplar_list = get_exemplar_from_file(cldr_file_path)
-  if exemplar_list:
-    _exemplar_from_file_cache[cldr_file_path] = exemplar_list
-    return exemplar_list
-  return None
-
-
-def get_exemplar_from_file(cldr_file_path):
-  data_file = path.join(CLDR_DIR, cldr_file_path)
-  try:
-    root = ElementTree.parse(data_file).getroot()
-  except IOError:
-    return None
-
-  for tag in root.iter('exemplarCharacters'):
-    if 'type' in tag.attrib:
-      if _VERBOSE:
-        print 'type defined, skip chars %s in %s' % (tag.attrib, cldr_file_path)
-      continue
-    try:
-      return exemplar_string_to_list(tag.text)
-    except (ValueError, IndexError) as e:
-      print 'error reading exemplar from \'%s\':\n  %s' % (cldr_file_path, e)
-
-  return None
-
-
-_exemplar_from_extra_data_cache = {}
-
-def get_exemplar_from_extra_data_cache(loc_tag):
-  try:
-    return _exemplar_from_extra_data_cache[loc_tag]
-  except KeyError:
-    pass
-
-  try:
-    exemplar_string = extra_locale_data.EXEMPLARS[loc_tag]
-    exemplars = exemplar_string_to_list(exemplar_string)
-    _exemplar_from_extra_data_cache[loc_tag] = exemplars
-    return exemplars
-  except KeyError:
-    pass
-  return None
-
-
-def find_parent_locale(locl):
-  if locl in parent_locale:
-    return parent_locale[locl]
-  if '-' in locl:
-    return locl[:locl.rindex('-')]
-  if locale == 'root':
-    return None
-  return 'root'
-
-
-def get_exemplar(language, script):
-  locl = language + '-' + script
-  while locl != 'root':
-    for directory in ['common', 'seed', 'exemplars']:
-      exemplar = get_exemplar_from_file_cache(
-        path.join(directory, 'main', locl.replace('-', '_')+'.xml'))
-      if exemplar:
-        return exemplar
-    exemplar = get_exemplar_from_extra_data_cache(locl)
-    if exemplar:
-      return exemplar
-    locl = find_parent_locale(locl)
-  return None
-
-
-likely_subtag_data = {}
-
-def parse_likely_subtags():
-  data_file = path.join(
-    CLDR_DIR, 'common', 'supplemental', 'likelySubtags.xml')
-  tree = ElementTree.parse(data_file)
-
-  for tag in tree.findall('likelySubtags/likelySubtag'):
-    from_tag = tag.get('from').replace('_', '-')
-    to_tag = tag.get('to').split('_')
-    likely_subtag_data[from_tag] = to_tag
-
-  likely_subtag_data.update(extra_locale_data.LIKELY_SUBTAGS)
-
-
-def find_likely_script(language):
-  if not likely_subtag_data:
-    parse_likely_subtags()
-  return likely_subtag_data[language][1]
-
-
-# technically, language tags are case-insensitive, but the CLDR data is cased
-LSRV_RE = re.compile(r'^([a-z]{2,3})(?:[_-]([A-Z][a-z]{3}))?'
-                     r'(?:[_-]([A-Z]{2}|\d{3}))?(?:[_-]([A-Z]{5,8}))?$')
-
-def get_lsrv(locale):
-  m = LSRV_RE.match(locale)
-  if not m:
-    print 'regex did not match locale \'%s\'' % locale
-    return None
-  lang = m.group(1)
-  script = m.group(2)
-  region = m.group(3)
-  variant = m.group(4)
-
-  if not script:
-    tag = lang
-    if region:
-      tag += '-' + region
-    try:
-      script = find_likely_script(tag)
-    except KeyError:
-      try:
-        script = find_likely_script(lang)
-      except KeyError:
-        pass
-  return (lang, script, region, variant)
-
-
-loc_to_lit_pop = {}
-
-def _collect_lit_pops():
-    data_file = path.join(
-        CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml')
-    root = ElementTree.parse(data_file).getroot()
-
-    for territory in root.findall('territoryInfo/territory'):
-      region = territory.attrib['type']
-      population = int(territory.attrib['population'])
-      lit_percent = float(territory.attrib['literacyPercent']) / 100.0
-      for lang_pop in territory.findall('languagePopulation'):
-        lang = lang_pop.attrib['type']
-        pop_percent = float(lang_pop.attrib['populationPercent']) / 100.0
-        if 'writingPercent' in lang_pop.attrib:
-          lang_lit_percent = float(lang_pop.attrib['writingPercent']) / 100.0
-        else:
-          lang_lit_percent = lit_percent
-
-        locale = get_lsrv(lang + '_' + region)
-        loc_tag = '_'.join([locale[0], locale[1]])
-
-        lit_pop = int(population * pop_percent * lang_lit_percent)
-        if loc_tag in loc_to_lit_pop:
-          loc_to_lit_pop[loc_tag] += lit_pop
-        else:
-          loc_to_lit_pop[loc_tag] = lit_pop
-
-
-def get_locs_by_lit_pop():
-  if not loc_to_lit_pop:
-    _collect_lit_pops()
-  return sorted([(v, k) for k, v in loc_to_lit_pop.iteritems()])
-
-
-def get_lit_pop(loc_tag):
-  if not loc_to_lit_pop:
-    _collect_lit_pops()
-  return loc_to_lit_pop.get(loc_tag, 0)
-
-
-def loc_to_tag(loc):
-  return '-'.join([tag for tag in loc if tag])
-
-
 def get_script_to_exemplar_data_map():
   """Return a map from script to 3-tuples of:
     - locale tuple (lang, script, region, variant)
@@ -294,11 +61,11 @@ def get_script_to_exemplar_data_map():
       if not filename.endswith('.xml'):
         continue
 
-      exemplar_list = get_exemplar_from_file_cache(path.join(data_dir, filename))
+      exemplar_list = cldr_data.get_exemplar_from_file(path.join(data_dir, filename))
       if not exemplar_list:
         continue
 
-      lsrv = get_lsrv(filename[:-4])
+      lsrv = cldr_data.loc_tag_to_lsrv(filename[:-4])
       if not lsrv:
         continue
       src = path.join(directory, filename)
@@ -306,7 +73,7 @@ def get_script_to_exemplar_data_map():
       if not script:
         continue
 
-      loc_tag = loc_to_tag(lsrv)
+      loc_tag = cldr_data.lsrv_to_loc_tag(lsrv)
       loc_to_exemplar_info = script_map[script]
       if loc_tag in loc_to_exemplar_info:
         if _VERBOSE:
@@ -351,7 +118,7 @@ def get_script_to_exemplar_data_map():
 
   # supplement with extra locale data
   for loc_tag in extra_locale_data.EXEMPLARS:
-    exemplar_list = get_exemplar_from_extra_data_cache(loc_tag)
+    exemplar_list = cldr_data.get_exemplar_from_extra_data(loc_tag)
     lang, script = loc_tag.split('-')
     lsrv = (lang, script, None, None)
     loc_to_exemplar_info = script_map[script]
@@ -525,10 +292,9 @@ def get_rare_char_info(char_to_lang_map, shared_lang_threshold):
 _lang_for_script_map = {}
 
 def _init_lang_for_script_map():
-  locs_by_lit_pop = [t[1] for t in get_locs_by_lit_pop()]
-  locs_by_lit_pop.reverse()
+  locs_by_lit_pop = [loc for _, loc in cldr_data.get_lang_scrs_by_decreasing_global_lit_pop()]
   for t in locs_by_lit_pop:
-    lsrv = get_lsrv(t)
+    lsrv = cldr_data.loc_tag_to_lsrv(t)
     script = lsrv[1]
     if script not in _lang_for_script_map:
       lang = lsrv[0]
@@ -557,8 +323,7 @@ def select_rare_chars_for_loc(script, locs_with_rare_chars, shared_lang_threshol
     rarity_threshold_map[lang_tag] = shared_lang_threshold
 
   selected = []
-  locs_by_lit_pop = [t[1] for t in get_locs_by_lit_pop()]
-  locs_by_lit_pop.reverse()
+  locs_by_lit_pop = [loc for _, loc in cldr_data.get_lang_scrs_by_decreasing_global_lit_pop()]
   # examine locales in decreasing order of literate population
   for loc_tag in locs_by_lit_pop:
     if script not in loc_tag:
