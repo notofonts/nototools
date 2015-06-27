@@ -11,6 +11,22 @@ disable gpos/missing
 filename like Bengali
 enable script_required except cp 951-952
 
+filename like Devanagari
+enable bounds/glyph/ui_ymin except gid 788
+disable bounds/font/ui_ymin
+enable bounds/glyph/ymax except gid 801-818 829-831 865 868-878
+disable bounds/font/ymax
+
+filename like Tamil
+enable script_required except cp 951-952 1cda a8f3
+
+filename like Telugu
+enable script_required except cp 951-952 1cda a8f3
+enable reachable except gid 611
+
+filename like Symbols
+disable filename/name
+
 condition
 vendor Adobe
 
@@ -21,8 +37,8 @@ vendor Adobe
 disable bidi
 
 # The v1.003 fonts align the windows ascent/descent with the hhea values, but not the
-# typographic ascender
-version == 1.003
+# typographic ascender. 1.004 patched some glyphs but otherwise behavior is the same.
+version == 1.004
 disable head/os2/ascender, head/os2/descender
 
 # Adobe says "None of the zero-width glyphs are involved with attachment"
