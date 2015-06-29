@@ -1108,7 +1108,7 @@ def check_font(file_name,
         # but it should be exceptional.
         tmp_gids = set()
         cmap = font_data.get_cmap(font)
-        for cp in lint_config.parse_int_values(WIN_ANSI_CODEPOINTS, True):
+        for cp in lint_config.parse_int_ranges(WIN_ANSI_CODEPOINTS, True):
           if cp in cmap:
             tmp_gids.add(font.getGlyphID(cmap[cp], requireReal=True))
         win_ansi_gids = frozenset(tmp_gids)
