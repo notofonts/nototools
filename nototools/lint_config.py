@@ -86,13 +86,13 @@ value_list: -- numbers or ranges separated by whitespace, no space around hyphen
   (<number> | <number>'-'<number>)+
 """
 
-def parse_int_values(intlist, is_hex):
-  """Returns a set of ints from a list of hex numbers or ranges separated by space.
-  A range is two hex values separated by hyphen with no intervening spaces."""
+def parse_int_ranges(range_string, is_hex, sep=' '):
+  """Returns a set of ints from a string of numbers or ranges separated by sep.
+  A range is two values separated by hyphen with no intervening separator."""
   result = set()
   count = 0
   base = 16 if is_hex else 10
-  value_list = intlist.split(' ')
+  value_list = range_string.split(sep)
   for val in value_list:
     if '-' in val: # assume range
       val_list = val.split('-')
@@ -111,6 +111,37 @@ def parse_int_values(intlist, is_hex):
     raise ValueError('duplicate values in %s, expected count is %d but result is %s' % (
         hexlist, count, result))
   return result
+
+
+def write_int_ranges(int_values, in_hex, sep=' '):
+  """From a set or list of ints, generate a string representation that can
+  be parsed by parse_int_ranges to return the original values (not order_preserving)."""
+
+  num_list = []
+
+  if type(int_values) is not list:
+    int_values = [v for v in int_values]
+  int_values.sort()
+  start = prev = int_values[0]
+  single_fmt = '%04x' if in_hex else '%d'
+  pair_fmt = single_fmt + '-' + single_fmt
+
+  def emit():
+    if prev == start:
+      num_list.append(single_fmt % prev)
+    else:
+      num_list.append(pair_fmt % (start, prev))
+
+  for v in int_values[1:]:
+    if prev:
+      if v == prev + 1:
+        prev += 1
+        continue
+      else:
+        emit()
+    start = prev = v
+  emit()
+  return sep.join(num_list)
 
 
 class IntSetFilter(object):
@@ -466,7 +497,7 @@ class TestSpec(object):
 
     if arg_type == 'cp' or arg_type == 'gid':
       is_hex = arg_type == 'cp'
-      int_set = parse_int_values(arg, is_hex)
+      int_set = parse_int_ranges(arg, is_hex)
       self.tag_options[tag] = (arg_type, IntSetFilter(relation != 'except', int_set))
     else:
       raise ValueError('illegal state - unrecognized arg_type \'%s\'' % arg_type)
