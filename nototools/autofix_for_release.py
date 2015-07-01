@@ -30,6 +30,8 @@ from fontTools import ttLib
 from nototools import font_data
 import notoconfig
 
+NOTO_URL = "http://www.google.com/get/noto/"
+
 def fix_revision(font):
     """Fix the revision of the font to match its version."""
     version = font_data.font_version(font)
@@ -78,7 +80,7 @@ NAME_CORRECTIONS = {
     'Sans Emoji': 'Emoji',
 }
 
-TRADEMARK_LINE = u'Noto is a trademark of Google Inc.'
+TRADEMARK_TEMPLATE = u'%s is a trademark of Google Inc.'
 
 def fix_name_table(font):
     """Fix copyright and reversed values in the 'name' table."""
@@ -108,10 +110,27 @@ def fix_name_table(font):
                 name_id, oldrecord, record)
             modified = True
 
-    if name_records[7] != TRADEMARK_LINE:
-      font_data.set_name_record(font, 7, TRADEMARK_LINE)
-      modified = True
-      print 'Updated name table record 7 to "%s"' % TRADEMARK_LINE
+    trademark_names = ['Noto', 'Arimo', 'Tinos', 'Cousine']
+    trademark_name = None
+    font_family = name_records[1]
+    for name in trademark_names:
+        if font_family.find(name) != -1:
+            trademark_name = name
+            break
+    if not trademark_name:
+        print 'no trademarked name in \'%s\'' % font_family
+    else:
+        trademark_line = TRADEMARK_TEMPLATE % trademark_name
+        if name_records[7] != trademark_line:
+            old_line = name_records[7]
+            font_data.set_name_record(font, 7, trademark_line)
+            modified = True
+            print 'Updated name table record 7 from "%s" to "%s"' % (old_line, trademark_line)
+
+    if name_records[11] != NOTO_URL:
+        font_data.set_name_record(font, 11, NOTO_URL)
+        modified = True
+        print 'Updated name table record 11 to "%s"' % NOTO_URL
 
     # TODO: check preferred family/subfamily(16&17)
 
@@ -244,7 +263,9 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
     modified |= fix_name_table(font)
     modified |= fix_attachlist(font)
     modified |= fix_os2_unicoderange(font)
-    modified |= fix_linegap(font)
+    # leave line gap for non-noto fonts alone, metrics are more constrained there
+    if font_data.font_name(font).find('Noto') != -1:
+      modified |= fix_linegap(font)
 
     tables_to_drop = TABLES_TO_DROP
     if not is_hinted:

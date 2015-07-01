@@ -624,7 +624,7 @@ def check_font(file_name,
                  "Postscript name is '%s', but was expecting '%s'." % (
                      names[6], expected_postscript_name))
 
-        if tests.check('name/trademark') and names[7] != "Noto is a trademark of Google Inc.":
+        if tests.check('name/trademark') and names[7] != "%s is a trademark of Google Inc." % family:
             warn("Trademark",
                  "Trademark message doesn't match template: '%s'." % names[7])
 
