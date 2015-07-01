@@ -1711,7 +1711,7 @@ def check_font(file_name,
 
     just_the_file_name = file_name.split("/")[-1]
     fontname_regex = (
-        "(Noto|Tinos|Arimo)"
+        "(Noto|Arimo|Tinos|Cousine)"
         + "(?P<style>" + "|".join(FONT_STYLES) + ")?"
         + "(?P<script>" + make_compact_scripts_regex() + ")?"
         + "(?P<variant>" + "|".join(FONT_VARIANTS) + ")?"
