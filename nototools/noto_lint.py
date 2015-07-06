@@ -45,8 +45,7 @@ from nototools import opentype_data
 from nototools import render
 from nototools import unicode_data
 
-NOTO_URL = "http://code.google.com/p/noto/"
-NOTO_NEW_URL = "http://www.google.com/get/noto/"
+NOTO_URL = "http://www.google.com/get/noto/"
 
 # from wikipedia windows 1252 page.  As of windows 98.
 WIN_ANSI_CODEPOINTS = (
@@ -743,7 +742,8 @@ def check_font(font_props, filename_error,
         if tests.check('name/trademark'):
             if 7 not in names:
                 warn("Trademark", "Trademark in 'name' table is not set.")
-            elif font_props.is_google and names[7] != "%s is a trademark of Google Inc." % family:
+            elif font_props.is_google and (
+                names[7] != "%s is a trademark of Google Inc." % font_props.family):
                 warn("Trademark",
                      "Trademark message doesn't match template: '%s'." % names[7])
 
@@ -1825,8 +1825,6 @@ def check_font(font_props, filename_error,
 
     font_path = os.path.expanduser(font_props.file_path)
     font = ttLib.TTFont(font_path)
-
-    print font_props
 
     is_indic = font_props.script in {
         "Deva", "Beng", "Guru", "Gujr", "Orya",
