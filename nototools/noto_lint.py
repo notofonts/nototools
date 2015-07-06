@@ -2021,11 +2021,10 @@ def main():
 
 
     if not arguments.csv:
-        file_count = len(arguments.font_files)
-        if file_count == 1:
+        if count == 1:
             print "Finished linting 1 file."
         else:
-            print "Finished linting %d files." % file_count
+            print "Finished linting %d files." % count
 
 if __name__ == "__main__":
     main()
