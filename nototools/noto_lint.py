@@ -25,6 +25,7 @@ __author__ = (
 import argparse
 import collections
 import itertools
+import json
 import math
 import os
 import re
@@ -427,6 +428,17 @@ CJK_VARIANT_NAMES = {
     "CJKtc": "CJK TC"
 }
 
+CJK_VARIANT_TO_SCRIPT = {
+    "JP": "Jpan",
+    "KR": "Kore",
+    "SC": "Hans",
+    "TC": "Hant",
+    "CJKjp": "Jpan",
+    "CJKkr": "Kore",
+    "CJKsc": "Hans",
+    "CJKtc": "Hant"
+}
+
 HARD_CODED_FONT_INFO = {
     "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
     "DroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
@@ -451,7 +463,109 @@ DESCENT = -600
 
 _last_printed_file_name = None
 
-def check_font(file_name,
+
+def make_compact_scripts_regex(scripts=None):
+    """Creates a regular expression that accepts all compact scripts names.
+    """
+    if scripts == None:
+        scripts = all_scripts()
+    scripts = {human_readable_script_name(script).translate(None, '_ ') for script in scripts}
+    return '|'.join(scripts)
+
+
+FontProps = collections.namedtuple(
+'FontProps',
+'file_path, family, style, script, variant, weight, vendor, char_version, '
+'is_cjk, is_mono, is_hinted, is_ui, is_noto, is_google')
+
+
+def font_properties_from_name(file_path):
+    """Use the font name and parent directory to determine the following properties:
+    - file_path
+    - family
+    - style
+    - script (code)
+    - variant (e.g. UI)
+    - weight (and slant)
+    - vendor (used for vendor filter in lint_config)
+    - char_version (unicode version e.g. for script to codepoint mapping)
+    - is_cjk
+    - is_mono
+    - is_hinted
+    - is_ui
+    - is_noto
+    These are returned as a map."""
+
+    is_cjk = False
+    is_mono = False
+    is_google = True
+
+    filename_error = ''
+    # by default, don't require characters after this version
+    char_version = 6.0
+
+    file_name = file_path.split("/")[-1]
+    fontname_regex = (
+        "(Noto|Arimo|Tinos|Cousine)"
+        + "(?P<style>" + "|".join(FONT_STYLES) + ")?"
+        + "(?P<script>" + make_compact_scripts_regex() + ")?"
+        + "(?P<variant>" + "|".join(FONT_VARIANTS) + ")?"
+        + "-"
+        + "(?P<weight>" + "|".join(FONT_WEIGHTS) + ")"
+        + ".ttf$")
+    match = re.match(fontname_regex, file_name)
+    if match:
+        family, style, compact_script, variant, weight = match.groups()
+        if compact_script:
+          script = script_code(compact_script)
+          assert script != "Zzzz"
+        elif style in ["Sans", "Serif"]:
+            script = "Latn"  # LGC really
+        elif family != 'Noto':
+          script = "Latn" # LGC for Tinos and Arimo
+        else:
+            style, script, variant, weight = HARD_CODED_FONT_INFO[
+                file_name]
+            if style != '': # Emoji, OK for it to not have script
+              filename_error = 'script'
+    else:
+        cjkfontname_regex = (
+        "Noto"
+        + "(?P<style>" + "|".join(CJK_FONT_STYLES) + ")"
+        + "(?P<mono>Mono)?"
+        + "(?P<variant>" + "|".join(CJK_FONT_VARIANTS) + ")?"
+        + "-"
+        + "(?P<weight>" + "|".join(CJK_FONT_WEIGHTS) + ")"
+        + ".otf$")
+        match = re.match(cjkfontname_regex, file_name)
+        if match:
+            family = 'Noto'
+            style, mono, variant, weight = match.groups()
+            script = CJK_VARIANT_TO_SCRIPT[variant]
+            is_cjk = True
+            is_mono = (mono == "Mono")
+        else:
+            style, script, variant, weight = HARD_CODED_FONT_INFO[
+                file_name]
+            filename_error = 'name'
+
+    is_hinted = "/hinted" in file_path or "_hinted" in file_name
+
+    is_ui = (variant == "UI")
+
+    is_noto = family == 'Noto'
+    if not is_noto:
+      # for Arimo and Tinos, require coverage up to Unicode 8
+      char_version = 8.0
+
+    vendor = 'Adobe' if is_cjk else 'Monotype'
+
+    return (FontProps(file_path, family, style, script, variant, weight, vendor, char_version,
+                      is_cjk, is_mono, is_hinted, is_ui, is_noto, is_google),
+            filename_error)
+
+
+def check_font(font_props, filename_error,
                lint_spec, runlog=False, skiplog=False,
                csv_flag=False, info_flag=False,
                extrema_details=True):
@@ -459,7 +573,7 @@ def check_font(file_name,
     def warn(category, message, details=True):
         global _last_printed_file_name
 
-        interesting_part_of_file_name = ",".join(file_name.split("/")[-2:])
+        interesting_part_of_file_name = ",".join(font_props.file_path.split("/")[-2:])
         if interesting_part_of_file_name != _last_printed_file_name:
             _last_printed_file_name = interesting_part_of_file_name
             if not csv_flag:
@@ -497,10 +611,10 @@ def check_font(file_name,
 
         if csv_flag:
             print ('%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
-                human_readable_script_name(script),
-                style,
-                variant if variant else '',
-                weight,
+                human_readable_script_name(font_props.script),
+                font_props.style,
+                font_props.variant if font_props.variant else '',
+                font_props.weight,
                 font_data.get_name_records(font)[8].split()[0],
                 category,
                 interesting_part_of_file_name,
@@ -537,35 +651,35 @@ def check_font(file_name,
         if not tests.check('name'):
           return
 
-        if is_cjk:
+        if font_props.is_cjk:
            check_name_table_cjk()
            return
 
         names = font_data.get_name_records(font)
 
         # Check family name
-        expected_family_name = family
-        if style:
+        expected_family_name = font_props.family
+        if font_props.style:
             # emoji has no style
             # the name comes from the script alone
-            expected_family_name += ' ' + style
-        if script != 'Latn':
-            expected_family_name += ' ' + human_readable_script_name(script)
-        if variant:
-            expected_family_name += ' ' + variant
-        if weight == 'BoldItalic':
+            expected_family_name += ' ' + font_props.style
+        if font_props.script != 'Latn' and font_props.is_google:
+            expected_family_name += ' ' + human_readable_script_name(font_props.script)
+        if font_props.variant:
+            expected_family_name += ' ' + font_props.variant
+        if font_props.weight == 'BoldItalic':
             expected_subfamily_name = 'Bold Italic'
         else:
-            expected_subfamily_name = weight
+            expected_subfamily_name = font_props.weight
 
         expected_full_name = expected_family_name
         expected_postscript_name = expected_family_name.replace(' ', '')
-        if weight != 'Regular':
+        if font_props.weight != 'Regular':
             expected_full_name += ' ' + expected_subfamily_name
             expected_postscript_name += (
                 '-' + expected_subfamily_name.replace(' ', ''))
 
-        if tests.check('name/copyright') and not re.match(
+        if tests.check('name/copyright') and font_props.is_google and not re.match(
             r'Copyright 201\d Google Inc. All Rights Reserved.$', names[0]):
             warn("Copyright",
                  "Copyright message doesn't match template: '%s'." % names[0])
@@ -597,8 +711,9 @@ def check_font(file_name,
                     and (0 <= int(minor_version) <= 65535)):
                     match_end = names[5][match.end():]
                     if tests.check('name/version/hinted_suffix'):
-                        if ((is_hinted and match_end != "") or
-                            (not is_hinted and match_end not in ["", " uh"])):
+                        if (font_props.is_google and
+                            (font_props.is_hinted and match_end != "") or
+                            (not font_props.is_hinted and match_end not in ["", " uh"])):
                             warn(
                                 "Version",
                                 "Version string '%s' has extra characters at its end." %
@@ -624,9 +739,12 @@ def check_font(file_name,
                  "Postscript name is '%s', but was expecting '%s'." % (
                      names[6], expected_postscript_name))
 
-        if tests.check('name/trademark') and names[7] != "%s is a trademark of Google Inc." % family:
-            warn("Trademark",
-                 "Trademark message doesn't match template: '%s'." % names[7])
+        if tests.check('name/trademark'):
+            if 7 not in names:
+                warn("Trademark", "Trademark in 'name' table is not set.")
+            elif font_props.is_google and names[7] != "%s is a trademark of Google Inc." % family:
+                warn("Trademark",
+                     "Trademark message doesn't match template: '%s'." % names[7])
 
         if tests.check('name/manufacturer') and 8 not in names:
             warn("Manufacturer",
@@ -649,39 +767,47 @@ def check_font(file_name,
         if tests.check('name/designer_url'):
             if 12 not in names:
                 warn("Designer",
-                     "The Designer URL field in 'name' tables is not set.")
+                     "The Designer URL field in 'name' table is not set.")
             elif not names[12].startswith('http://'):
                 warn("Designer",
-                     "The Designer URL field in 'name' is not an "
+                     "The Designer URL field in 'name' table is not an "
                      "http URL: '%s'." % names[12])
 
-        if tests.check('name/license') and names[13] != "Licensed under the Apache License, Version 2.0":
-            warn("License",
-                 "License message doesn't match template: '%s'." % names[13])
+        if tests.check('name/license'):
+            if 13 not in names:
+                warn("License",
+                     "The License field in 'name' table is not set.")
+            elif names[13] != "Licensed under the Apache License, Version 2.0":
+                warn("License",
+                     "License message doesn't match template: '%s'." % names[13])
 
-        if tests.check('name/license_url') and names[14] != "http://www.apache.org/licenses/LICENSE-2.0":
-            warn("License",
-                 "License URL doesn't match template: '%s'." % names[14])
+        if tests.check('name/license_url'):
+            if 14 not in names:
+                warn("License",
+                     "The License URL in 'name' table is not set.")
+            elif names[14] != "http://www.apache.org/licenses/LICENSE-2.0":
+                warn("License",
+                     "License URL doesn't match template: '%s'." % names[14])
 
 
     def check_name_table_cjk():
         names = font_data.get_name_records(font)
 
         # Check family name
-        expected_family_name = 'Noto ' + style
-        if is_mono:
+        expected_family_name = 'Noto ' + font_props.style
+        if font_props.is_mono:
             expected_family_name += ' Mono'
-        if variant:
-            expected_family_name += ' ' + CJK_VARIANT_NAMES[variant]
-        expected_family_name += ' ' + weight # weight always included
+        if font_props.variant:
+            expected_family_name += ' ' + CJK_VARIANT_NAMES[font_props.variant]
+        expected_family_name += ' ' + font_props.weight # weight always included
 
         expected_subfamily_name = 'Regular' # all regular for now
 
         expected_full_name = expected_family_name
-        expected_postscript_name = 'Noto' + style
-        if is_mono:
+        expected_postscript_name = 'Noto' + font_props.style
+        if font_props.is_mono:
           expected_postscript_name += 'Mono'
-        expected_postscript_name += variant + '-' + weight
+        expected_postscript_name += font_props.variant + '-' + font_props.weight
 
         ADOBE_COPYRIGHT = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
                            u"\(http://www.adobe.com/\).")
@@ -789,38 +915,38 @@ def check_font(file_name,
         # https://www.microsoft.com/typography/otspec/recom.htm
 
         needed_chars = set()
-        if script == "Qaae":  # Emoji
+        if font_props.script == "Qaae":  # Emoji
             needed_chars = set()  # TODO: Check emoji coverage
-        elif script == "Zsym":  # Symbols
+        elif font_props.script == "Zsym":  # Symbols
             needed_chars = _symbol_set()
-        elif script == "Latn":  # LGC really
+        elif font_props.script == "Latn":  # LGC really
             needed_chars = (
                 unicode_data.defined_characters(scr="Latn")
                 | unicode_data.defined_characters(scr="Grek")
                 | unicode_data.defined_characters(scr="Cyrl"))
             needed_chars -= _symbol_set()
             needed_chars -= _cjk_set()
-        elif style == 'Nastaliq':
+        elif font_props.style == 'Nastaliq':
             needed_chars = noto_data.urdu_set()
         else:
-            needed_chars = unicode_data.defined_characters(scr=script)
+            needed_chars = unicode_data.defined_characters(scr=font_props.script)
             needed_chars -= _symbol_set()
 
-        needed_chars &= unicode_data.defined_characters(version=char_version)
+        needed_chars &= unicode_data.defined_characters(version=font_props.char_version)
 
-        if style != 'Nastaliq':
+        if font_props.style != 'Nastaliq':
             try:
-                needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[script])
+                needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[font_props.script])
             except KeyError:
                 pass
 
             try:
-                needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
+                needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[font_props.script])
             except KeyError:
                 pass
 
             try:
-                needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[script])
+                needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[font_props.script])
             except KeyError:
                 pass
 
@@ -849,7 +975,7 @@ def check_font(file_name,
         cmap_table = font['cmap']
         cmaps = {}
         expected_tables = [(4, 3, 1), (12, 3, 10)]
-        if is_cjk:
+        if font_props.is_cjk:
             expected_tables.extend([
                 # Adobe says historically some programs used these to identify
                 # the script in the font.  The encodingID is the quickdraw script
@@ -917,7 +1043,7 @@ def check_font(file_name,
                          "https://www.microsoft.com/typography/otspec/recom.htm)."
                              % code)
 
-        if not is_cjk and tests.check('cmap/script_required'):
+        if not font_props.is_cjk and tests.check('cmap/script_required'):
             _check_needed_chars(cmap, tests.get_filter('cmap/script_required'))
 
         if tests.check('cmap/private_use'):
@@ -941,7 +1067,10 @@ def check_font(file_name,
                      "there are: %s."
                          % printable_unicode_range(non_characters_in_cmap))
 
-        if tests.check('cmap/disallowed_ascii') and not (script == "Qaae" or script == "Latn" or is_cjk):
+        if tests.check('cmap/disallowed_ascii') and not (
+            font_props.script == "Qaae" or
+            font_props.script == "Latn" or
+            font_props.is_cjk):
             ascii_letters = noto_data.ascii_letters()
             contained_letters = ascii_letters & set(cmap.keys())
             if contained_letters:
@@ -982,7 +1111,7 @@ def check_font(file_name,
         hhea_table = font["hhea"]
 
         if tests.check('head/hhea'):
-            if is_ui or deemed_ui:
+            if font_props.is_ui or deemed_ui:
                 if tests.check('head/hhea/ascent') and hhea_table.ascent != ASCENT:
                     warn("Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
@@ -1038,13 +1167,14 @@ def check_font(file_name,
                      "from the opposite of value of Descent in 'hhea' table (%d), "
                      "but they should be opposites." %
                      (os2_table.usWinDescent, hhea_table.descent))
-            if tests.check('head/os2/achvendid') and os2_table.achVendID != 'GOOG':
+            if tests.check('head/os2/achvendid') and (
+                font_props.is_google and os2_table.achVendID != 'GOOG'):
                 warn("OS/2",
                      "Value of achVendID in the 'OS/2' table is %s, "
                      "but should be GOOG." %
                      os2_table.achVendID)
 
-            if is_cjk:
+            if font_props.is_cjk:
                 expected_weights = {
                     'black': 900,
                     'bold': 700,
@@ -1059,9 +1189,9 @@ def check_font(file_name,
                     'bold': 700,
                     'regular': 400
                 }
-            expected_weight = expected_weights.get(weight.lower())
+            expected_weight = expected_weights.get(font_props.weight.lower())
             if not expected_weight:
-                raise ValueError('unexpected weight: %s' % weight)
+                raise ValueError('unexpected weight: %s' % font_props.weight)
 
             if tests.check('head/os2/weight_class') and os2_table.usWeightClass != expected_weight:
                 warn("OS/2",
@@ -1138,7 +1268,7 @@ def check_font(file_name,
               descent_limit = typo_descent
               descent_name = 'sTypoDescent'
 
-            if is_ui or deemed_ui:
+            if font_props.is_ui or deemed_ui:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
                     ymax is not None and ymax > MAX_UI_HEIGHT):
                     warn(
@@ -1168,7 +1298,7 @@ def check_font(file_name,
                     (glyph_index, glyph_name, ymin, descent_name, descent_limit))
 
         if tests.check('bounds/font'):
-            if is_ui or deemed_ui:
+            if font_props.is_ui or deemed_ui:
                 if tests.check('bounds/font/ui_ymax') and font_ymax > MAX_UI_HEIGHT:
                     warn("Bounds", "Real yMax is %d, but it should be less "
                          "than or equal to %d." % (font_ymax, MAX_UI_HEIGHT))
@@ -1408,7 +1538,7 @@ def check_font(file_name,
           "Vai",
           "Yi",
         ]
-        if not is_cjk and human_readable_script_name(script) in whitelist:
+        if not font_props.is_cjk and human_readable_script_name(font_props.script) in whitelist:
             return
         if tests.check('complex/gpos/missing') and ("GPOS" not in font):
             warn("GPOS", "There is no GPOS table in the font.")
@@ -1495,7 +1625,7 @@ def check_font(file_name,
             return
         if not tests.check('hints'):
             return
-        expected_to_be_hinted = '/hinted' in file_name or '_hinted' in file_name
+        expected_to_be_hinted = font_props.is_hinted
         expected_to_be_unhinted = not expected_to_be_hinted
 
         # There should be no fpgm, prep, or cvt tables in unhinted fonts
@@ -1581,7 +1711,7 @@ def check_font(file_name,
                     if width != digit_width:
                         warn("Advances",
                              "The advance of '%s' (%d) is different from that of '0' (%d)." %
-                             (digit, width, digit_width))
+                             (chr(digit), width, digit_width))
 
         if period_char in cmap:
             period_width = get_horizontal_advance(period_char)
@@ -1686,100 +1816,34 @@ def check_font(file_name,
                      "The following %d glyphs are unreachable in the font: %s." %
                      (len(reported_glyphs), report_info))
 
-    def make_compact_scripts_regex(scripts=None):
-        """Creates a regular expression that accepts all compact scripts names.
-        """
-        if scripts == None:
-            scripts = all_scripts()
-        scripts = {human_readable_script_name(script).translate(None, '_ ') for script in scripts}
-        return '|'.join(scripts)
-
     ### actual start of check_font fn
 
     # python 2.7 does not have nonlocal, so hack around it
     suppressed_err_count = [0]
     err_count = [0]
 
-    font = ttLib.TTFont(file_name)
+    font_path = os.path.expanduser(font_props.file_path)
+    font = ttLib.TTFont(font_path)
 
-    is_cjk = False
-    is_mono = False
+    print font_props
 
-    filename_error = ''
-    # by default, don't require characters after this version
-    char_version = 6.0
-
-    just_the_file_name = file_name.split("/")[-1]
-    fontname_regex = (
-        "(Noto|Arimo|Tinos|Cousine)"
-        + "(?P<style>" + "|".join(FONT_STYLES) + ")?"
-        + "(?P<script>" + make_compact_scripts_regex() + ")?"
-        + "(?P<variant>" + "|".join(FONT_VARIANTS) + ")?"
-        + "-"
-        + "(?P<weight>" + "|".join(FONT_WEIGHTS) + ")"
-        + ".ttf$")
-    match = re.match(fontname_regex, just_the_file_name)
-    if match:
-        family, style, compact_script, variant, weight = match.groups()
-        if compact_script:
-          script = script_code(compact_script)
-          assert script != "Zzzz"
-        elif style in ["Sans", "Serif"]:
-            script = "Latn"  # LGC really
-        elif family != 'Noto':
-          script = "Latn" # LGC for Tinos and Arimo
-        else:
-            style, script, variant, weight = HARD_CODED_FONT_INFO[
-                just_the_file_name]
-            if style != '': # Emoji, OK for it to not have script
-              filename_error = 'script'
-    else:
-        cjkfontname_regex = (
-        "Noto"
-        + "(?P<style>" + "|".join(CJK_FONT_STYLES) + ")"
-        + "(?P<mono>Mono)?"
-        + "(?P<variant>" + "|".join(CJK_FONT_VARIANTS) + ")?"
-        + "-"
-        + "(?P<weight>" + "|".join(CJK_FONT_WEIGHTS) + ")"
-        + ".otf$")
-        match = re.match(cjkfontname_regex, just_the_file_name)
-        family = 'Noto'
-        if match:
-            style, mono, variant, weight = match.groups()
-            script = None
-            is_cjk = True
-            is_mono = (mono == "Mono")
-        else:
-            style, script, variant, weight = HARD_CODED_FONT_INFO[
-                just_the_file_name]
-            filename_error = 'name'
-
-    is_hinted = "/hinted" in file_name or "_hinted" in file_name
-
-    is_ui = (variant == "UI")
-
-    is_noto = family == 'Noto'
-    if not is_noto:
-      # for Arimo and Tinos, require coverage up to Unicode 8
-      char_version = 8.0
-
-    is_indic = script in {
+    is_indic = font_props.script in {
         "Deva", "Beng", "Guru", "Gujr", "Orya",
         "Taml", "Telu", "Knda", "Mlym", "Sinh"}
 
-    deemed_ui = (not is_ui) and script in noto_data.DEEMED_UI_SCRIPTS_SET
+    deemed_ui = (not font_props.is_ui) and font_props.script in noto_data.DEEMED_UI_SCRIPTS_SET
 
     fi = lint_config.FontInfo(
-        filename=just_the_file_name,
-        name=family,
-        style=style,
-        script=script,
-        variant=variant,
-        weight=weight,
-        monospace=is_mono,
-        hinted=is_hinted,
-        vendor='Adobe' if is_cjk else 'Monotype',
-        version=printable_font_revision(font, accuracy=3 if is_cjk else 2))
+        filename=os.path.basename(font_props.file_path),
+        name=font_props.family,
+        style=font_props.style,
+        script=font_props.script,
+        variant=font_props.variant,
+        weight=font_props.weight,
+        monospace=font_props.is_mono,
+        hinted=font_props.is_hinted,
+        vendor=font_props.vendor,
+        version=printable_font_revision(font, accuracy=3 if font_props.vendor == 'Adobe' else 2))
     tests = lint_spec.get_tests(fi)
 
     if filename_error:
@@ -1790,7 +1854,7 @@ def check_font(file_name,
         elif filename_error == 'name' and tests.check('filename/name'):
             warn("File name",
                  "File name '%s' does not match the Noto font naming guidelines."
-                 % just_the_file_name)
+                 % file_name)
 
 
     check_name_table()
@@ -1847,6 +1911,16 @@ def get_lint_spec(spec_file, extra_specs):
   return lint_config.parse_spec(extra_specs, spec)
 
 
+def parse_font_props(font_props_file):
+  """Return a list of FontProps objects."""
+  with open(font_props_file) as f:
+    font_spec = f.read()
+  spec_data = json.loads(font_spec)
+  return [FontProps(**m) for m in spec_data]
+
+def write_font_props(font_props):
+  print json.dumps(font_props._asdict())
+
 def main():
     default_config_file = notoconfig.values.get('lint_config')
     if not default_config_file:
@@ -1875,8 +1949,12 @@ def main():
     parser.add_argument(
         "font_files",
         metavar="font",
-        nargs="+",
-        help="a font file to check")
+        nargs="*",
+        help="a font file to check, can omit if font_spec is provided")
+    parser.add_argument(
+        "--font_props_file",
+        metavar="file",
+        help="file containing json describing font file paths and expected properties")
     parser.add_argument(
         "--config_file",
         help="location of config file (default %s, 'None' for none)" % default_config_file,
@@ -1894,8 +1972,21 @@ def main():
         "--skiplog",
         help="show tags of skipped tests",
         action="store_true")
+    parser.add_argument(
+        "--dump_font_props",
+        help="write font props for files",
+        action="store_true")
 
     arguments = parser.parse_args()
+
+    if arguments.dump_font_props:
+        for font_file_path in arguments.font_files:
+            font_props, filename_error = font_properties_from_name(font_file_path)
+            if filename_error:
+                print '#Error for %s: %s' % (font_file_path, filename_error)
+            else:
+                write_font_props(font_props)
+        return
 
     lint_spec = get_lint_spec(arguments.config_file, arguments.config)
 
@@ -1903,14 +1994,30 @@ def main():
         print("Script,Style,Variant,Weight,Manufacturer,Category,Hint Status,"
             "File Name,Revision,Issue")
 
-    for font_file_name in arguments.font_files:
-        check_font(font_file_name,
+    for font_file_path in arguments.font_files:
+        font_props, filename_error = font_properties_from_name(font_file_path)
+        check_font(font_props,
+                   filename_error,
                    lint_spec,
                    arguments.runlog,
                    arguments.skiplog,
                    arguments.csv,
                    arguments.info,
                    arguments.extrema_details)
+    count = len(arguments.font_files)
+    if arguments.font_props_file:
+        font_props_list = parse_font_props(arguments.font_props_file)
+        count += len(font_props_list)
+        for font_props in font_props_list:
+             check_font(font_props,
+                        '',
+                        lint_spec,
+                        arguments.runlog,
+                        arguments.skiplog,
+                        arguments.csv,
+                        arguments.info,
+                        arguments.extrema_details)
+
 
     if not arguments.csv:
         file_count = len(arguments.font_files)
