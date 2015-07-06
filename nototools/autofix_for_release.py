@@ -212,6 +212,9 @@ def fix_path(file_path, is_hinted):
     # fix SansEmoji
     file_path = re.sub('NotoSansEmoji', 'NotoEmoji', file_path)
 
+    # fix Nastaliq
+    file_path = re.sub('Nastaliq-', 'NastaliqUrdu-', file_path)
+
     return file_path
 
 
