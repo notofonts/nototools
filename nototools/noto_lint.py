@@ -452,7 +452,8 @@ HARD_CODED_FONT_INFO = {
     "NotoSansKufiArabic-Regular.ttf": ("Kufi", "Arab", None, "Regular"),
     "NotoSansKufiArabic-Bold.ttf": ("Kufi", "Arab", None, "Bold"),
     "NotoSansSymbols-Regular.ttf": ("Sans", "Zsym", None, "Regular"),
-    "NotoNastaliqUrduDraft.ttf": ("Nastaliq", "Urdu", None, "Regular")
+    "NotoNastaliqUrduDraft.ttf": ("Nastaliq", "Urdu", None, "Regular"),
+    "NotoNastaliq-Regular.ttf": ("Nastaliq", "Urdu", None, "Regular")
 }
 
 MAX_UI_HEIGHT = 2163
@@ -1850,11 +1851,11 @@ def check_font(font_props, filename_error,
         if filename_error == 'script' and tests.check('filename/script'):
             warn("File name",
                  "Style %s also needs a script mentioned in the "
-                 "file name." % style)
+                 "file name." % font_props.style)
         elif filename_error == 'name' and tests.check('filename/name'):
             warn("File name",
                  "File name '%s' does not match the Noto font naming guidelines."
-                 % file_name)
+                 % os.path.basename(font_props.file_path))
 
 
     check_name_table()

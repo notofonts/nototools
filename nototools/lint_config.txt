@@ -17,6 +17,10 @@ disable bounds/font/ui_ymin
 enable bounds/glyph/ymax except gid 801-818 829-831 865 868-878
 disable bounds/font/ymax
 
+filename like Nastaliq
+# TODO: (dougfelt) find a better way of making these exceptions
+enable bounds/glyph/ymin except gid 222 223 250 280 882 887 950 959 974
+
 filename like Tamil
 enable script_required except cp 951-952 1cda a8f3
 
