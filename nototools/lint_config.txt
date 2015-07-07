@@ -3,6 +3,7 @@ disable head/os2/unicoderange
 
 vendor Monotype
 disable trademark # we can swat this ourselves
+disable vendor_url # we just changed this, and can swat it ourselves
 disable extrema
 
 filename like Avestan
@@ -17,6 +18,9 @@ disable bounds/font/ui_ymin
 enable bounds/glyph/ymax except gid 801-818 829-831 865 868-878
 disable bounds/font/ymax
 
+filename like Emoji
+disable filename/name
+
 filename like Nastaliq
 # TODO: (dougfelt) find a better way of making these exceptions
 enable bounds/glyph/ymin except gid 222 223 250 280 882 887 950 959 974
@@ -30,6 +34,7 @@ enable reachable except gid 611
 
 filename like Symbols
 disable filename/name
+
 
 condition
 vendor Adobe

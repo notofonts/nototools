@@ -538,8 +538,8 @@ def font_properties_from_name(file_path):
         + "(?P<weight>" + "|".join(CJK_FONT_WEIGHTS) + ")"
         + ".otf$")
         match = re.match(cjkfontname_regex, file_name)
+        family = 'Noto'
         if match:
-            family = 'Noto'
             style, mono, variant, weight = match.groups()
             script = CJK_VARIANT_TO_SCRIPT[variant]
             is_cjk = True
@@ -956,20 +956,15 @@ def check_font(font_props, filename_error,
 
         if char_filter:
             # old_needed_size = len(needed_chars)
-            needed_chars = set(itertools.ifilter(char_filter.accept, needed_chars))
+            needed_chars = set(itertools.ifilter(char_filter[1].accept, needed_chars))
             # TODO(dougfelt): figure out how to make this info available without messing up output
             # print 'filter needed char size: %d -> %d' % (old_needed_size, len(needed_chars))
 
         missing_chars = needed_chars - set(cmap.keys())
         if missing_chars:
-            if len(missing_chars) > 100:
-                warn("Chars",
-                     "Over 100 characters are missing from the font: %s."
-                     % ", ".join(printable_unicode_range(missing_chars).split(", ")[:5]) + "...")
-            else:
-                warn("Chars",
-                     "The following characters are missing from the font: %s."
-                         % printable_unicode_range(missing_chars))
+            warn("Chars",
+                 "The following %d characters are missing from the font: %s."
+                 % (len(missing_chars), printable_unicode_range(missing_chars)))
 
 
     def check_cmap_table():
@@ -1188,6 +1183,8 @@ def check_font(font_props, filename_error,
             else:
                 expected_weights = {
                     'bold': 700,
+                    'bolditalic': 700,
+                    'italic': 400,
                     'regular': 400
                 }
             expected_weight = expected_weights.get(font_props.weight.lower())
@@ -1291,7 +1288,7 @@ def check_font(font_props, filename_error,
                     "the font's %s (%d), resulting in clipping." %
                     (glyph_index, glyph_name, ymax, ascent_name, ascent_limit))
             if (tests.checkvalue('bounds/glyph/ymin', glyph_index) and ymin is not None and
-                ymin < -us_win_descent):
+                ymin < descent_limit):
                 warn(
                     "Bounds",
                     "Real yMin for glyph %d (%s) is %d, which is lower than "
@@ -1692,7 +1689,7 @@ def check_font(font_props, filename_error,
                     glyph_name = cmap[codepoint]
                     glyph_id = font.getGlyphID(glyph_name)
                     warn("Advances",
-                         "The advance of U+%04x (%s, glyph %d) is %d, but expected between"
+                         "The advance of U+%04x (%s, glyph %d) is %d, but expected between "
                          "%d and %d." % (codepoint, glyph_name, glyph_id, adv, low_exp,
                                          high_exp))
 
