@@ -124,6 +124,7 @@ BCP_FIXES = {
   'cjk': [('cjk', 'cjk'), ('cjk-AO', 'cjk_AO')],
   'fa': 'pes_2', #drop pes_1
   'ht': [('ht-popular', 'hat_popular'), ('ht-kreyol', 'hat_kreyol')],
+  'hus': 'hus', # drop hva, hsf
   'kg': [('kg', 'kng'), ('kg-AO', 'kng_AO')],
   'la': 'lat', # drop lat_1
   'ln': 'lin_tones', # drop lin
@@ -139,7 +140,9 @@ def fix_index(bcp_to_codes):
   a mapping from one bcp47 code to one file code."""
   result = {}
   for k, v in bcp_to_codes.iteritems():
-    if len(v) == 1:
+    if k == 'und':
+      print 'skip und'
+    elif len(v) == 1:
       result[k] = next(iter(v))
     elif not k in BCP_FIXES:
       print 'No fix for %s (%s)' % (k, v)
@@ -335,7 +338,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
     raise ValueError('Please clean %s.' % sample_dir)
 
   if in_repo:
-    repo, subdir = path.split(sample_dir)
+    repo, subdir = os.path.split(sample_dir)
     tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
 
   comments = [
