@@ -124,6 +124,7 @@ BCP_FIXES = {
   'cjk': [('cjk', 'cjk'), ('cjk-AO', 'cjk_AO')],
   'fa': 'pes_2', #drop pes_1
   'ht': [('ht-popular', 'hat_popular'), ('ht-kreyol', 'hat_kreyol')],
+  'hus': 'hus', # drop hva, hsf
   'kg': [('kg', 'kng'), ('kg-AO', 'kng_AO')],
   'la': 'lat', # drop lat_1
   'ln': 'lin_tones', # drop lin
@@ -139,7 +140,9 @@ def fix_index(bcp_to_codes):
   a mapping from one bcp47 code to one file code."""
   result = {}
   for k, v in bcp_to_codes.iteritems():
-    if len(v) == 1:
+    if k == 'und':
+      print 'skip und'
+    elif len(v) == 1:
       result[k] = next(iter(v))
     elif not k in BCP_FIXES:
       print 'No fix for %s (%s)' % (k, v)
@@ -317,9 +320,9 @@ def fix_sample(sample, bcp):
     return sample
 
   if new_sample == sample:
-    print 'sample for %s was not changed' % bcp
+    print 'sample for %s was not changed by fix' % bcp
   else:
-    print 'changed sample for %s' % bcp
+    print 'fixed sample for %s' % bcp
   return new_sample
 
 
@@ -335,8 +338,9 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
     raise ValueError('Please clean %s.' % sample_dir)
 
   if in_repo:
-    repo, subdir = path.split(sample_dir)
+    repo, subdir = os.path.split(sample_dir)
     tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
+    print 'only allowing overwrite of:\n  %s' % '\n  '.join(sorted(tool_samples))
 
   comments = [
     '# Attributions for sample excerpts:',
@@ -355,24 +359,24 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
     src_path = os.path.join(udhr_dir, src_file)
     dst_path = os.path.join(sample_dir, dst_file)
     sample = extract_para(src_path)
-    sample = fix_sample(sample, bcp)
     if not sample:
       print 'unable to get sample from %s' % src_file
       return
-    if in_repo and dst_file not in tool_samples:
-      print 'cannot overwrite modified file %s' % dst_file
+    if in_repo and os.path.isfile(dst_path) and dst_file not in tool_samples:
+      print 'Not overwriting modified file %s' % dst_file
     else:
+      sample = fix_sample(sample, bcp)
       with codecs.open(dst_path, 'w', 'utf8') as f:
         f.write(sample)
       print 'created sample %s from %s' % (dst_file, src_file)
-    sample_attrib_list.append('%s: %s' % (dst_file, attrib))
-    count += 1
+      count += 1
+    sample_attrib_list.append('%s: %s\n' % (dst_file, attrib))
   print 'Created %d samples' % count
 
   # Some existing samples that we don't overwrite are not in bcp_to_code_attrib,
   # so they're not listed.  Readers of the attributions.txt file will need to
   # default these to 'none'.
-  attrib_data = '\n'.join(comments + sorted(sample_attrib_list))
+  attrib_data = ''.join(comments + sorted(sample_attrib_list))
   with open(os.path.join(sample_dir, 'attributions.txt'), 'w') as f:
     f.write(attrib_data)
 
@@ -381,7 +385,11 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
 
   date = datetime.datetime.now().strftime('%Y-%m-%d')
   dst = 'in %s ' % sample_dir if not in_repo else ''
-  print 'Update sample files %sfrom %s as of %s.' % (dst, udhr_dir, date)
+  noto_ix = udhr_dir.find('nototools')
+  src = udhr_dir if noto_ix == -1 else udhr_dir[noto_ix:]
+
+  # prefix of this sample commit message indicates that these were tool-generated
+  print 'Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date)
 
 
 def get_scripts(text):
@@ -470,6 +478,9 @@ def compare_samples(src_dir, trg_dir, trg_to_src_name=lambda x: x, opts=None):
   show_diffs = opts and 'diffs' in opts
 
   for trg_name in os.listdir(trg_dir):
+    if trg_name == 'attributions.txt':
+      continue
+
     trg_path = os.path.join(trg_dir, trg_name)
     if not (os.path.isfile(trg_path) and trg_name.endswith('.txt')):
       continue
