@@ -320,9 +320,9 @@ def fix_sample(sample, bcp):
     return sample
 
   if new_sample == sample:
-    print 'sample for %s was not changed' % bcp
+    print 'sample for %s was not changed by fix' % bcp
   else:
-    print 'changed sample for %s' % bcp
+    print 'fixed sample for %s' % bcp
   return new_sample
 
 
@@ -361,7 +361,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
     if not sample:
       print 'unable to get sample from %s' % src_file
       return
-    if in_repo and dst_file not in tool_samples:
+    if in_repo and os.path.isfile(dst_file) and dst_file not in tool_samples:
       print 'Not overwriting modified file %s' % dst_file
     else:
       sample = fix_sample(sample, bcp)
@@ -477,6 +477,9 @@ def compare_samples(src_dir, trg_dir, trg_to_src_name=lambda x: x, opts=None):
   show_diffs = opts and 'diffs' in opts
 
   for trg_name in os.listdir(trg_dir):
+    if trg_name == 'attributions.txt':
+      continue
+
     trg_path = os.path.join(trg_dir, trg_name)
     if not (os.path.isfile(trg_path) and trg_name.endswith('.txt')):
       continue
