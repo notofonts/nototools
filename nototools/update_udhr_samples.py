@@ -340,7 +340,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   if in_repo:
     repo, subdir = os.path.split(sample_dir)
     tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
-    print 'not overwriting:\n  %s' % '\n  '.join(sorted(tool_samples))
+    print 'only allowing overwrite of:\n  %s' % '\n  '.join(sorted(tool_samples))
 
   comments = [
     '# Attributions for sample excerpts:',
@@ -362,7 +362,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
     if not sample:
       print 'unable to get sample from %s' % src_file
       return
-    if in_repo and os.path.isfile(dst_file) and dst_file not in tool_samples:
+    if in_repo and os.path.isfile(dst_path) and dst_file not in tool_samples:
       print 'Not overwriting modified file %s' % dst_file
     else:
       sample = fix_sample(sample, bcp)
