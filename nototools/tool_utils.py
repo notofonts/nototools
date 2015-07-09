@@ -117,7 +117,8 @@ def generate_zip_with_7za_from_filepairs(pairs, archive_path):
 def dos2unix(root_dir, glob_list):
   """Convert dos line endings to unix ones in place."""
   with temp_chdir(root_dir):
-    subprocess.check_call(['dos2unix', '-o'] + glob_list)
+    # use shell instead of walking through the list and calling glob and extending...
+    subprocess.check_call(['dos2unix', '-o'] + glob_list, shell=True)
 
 
 def zip_extract_with_timestamp(zippath, dstdir):
