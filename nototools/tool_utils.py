@@ -16,6 +16,7 @@
 
 import contextlib
 import datetime
+import glob
 import os
 import os.path as path
 import re
@@ -117,8 +118,10 @@ def generate_zip_with_7za_from_filepairs(pairs, archive_path):
 def dos2unix(root_dir, glob_list):
   """Convert dos line endings to unix ones in place."""
   with temp_chdir(root_dir):
-    # use shell instead of walking through the list and calling glob and extending...
-    subprocess.check_call(['dos2unix', '-o'] + glob_list, shell=True)
+    for g in glob_list:
+      file_list = glob.glob(g)
+      if file_list:
+        subprocess.check_call(['dos2unix', '-k', '-q', '-o'] + file_list)
 
 
 def zip_extract_with_timestamp(zippath, dstdir):
