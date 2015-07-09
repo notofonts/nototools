@@ -358,18 +358,18 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
     src_path = os.path.join(udhr_dir, src_file)
     dst_path = os.path.join(sample_dir, dst_file)
     sample = extract_para(src_path)
-    sample = fix_sample(sample, bcp)
     if not sample:
       print 'unable to get sample from %s' % src_file
       return
     if in_repo and dst_file not in tool_samples:
-      print 'cannot overwrite modified file %s' % dst_file
+      print 'Not overwriting modified file %s' % dst_file
     else:
+      sample = fix_sample(sample, bcp)
       with codecs.open(dst_path, 'w', 'utf8') as f:
         f.write(sample)
       print 'created sample %s from %s' % (dst_file, src_file)
+      count += 1
     sample_attrib_list.append('%s: %s' % (dst_file, attrib))
-    count += 1
   print 'Created %d samples' % count
 
   # Some existing samples that we don't overwrite are not in bcp_to_code_attrib,
@@ -384,7 +384,11 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
 
   date = datetime.datetime.now().strftime('%Y-%m-%d')
   dst = 'in %s ' % sample_dir if not in_repo else ''
-  print 'Update sample files %sfrom %s as of %s.' % (dst, udhr_dir, date)
+  noto_ix = udhr_dir.find('nototools')
+  src = udhr_dir if noto_ix == -1 else udhr_dir[noto_ix:]
+
+  # prefix of this sample commit message indicates that these were tool-generated
+  print 'Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date)
 
 
 def get_scripts(text):
