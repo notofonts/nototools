@@ -340,6 +340,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   if in_repo:
     repo, subdir = os.path.split(sample_dir)
     tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
+    print 'not overwriting:\n  %s' % '\n  '.join(sorted(tool_samples))
 
   comments = [
     '# Attributions for sample excerpts:',
