@@ -63,6 +63,9 @@ def update_udhr(udhr_dir, fetch_dir, in_repo):
   os.makedirs(udhr_dir)
   tool_utils.zip_extract_with_timestamp(zippath, udhr_dir)
 
+  # dos line endings, sheesh
+  tool_utils.dos2unix(udhr_dir, ['*.xml', '*.rnc', '*.rng'])
+
   if in_repo:
     tool_utils.git_add_all(udhr_dir)
 
@@ -91,9 +94,7 @@ def parse_index(src_dir):
     if s < 3:
       continue
 
-    l = e.attrib.get('l')
-    v = e.attrib.get('v')
-    code = l + ('_' + v if v else '')
+    code = e.attrib.get('f')
 
     bcp = e.attrib.get('bcp47')
     if not bcp:
