@@ -370,13 +370,13 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
         f.write(sample)
       print 'created sample %s from %s' % (dst_file, src_file)
       count += 1
-    sample_attrib_list.append('%s: %s' % (dst_file, attrib))
+    sample_attrib_list.append('%s: %s\n' % (dst_file, attrib))
   print 'Created %d samples' % count
 
   # Some existing samples that we don't overwrite are not in bcp_to_code_attrib,
   # so they're not listed.  Readers of the attributions.txt file will need to
   # default these to 'none'.
-  attrib_data = '\n'.join(comments + sorted(sample_attrib_list))
+  attrib_data = ''.join(comments + sorted(sample_attrib_list))
   with open(os.path.join(sample_dir, 'attributions.txt'), 'w') as f:
     f.write(attrib_data)
 
