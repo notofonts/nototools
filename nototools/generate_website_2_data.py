@@ -103,9 +103,12 @@ def noto_font_path_to_info(font_path):
   match = _NOTO_FONT_NAME_REGEX.match(filename)
   if match:
     family, mono, script, variant, weight, slope, fmt = match.groups()
-  elif filename == 'NotoNastaliqUrduDraft.ttf':
-    family, mono, script, variant, weight, slope, fmt = (
-        'Nastaliq', None, 'Aran', None, 'Regular', None, 'ttf')
+    # Currently, this code uses 'Aran' as the stand-in script for Arabic written
+    # using Nastaliq.  The font naming uses 'Urdu' which is not a script, but
+    # a language. Not clear which is better, we should just decide on one.
+    # For now, we remap.
+    if family == 'Nastaliq' and script == 'Urdu':
+      script = 'Aran'
   else:
     if filename not in ['NotoSansCJK.ttc.zip']:
       print '%s did not match font regex' % filename
@@ -334,7 +337,7 @@ def get_used_lang_data(supported_scripts):
   known_langs = set(cldr_data.known_langs())
   for lang in lang_to_additional_script:
     if not lang in known_langs:
-      print 'lang %s not in known langs' % lang
+      print 'lang %s not in known langs, adding' % lang
       known_langs.add(lang)
 
   for lang in known_langs:
