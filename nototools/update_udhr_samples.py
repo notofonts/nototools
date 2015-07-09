@@ -63,6 +63,9 @@ def update_udhr(udhr_dir, fetch_dir, in_repo):
   os.makedirs(udhr_dir)
   tool_utils.zip_extract_with_timestamp(zippath, udhr_dir)
 
+  # dos line endings, sheesh
+  tool_utils.dos2unix(udhr_dir, ['*.xml', '*.rnc', '*.rng'])
+
   if in_repo:
     tool_utils.git_add_all(udhr_dir)
 
@@ -91,9 +94,7 @@ def parse_index(src_dir):
     if s < 3:
       continue
 
-    l = e.attrib.get('l')
-    v = e.attrib.get('v')
-    code = l + ('_' + v if v else '')
+    code = e.attrib.get('f')
 
     bcp = e.attrib.get('bcp47')
     if not bcp:
@@ -325,12 +326,17 @@ def fix_sample(sample, bcp):
 def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   """Create samples in sample_dir from the sources in udhr_dir,
   based on the bcp_to_code mapping.  Stage if sample_dir is in the
-  repo."""
+  repo.  If sample_dir is in the repo, don't overwrite samples whose
+  most recent log entry does not start with 'Updated by tool'"""
 
   tool_utils.check_dir_exists(udhr_dir)
 
   if in_repo and os.path.isdir(sample_dir) and not tool_utils.git_is_clean(sample_dir):
     raise ValueError('Please clean %s.' % sample_dir)
+
+  if in_repo:
+    repo, subdir = path.split(sample_dir)
+    tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
 
   comments = [
     '# Attributions for sample excerpts:',
@@ -345,7 +351,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   for bcp, (code, attrib) in bcp_to_code_attrib.iteritems():
     text = None
     src_file = 'udhr_%s.xml' % code
-    dst_file = '%s.txt' % bcp
+    dst_file = '%s_udhr.txt' % bcp
     src_path = os.path.join(udhr_dir, src_file)
     dst_path = os.path.join(sample_dir, dst_file)
     sample = extract_para(src_path)
@@ -353,12 +359,14 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
     if not sample:
       print 'unable to get sample from %s' % src_file
       return
+    if in_repo and dst_file not in tool_samples:
+      print 'cannot overwrite modified file %s' % dst_file
     else:
       with codecs.open(dst_path, 'w', 'utf8') as f:
         f.write(sample)
       print 'created sample %s from %s' % (dst_file, src_file)
-      sample_attrib_list.append('%s: %s' % (bcp, attrib))
-      count += 1
+    sample_attrib_list.append('%s: %s' % (dst_file, attrib))
+    count += 1
   print 'Created %d samples' % count
 
   # Some existing samples that we don't overwrite are not in bcp_to_code_attrib,
@@ -537,6 +545,9 @@ def main():
   4) use -c --sample_dir=/tmp/foo to compare the staged samples
   5) tweak the mapping, use -m to see that it's doing what we want
   6) use --us to generate the samples and stage them to [tools]/sample_texts
+
+  This will not overwrite samples whose most recent log entry does
+  not start with 'Updated by tool'.
   """
 
   parser = argparse.ArgumentParser(epilog=epilog,
