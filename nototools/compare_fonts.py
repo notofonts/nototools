@@ -51,12 +51,15 @@ def _get_excluded_chars():
   # we skip Arabic and Hebrew characters
   global _excluded_chars
   if not _excluded_chars:
-    arabic_ranges = '[\u0600-\u06ff \u0750-\u076d \ufb50-\ufdff \ufe70-\ufefc]'
-    arabic_set = set([ord(cp) for cp in cldr_data.unicode_set_string_to_list(arabic_ranges)])
+    arabic_ranges = '[\u0600-\u06ff \u0750-\u077f \u08a0-\u08ff \ufb50-\ufdff \ufe70-\ufefc]'
+    arabic_set = frozenset([ord(cp) for cp in cldr_data.unicode_set_string_to_list(arabic_ranges)])
     # includes sheqel sign, omit?
     hebrew_ranges = '[\u0590-\u05ff \u20aa \ufb1d-\ufb4f]'
-    hebrew_set = set([ord(cp) for cp in cldr_data.unicode_set_string_to_list(hebrew_ranges)])
-    _excluded_chars = frozenset(arabic_set | hebrew_set)
+    hebrew_set = frozenset([ord(cp) for cp in cldr_data.unicode_set_string_to_list(hebrew_ranges)])
+    armenian_ranges = '[\u0530-\u058f \ufb13-\ufb17]'
+    armenian_set = frozenset([ord(cp) for cp in cldr_data.unicode_set_string_to_list(armenian_ranges)])
+    private_use_set = frozenset(range(0xe000, 0xf900))
+    _excluded_chars = frozenset(arabic_set | hebrew_set | armenian_set | private_use_set)
   return _excluded_chars
 
 
@@ -114,13 +117,14 @@ class FontCompare(object):
     target_version = font_data.printable_font_revision(target)
     test_version = font_data.printable_font_revision(test)
 
-    names = font_data.get_name_records(test)
-    self._log('target version: %s' % target_version)
-    self._log('test name: %s %s, version %s' % (names[1], names[2], test_version))
+    target_names = font_data.get_name_records(target)
+    test_names = font_data.get_name_records(test)
+    self._log('target name: %s %s, version: %s' % (target_names[1], target_names[2], target_version))
+    self._log('test name: %s %s, version %s' % (test_names[1], test_names[2], test_version))
 
     if emit_config:
-      font_family = names[1]
-      font_subfamily = names[2].replace(' ', '')
+      font_family = test_names[1]
+      font_subfamily = test_names[2].replace(' ', '')
       self._config('name like %s; weight like %s; version == %s' %
                    (font_family, font_subfamily, test_version))
 
@@ -278,6 +282,8 @@ class FontCompare(object):
     # complicated to do this.  For now we'll just check the directly mapped glyphs.
     differences = []
     for cp in self.target_chars:
+      if cp not in self.test_cmap:
+        continue
       target_glyph_name = self.target_cmap[cp]
       test_glyph_name = self.test_cmap[cp]
       target_glyph = target_glyf[target_glyph_name]
@@ -455,7 +461,7 @@ def check_font(target_file, test_file, incremental_version=False, emit_config=Fa
               enabled_tests).check_all()
 
 
-def get_reference_name(name):
+def get_reference_name_1(name):
     m = name_re.match(name)
     if not m:
       raise ValueError('font name %s does not match expected pattern' % name)
@@ -473,12 +479,33 @@ def get_reference_name(name):
     return target_family + target_style + '.ttf'
 
 
+_ref_name_2_map = {
+    'Arimo-Regular.ttf': 'arial.ttf',
+    'Arimo-Bold.ttf': 'arialbd.ttf',
+    'Arimo-Italic.ttf': 'ariali.ttf',
+    'Arimo-BoldItalic.ttf': 'arialbi.ttf',
+    'Cousine-Regular.ttf': 'cour.ttf',
+    'Cousine-Bold.ttf': 'courbd.ttf',
+    'Cousine-Italic.ttf': 'couri.ttf',
+    'Cousine-BoldItalic.ttf': 'courbi.ttf',
+    'Tinos-Regular.ttf': 'times.ttf',
+    'Tinos-Bold.ttf': 'timesbd.ttf',
+    'Tinos-Italic.ttf': 'timesi.ttf',
+    'Tinos-BoldItalic.ttf': 'timesbi.ttf'
+}
+
+def get_reference_name_2(name):
+  return _ref_name_2_map.get(name)
+
+
 def check_fonts(target_dir, fonts, incremental_version=False, emit_config=False, reverse=False,
                 ignored_cp=None, only_cp=None, enabled_tests=None):
   for font in fonts:
     target_name = path.basename(font)
     if not incremental_version:
-      target_name = get_reference_name(target_name)
+      target_name = get_reference_name_2(target_name)
+      if not target_name:
+        raise ValueError('could not find target name for %s' % path.basename(font))
 
     target_path = path.join(target_dir, target_name)
     if not path.isfile(target_path):
