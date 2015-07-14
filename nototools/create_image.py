@@ -19,6 +19,7 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
+import argparse
 import os
 import os.path
 fonts_conf = os.path.abspath(os.path.join (os.path.dirname(__file__), "fonts.conf"))
@@ -103,6 +104,7 @@ def draw_on_surface(surface, text, params):
 
     return bottom_usage - top_usage
 
+
 def create_svg(text, output_path, **kwargs):
     """Creates an SVG image from the given text."""
 
@@ -114,6 +116,7 @@ def create_svg(text, output_path, **kwargs):
     draw_on_surface(real_surface, text, params)
     real_surface.flush()
     real_surface.finish()
+
 
 def create_png(text, output_path, **kwargs):
     """Creates a PNG image from the given text."""
@@ -127,6 +130,7 @@ def create_png(text, output_path, **kwargs):
     draw_on_surface(real_surface, text, params)
     real_surface.write_to_png(output_path)
 
+
 def create_img(text, output_path, **kwargs):
     """Creates a PNG or SVG image based on the output_path extension,
        from the given text"""
@@ -139,7 +143,7 @@ def create_img(text, output_path, **kwargs):
         print 'extension % not supported' % ext
 
 
-def main():
+def test():
     """Test sample Hindi and Arabic texts."""
 
     import codecs
@@ -156,6 +160,99 @@ def main():
          language='ar', rtl=True)
     test('mn-Mong.txt', 'mong.png', family='Noto Sans Mongolian',
          language='mn', vertical=True)
+
+
+_weight_map = {
+    'ultralight': pango.WEIGHT_ULTRALIGHT,
+    'light': pango.WEIGHT_LIGHT,
+    'normal': pango.WEIGHT_NORMAL,
+    'bold': pango.WEIGHT_BOLD,
+    'ultrabold': pango.WEIGHT_ULTRABOLD,
+    'heavy': pango.WEIGHT_HEAVY
+  }
+
+
+def _get_weight(weight_name):
+  if not weight_name:
+    return pango.WEIGHT_NORMAL
+  weight = _weight_map.get(weight_name)
+  if weight:
+    return weight
+  raise ValueError('could not recognize weight \'%s\'\naccepted values are %s' %
+                  ( weight_name, ', '.join(sorted(_weight_map.keys()))))
+
+
+_italic_map = {
+    'italic': pango.STYLE_ITALIC,
+    'oblique': pango.STYLE_OBLIQUE,
+    'normal': pango.STYLE_NORMAL
+  }
+
+def _get_style(style_name):
+  if not style_name:
+    return pango.STYLE_NORMAL
+  style = _style_map.get(style_name)
+  if style:
+    return style
+  raise ValueError('could not recognize style \'%s\'\naccepted values are %s' %
+                   (style_name, ', '.join(sorted(_style_map.keys()))))
+
+
+def render_codes(code_list, font_name, weight_name, style_name, font_size, lang, ext):
+    text = u''.join([unichr(int(s, 16)) for s in code_list])
+    render_text(text, font_name, weight_name, style_name, font_size, lang, ext)
+
+
+def render_text(text, font_name, weight_name, style_name, font_size, lang, ext):
+    font = font_name or 'Noto Sans'
+    font_size = font_size or 32
+    name_strs = ['%x' % ord(cp) for cp in text]
+    name_strs.append(font.replace(' ', ''))
+    if weight_name:
+      name_strs.append(weight_name)
+    if style_name:
+      name_strs.append(style_name)
+    name_strs.append(str(font_size))
+    if lang:
+      name_strs.append(lang)
+    outfile_name = 'sample_' + '_'.join(name_strs) + '.' + ext
+    weight = _get_weight(weight_name)
+    style = _get_style(style_name)
+    create_img(text, outfile_name, family=font, weight=weight, style=style,
+               language=lang, font_size=font_size)
+    print 'generated ' + outfile_name
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test', action='store_true', help='generate test images')
+    parser.add_argument('--codes', metavar='hex', nargs='+',
+                        help='list of hex codepoints to render')
+    parser.add_argument('--text', metavar='str', help='text to render, can include unicode escapes')
+    parser.add_argument('-f', '--font', metavar='name', help='name of noto font to use')
+    parser.add_argument('-b', '--bold', metavar='wt', help="pango weight name", default=None)
+    parser.add_argument('-i', '--italic', metavar='it', help="pango style name", default=None)
+    parser.add_argument('-s', '--size', metavar='int', type=int, help='point size (default 32)',
+                        default=32)
+    parser.add_argument('-l', '--lang', metavar='lang', help='language code')
+    parser.add_argument('-t', '--type', metavar='ext', help='svg (default) or png', default='svg')
+
+    args = parser.parse_args()
+    if args.test:
+      test()
+      return
+    if args.codes and args.text:
+      print 'choose either codes or text'
+      return
+    if args.codes:
+      render_codes(args.codes, args.font, args.bold, args.italic,
+                   args.size, args.lang, args.type)
+    elif args.text:
+      render_text(args.text.decode('unicode-escape'), args.font, args.bold, args.italic,
+                  args.size, args.lang, args.type)
+    else:
+      print 'nothing to do'
+
 
 if __name__ == '__main__':
     main()
