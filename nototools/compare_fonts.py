@@ -526,7 +526,8 @@ def main():
   parser.add_argument('-iv', '--incremental_version', help='target font is a previous drop from MTI',
                       action='store_true')
   parser.add_argument('-c', '--config', help='emit config spec', action='store_true')
-  parser.add_argument('--test', metavar='test-list',  help='test only named tests (comma-separated)')
+  parser.add_argument('--test', metavar='test',  help='test only named tests (%s)' %
+                      sorted(FontCompare.test_names), nargs='+')
   parser.add_argument('-r', '--reverse', help='reverse direction of comparison', action='store_true')
   parser.add_argument('-ic', '--ignore_codepoints', metavar = 'ranges',
                       help='report no errors on these codepoints (hex ranges separated by space)')
@@ -534,7 +535,7 @@ def main():
                       help='only report errors on these codepoints (hex ranges separated by space)')
   args = parser.parse_args()
 
-  enabled_tests = FontCompare.check_test_list(args.test.split(',') if args.test else None)
+  enabled_tests = FontCompare.check_test_list(args.test)
   if not enabled_tests:
     return
 
