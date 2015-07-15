@@ -248,7 +248,7 @@ class FontCondition(object):
       value = re.compile(value)
     self.__dict__[condition_name] = (fn, value)
 
-  line_re = re.compile(r'([^ \t]+)\s+([^ \t]+)(.*)?')
+  line_re = re.compile(r'([^ \t]+)\s+([^ \t]+)(.*)')
   def modify_line(self, line):
     line = line.strip()
     m = self.line_re.match(line)
