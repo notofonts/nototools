@@ -272,6 +272,12 @@ def script_code(script_name):
     return "Zzzz"  # Unknown
 
 
+def all_script_codes():
+    """Returns a frozenset of all script codes."""
+    load_data()
+    return frozenset(_script_code_to_long_name.keys())
+
+
 def web_script_code(script_name):
     """Web version of script_code based on generate_website_data.  This
     returns an unrecognized script_name if it is 4 letters long or fails,
@@ -536,6 +542,7 @@ def _load_property_value_aliases_txt():
             long_name = data_item[2]
             _script_code_to_long_name[code] = long_name
             _script_long_name_to_code[long_name] = code
+
 
 def _load_bidi_mirroring_txt():
     """Load bidi mirroring glyphs from BidiMirroring.txt."""
