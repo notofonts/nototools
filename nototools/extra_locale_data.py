@@ -171,6 +171,7 @@ LIKELY_SUBTAGS = {
     'nov': ('nov', 'Latn', '001'),  # Novial
     'nyo': ('nyo', 'Latn', 'UG'),  # Nyoro
     'nzi': ('nzi', 'Latn', 'GH'),  # Nzima
+    'ohu': ('ohu', 'Hung', 'HR'),  # Old Hungarian
     'oj': ('oj', 'Latn', 'CA'),  # Ojibwa
     'osa': ('osa', 'Latn', 'US'),  # Osage
     'osc': ('osc', 'Ital', 'ZZ'),  # Oscan
@@ -205,12 +206,24 @@ LIKELY_SUBTAGS = {
     'xnr': ('xnr', 'Deva', 'IN'),  # Kangri
     'xum': ('xum', 'Ital', 'ZZ'),  # Umbrian (dlf)
     'zdj': ('zdj', 'Arab', 'KM'),  # Ngazidja Comorian
+    'und-Mult': ('skr', 'Mult', 'ZZ'), # ancient writing system for Saraiki, Arabic now used
+    'und-Hung': ('ohu', 'Hung', 'ZZ'), # Old Hungarian, Carpathian basin
+    'und-Hluw': ('hlu', 'Hluw', 'ZZ'), # Hieroglyphic Luwian
+    'und-Ahom': ('aho', 'Ahom', 'ZZ'), # Ahom
 }
 
+
+ENGLISH_SCRIPT_NAMES = {
+    'Ahom': u'Ahom',
+    'Cans': u'Canadian Aboriginal', # shorten name for display purposes, match Noto font name
+    'Hatr': u'Hatran',
+    'Mult': u'Multani',
+}
 
 ENGLISH_LANGUAGE_NAMES = {
     'abr': u'Abron',
     'abq': u'Abaza',
+    'aho': u'Ahom',
     'aii': u'Assyrian Neo-Aramaic',
     'akz': u'Alabama',
     'amo': u'Amo',
@@ -222,6 +235,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'bfy': u'Bagheli',
     'bgc': u'Haryanvi',
     'bgx': u'Balkan Gagauz Turkish',
+    'bh': u'Bihari',
     'bhb': u'Bhili',
     'bhi': u'Bhilali',
     'bhk': u'Albay Bikol',
@@ -273,6 +287,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'gub': u'Guajajára',
     'gvr': u'Western Gurung',
     'haz': u'Hazaragi',
+    'hlu': u'Hieroglyphic Luwian',
     'hmd': u'A-Hmao',
     'hnd': u'Southern Hindko',
     'hne': u'Chhattisgarhi',
@@ -328,6 +343,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'moe': u'Montagnais',
     'mrd': u'Western Magar',
     'mro': u'Mru',
+    'mru': u'Cameroon Mono',
     'mtr': u'Mewari',
     'mvy': u'Indus Kohistani',
     'mwk': u'Kita Maninkakan',
@@ -344,10 +360,13 @@ ENGLISH_LANGUAGE_NAMES = {
     'noe': u'Nimadi',
     'nsk': u'Naskapi',
     'nxq': u'Naxi',
+    'ohu': u'Old Hungarian',
     'osc': u'Oscan',
     'otk': u'Old Turkish',
     'pcm': u'Nigerian Pidgin',
+    'pka': u'Ardhamāgadhī Prākrit',
     'pko': u'Pökoot',
+    'pra': u'Prakrit', # language family name
     'prd': u'Parsi-Dari',
     'prs': u'Dari',
     'puu': u'Punu',

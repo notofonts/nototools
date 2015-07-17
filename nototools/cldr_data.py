@@ -97,6 +97,9 @@ def _parse_supplemental_data():
 #     if 'officialStatus' not in child.attrib:
 #       continue  # Skip non-official languages
       lang = child.get('type')
+      if lang == 'und':
+        # no point, this data is typically uninhabited small islands and Antarctica
+        continue
       ix = lang.find('_')
       if ix == -1:
         key = lang + '-' + territory
@@ -215,7 +218,8 @@ def get_likely_subtags(lang_tag):
         break
 
   print 'no likely subtag for %s' % lang_tag
-  return ('und', 'Zzzz', 'ZZ')
+  tags = lang_tag.split('-')
+  return (tags[0], tags[1] if len(tags) > 1 else 'Zzzz', tags[2] if len(tags) > 2 else 'ZZ')
 
 
 _SCRIPT_METADATA = {}
@@ -339,11 +343,10 @@ def _parse_english_labels():
 
   _ENGLISH_LANGUAGE_NAMES = _xml_to_dict(ldn.find('languages'))
   _ENGLISH_SCRIPT_NAMES = _xml_to_dict(ldn.find('scripts'))
-  # Shorten name of Cans for display purposes-- match the name of the font used for Cans.
-  _ENGLISH_SCRIPT_NAMES['Cans'] = 'Canadian Aboriginal'
   _ENGLISH_TERRITORY_NAMES = _xml_to_dict(ldn.find('territories'))
 
   # Add languages used that miss names
+  _ENGLISH_SCRIPT_NAMES.update(extra_locale_data.ENGLISH_SCRIPT_NAMES)
   _ENGLISH_LANGUAGE_NAMES.update(extra_locale_data.ENGLISH_LANGUAGE_NAMES)
 
 
