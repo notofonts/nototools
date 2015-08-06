@@ -1,8 +1,8 @@
 # IndicSyllabicCategory-8.0.0.txt
-# Date: 2015-02-24, 02:31:00 GMT [RP]
+# Date: 2015-05-12, 10:00:00 GMT [RP, KW, LI]
 #
 # Unicode Character Database
-# Copyright (c) 1991-2014 Unicode, Inc.
+# Copyright (c) 1991-2015 Unicode, Inc.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 # For documentation, see UAX #44: Unicode Character Database,
 # at http://www.unicode.org/reports/tr44/
@@ -543,7 +543,7 @@ ABE9..ABEA    ; Vowel_Dependent # Mc   [2] MEETEI MAYEK VOWEL SIGN CHEINAP..MEET
 111B3..111B5  ; Vowel_Dependent # Mc   [3] SHARADA VOWEL SIGN AA..SHARADA VOWEL SIGN II
 111B6..111BE  ; Vowel_Dependent # Mn   [9] SHARADA VOWEL SIGN U..SHARADA VOWEL SIGN O
 111BF         ; Vowel_Dependent # Mc       SHARADA VOWEL SIGN AU
-111CB..111CC  ; Vowel_Dependent # Mn   [2] SHARADA SHARADA VOWEL MODIFIER MARK..SHARADA EXTRA SHORT VOWEL MARK
+111CB..111CC  ; Vowel_Dependent # Mn   [2] SHARADA VOWEL MODIFIER MARK..SHARADA EXTRA SHORT VOWEL MARK
 1122C..1122E  ; Vowel_Dependent # Mc   [3] KHOJKI VOWEL SIGN AA..KHOJKI VOWEL SIGN II
 1122F..11231  ; Vowel_Dependent # Mn   [3] KHOJKI VOWEL SIGN U..KHOJKI VOWEL SIGN AI
 11232..11233  ; Vowel_Dependent # Mc   [2] KHOJKI VOWEL SIGN O..KHOJKI VOWEL SIGN AU
@@ -568,6 +568,7 @@ ABE9..ABEA    ; Vowel_Dependent # Mc   [2] MEETEI MAYEK VOWEL SIGN CHEINAP..MEET
 11630..11632  ; Vowel_Dependent # Mc   [3] MODI VOWEL SIGN AA..MODI VOWEL SIGN II
 11633..1163A  ; Vowel_Dependent # Mn   [8] MODI VOWEL SIGN U..MODI VOWEL SIGN AI
 1163B..1163C  ; Vowel_Dependent # Mc   [2] MODI VOWEL SIGN O..MODI VOWEL SIGN AU
+11640         ; Vowel_Dependent # Mn       MODI SIGN ARDHACANDRA
 116AD         ; Vowel_Dependent # Mn       TAKRI VOWEL SIGN AA
 116AE..116AF  ; Vowel_Dependent # Mc   [2] TAKRI VOWEL SIGN I..TAKRI VOWEL SIGN II
 116B0..116B5  ; Vowel_Dependent # Mn   [6] TAKRI VOWEL SIGN U..TAKRI VOWEL SIGN AU
@@ -998,7 +999,7 @@ A8E0..A8F1    ; Cantillation_Mark # Mn  [18] COMBINING DEVANAGARI DIGIT ZERO..CO
 
 # [Not derivable]
 
-00B2..00B3    ; Syllable_Modifier # Mn   [2] SUPERSCRIPT TWO..SUPERSCRIPT THREE
+00B2..00B3    ; Syllable_Modifier # No   [2] SUPERSCRIPT TWO..SUPERSCRIPT THREE
 0F35          ; Syllable_Modifier # Mn       TIBETAN MARK NGAS BZUNG NYI ZLA
 0F37          ; Syllable_Modifier # Mn       TIBETAN MARK NGAS BZUNG SGOR RTAGS
 0FC6          ; Syllable_Modifier # Mn       TIBETAN SYMBOL PADMA GDAN
@@ -1009,8 +1010,8 @@ A8E0..A8F1    ; Cantillation_Mark # Mn  [18] COMBINING DEVANAGARI DIGIT ZERO..CO
 1A7A..1A7C    ; Syllable_Modifier # Mn   [3] TAI THAM SIGN RA HAAM..TAI THAM SIGN KHUEN-LUE KARAN
 1A7F          ; Syllable_Modifier # Mn       TAI THAM COMBINING CRYPTOGRAMMIC DOT
 1C36          ; Syllable_Modifier # Mn       LEPCHA SIGN RAN
-2074          ; Syllable_Modifier # Mn       SUPERSCRIPT FOUR
-2082..2084    ; Syllable_Modifier # Mn   [3] SUBSCRIPT TWO..SUBSCRIPT FOUR
+2074          ; Syllable_Modifier # No       SUPERSCRIPT FOUR
+2082..2084    ; Syllable_Modifier # No   [3] SUBSCRIPT TWO..SUBSCRIPT FOUR
 
 # ================================================
 

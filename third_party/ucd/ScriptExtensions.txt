@@ -1,5 +1,5 @@
-# ScriptExtensions-8.0.0.txt
-# Date: 2015-02-18, 02:08:00 GMT [RP]
+# ScriptExtensions-9.0.0.txt
+# Date: 2015-05-06, 06:14:00 GMT [RP]
 #
 # Unicode Character Database
 # Copyright (c) 1991-2015 Unicode, Inc.
@@ -12,8 +12,8 @@
 # For more information, see:
 #   UAX #24, Unicode Script Property: http://www.unicode.org/reports/tr24/
 #     Especially the sections:
-#        http://www.unicode.org/reports/tr24/#Assignment_Script_Values
-#        http://www.unicode.org/reports/tr24/#Assignment_ScriptX_Values
+#       http://www.unicode.org/reports/tr24/#Assignment_Script_Values
+#       http://www.unicode.org/reports/tr24/#Assignment_ScriptX_Values
 #
 # Each Script_Extensions value in this file consists of a set
 # of one or more abbreviated Script property values. The ordering of the
@@ -74,6 +74,14 @@
 
 # ================================================
 
+# Script_Extensions=Hani
+
+1D360..1D371  ; Hani # No  [18] COUNTING ROD UNIT DIGIT ONE..COUNTING ROD TENS DIGIT NINE
+
+# Total code points: 18
+
+# ================================================
+
 # Script_Extensions=Latn
 
 0363..036F    ; Latn # Mn  [13] COMBINING LATIN SMALL LETTER A..COMBINING LATIN SMALL LETTER X
@@ -113,6 +121,14 @@ FDFD          ; Arab Thaa # So       ARABIC LIGATURE BISMILLAH AR-RAHMAN AR-RAHE
 # Script_Extensions=Armn Geor
 
 0589          ; Armn Geor # Po       ARMENIAN FULL STOP
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Beng Deva
+
+A8F1          ; Beng Deva # Mn       COMBINING DEVANAGARI SIGN AVAGRAHA
 
 # Total code points: 1
 
@@ -211,10 +227,13 @@ A8F3          ; Deva Taml # Lo       DEVANAGARI SIGN CANDRABINDU VIRAMA
 
 # Script_Extensions=Gran Taml
 
+0BAA          ; Gran Taml # Lo       TAMIL LETTER PA
+0BB5          ; Gran Taml # Lo       TAMIL LETTER VA
 0BE6..0BEF    ; Gran Taml # Nd  [10] TAMIL DIGIT ZERO..TAMIL DIGIT NINE
 0BF0..0BF2    ; Gran Taml # No   [3] TAMIL NUMBER TEN..TAMIL NUMBER ONE THOUSAND
+11303         ; Gran Taml # Mc       GRANTHA SIGN VISARGA
 
-# Total code points: 13
+# Total code points: 16
 
 # ================================================
 
