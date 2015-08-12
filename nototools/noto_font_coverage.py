@@ -83,7 +83,11 @@ def run(args, families):
   cp_to_families = collections.defaultdict(set)
   if args.each:
     def each_emit(out_cps, out_families):
-      print '%s:\n  %s' % (to_ranges_str(out_cps), '\n  '.join(sorted(out_families)))
+      if out_families:
+        out_family_str = '\n  '.join(sorted(out_families))
+      else:
+        out_family_str = '<no coverage>'
+      print '%s:\n  %s' % (to_ranges_str(out_cps), out_family_str)
 
     cps = codepoints(args.each)
     print 'families that contain any of %s, by cp' % to_ranges_str(cps)
