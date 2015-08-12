@@ -17,12 +17,13 @@
 """A tool to output charmap coverage of the noto font families."""
 
 import argparse
+import collections
 
 from nototools import noto_fonts
 
 def print_names(families):
   """Write the names of the families in sorted order."""
-  family_names = [v.name for v in families.itervalues()]
+  family_names = [family.name for family in families.itervalues()]
   for name in sorted(family_names):
     print name
 
@@ -49,10 +50,11 @@ def codepoints(cp_list):
   return result
 
 
-def to_ranges(cp_list):
-  if not list:
+def to_ranges_str(cps):
+  if not cps:
     return ''
 
+  cps = sorted(cps)
   ranges = []
 
   def emit(first, last):
@@ -61,9 +63,9 @@ def to_ranges(cp_list):
     else:
       ranges.append('%04x' % first)
 
-  first = cp_list[0]
+  first = cps[0]
   last = first
-  for cp in cp_list[1:]:
+  for cp in cps[1:]:
     if cp == last + 1:
       last = cp
     else:
@@ -71,26 +73,47 @@ def to_ranges(cp_list):
       first = cp
       last = cp
   emit(first, last)
-  return ', '.join(ranges)
+  return ' '.join(ranges)
 
 
 def run(args, families):
   if args.names:
     print_names(families)
+
+  cp_to_families = collections.defaultdict(set)
   if args.each:
-    for cp in sorted(codepoints(args.each)):
-      print 'codepoint %04x:' % cp
-      family_names = check_cp(families, cp)
-      if family_names:
-        print '\n'.join(['  %s' % name for name in sorted(family_names)])
-      else:
-        print '  not supported'
+    def each_emit(out_cps, out_families):
+      print '%s:\n  %s' % (to_ranges_str(out_cps), '\n  '.join(sorted(out_families)))
+
+    cps = codepoints(args.each)
+    print 'families that contain any of %s, by cp' % to_ranges_str(cps)
+    for family in families.itervalues():
+      family_cps = family.charset & cps
+      for cp in family_cps:
+        cp_to_families[cp].add(family.name)
+
+    if not cp_to_families:
+      print 'no family supports any codepoint'
+    else:
+      cp_list = sorted(cps)
+      cp = cp_list[0]
+      out_cps = [cp]
+      out_families = cp_to_families[cp]
+      for cp in cp_list[1:]:
+        next_families = cp_to_families[cp]
+        if out_families == next_families:
+          out_cps.append(cp)
+        else:
+          each_emit(out_cps, out_families)
+          out_cps = [cp]
+          out_families = next_families
+      each_emit(out_cps, out_families)
 
   if args.any:
     missing = set()
     result = {}
     cps = sorted(codepoints(args.any))
-    print 'families that contain any of %s' % to_ranges(cps)
+    print 'families that contain any of %s' % to_ranges_str(cps)
     for cp in cps:
       family_names = check_cp(families, cp)
       if family_names:
@@ -100,16 +123,16 @@ def run(args, families):
           else:
             result[family] = set([cp])
       else:
-        missing |= cp
+        missing.add(cp)
     if result:
       for k, v in sorted(result.iteritems()):
-        print '  %s: %s' % (k, to_ranges(sorted(v)))
+        print '  %s: %s' % (k, to_ranges_str(v))
     if missing:
-      print 'not supported: %s' % to_ranges(sorted(missing))
+      print '  not supported: %s' % to_ranges_str(missing)
 
   if args.all:
     cps = sorted(codepoints(args.all))
-    print 'families that contain all of %s' % to_ranges(cps)
+    print 'families that contain all of %s' % to_ranges_str(cps)
     result = set([family.name for family in families.itervalues()])
     for cp in cps:
       family_names = check_cp(families, cp)
