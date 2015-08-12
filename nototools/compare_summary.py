@@ -66,7 +66,7 @@ def compare_table_info(base_info, target_info):
     b_tup = base_info.get(k)
     t_tup = target_info.get(k)
     if not b_tup:
-      added.append(t_tup)
+      added.append((k, t_tup[0]))
     else:
       b_len = b_tup[0]
       t_len = t_tup[0]
