@@ -1,5 +1,5 @@
 # PropertyValueAliases-8.0.0.txt
-# Date: 2015-01-15, 23:07:50 GMT [MD, KW manual edit]
+# Date: 2015-03-11, 22:29:33 GMT [MD]
 #
 # Unicode Character Database
 # Copyright (c) 1991-2015 Unicode, Inc.
@@ -751,8 +751,10 @@ InSC; Consonant_Killer                ; Consonant_Killer
 InSC; Consonant_Medial                ; Consonant_Medial
 InSC; Consonant_Placeholder           ; Consonant_Placeholder
 InSC; Consonant_Preceding_Repha       ; Consonant_Preceding_Repha
+InSC; Consonant_Prefixed              ; Consonant_Prefixed
 InSC; Consonant_Subjoined             ; Consonant_Subjoined
 InSC; Consonant_Succeeding_Repha      ; Consonant_Succeeding_Repha
+InSC; Consonant_With_Stacker          ; Consonant_With_Stacker
 InSC; Gemination_Mark                 ; Gemination_Mark
 InSC; Invisible_Stacker               ; Invisible_Stacker
 InSC; Joiner                          ; Joiner
@@ -1212,7 +1214,7 @@ sc ; Runr                             ; Runic
 sc ; Samr                             ; Samaritan
 sc ; Sarb                             ; Old_South_Arabian
 sc ; Saur                             ; Saurashtra
-sc ; Sgnw                             ; Sign_Writing
+sc ; Sgnw                             ; SignWriting
 sc ; Shaw                             ; Shavian
 sc ; Shrd                             ; Sharada
 sc ; Sidd                             ; Siddham

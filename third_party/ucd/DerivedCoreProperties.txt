@@ -1,5 +1,5 @@
 # DerivedCoreProperties-8.0.0.txt
-# Date: 2015-02-13, 13:30:20 GMT [MD]
+# Date: 2015-03-11, 22:29:21 GMT [MD]
 #
 # Unicode Character Database
 # Copyright (c) 1991-2015 Unicode, Inc.
@@ -1090,6 +1090,7 @@ FFDA..FFDC    ; Alphabetic # Lo   [3] HALFWIDTH HANGUL LETTER EU..HALFWIDTH HANG
 116B0..116B5  ; Alphabetic # Mn   [6] TAKRI VOWEL SIGN U..TAKRI VOWEL SIGN AU
 11700..11719  ; Alphabetic # Lo  [26] AHOM LETTER KA..AHOM LETTER JHA
 1171D..1171F  ; Alphabetic # Mn   [3] AHOM CONSONANT SIGN MEDIAL LA..AHOM CONSONANT SIGN MEDIAL LIGATING RA
+11720..11721  ; Alphabetic # Mc   [2] AHOM VOWEL SIGN A..AHOM VOWEL SIGN AA
 11722..11725  ; Alphabetic # Mn   [4] AHOM VOWEL SIGN I..AHOM VOWEL SIGN UU
 11726         ; Alphabetic # Mc       AHOM VOWEL SIGN E
 11727..1172A  ; Alphabetic # Mn   [4] AHOM VOWEL SIGN AW..AHOM VOWEL SIGN AM
@@ -1192,7 +1193,7 @@ FFDA..FFDC    ; Alphabetic # Lo   [3] HALFWIDTH HANGUL LETTER EU..HALFWIDTH HANG
 2B820..2CEA1  ; Alphabetic # Lo [5762] CJK UNIFIED IDEOGRAPH-2B820..CJK UNIFIED IDEOGRAPH-2CEA1
 2F800..2FA1D  ; Alphabetic # Lo [542] CJK COMPATIBILITY IDEOGRAPH-2F800..CJK COMPATIBILITY IDEOGRAPH-2FA1D
 
-# Total code points: 110941
+# Total code points: 110943
 
 # ================================================
 
