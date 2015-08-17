@@ -473,6 +473,7 @@ EXEMPLARS = {
   'und-Sund': r'[\u1b83-\u1ba0]',
   'und-Sylo': r'[\ua800-\ua82b]',
   'und-Tavt': r'[\uaa80-\uaaaf \uaadb-\uaadf]',
+  'und-Tglg': r'[\u1700-\u170c \u170e-\u1711]',
   'und-Ugar': r'[\U010380-\U01039d \U01039f]',
   'und-Xsux': r'[\U012000-\U01202f]',
   'und-Zsym': r'[\u20ac\u20b9\u2103\u2109\u2115\u2116\u211a\u211e\u2122'
