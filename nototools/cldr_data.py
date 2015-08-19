@@ -124,7 +124,8 @@ def _parse_supplemental_data():
     if und_scr in _LIKELY_SUBTAGS:
       lang = _LIKELY_SUBTAGS[und_scr][0]
       if lang != 'und' and script not in _LANG_TO_SCRIPTS[lang]:
-        print 'lang to scripts missing script %s for %s' % (script, lang)
+        print 'lang to scripts missing script %s for %s (from %s)' % (
+            script, lang, ', '.join(_LANG_TO_SCRIPTS[lang]))
         _LANG_TO_SCRIPTS[lang].add(script)
 
   # Use extra locale data's likely subtag info to change the supplemental
@@ -273,7 +274,7 @@ def _get_language_name_from_file(language, cldr_file_path):
   for tag in parent:
     assert tag.tag == 'language'
     if tag.get('type').replace('_', '-') == language:
-      _LANGUAGE_NAME_FROM_FILE_CACHE[cache_key] = tag.text
+      _LANGUAGE_NAME_FROM_FILE_CACHE[cache_key] = unicode(tag.text)
       return _LANGUAGE_NAME_FROM_FILE_CACHE[cache_key]
   return None
 
@@ -291,17 +292,25 @@ def parent_locale(locale):
   return 'root'
 
 
-def get_native_language_name(lang_scr):
+def get_native_language_name(lang_scr, exclude_script=False):
     """Get the name of a language/script in its own locale."""
-    try:
-      return extra_locale_data.NATIVE_NAMES[lang_scr]
-    except KeyError:
-      pass
 
     if '-' in lang_scr:
-      langs = [lang_scr, lang_scr.split('-')[0]]
+      lang = lang_scr.split('-')[0]
     else:
-      langs = [lang_scr]
+      lang = lang_scr
+      lang_scr = None
+
+    if exclude_script or not lang_scr:
+      langs = [lang]
+    else:
+      langs = [lang_scr, lang]  # lang_scr first since we want to try that first
+
+    for lang in langs:
+      try:
+        return extra_locale_data.NATIVE_NAMES[lang]
+      except KeyError:
+        pass
 
     locale = lang_scr
     while locale != 'root':
@@ -323,7 +332,7 @@ def _xml_to_dict(element):
       continue
     key = child.get('type')
     key = key.replace('_', '-')
-    result[key] = child.text
+    result[key] = unicode(child.text)
   return result
 
 
@@ -362,6 +371,7 @@ def get_english_script_name(script):
 def get_english_language_name(lang_scr):
   """Get the name of a language/script in the en-US locale."""
   _parse_english_labels()
+
   try:
     return _ENGLISH_LANGUAGE_NAMES[lang_scr]
   except KeyError:
@@ -509,10 +519,10 @@ def get_exemplar_and_source(loc_tag):
       exemplar = get_exemplar_from_file(
         path.join(directory, 'main', loc_tag.replace('-', '_') + '.xml'))
       if exemplar:
-        return exemplar, directory + '-' + loc_tag
+        return exemplar, loc_tag + '_ex_' + directory
     exemplar = get_exemplar_from_extra_data(loc_tag)
     if exemplar:
-      return exemplar, 'extra-' + loc_tag
+      return exemplar, loc_tag + '_ex_extra'
     loc_tag = parent_locale(loc_tag)
     if loc_tag == 'root' or (script and get_likely_subtags(loc_tag)[1] != script):
       break

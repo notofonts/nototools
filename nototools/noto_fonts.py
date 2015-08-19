@@ -165,7 +165,7 @@ def get_noto_fonts():
         continue
 
       if notoinfo.variant == 'Mono':
-        continue
+        pass
 
       if notoinfo.script in {'CJK', 'HST'}:
         continue
@@ -190,6 +190,7 @@ def get_noto_fonts():
       font = Font(filepath, notoinfo.hint_status, key,
                   family, notoinfo.script, notoinfo.variant, notoinfo.weight,
                   notoinfo.slope, license_type, notoinfo.is_cjk, notoinfo.fmt)
+
       all_fonts.append(font)
 
   return all_fonts
@@ -232,7 +233,7 @@ def get_families(fonts):
       else:
         unhinted_members.append(font)
       if not rep_member:
-        if font.weight == 'Regular' and font.slope is None:
+        if font.weight == 'Regular' and font.slope is None and font.variant != 'Mono':
           # We assume here that there's no difference between a hinted or unhinted
           # rep_member in terms of what we use it for
           rep_member = font
@@ -240,13 +241,13 @@ def get_families(fonts):
     if not rep_member:
       raise ValueError('Family %s does have a representative font.' % key)
 
-    if hinted_members and not len(hinted_members) in [1, 2, 4, 7]:
+    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]: # 9 adds the two Mono variants
       raise ValueError('Family %s has %d hinted_members (%s)' % (
-          key, len(hinted_members), [font.name for font in hinted_members]))
+          key, len(hinted_members), [path.basename(font.filepath) for font in hinted_members]))
 
-    if unhinted_members and not len(unhinted_members) in [1, 2, 4, 7]:
+    if unhinted_members and not len(unhinted_members) in [1, 2, 4]:
       raise ValueError('Family %s has %d unhinted_members (%s)' % (
-          key, len(unhinted_members), [font.name for font in unhinted_members]))
+          key, len(unhinted_members), [path.basename(font.filepath) for font in unhinted_members]))
 
     if hinted_members and unhinted_members and len(hinted_members) != len(unhinted_members):
       raise ValueError('Family %s has %d hinted members but %d unhinted memberts' % (

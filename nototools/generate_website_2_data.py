@@ -39,6 +39,7 @@ from nototools import cldr_data
 from nototools import coverage
 from nototools import create_image
 from nototools import extra_locale_data
+from nototools import lang_data
 from nototools import notoconfig
 from nototools import noto_fonts
 from nototools import tool_utils
@@ -69,160 +70,174 @@ def get_script_to_family_ids(family_map):
   return script_to_family_ids
 
 
-def get_used_lang_data(supported_scripts):
-  """Returns a mapping from lang to a tuple of:
-  - a set of scripts used in some region
-  - a set of scripts not used in any region"""
+def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
+  family_id_to_lang_scrs = collections.defaultdict(set)
+  for lang_scr in lang_scrs:
+    lang, script = lang_scr.split('-')
+    family_ids = script_to_family_ids[script]
+    for family_id in family_ids:
+      family_id_to_lang_scrs[family_id].add(lang_scr)
 
-  # Get additional scripts for a lang by using get_likely_subtags from script to
-  # lang.  This might not be the same as the likely script for a lang, but it does
-  # indicate the language can be written in the script, or so we assume.
-  lang_to_additional_script = {}
-  for script in supported_scripts:
-    lang = cldr_data.get_likely_subtags('und-' + script)[0]
-    if lang != 'und':
-      lang_to_additional_script[lang] = script
-
-  unsupported_scripts = set()
-  lang_data = {}
-  used_lang_scripts = collections.defaultdict(set)
-  for region in cldr_data.known_regions():
-    lang_scripts = cldr_data.region_to_lang_scripts(region)
-    for lang_script in lang_scripts:
-      lang, script = lang_script.split('-')
-      if script == 'Kana':
-        print 'remap %s to use Jpan' % lang_script
-        script = 'Jpan'
-      if script not in supported_scripts:
-        unsupported_scripts.add(script)
-      used_lang_scripts[lang].add(script)
-
-  if unsupported_scripts:
-    print 'used scripts that are not supported: %s' % ', '.join(sorted(unsupported_scripts))
-
-  known_langs = set(cldr_data.known_langs())
-  for lang in lang_to_additional_script:
-    if not lang in known_langs:
-      print 'lang %s not in known langs, adding' % lang
-      known_langs.add(lang)
-
-  for lang in known_langs:
-    if lang in ['ryu', 'ain']:
-      all_scripts = set(['Jpan'])
+  # Nastaliq patches:
+  # Additionally map some languages in Arab script to Nastaliq ('Aran')
+  nastaliq_lang_scrs = family_id_to_lang_scrs['nastaliq-aran']
+  for lang_scr in ['bal-Arab', 'hnd-Arab', 'hno-Arab', 'ks-Arab', 'lah-Arab',
+                   'pa-Arab', 'skr-Arab', 'ur-Arab']:
+    if not lang_scr in lang_scrs:
+      print 'Map nastaliq: %s not found' % lang_scr
     else:
-      all_scripts = set(cldr_data.lang_to_scripts(lang))
-
-    # add additional scripts for lang
-    if lang in lang_to_additional_script:
-      script = lang_to_additional_script[lang]
-      if script not in all_scripts:
-        print 'cldr data does not have script %s for lang %s' % (script, lang)
-        all_scripts.add(script)
-
-    if not all_scripts & supported_scripts:
-      print 'no supported scripts among %s for lang %s' % (all_scripts, lang)
-      continue
-
-    used_scripts = used_lang_scripts[lang]
-    if not used_scripts:
-      script = cldr_data.get_likely_script(lang)
-      if script != 'Zzzz':
-        used_scripts = set([script])
-
-    unused_scripts = all_scripts - used_scripts
-    lang_data[lang] = (used_scripts, unused_scripts)
-
-  # Patch out langs whose sample data Noto doesn't support
-  # A bunch of these resolve to the same sample.  Would be easier to check if I just had
-  # sample names independent of language names, but then harder to remove the languages.
-  for lang in ['abq', 'ady', 'aii-Cyrl', 'av', 'bua', 'chm']:
-    if not lang in lang_data:
-      print 'patched out lang %s not present' % lang
-    else:
-      print 'patch out lang %s' % lang
-      del lang_data[lang]
-
-  return lang_data
-
-
-def get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids):
-  lang_tag_to_family_ids = collections.defaultdict(set)
-  for lang in used_lang_data:
-    used_scripts, unused_scripts = used_lang_data[lang]
-    add_script = len(used_scripts) > 1
-    default_script = iter(used_scripts).next() if len(used_scripts) == 1 else None
-    for script in used_scripts:
-      if not script in script_to_family_ids:
-        print 'unsupported script %s for lang %s' % (script, lang)
-      else:
-        family_ids = script_to_family_ids[script]
-        tag = lang + '-' + script if add_script else lang
-        lang_tag_to_family_ids[tag].update(family_ids)
-    add_script = add_script or len (used_scripts | unused_scripts) > 1
-    for script in unused_scripts:
-      if not script in script_to_family_ids:
-        print 'unsupported unused script %s for lang %s' % (script, lang)
-      else:
-        family_ids = script_to_family_ids[script]
-        tag = lang + '-' + script if add_script else lang
-        lang_tag_to_family_ids[tag].update(family_ids)
-
-  # Map thsese to Nastaliq
-  for lang_tag in ['bal', 'hnd', 'hno', 'ks', 'lah', 'pa-Arab', 'skr', 'ur']:
-    if not lang_tag in lang_tag_to_family_ids:
-      print 'Map nastaliq: %s not found' % lang_tag
-    else:
-      lang_tag_to_family_ids[lang_tag].add('nastaliq-aran')
+      print 'added %s to nastaliq' % lang_scr
+      nastaliq_lang_scrs.add(lang_scr)
 
   # Kufi patches:
   # - Kufi is broken for Urdu Heh goal (issue #34)
   # - Kufi doesn't support all characters needed for Khowar
   # - Kufi doesn't support all characters needed for Kashmiri
-  for lang_tag in ['ur', 'khw', 'ks', 'ks-Arab']:
-    if not lang_tag in lang_tag_to_family_ids:
-      print 'patch kufi: %s not found' % lang_tag
+  kufi_lang_scrs = family_id_to_lang_scrs['kufi-arab']
+  for lang_scr in ['ur-Arab', 'khw-Arab', 'ks-Arab']:
+    if not lang_scr in lang_scrs:
+      print 'Patch kufi: %s not found' % lang_scr
     else:
-      lang_tag_to_family_ids[lang_tag] -= {'kufi-arab'}
-      if not lang_tag_to_family_ids:
-        print 'patched kufi: %s, no fonts remaining' % lang_tag
-        del lang_tag_to_family_ids[lang_tag]
+      kufi_lang_scrs.remove(lang_scr)
+      print 'removed %s from kufi' % lang_scr
+      if not kufi_lang_scrs:
+        break
+
+  for f, ls in family_id_to_lang_scrs.iteritems():
+    if not ls:
+      print '!family %s has no lang' % f
+
+  return family_id_to_lang_scrs
+
+
+def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
+                                           families,
+                                           lang_scr_to_sample_infos):
+    """For each lang_scr + family combination, determine which sample to use from
+    those available for the lang_scr.  If the family can't display any of the
+    samples, report an error, the lang will not be added to those supported
+    by the family.  If the family supports no languages, also report an error.
+
+    The returned value is a tuple:
+    - a map from family_id to another map, which is:
+      - a map from lang_scr to sample_key
+    - a map from sample_key to sample info
+    """
+
+    family_id_to_lang_scr_to_sample_key = {}
+    sample_key_to_info = {}
+
+    tested_keys = set()
+    failed_keys = set()
+
+    for family_id in sorted(family_id_to_lang_scrs):
+      lang_scr_to_sample_key = {}
+      for lang_scr in sorted(family_id_to_lang_scrs[family_id]):
+        sample_infos = lang_scr_to_sample_infos[lang_scr]
+        assert len(sample_infos) > 0
+
+        sample_key_for_lang = None
+        for info in sample_infos:
+          sample = info[1]
+          sample_key = info[3]
+
+          full_key = sample_key + '-' + family_id
+          if full_key in tested_keys:
+            if full_key in failed_keys:
+              print 'family %s already rejected sample %s (lang %s)' % (family_id, sample_key, lang_scr)
+              continue
+          else:
+            failed_cps = set()
+            tested_keys.add(full_key)
+            charset = families[family_id].charset
+            for cp in sample:
+              if ord(cp) in [0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010]:
+                continue
+              if ord(cp) not in charset:
+                failed_cps.add(ord(cp))
+
+            if failed_cps:
+              print 'family %s rejects sample %s for lang %s:\n  %s' % (
+                  family_id, sample_key, lang_scr,
+                  '\n  '.join('%04x (%s)' % (cp, unichr(cp)) for cp in sorted(failed_cps)))
+              failed_keys.add(full_key)
+              continue
+
+          print 'family %s accepts sample %s for lang %s' % (family_id, sample_key, lang_scr)
+
+          sample_key_for_lang = sample_key
+          if sample_key not in sample_key_to_info:
+            sample_key_to_info[sample_key] = info
+          break
+
+        if not sample_key_for_lang:
+          print '%s has no sample to display in %s' % (lang_scr, family_id)
+        else:
+          lang_scr_to_sample_key[lang_scr] = sample_key_for_lang
+
+      if not lang_scr_to_sample_key:
+        print '!%s can display no samples for any lang of %s' % (
+            family_id, ', '.join(sorted(family_id_to_lang_scrs[family_id])))
       else:
-        print 'patched kufi: %s -> %s' % (lang_tag, lang_tag_to_family_ids[lang_tag])
+        family_id_to_lang_scr_to_sample_key[family_id] = lang_scr_to_sample_key
 
-  return lang_tag_to_family_ids
+    return (family_id_to_lang_scr_to_sample_key, sample_key_to_info)
 
 
-def get_region_to_family_ids(script_to_family_ids):
-  region_to_family_ids = collections.defaultdict(set)
-  for region in cldr_data.known_regions():
+def get_family_id_to_regions(family_id_to_lang_scr_to_sample_key):
+  lang_scr_to_regions = collections.defaultdict(set)
+  for region in sorted(cldr_data.known_regions()):
     if region == 'ZZ':
       continue
-    if len(region) > 2:
+    if len(region) > 2: # e.g. world
       print 'skipping region %s' % region
       continue
-    lang_scripts = cldr_data.region_to_lang_scripts(region)
-    for lang_script in lang_scripts:
-      lang, script = lang_script.split('-')
-      if script == 'Kana':
-        print 'remap %s to use Jpan script' % lang_script
-        script = 'Jpan'
-      if not script in script_to_family_ids:
-        print 'unsupported script %s for lang %s in region %s' % (script, lang, region)
+    lang_scrs = cldr_data.region_to_lang_scripts(region)
+    for lang_scr in lang_scrs:
+      lang_scr_to_regions[lang_scr].add(region)
+
+  family_id_to_regions = collections.defaultdict(set)
+  warnings = set()
+  for family_id, lang_scr_to_sample_key in family_id_to_lang_scr_to_sample_key.iteritems():
+    for lang_scr in lang_scr_to_sample_key:
+      if lang_scr in lang_scr_to_regions:
+        for region in lang_scr_to_regions[lang_scr]:
+          family_id_to_regions[family_id].add(region)
       else:
-        families = script_to_family_ids[script]
-        region_to_family_ids[region].update(families)
+        # don't warn about undefined languages
+        if not lang_scr.startswith('und'):
+          warnings.add(lang_scr)
+
+  for lang_scr in sorted(warnings):
+    print 'no mapping from %s to any region' % lang_scr
+
+  return family_id_to_regions
+
+
+def get_region_to_family_ids(family_id_to_regions):
+  region_to_family_ids = collections.defaultdict(set)
+  for family_id, regions in family_id_to_regions.iteritems():
+    for region in regions:
+      region_to_family_ids[region].add(family_id)
   return region_to_family_ids
 
 
-def get_lang_tag_sort_order(lang_tags):
-  """Return a sort order for lang_tags based on the english name, but clustering related
-  languages."""
-  def lang_key(lang_tag):
-    name = cldr_data.get_english_language_name(lang_tag)
-    if not name:
-      print 'no name for %s' % lang_tag
-      return None
+def get_named_lang_scrs(family_id_to_lang_scr_to_sample_key):
+  """Return the list of lang_scrs whose names appear in the UI."""
+  named_lang_scrs = lang_data.lang_scripts()
+  supported_lang_scrs = set()
+  for family_id in family_id_to_lang_scr_to_sample_key:
+    lang_scrs = [l for l in family_id_to_lang_scr_to_sample_key[family_id].keys()
+                 if l in named_lang_scrs]
+    supported_lang_scrs.update(lang_scrs)
+  return supported_lang_scrs
 
+
+def get_lang_scr_sort_order(lang_scrs):
+  """Return a sort order for lang_scrs based on the english name, but clustering related
+  languages."""
+  def lang_key(lang_scr):
+    name = lang_data.lang_script_to_names(lang_scr)[0]
     if name.endswith (' script)'):
       ix = name.rfind('(') - 1
       script_sfx = ' ' + name[ix + 2: len(name) - 8]
@@ -246,35 +261,15 @@ def get_lang_tag_sort_order(lang_tags):
 
     return key + script_sfx
 
-  sorted_tags = list(lang_tags)
-  sorted_tags.sort(key=lang_key)
+  sorted_lang_scrs = list(lang_scrs)
+  sorted_lang_scrs.sort(key=lang_key)
   n = 0
   tag_order = {}
-  for tag in sorted_tags:
-    # print '%10s: %s' % (tag, cldr_data.get_english_language_name(tag))
-    tag_order[tag] = n
+  for lang_scr in sorted_lang_scrs:
+    # print '%10s: %s' % (lang_scr, cldr_data.get_english_language_name(lang_scr))
+    tag_order[lang_scr] = n
     n += 1
   return tag_order
-
-
-def get_family_id_to_lang_tags(lang_tag_to_family_ids, families):
-  family_id_to_lang_tags = {}
-  for family_id in families:
-    family_id_to_lang_tags[family_id] = set()
-  for lang_tag, family_ids in lang_tag_to_family_ids.iteritems():
-    for family_id in family_ids:
-      family_id_to_lang_tags[family_id].add(lang_tag)
-  return family_id_to_lang_tags
-
-
-def get_family_id_to_regions(region_to_family_ids, families):
-  family_id_to_regions = {}
-  for family_id in families:
-    family_id_to_regions[family_id] = set()
-  for region, family_ids in region_to_family_ids.iteritems():
-    for family_id in family_ids:
-      family_id_to_regions[family_id].add(region)
-  return family_id_to_regions
 
 
 def get_charset_info(charset):
@@ -305,8 +300,8 @@ def get_charset_info(charset):
   return ','.join(range_list)
 
 
-def get_sample_from_sample_file(lang_scr):
-  filepath = path.join(SAMPLE_TEXT_DIR, lang_scr + '.txt')
+def get_sample_from_sample_file(lang_scr_ext):
+  filepath = path.join(SAMPLE_TEXT_DIR, lang_scr_ext + '.txt')
   if path.exists(filepath):
     return unicode(open(filepath).read().strip(), 'UTF-8')
   return None
@@ -314,7 +309,7 @@ def get_sample_from_sample_file(lang_scr):
 
 ATTRIBUTION_DATA = {}
 
-def get_attribution(lang_scr):
+def get_attribution(lang_scr_ext):
   if not ATTRIBUTION_DATA:
     attribution_path = path.join(TOOLS_DIR, 'sample_texts', 'attributions.txt')
     with open(attribution_path, 'r') as f:
@@ -325,10 +320,11 @@ def get_attribution(lang_scr):
         continue
       tag, attrib = line.split(':')
       ATTRIBUTION_DATA[tag.strip()] = attrib.strip()
+    print 'read %d lines of attribution data' % len(ATTRIBUTION_DATA)
   try:
-    return ATTRIBUTION_DATA[lang_scr]
+    return ATTRIBUTION_DATA[lang_scr_ext + '.txt']
   except KeyError:
-    print 'no attribution for %s' % lang_scr
+    print 'no attribution for %s' % lang_scr_ext
     return 'none'
 
 
@@ -341,108 +337,80 @@ def sample_text_from_exemplar(exemplar):
   return ' '.join(exemplar)
 
 
-def get_sample_and_attrib(lang_scr):
-  """Return a tuple of:
+def get_sample_infos(lang_scr, rtl):
+  """Return a list of tuples of:
+  - true if rtl, false if not
   - a short sample text string
   - an attribution key, one of
     UN: official UN translation, needs attribution
     other: not an official UN translation, needs non-attribution
     original: public domain translation, does not need attribution
     none: we have no attribution info on this, does not need attribution
-  - source key"""
+  - source key.
+  The list is in order of priority: udhr samples, exemplars for the language,
+  sample text for the script, exemplars for the script."""
+
   assert '-' in lang_scr
-  DEBUG = lang_scr.startswith('tab-')
 
-  sample_text = get_sample_from_sample_file(lang_scr)
+  sample_infos = []
+  sample_text = get_sample_from_sample_file(lang_scr + '_udhr')
   if sample_text is not None:
-    attr = get_attribution(lang_scr)
-    src_key = 'txt-' + lang_scr
-    return sample_text, attr, src_key
+    src_key = lang_scr + '_udhr'
+    attr = get_attribution(src_key)
+    sample_infos.append((rtl, sample_text, attr, src_key))
 
-  exemplar, src_key = cldr_data.get_exemplar_and_source(lang_scr)
-  if exemplar is not None:
-    return sample_text_from_exemplar(exemplar), 'none', src_key
+  lang, script = lang_scr.split('-')
+  if lang != 'und':
+    exemplar, src_key = cldr_data.get_exemplar_and_source(lang_scr)
+    if exemplar is not None:
+      sample_infos.append((rtl, sample_text_from_exemplar(exemplar), 'none', src_key))
 
-  _, script = lang_scr.split('-')
-  src_key = 'und-' + script
+  src_key = 'und-' + script + '_chars'
   sample_text = get_sample_from_sample_file(src_key)
   if sample_text is not None:
-    return sample_text, 'none', src_key
+    sample_infos.append((rtl, sample_text, 'none', src_key))
 
-  print 'No sample for %s' % lang_scr
-  return '', 'none', 'none'
+  exemplar, src_key = cldr_data.get_exemplar_and_source('und-' + script)
+  if exemplar is not None:
+    sample_infos.append((rtl, sample_text_from_exemplar(exemplar), 'none', src_key))
 
+  if not sample_infos:
+    print '!No sample info for %s' % lang_scr
 
-def ensure_script(lang_tag):
-  """If lang_tag has no script, use get_likely_script to add one.
-  If that fails, return an empty tag."""
-  if '-' in lang_tag:
-    return lang_tag
-  try:
-    script = cldr_data.get_likely_script(lang_tag)
-  except KeyError:
-    print 'no likely script for lang %s' % lang_tag
-    return ''
-  return lang_tag + '-' + script
+  return sample_infos
 
 
-def get_family_id_to_default_lang_tag(family_id_to_lang_tags):
+def get_family_id_to_default_lang_scr(family_id_to_lang_scrs):
   """Return a mapping from family id to default lang tag, for families
   that have multiple lang tags.  This is based on likely subtags and
   the script of the family (Latn for LGC).
   """
-  # TODO(dougfelt): this reintroduces language tags that we'd previously filtered
-  # out.  We should not be doing this here.  Figure out a better way to handle this.
 
-  family_id_to_default_lang_tag = {}
-  for family_id, lang_tags in family_id_to_lang_tags.iteritems():
+  family_id_to_default_lang_scr = {}
+  for family_id, lang_scrs in family_id_to_lang_scrs.iteritems():
     parts = family_id.split('-')
     if len(parts) == 1:
       # 'sans' or 'serif'
       script = 'Latn'
     else:
       script = parts[1].capitalize()
-    lang = cldr_data.get_likely_subtags('und-' + script)[0]
-    # CLDR has no names for these, and two are collectives, so it's simpler to omit them.
-    if script in ['Kthi', 'Khar', 'Brah']:
-      print 'likely lang for %s is %s, replace with und' % (script, lang)
+
+    if script == 'Aran':
+      # patch for Nastaliq
+      script = 'Arab'
+      lang = 'ur'
+    elif script == 'Zsym' or lang_data.is_excluded_script(script):
       lang = 'und'
-
-    if lang == 'und':
-      # special case
-      if script == 'Latn':
-        lang_tag = 'en'
-      elif script == 'Aran':
-        lang_tag = 'ur'
-      else:
-        lang_tag = 'und' + '-' + script
-    elif lang not in lang_tags:
-      lang_tag = lang + '-' + script
-      if lang_tag not in lang_tags:
-        print 'Akk, lang and lang_scr \'%s\' not listed for family %s' % (
-            lang_tag, family_id)
     else:
-      lang_tag = lang
-    family_id_to_default_lang_tag[family_id] = lang_tag
-  return family_id_to_default_lang_tag
+      lang = lang_data.script_to_default_lang(script)
+    lang_scr = lang + '-' + script
 
+    if lang_scr not in lang_scrs:
+      print 'default lang_scr \'%s\' not listed for family %s %s' % (
+          lang_scr, family_id, lang_scrs)
 
-def get_used_lang_tags(family_langs, default_langs):
-  return set(family_langs) | set(default_langs)
-
-
-def get_lang_tag_to_sample_data(used_lang_tags):
-  """Return a mapping from lang tag to tuple of:
-    - rtl
-    - sample text
-    - attribution
-  """
-  lang_tag_to_sample_data = {}
-  for lang_tag in used_lang_tags:
-    rtl = cldr_data.is_rtl(lang_tag)
-    sample, attrib, src_key = get_sample_and_attrib(ensure_script(lang_tag))
-    lang_tag_to_sample_data[lang_tag] = (rtl, sample, attrib, src_key)
-  return lang_tag_to_sample_data
+    family_id_to_default_lang_scr[family_id] = lang_scr
+  return family_id_to_default_lang_scr
 
 
 lat_long_data = {}
@@ -624,7 +592,11 @@ class WebGen(object):
     return basename
 
   def build_family_css(self, key, family):
-    fonts = family.hinted_members or family.unhinted_members
+    fonts = [m for m in (family.hinted_members or family.unhinted_members)
+             if m.variant != 'Mono']
+    fonts.sort(key=lambda f: str(css_weight(f.weight)) + '-' +
+               ('b' if css_style(f.slope) == 'italic' else 'a'))
+
     css_name = key + '.css'
     csspath = path.join(self.css, css_name)
     font_size = 0
@@ -652,14 +624,16 @@ class WebGen(object):
       css_info[key] = self.build_family_css(key, family_data)
     return css_info
 
-  def build_data_json(self, families, family_zip_info, universal_zip_info,
-                      family_id_to_lang_tags, family_id_to_regions,
-                      lang_tag_to_family_ids, region_to_family_ids):
+  def build_data_json(self, family_id_to_lang_scr_to_sample_key,
+                      families, family_zip_info, universal_zip_info,
+                      family_id_to_regions, region_to_family_ids):
 
     data_obj = collections.OrderedDict()
     families_obj = collections.OrderedDict()
     # Sort families by English name, except 'Noto Sans' and 'Noto Serif' come first
-    family_ids = [family_id for family_id in families if family_id != 'sans' and family_id != 'serif']
+    family_ids = [family_id for family_id
+                  in family_id_to_lang_scr_to_sample_key
+                  if family_id != 'sans' and family_id != 'serif']
     family_ids = sorted(family_ids, key=lambda f: families[f].name)
     sorted_ids = ['sans', 'serif']
     sorted_ids.extend(family_ids)
@@ -676,8 +650,13 @@ class WebGen(object):
         pkg_obj['unhinted'] = unhinted_size
       family_obj['pkgSize'] = pkg_obj
 
-      family_obj['fonts'] = len(family.hinted_members or family.unhinted_members)
-      family_obj['langs'] = len(family_id_to_lang_tags[k])
+      # special case number of fonts for CJK
+      if family.rep_member.is_cjk:
+        num_fonts = 7 #ignore mono
+      else:
+        num_fonts = len(family.hinted_members or family.unhinted_members)
+      family_obj['fonts'] = num_fonts
+      family_obj['langs'] = len(family_id_to_lang_scr_to_sample_key[k])
       family_obj['regions'] = len(family_id_to_regions[k])
 
       families_obj[k] = family_obj
@@ -685,20 +664,28 @@ class WebGen(object):
 
     data_obj['familyOrder'] = sorted_ids
 
-    langs_obj = collections.OrderedDict()
-    # Dont list 'und-' lang tags, these are for default samples and not listed in the UI
-    lang_tags = [lang for lang in lang_tag_to_family_ids if not lang.startswith('und-')]
+    # get inverse map from lang_scr to family_id
+    lang_scr_to_family_ids = collections.defaultdict(set)
+    for family_id, lang_scrs in family_id_to_lang_scr_to_sample_key.iteritems():
+      for lang_scr in lang_scrs:
+        lang_scr_to_family_ids[lang_scr].add(family_id)
 
-    lang_tags = sorted(lang_tags, key=lambda l: cldr_data.get_english_language_name(l))
-    for lang in lang_tags:
+    # Dont list 'und-' lang tags, these are for default samples and not listed in the UI
+    lang_scrs = [l for l in lang_scr_to_family_ids if not l.startswith('und-')]
+
+    langs_obj = collections.OrderedDict()
+    # sort by english name
+    for lang_scr in sorted(lang_scrs,
+                           key=lambda l: lang_data.lang_script_to_names(l)[0]):
       lang_obj = collections.OrderedDict()
-      english_name = cldr_data.get_english_language_name(lang)
+      names = lang_data.lang_script_to_names(lang_scr)
+      english_name = names[0]
       lang_obj['name'] = english_name
-      lang_obj['families'] = sorted(lang_tag_to_family_ids[lang])
-      native_name = cldr_data.get_native_language_name(lang)
-      if native_name and native_name != english_name:
-        lang_obj['keywords'] = [native_name]
-      langs_obj[lang] = lang_obj
+      lang_obj['families'] = sorted(lang_scr_to_family_ids[lang_scr])
+      native_names = [n for n in names[1:] if n != english_name]
+      if native_names:
+        lang_obj['keywords'] = native_names
+      langs_obj[lang_scr] = lang_obj
     data_obj['lang'] = langs_obj
 
     regions_obj = collections.OrderedDict()
@@ -717,27 +704,39 @@ class WebGen(object):
 
     self.write_json(data_obj, 'data')
 
-  def build_family_json(self, family_id, family, lang_tags, regions, css_info,
-                        default_lang_tag):
+  def build_family_json(self, family_id, family, lang_scrs_map, lang_scr_sort_order,
+                        regions, css_info, default_lang_scr):
     family_obj = collections.OrderedDict()
     category = get_css_generic_family(family.name)
     if category:
       family_obj['category'] = category
-    if lang_tags:
-       # maintain provided sort order
-      family_obj['langs'] = lang_tags
-    if default_lang_tag:
-      family_obj['defaultLang'] = default_lang_tag
+    if lang_scrs_map:
+      # The map includes all samples, but some samples have no language.  These are
+      # not listed.
+      lang_scrs = [l for l in lang_scrs_map.keys() if not l.startswith('und-')]
+      lang_scrs.sort(key=lambda l: lang_scr_sort_order[l])
+      family_obj['langs'] = lang_scrs
+      # The mapping from sample to sample id includes all samples.
+      samples_obj = collections.OrderedDict()
+      for lang_scr in sorted(lang_scrs_map.keys()):
+        samples_obj[lang_scr] = lang_scrs_map[lang_scr]
+      family_obj['samples'] = samples_obj
+    if default_lang_scr:
+      family_obj['defaultLang'] = default_lang_scr
+      if lang_scrs_map:
+        assert default_lang_scr in lang_scrs_map
     if regions:
       family_obj['regions'] = sorted(regions)
     if family.charset:
       family_obj['ranges'] = get_charset_info(family.charset)
+
     fonts_obj = []
-    members = []
-    members.extend(family.hinted_members or family.unhinted_members)
-    members.sort(key=lambda f: str(css_weight(f.weight)) + '-' +
-                                   ('b' if css_style(f.slope) == 'italic' else 'a'))
-    for font in members:
+    members = [m for m in (family.hinted_members or family.unhinted_members)
+               if m.variant != 'Mono']
+    # sort non-italic before italic
+    for font in sorted(members,
+                       key=lambda f: str(css_weight(f.weight)) + '-' +
+                       ('b' if css_style(f.slope) == 'italic' else 'a')):
       weight_style = collections.OrderedDict()
       weight_style['weight'] = css_weight(font.weight)
       weight_style['style'] = css_style(font.slope)
@@ -746,32 +745,31 @@ class WebGen(object):
     family_obj['fontSize'] = css_info
     self.write_json(family_obj, family_id)
 
-  def build_families_json(self, families, family_id_to_lang_tags,
-                          family_id_to_default_lang_tag,
+  def build_families_json(self, family_id_to_lang_scr_to_sample_key,
+                          families, family_id_to_default_lang_scr,
                           family_id_to_regions, family_css_info,
-                          lang_sort_order):
-    for k, v in families.iteritems():
-      lang_tags = list(family_id_to_lang_tags[k])
-      lang_tags.sort(key=lambda l: lang_sort_order[l])
-      default_lang_tag = family_id_to_default_lang_tag[k]
-      regions = family_id_to_regions[k]
-      css_info = family_css_info[k]
-      self.build_family_json(k, v, lang_tags, regions, css_info, default_lang_tag)
+                          lang_scr_sort_order):
+    for family_id, lang_scrs_map in sorted(family_id_to_lang_scr_to_sample_key.iteritems()):
+      family = families[family_id]
+      regions = family_id_to_regions[family_id]
+      css_info = family_css_info[family_id]
+      default_lang_scr = family_id_to_default_lang_scr[family_id]
+      self.build_family_json(family_id, family, lang_scrs_map, lang_scr_sort_order,
+                             regions, css_info, default_lang_scr)
 
-  def build_misc_json(self, sample_data, region_data):
-    lang_info = sample_data
+  def build_misc_json(self, sample_key_to_info, region_data):
     meta_obj = collections.OrderedDict()
 
-    langs_obj = collections.OrderedDict()
-    for lang in sorted(lang_info):
-      rtl, sample, attrib, sample_key = lang_info[lang]
-      lang_obj = collections.OrderedDict()
-      lang_obj['sample'] = sample
-      lang_obj['attrib'] = attrib
+    samples_obj = collections.OrderedDict()
+    for sample_key in sorted(sample_key_to_info):
+      rtl, sample, attrib, _ = sample_key_to_info[sample_key]
+      sample_obj = collections.OrderedDict()
+      sample_obj['sample'] = sample
+      sample_obj['attrib'] = attrib
       if rtl:
-        lang_obj['rtl'] = rtl
-      langs_obj[lang] = lang_obj
-    meta_obj['lang'] = langs_obj
+        sample_obj['rtl'] = rtl
+      samples_obj[sample_key] = sample_obj
+    meta_obj['samples'] = samples_obj
 
     # don't need much accuracy for our map UI use case
     def trim_decimals(num):
@@ -791,13 +789,13 @@ class WebGen(object):
 
     self.write_json(meta_obj, 'meta')
 
-  def build_family_images(self, family, lang_tag, is_rtl, sample_text, attrib):
+  def build_family_images(self, family, lang_scr, is_rtl, sample_text, attrib, sample_key):
     family_id = family.rep_member.key
     is_cjk = family.rep_member.is_cjk
     for font in family.hinted_members or family.unhinted_members:
       weight = css_weight(font.weight)
       style = css_style(font.slope)
-      image_file_name = '%s_%s_%d_%s.svg' % (family_id, lang_tag, weight, style)
+      image_file_name = '%s_%s_%d_%s.svg' % (family_id, lang_scr, weight, style)
       if is_cjk:
         family_suffix = ' ' + font.weight
       else:
@@ -812,7 +810,7 @@ class WebGen(object):
           sample_text,
           image_location,
           family=family.name + family_suffix,
-          language=lang_tag,
+          language=lang_scr,
           rtl=is_rtl,
           width=685,
           # text is coming out bigger than we expect, perhaps this is why?
@@ -821,19 +819,21 @@ class WebGen(object):
           weight=weight,
           style=style)
 
-  def build_images(self, families, family_id_to_lang_tags, family_id_to_default_lang_tag,
-                   lang_tag_to_sample_info):
-    for family_id, family in families.iteritems():
+  def build_images(self, family_id_to_lang_scr_to_sample_key,
+                   families, family_id_to_default_lang_scr,
+                   sample_key_to_info):
+    for family_id in sorted(family_id_to_lang_scr_to_sample_key):
+      family = families[family_id]
       print 'Generating images for %s...' % family.name
-      default_lang = family_id_to_default_lang_tag[family_id]
-      lang_tags = family_id_to_lang_tags[family_id]
-      if not default_lang in lang_tags:
-        print 'build extra default image for lang %s' % default_lang
-        lang_tags = list(lang_tags)
-        lang_tags.append(default_lang)
-      for lang_tag in lang_tags:
-        is_rtl, sample_text, attrib, sample_key = lang_tag_to_sample_info[lang_tag]
-        self.build_family_images(family, lang_tag, is_rtl, sample_text, attrib)
+      default_lang = family_id_to_default_lang_scr[family_id]
+      lang_scr_to_sample_key = family_id_to_lang_scr_to_sample_key[family_id]
+      # We don't know that rendering the same sample text with different languages
+      # is the same, so we have to generate all the samples and name them based on the
+      # language.  But most of the samples with the same font and text will be the
+      # same, because the fonts generally only customize for a few language tags.
+      for lang_scr, sample_key in lang_scr_to_sample_key.iteritems():
+        is_rtl, sample_text, attrib, _ = sample_key_to_info[sample_key]
+        self.build_family_images(family, lang_scr, is_rtl, sample_text, attrib, sample_key)
 
   def build_ttc_zips(self):
     """Generate zipped versions of the ttc files and put in pkgs directory."""
@@ -868,7 +868,7 @@ class WebGen(object):
 
     # debug/print
     # ['families', 'script_to_family_ids', 'used_lang_data',
-    #  'family_id_to_lang_tags', 'family_id_to_default_lang_tag']
+    #  'family_id_to_lang_scrs', 'family_id_to_default_lang_scr']
     debug = frozenset([])
 
     fonts = noto_fonts.get_noto_fonts()
@@ -885,104 +885,86 @@ class WebGen(object):
       for script, family_ids in sorted(script_to_family_ids.iteritems()):
         print script, family_ids
 
-    supported_scripts = set(script_to_family_ids.keys())
-    used_lang_data = get_used_lang_data(supported_scripts)
-    if 'used_lang_data' in debug:
-      print '\nused lang data'
-      for lang, data in sorted(used_lang_data.iteritems()):
-        used = ', '.join(data[0])
-        unused = ', '.join(data[1])
-        if unused:
-          unused = '(' + unused + ')'
-          if used:
-            unused = ' ' + unused
-        print '%s: %s%s' % (lang, used, unused)
+    all_lang_scrs = set(['und-' + script for script in script_to_family_ids])
+    all_lang_scrs.update(lang_data.lang_scripts())
 
-    langs_to_delete = []
-    for lang in used_lang_data.keys():
-      if not cldr_data.get_english_language_name(lang):
-        langs_to_delete.append(lang)
-    if langs_to_delete:
-      print 'deleting languages with no english name: %s' % langs_to_delete
-      for lang in langs_to_delete:
-        del used_lang_data[lang]
+    lang_scr_to_sample_infos = {}
+    for lang_scr in all_lang_scrs:
+      lang, script = lang_scr.split('-')
+      if not script in script_to_family_ids:
+        print 'no family supports script in %s' % lang_scr
+        continue
 
-    lang_tag_to_family_ids = get_lang_tag_to_family_ids(used_lang_data, script_to_family_ids)
+      rtl = cldr_data.is_rtl(lang_scr)
+      sample_infos = get_sample_infos(lang_scr, rtl)
+      if not sample_infos:
+        continue
 
-    region_to_family_ids = get_region_to_family_ids(script_to_family_ids)
+      lang_scr_to_sample_infos[lang_scr] = sample_infos
 
-    family_id_to_lang_tags = get_family_id_to_lang_tags(lang_tag_to_family_ids, families)
-    if 'family_id_to_lang_tags' in debug:
-      print '\nfamily id to lang tags'
-      for family_id, lang_tags in sorted(family_id_to_lang_tags.iteritems()):
-        print '%s: %s' % (family_id, ','.join(sorted(lang_tags)))
+    if 'lang_scr_to_sample_infos' in debug:
+      print '\nlang+script to sample infos'
+      for lang_scr, info_list in sorted(lang_scr_to_sample_infos.iteritems()):
+        for info in info_list:
+          print '%s key: %s rtl: %s attrib: %s len: %d' % (
+              lang_scr, info[3], info[0], info[2], len(info[1]))
 
-    family_id_to_regions = get_family_id_to_regions(region_to_family_ids, families)
+    family_id_to_lang_scrs = get_family_id_to_lang_scrs(
+        lang_scr_to_sample_infos.keys(), script_to_family_ids)
 
-    family_id_to_default_lang_tag = get_family_id_to_default_lang_tag(
-        family_id_to_lang_tags)
-    if 'family_id_to_default_lang_tag' in debug:
-      print '\nfamily id to default lang tag'
-      for family_id, lang_tag in family_id_to_default_lang_tag.iteritems():
-        print family_id, lang_tag
+    family_id_to_lang_scr_to_sample_key, sample_key_to_info = get_family_id_to_lang_scr_to_sample_key(
+        family_id_to_lang_scrs, families, lang_scr_to_sample_infos)
 
-    used_lang_tags = get_used_lang_tags(
-        lang_tag_to_family_ids.keys(), family_id_to_default_lang_tag.values())
-    lang_tag_to_sample_data = get_lang_tag_to_sample_data(used_lang_tags)
+    family_id_to_regions = get_family_id_to_regions(family_id_to_lang_scr_to_sample_key)
+    region_to_family_ids = get_region_to_family_ids(family_id_to_regions)
 
-    # find the samples that can't be displayed.
-    tested_keys = set()
-    failed_keys = set()
-    family_langs_to_remove = {}
-    for lang_tag in sorted(lang_tag_to_sample_data):
-      sample_info = lang_tag_to_sample_data[lang_tag]
-      sample = sample_info[1]
-      sample_key = sample_info[3]
-
-      for family_id in sorted(lang_tag_to_family_ids[lang_tag]):
-        full_key = sample_key + '-' + family_id
-        if full_key in tested_keys:
-          if full_key in failed_keys:
-            print 'failed sample %s lang %s' % (full_key, lang_tag)
-            if family_id not in family_langs_to_remove:
-              family_langs_to_remove[family_id] = set()
-            family_langs_to_remove[family_id].add(lang_tag)
-          continue
-
-        failed_cps = set()
-        tested_keys.add(full_key)
-        charset = families[family_id].charset
-        for cp in sample:
-          if ord(cp) in [0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010]:
-            continue
-          if ord(cp) not in charset:
-            failed_cps.add(ord(cp))
-        if failed_cps:
-          print 'sample %s cannot be displayed in %s (lang %s):\n  %s' % (
-              sample_key, family_id, lang_tag,
-              '\n  '.join('%04x (%s)' % (cp, unichr(cp)) for cp in sorted(failed_cps)))
-          failed_keys.add(full_key)
-          if family_id not in family_langs_to_remove:
-            family_langs_to_remove[family_id] = set()
-          family_langs_to_remove[family_id].add(lang_tag)
-
-    for family_id in sorted(family_langs_to_remove):
-      langs_to_remove = family_langs_to_remove[family_id]
-      print 'remove from %s: %s' % (family_id, ','.join(sorted(langs_to_remove)))
-
-      family_id_to_lang_tags[family_id] -= langs_to_remove
-      default_lang_tag = family_id_to_default_lang_tag[family_id]
-      if default_lang_tag in langs_to_remove:
-        print '!removing default lang tag %s for family %s' % (
-            default_lang_tag, family_id)
-      for lang in langs_to_remove:
-        lang_tag_to_family_ids[lang] -= set([family_id])
+    family_id_to_default_lang_scr = get_family_id_to_default_lang_scr(
+        family_id_to_lang_scrs)
+    if 'family_id_to_default_lang_scr' in debug:
+      print '\nfamily id to default lang scr'
+      for family_id, lang_scr in family_id_to_default_lang_scr.iteritems():
+        print family_id, lang_scr
 
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
-    lang_tag_sort_order = get_lang_tag_sort_order(lang_tag_to_family_ids.keys())
+    lang_scrs = get_named_lang_scrs(family_id_to_lang_scr_to_sample_key)
+    lang_scr_sort_order = get_lang_scr_sort_order(lang_scrs)
 
-    if self.no_build:
+    # sanity checks
+    # all families have languages, and all those have samples.
+    # all families have a default language, and that is in the sample list
+    error_list = []
+    for family in families.values():
+      family_id = family.rep_member.key
+      if not family_id in family_id_to_lang_scr_to_sample_key:
+        error_list.append('no entry for family %s' % family_id)
+        continue
+
+      lang_scr_to_sample_key = family_id_to_lang_scr_to_sample_key[family_id]
+      if not lang_scr_to_sample_key:
+        error_list.append('no langs for family %s' % family_id)
+        continue
+
+      for lang_scr in lang_scr_to_sample_key:
+        sample_key = lang_scr_to_sample_key[lang_scr]
+        if not sample_key:
+          error_list.append('no sample key for lang %s in family %s' % (lang_scr, sample_key))
+          continue
+        if not sample_key in sample_key_to_info:
+          error_list.append('no sample for sample key: %s' % sample_key)
+
+      if not family_id in family_id_to_default_lang_scr:
+        error_list.append('no default lang for family %s' % family_id)
+        continue
+      default_lang_scr = family_id_to_default_lang_scr[family_id]
+      if not default_lang_scr in lang_scr_to_sample_key:
+        error_list.append('default lang %s not in samples for family %s' %
+                          (default_lang_scr, family_id))
+
+    if error_list:
+      print 'Errors:\n' + '\n  '.join(error_list)
+
+    if error_list or self.no_build:
       print 'skipping build output'
       return
 
@@ -1001,26 +983,26 @@ class WebGen(object):
     else:
       family_css_info = self.build_css(families)
 
-    if self.no_data or self.no_zips or self.no_css:
-      reason = '' if self.no_data else 'no zips' if self.no_zips else 'no css'
+    if self.no_data:
       print 'skipping data output%s' % reason
     else:
-      self.build_data_json(families, family_zip_info, universal_zip_info,
-                           family_id_to_lang_tags, family_id_to_regions,
-                           lang_tag_to_family_ids, region_to_family_ids)
+      self.build_data_json(family_id_to_lang_scr_to_sample_key,
+                           families, family_zip_info, universal_zip_info,
+                           family_id_to_regions, region_to_family_ids)
 
-      self.build_families_json(families, family_id_to_lang_tags,
-                               family_id_to_default_lang_tag,
+      self.build_families_json(family_id_to_lang_scr_to_sample_key,
+                               families, family_id_to_default_lang_scr,
                                family_id_to_regions, family_css_info,
-                               lang_tag_sort_order)
+                               lang_scr_sort_order)
 
-      self.build_misc_json(lang_tag_to_sample_data, region_data)
+      self.build_misc_json(sample_key_to_info, region_data)
 
     if self.no_images:
       print 'skipping image output'
     else:
-      self.build_images(families, family_id_to_lang_tags,
-                        family_id_to_default_lang_tag, lang_tag_to_sample_data)
+      self.build_images(family_id_to_lang_scr_to_sample_key,
+                        families,  family_id_to_default_lang_scr,
+                        sample_key_to_info)
 
 
 
