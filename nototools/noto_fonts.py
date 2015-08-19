@@ -190,6 +190,7 @@ def get_noto_fonts():
       font = Font(filepath, notoinfo.hint_status, key,
                   family, notoinfo.script, notoinfo.variant, notoinfo.weight,
                   notoinfo.slope, license_type, notoinfo.is_cjk, notoinfo.fmt)
+
       all_fonts.append(font)
 
   return all_fonts
@@ -232,7 +233,7 @@ def get_families(fonts):
       else:
         unhinted_members.append(font)
       if not rep_member:
-        if font.weight == 'Regular' and font.slope is None:
+        if font.weight == 'Regular' and font.slope is None and font.variant != 'Mono':
           # We assume here that there's no difference between a hinted or unhinted
           # rep_member in terms of what we use it for
           rep_member = font
@@ -244,7 +245,7 @@ def get_families(fonts):
       raise ValueError('Family %s has %d hinted_members (%s)' % (
           key, len(hinted_members), [path.basename(font.filepath) for font in hinted_members]))
 
-    if unhinted_members and not len(unhinted_members) in [1, 2, 4, 7, 9]:
+    if unhinted_members and not len(unhinted_members) in [1, 2, 4]:
       raise ValueError('Family %s has %d unhinted_members (%s)' % (
           key, len(unhinted_members), [path.basename(font.filepath) for font in unhinted_members]))
 
