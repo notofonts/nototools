@@ -388,8 +388,8 @@ class TestSpec(object):
     comma_period -- checks that comma and period have same advance
     whitespace -- checks for expected advance relationships in whitespace
   stem -- stem widths
-    left_joiner -- non-zero lsb
-    right_joiner -- rsb not -70
+    left_joining -- non-zero lsb
+    right_joining -- rsb not -70
   reachable except|only gid
   """
 

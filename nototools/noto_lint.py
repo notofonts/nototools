@@ -568,10 +568,13 @@ def font_properties_from_name(file_path):
 def check_font(font_props, filename_error,
                lint_spec, runlog=False, skiplog=False,
                csv_flag=False, info_flag=False,
-               extrema_details=True):
+               extrema_details=True, nowarn=False):
 
-    def warn(category, message, details=True):
+    def warn(test_name, category_name, message, details=True, is_error=True, check_test=True):
         global _last_printed_file_name
+
+        if check_test and not tests.check(test_name):
+          return
 
         interesting_part_of_file_name = ",".join(font_props.file_path.split("/")[-2:])
         if interesting_part_of_file_name != _last_printed_file_name:
@@ -581,49 +584,71 @@ def check_font(font_props, filename_error,
                     interesting_part_of_file_name,
                     printable_font_versions(font))
 
-        # Assumes "info" warning only and always comes at the end of
+        # Assumes "info" only and always comes at the end of
         # processing a file.
-        if category is "info":
-            def pluralize_errmsg(count):
+        if category_name is "info":
+            def pluralize_errmsg(count, is_error=True):
+                msg = "error" if is_error else "warning"
                 if count == 0:
-                    return "no issues"
+                    return "no %ss" % msg
                 elif count == 1:
-                    return "1 issue"
+                    return "1 " + msg
                 else:
-                    return "%d issues" % count
+                    return "%d %ss" % (count, msg)
 
             if not csv_flag:
                 ec = err_count[0]
-                sc = suppressed_err_count[0]
-                if not sc:
-                  print "Found %s." % pluralize_errmsg(ec)
+                se = suppressed_err_count[0]
+                if not se:
+                    print "Found %s." % pluralize_errmsg(ec)
                 else:
-                  print "Found %s (%s hidden)." % (pluralize_errmsg(ec),
-                                                   "all" if sc == ec else sc)
+                    print "Found %s (%s hidden)." % (pluralize_errmsg(ec),
+                                                     "all" if se == ec else se)
+                wc = warn_count[0]
+                if wc and not nowarn:
+                    sw = suppressed_warn_count[0]
+                    if not sw and wc:
+                        print "Found %s." % pluralize_errmsg(wc, False)
+                    elif wc:
+                        print "Found %s (%s hidden)." % (pluralize_errmsg(wc, False),
+                                                         "all" if sw == wc else sw)
+
             if not info_flag:
                 return
 
-        err_count[0] += 1
+        if is_error:
+            err_count[0] += 1
+        else:
+            warn_count[0] += 1
+
+        if is_error:
+            if not details:
+                suppressed_err_count[0] += 1
+        else:
+            if nowarn or not details:
+                suppressed_warn_count[0] += 1
 
         if not details:
-            suppressed_err_count[0] += 1
             return
 
+        if nowarn and not is_error:
+            return
+
+        err_type = 'Info' if category_name is "info" else "Error" if is_error else "Warning"
         if csv_flag:
-            print ('%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
+            print ('%s,%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
+                err_type,
                 human_readable_script_name(font_props.script),
                 font_props.style,
                 font_props.variant if font_props.variant else '',
                 font_props.weight,
                 font_data.get_name_records(font)[8].split()[0],
-                category,
+                category_name,
                 interesting_part_of_file_name,
                 printable_font_revision(font),
                 message)).encode('UTF-8')
         else:
-            if category is "info":
-                print "[informational]",
-            print message.encode('UTF-8')
+            print "%s <%s> %s" % (err_type[0], test_name, message.encode('UTF-8'))
         sys.stdout.flush()
 
 
@@ -679,23 +704,23 @@ def check_font(font_props, filename_error,
             expected_postscript_name += (
                 '-' + expected_subfamily_name.replace(' ', ''))
 
-        if tests.check('name/copyright') and font_props.is_google and not re.match(
+        if font_props.is_google and not re.match(
             r'Copyright 201\d Google Inc. All Rights Reserved.$', names[0]):
-            warn("Copyright",
+            warn("name/copyright", "Copyright",
                  "Copyright message doesn't match template: '%s'." % names[0])
 
-        if tests.check('name/family') and names[1] != expected_family_name:
-            warn("Family name",
+        if names[1] != expected_family_name:
+            warn("name/family", "Family name",
                  "Font family name is '%s', but was expecting '%s'." % (
                      names[1], expected_family_name))
 
-        if tests.check('name/subfamily') and names[2] != expected_subfamily_name:
-            warn("Sub-family name",
+        if names[2] != expected_subfamily_name:
+            warn("name/subfamily", "Sub-family name",
                  "Font subfamily name is '%s', but was expecting '%s'." % (
                      names[2], expected_subfamily_name))
 
-        if tests.check('name/full') and names[4] != expected_full_name:
-            warn("Font name",
+        if names[4] != expected_full_name:
+            warn("name/full", "Font name",
                  "Full font name is '%s', but was expecting '%s'." % (
                      names[4], expected_full_name))
 
@@ -710,85 +735,81 @@ def check_font(font_props, filename_error,
                 if ((0 <= int(major_version) <= 65535)
                     and (0 <= int(minor_version) <= 65535)):
                     match_end = names[5][match.end():]
-                    if tests.check('name/version/hinted_suffix'):
-                        if (font_props.is_google and
-                            (font_props.is_hinted and match_end != "") or
-                            (not font_props.is_hinted and match_end not in ["", " uh"])):
-                            warn(
-                                "Version",
-                                "Version string '%s' has extra characters at its end." %
-                                names[5])
+                    if (font_props.is_google and
+                        (font_props.is_hinted and match_end != "") or
+                        (not font_props.is_hinted and match_end not in ["", " uh"])):
+                        warn("name/version/hinted_suffix", "Version",
+                             "Version string '%s' has extra characters at its end." %
+                             names[5])
+
                     accuracy = len(minor_version)
                     font_revision = printable_font_revision(font, accuracy)
-                    if (tests.check('name/version/match_head') and
-                        font_revision != major_version + "." + minor_version):
-                        warn("Font Revision", "fontRevision in 'head' table is %s, "
+                    if font_revision != major_version + "." + minor_version:
+                        warn("name/version/match_head", "Font Revision",
+                             "fontRevision in 'head' table is %s, "
                              "while font version in 'name' table is %s.%s." % (
                                  font_revision, major_version, minor_version))
                 else:
-                    if tests.check('name/version/out_of_range'):
-                        warn("Version",
-                             "Version string has numerical parts out of "
-                             "[0, 65535]: '%s'." % names[5])
+                    warn("name/version/out_of_range", "Version",
+                         "Version string has numerical parts out of "
+                         "[0, 65535]: '%s'." % names[5])
             else:
-                if tests.check('name/version/expected_pattern'):
-                    warn("Version", "Version string is irregular: '%s'." % names[5])
+                warn("name/version/expected_pattern", "Version",
+                     "Version string is irregular: '%s'." % names[5])
 
-        if tests.check('name/postscript') and names[6] != expected_postscript_name:
-            warn("Postscript name",
+        if names[6] != expected_postscript_name:
+            warn("name/postscript", "Postscript name",
                  "Postscript name is '%s', but was expecting '%s'." % (
                      names[6], expected_postscript_name))
 
-        if tests.check('name/trademark'):
-            if 7 not in names:
-                warn("Trademark", "Trademark in 'name' table is not set.")
-            elif font_props.is_google and (
-                names[7] != "%s is a trademark of Google Inc." % font_props.family):
-                warn("Trademark",
-                     "Trademark message doesn't match template: '%s'." % names[7])
+        if 7 not in names:
+            warn("name/trademark", "Trademark",
+                 "Trademark in 'name' table is not set.")
+        elif font_props.is_google and (
+            names[7] != "%s is a trademark of Google Inc." % font_props.family):
+            warn("name/trademark", "Trademark",
+                 "Trademark message doesn't match template: '%s'." % names[7])
 
-        if tests.check('name/manufacturer') and 8 not in names:
-            warn("Manufacturer",
+        if 8 not in names:
+            warn("name/manufacturer", "Manufacturer",
                  "Manufacturer name in 'name' table is not set.")
 
-        if tests.check('name/designer') and 9 not in names:
-            warn("Designer", "Designer name in 'name' table is not set.")
+        if 9 not in names:
+            warn("name/designer", "Designer",
+                 "Designer name in 'name' table is not set.")
 
-        if tests.check('name/description') and 10 not in names:
-            warn("Description",
+        if 10 not in names:
+            warn("name/description", "Description",
                  "The description field in 'name' table is not set.")
 
-        if tests.check('name/vendor_url'):
-            if 11 not in names:
-                warn("Vendor", "The Vendor URL field in 'name' table is not set.")
-            elif names[11] != NOTO_URL:
-                warn("Vendor",
-                     "Vendor URL field doesn't match template: '%s'." % names[11])
+        if 11 not in names:
+            warn("name/vendor_url", "Vendor",
+                 "The Vendor URL field in 'name' table is not set.")
+        elif names[11] != NOTO_URL:
+            warn("name/vendor_url", "Vendor",
+                 "Vendor URL field doesn't match template: '%s'." % names[11])
 
-        if tests.check('name/designer_url'):
-            if 12 not in names:
-                warn("Designer",
-                     "The Designer URL field in 'name' table is not set.")
-            elif not names[12].startswith('http://'):
-                warn("Designer",
-                     "The Designer URL field in 'name' table is not an "
-                     "http URL: '%s'." % names[12])
+        if 12 not in names:
+            warn("name/designer_url", "Designer",
+                 "The Designer URL field in 'name' table is not set.")
+        elif not names[12].startswith('http://'):
+            warn("name/designer_url", "Designer",
+                 "The Designer URL field in 'name' table is not an "
+                 "http URL: '%s'." % names[12])
 
-        if tests.check('name/license'):
-            if 13 not in names:
-                warn("License",
-                     "The License field in 'name' table is not set.")
-            elif names[13] != "Licensed under the Apache License, Version 2.0":
-                warn("License",
-                     "License message doesn't match template: '%s'." % names[13])
+        if 13 not in names:
+            warn("name/license", "License",
+                 "The License field in 'name' table is not set.")
+        elif names[13] != "Licensed under the Apache License, Version 2.0":
+            warn("name/license", "License",
+                 "License message doesn't match template: '%s'." % names[13])
 
-        if tests.check('name/license_url'):
-            if 14 not in names:
-                warn("License",
-                     "The License URL in 'name' table is not set.")
-            elif names[14] != "http://www.apache.org/licenses/LICENSE-2.0":
-                warn("License",
-                     "License URL doesn't match template: '%s'." % names[14])
+        if 14 not in names:
+            warn("name/license_url", "License",
+                 "The License URL in 'name' table is not set.")
+        elif names[14] != "http://www.apache.org/licenses/LICENSE-2.0":
+            warn("name/license_url", "License",
+                 "License URL doesn't match template: '%s'." % names[14])
 
 
     def check_name_table_cjk():
@@ -819,23 +840,23 @@ def check_font(font_props, filename_error,
                        "permissions and limitations governing your use of this Font Software.")
         SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
 
-        if tests.check('name/copyright') and not re.match(ADOBE_COPYRIGHT, names[0]):
-            warn("Copyright",
+        if not re.match(ADOBE_COPYRIGHT, names[0]):
+            warn("name/copyright", "Copyright",
                  "Copyright message doesn't match template: '%s': \n%s" %
                  (names[0], ADOBE_COPYRIGHT))
 
-        if tests.check('name/family') and names[1] != expected_family_name:
-            warn("Family name",
+        if names[1] != expected_family_name:
+            warn("name/family", "Family name",
                  "Font family name is '%s', but was expecting '%s'." % (
                      names[1], expected_family_name))
 
-        if tests.check('name/subfamily') and names[2] != expected_subfamily_name:
-            warn("Sub-family name",
+        if names[2] != expected_subfamily_name:
+            warn("name/subfamily", "Sub-family name",
                  "Font subfamily name is '%s', but was expecting '%s'." % (
                      names[2], expected_subfamily_name))
 
-        if tests.check('name/full') and names[4] != expected_full_name:
-            warn("Font name",
+        if names[4] != expected_full_name:
+            warn("name/full", "Font name",
                  "Full font name is '%s', but was expecting '%s'." % (
                      names[4], expected_full_name))
 
@@ -854,61 +875,61 @@ def check_font(font_props, filename_error,
                     and (0 <= int(minor_version) <= 65535)):
                     accuracy = len(minor_version)
                     font_revision = printable_font_revision(font, accuracy)
-                    if (tests.check('name/version/match_head') and
-                        font_revision != major_version + "." + minor_version):
-                        warn("Font Revision", "fontRevision in 'head' table is %s, "
+                    if font_revision != major_version + "." + minor_version:
+                        warn("name/version/match_head", "Font Revision",
+                             "fontRevision in 'head' table is %s, "
                              "while font version in 'name' table is %s.%s." % (
                                  font_revision, major_version, minor_version))
                 else:
-                    if tests.check('name/version/out_of_range'):
-                        warn("Version",
-                             "Version string has numerical parts outside the range "
-                             "[0, 65535]: '%s'." % version_string)
+                    warn("name/version/out_of_range", "Version",
+                         "Version string has numerical parts outside the range "
+                         "[0, 65535]: '%s'." % version_string)
             else:
-                if tests.check('name/version/expected_pattern'):
-                    warn("Version", "Version string is irregular: '%s'." % names[5])
+                warn("name/version/expected_pattern", "Version",
+                     "Version string is irregular: '%s'." % names[5])
 
-        if tests.check('name/postscript') and names[6] != expected_postscript_name:
-            warn("Postscript name",
+        if names[6] != expected_postscript_name:
+            warn("name/postscript", "Postscript name",
                  "Postscript name is '%s', but was expecting '%s'." % (
                      names[6], expected_postscript_name))
 
-        if tests.check('name/trademark') and names[7] != "Noto is a trademark of Google Inc.":
-            warn("Trademark",
+        if names[7] != "Noto is a trademark of Google Inc.":
+            warn("name/trademark", "Trademark",
                  "Trademark message doesn't match template: '%s'." % names[7])
 
-        if tests.check('name/manufacturer') and 8 not in names:
-            warn("Manufacturer",
+        if 8 not in names:
+            warn("name/manufacturer", "Manufacturer",
                  "Manufacturer name in 'name' table is not set.")
 
-        if tests.check('name/designer') and 9 not in names:
-            warn("Designer", "Designer name in 'name' table is not set.")
+        if 9 not in names:
+            warn("name/designer", "Designer",
+                 "Designer name in 'name' table is not set.")
 
-        if tests.check('name/description') and 10 not in names:
-            warn("Description",
+        if 10 not in names:
+            warn("name/description", "Description",
                  "The description field in 'name' table is not set.")
-        if tests.check('name/vendor_url'):
-            if 11 not in names:
-                warn("Vendor", "The Vendor URL field in 'name' table is not set.")
-            elif names[11] != NOTO_NEW_URL:
-                warn("Vendor",
-                     "Vendor URL field doesn't match template: '%s'." % names[11])
 
-        if tests.check('name/designer_url'):
-            if 12 not in names:
-                warn("Designer",
-                     "The Designer URL field in 'name' table is not set.")
-            elif not names[12].startswith('http://'):
-                warn("Designer",
-                     "The Designer URL field in 'name' is not an "
-                     "http URL: '%s'." % names[12])
+        if 11 not in names:
+            warn("name/vendor_url", "Vendor",
+                 "The Vendor URL field in 'name' table is not set.")
+        elif names[11] != NOTO_NEW_URL:
+            warn("name/vendor_url", "Vendor",
+                 "Vendor URL field doesn't match template: '%s'." % names[11])
 
-        if tests.check('name/license') and names[13] != SIL_LICENSE:
-            warn("License",
+        if 12 not in names:
+            warn("name/designer_url", "Designer",
+                 "The Designer URL field in 'name' table is not set.")
+        elif not names[12].startswith('http://'):
+            warn("name/designer_url", "Designer",
+                 "The Designer URL field in 'name' is not an "
+                 "http URL: '%s'." % names[12])
+
+        if names[13] != SIL_LICENSE:
+            warn("name/license", "License",
                  "License message doesn't match template: '%s'." % names[13])
 
-        if tests.check('name/license_url') and names[14] != SIL_LICENSE_URL:
-            warn("License",
+        if names[14] != SIL_LICENSE_URL:
+            warn("name/license_url", "License",
                  "License URL doesn't match template: '%s'." % names[14])
 
     def _check_needed_chars(cmap, char_filter):
@@ -962,9 +983,10 @@ def check_font(font_props, filename_error,
 
         missing_chars = needed_chars - set(cmap.keys())
         if missing_chars:
-            warn("Chars",
+            warn("cmap/script_required", "Chars",
                  "The following %d characters are missing from the font: %s."
-                 % (len(missing_chars), printable_unicode_range(missing_chars)))
+                 % (len(missing_chars), printable_unicode_range(missing_chars)),
+                 check_test=False)
 
 
     def check_cmap_table():
@@ -990,24 +1012,22 @@ def check_font(font_props, filename_error,
             if (table.format,
                 table.platformID,
                 table.platEncID) not in expected_tables:
-                if tests.check('cmap/tables/unexpected'):
-                    warn("cmap",
-                         "'cmap' has a subtable of "
-                         "(format=%d, platform=%d, encoding=%d), "
-                         "which it shouldn't have." % (
-                             table.format, table.platformID, table.platEncID))
+                warn("cmap/tables/unexpected", "cmap",
+                     "'cmap' has a subtable of (format=%d, platform=%d, encoding=%d), "
+                     "which it shouldn't have." % (
+                         table.format, table.platformID, table.platEncID))
             elif table != (12, 0, 4):
                 cmaps[table.format] = table.cmap
 
-        if tests.check('cmap/tables/missing') and 4 not in cmaps:
-            warn("cmap",
+        if 4 not in cmaps:
+            warn("cmap/tables/missing", "cmap",
                  "'cmap' does not have a format 4 subtable, but it should.")
 
         if 12 in cmaps:
             cmap = cmaps[12]
             # if there is a format 12 table, it should have non-BMP characters
-            if tests.check('cmap/tables/format_12_has_bmp') and max(cmap.keys()) <= 0xFFFF:
-                warn("cmap",
+            if max(cmap.keys()) <= 0xFFFF:
+                warn("cmap/tables/format_12_has_bmp", "cmap",
                      "'cmap' has a format 12 subtable but no "
                      "non-BMP characters.")
 
@@ -1015,14 +1035,14 @@ def check_font(font_props, filename_error,
             if tests.check('cmap/tables/format_4_subset_of_12') and 4 in cmaps:
                 for char in cmaps[4]:
                     if char not in cmap:
-                        warn("cmap",
+                        warn("cmap/tables/format_4_subset_of_12", "cmap",
                              "U+%04X is mapped in cmap's format 4 subtable but "
-                             "not in the format 12 one." % char)
+                             "not in the format 12 one." % char, check_test=False)
                     elif cmaps[4][char] != cmap[char]:
-                        warn("cmap",
+                        warn("cmap/tables/format_4_subset_of_12", "cmap",
                              "U+%04X is mapped to %s in cmap's format 4 "
                              "subtable but to %s in the format 12 one." % (
-                                 char, cmaps[4][char], cmap[char]))
+                                 char, cmaps[4][char], cmap[char]), check_test=False)
         else:
             cmap = cmaps[4]
 
@@ -1034,10 +1054,11 @@ def check_font(font_props, filename_error,
                 0x0020] # space
             for code in required_in_all_fonts:
                 if code not in cmap:
-                    warn("cmap",
+                    warn("cmap/required", "cmap",
                          "U+%04X is not mapped in cmap, but it should be (see "
                          "https://www.microsoft.com/typography/otspec/recom.htm)."
-                             % code)
+                             % code,
+                         check_test=False)
 
         if not font_props.is_cjk and tests.check('cmap/script_required'):
             _check_needed_chars(cmap, tests.get_filter('cmap/script_required'))
@@ -1046,10 +1067,11 @@ def check_font(font_props, filename_error,
             privates_in_cmap = {char for char in cmap
                                 if unicode_data.is_private_use(char)}
             if privates_in_cmap:
-                warn("Chars",
+                warn("cmap/private_use", "Chars",
                      "There should be no private use characters defined in the "
                      "font, but there are: %s."
-                         % printable_unicode_range(privates_in_cmap))
+                         % printable_unicode_range(privates_in_cmap),
+                     check_test=False)
 
         if tests.check('cmap/non_characters'):
             non_characters = frozenset(
@@ -1058,10 +1080,11 @@ def check_font(font_props, filename_error,
                 + [0xFFFF + plane_no * 0x10000 for plane_no in range(0, 17)])
             non_characters_in_cmap = non_characters & set(cmap.keys())
             if non_characters_in_cmap:
-                warn("Chars",
+                warn("cmap/non_characters", "Chars",
                      "There should be no non-characters defined in the font, but "
                      "there are: %s."
-                         % printable_unicode_range(non_characters_in_cmap))
+                         % printable_unicode_range(non_characters_in_cmap),
+                     check_test=False)
 
         if tests.check('cmap/disallowed_ascii') and not (
             font_props.script == "Qaae" or
@@ -1070,9 +1093,10 @@ def check_font(font_props, filename_error,
             ascii_letters = noto_data.ascii_letters()
             contained_letters = ascii_letters & set(cmap.keys())
             if contained_letters:
-                warn("Chars",
+                warn("cmap/disallowed_ascii", "Chars",
                     "There should not be ASCII letters in the font, but there are: %s."
-                    % printable_unicode_range(contained_letters))
+                     % printable_unicode_range(contained_letters),
+                     check_test=False)
 
         return cmap
 
@@ -1082,6 +1106,9 @@ def check_font(font_props, filename_error,
             return
 
         def check_ul_unicode_range():
+            if not tests.check('head/os2/unicoderange'):
+                return
+
             bitmap = font_data.get_os2_unicoderange_bitmap(font)
             expected_info = opentype_data.collect_unicoderange_info(cmap)
             expected_bitmap = font_data.unicoderange_info_to_bitmap(expected_info)
@@ -1096,10 +1123,12 @@ def check_font(font_props, filename_error,
                     chars_in_bucket = sum(t[0] for t in expected_info if t[1][2] == bucket_index)
                     size_of_bucket = opentype_data.unicoderange_bucket_info_size(bucket_info)
                     set_unset = "not be set" if bitmap & (1 << bucket_index) else "be set"
-                    warn("Range bit",
+                    warn("head/os2/unicoderange", "Range bit",
                          "ulUnicodeRange bit %d (%s) should %s (cmap has "
                          "%d of %d codepoints in this range)" %
-                         (bucket_index, range_name, set_unset, chars_in_bucket, size_of_bucket))
+                         (bucket_index, range_name, set_unset, chars_in_bucket, size_of_bucket),
+                         check_test=False)
+
             # print printable_unicode_range(set(cmap.keys()))
             # print "expected %s" % font_data.unicoderange_bitmap_to_string(expected_bitmap)
             # print "have %s" % font_data.unicoderange_bitmap_to_string(bitmap)
@@ -1108,64 +1137,65 @@ def check_font(font_props, filename_error,
 
         if tests.check('head/hhea'):
             if font_props.is_ui or deemed_ui:
-                if tests.check('head/hhea/ascent') and hhea_table.ascent != ASCENT:
-                    warn("Bounds",
+                if hhea_table.ascent != ASCENT:
+                    warn("head/hhea/ascent", "Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
                              % (hhea_table.ascent, ASCENT))
-                if tests.check('head/hhea/descent') and hhea_table.descent != DESCENT:
-                    warn("Bounds",
+                if hhea_table.descent != DESCENT:
+                    warn("head/hhea/descent", "Bounds",
                          "Value of descent in 'hhea' table is %d, but should be %d."
                              % (hhea_table.descent, DESCENT))
 
-            if tests.check('head/hhea/linegap') and hhea_table.lineGap != 0:
-                warn("Line Gap",
+            if hhea_table.lineGap != 0:
+                warn("head/hhea/linegap", "Line Gap",
                      "Value of lineGap in 'hhea' table is %d, but should be 0."
                          % hhea_table.lineGap)
 
         vhea_table = font.get("vhea")
         if tests.check('head/vhea') and vhea_table:
-            if tests.check('head/vhea/linegap') and vhea_table.lineGap != 0:
-                warn("Line Gap",
+            if vhea_table.lineGap != 0:
+                warn("head/vhea/linegap", "Line Gap",
                      "Value of lineGap in 'vhea' table is %d, but should be 0."
                      % vhea_table.lineGap)
 
         os2_table = font["OS/2"]
 
         if tests.check('head/os2'):
-            if tests.check('head/os2/fstype') and os2_table.fsType != 0:
-                warn("OS/2",
+            if os2_table.fsType != 0:
+                warn("head/os2/fstype", "OS/2",
                      "Value of fsType in the 'OS/2' table is 0x%04X, but should "
                      "be 0." % os2_table.fsType)
-            if tests.check('head/os2/ascender') and os2_table.sTypoAscender != hhea_table.ascent:
-                warn("OS/2",
+            if os2_table.sTypoAscender != hhea_table.ascent:
+                warn("head/os2/ascender", "OS/2",
                      "Value of sTypoAscender in 'OS/2' table (%d) is different "
                      "from the value of Ascent in 'hhea' table (%d), "
                      "but they should be equal." %
                      (os2_table.sTypoAscender, hhea_table.ascent))
-            if tests.check('head/os2/descender') and os2_table.sTypoDescender != hhea_table.descent:
-                warn("OS/2",
+            if os2_table.sTypoDescender != hhea_table.descent:
+                warn("head/os2/descender", "OS/2",
                      "Value of sTypoDescender in 'OS/2' table (%d) is different "
                      "from the value of Descent in 'hhea' table (%d), "
                      "but they should be equal." %
                      (os2_table.sTypoDescender, hhea_table.descent))
-            if tests.check('head/os2/linegap') and os2_table.sTypoLineGap != 0:
-                warn("OS/2", "Value of sTypoLineGap in 'OS/2' table is %d, but "
+            if os2_table.sTypoLineGap != 0:
+                warn("head/os2/linegap", "OS/2",
+                     "Value of sTypoLineGap in 'OS/2' table is %d, but "
                      "should be 0." % os2_table.sTypoLineGap)
 
-            if tests.check('head/os2/winascent') and os2_table.usWinAscent != hhea_table.ascent:
-                warn("OS/2", "Value of usWinAscent in 'OS/2' table (%d) is "
+            if os2_table.usWinAscent != hhea_table.ascent:
+                warn("head/os2/winascent", "OS/2",
+                     "Value of usWinAscent in 'OS/2' table (%d) is "
                      "different from the value of Ascent in 'hhea' table (%d), "
                      "but they should be equal." %
                      (os2_table.usWinAscent, hhea_table.ascent))
-            if tests.check('head/os2/windescent') and os2_table.usWinDescent != -hhea_table.descent:
-                warn("OS/2",
+            if os2_table.usWinDescent != -hhea_table.descent:
+                warn("head/os2/windescent", "OS/2",
                      "Value of usWinDescent in 'OS/2' table (%d) is different "
                      "from the opposite of value of Descent in 'hhea' table (%d), "
                      "but they should be opposites." %
                      (os2_table.usWinDescent, hhea_table.descent))
-            if tests.check('head/os2/achvendid') and (
-                font_props.is_google and os2_table.achVendID != 'GOOG'):
-                warn("OS/2",
+            if font_props.is_google and os2_table.achVendID != 'GOOG':
+                warn("head/os2/achvendid", "OS/2",
                      "Value of achVendID in the 'OS/2' table is %s, "
                      "but should be GOOG." %
                      os2_table.achVendID)
@@ -1191,36 +1221,35 @@ def check_font(font_props, filename_error,
             if not expected_weight:
                 raise ValueError('unexpected weight: %s' % font_props.weight)
 
-            if tests.check('head/os2/weight_class') and os2_table.usWeightClass != expected_weight:
-                warn("OS/2",
+            if os2_table.usWeightClass != expected_weight:
+                warn("head/os2/weight_class", "OS/2",
                      "Value of usWeightClass in 'OS/2' table is %d, but should "
                      "be %d." % (os2_table.usWeightClass, expected_weight))
 
-            if tests.check('head/os2/fsselection'):
-                OS2_SEL_ITALIC_MASK = 1
-                OS2_SEL_BOLD_MASK = 1 << 5
-                OS2_SEL_REGULAR_MASK = 1 << 6
-                OS2_SEL_USE_TYPO_METRICS_MASK = 1 << 7
-                OS2_SEL_WWS_MASK = 1 << 8
-                if os2_table.fsSelection & OS2_SEL_REGULAR_MASK:
-                    if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
-                        warn("OS/2",
-                             "fsSelection Regular bit is set, so the Italic bit should be clear.")
-                    if os2_table.fsSelection & OS2_SEL_BOLD_MASK:
-                        warn("OS/2",
-                             "fsSelection Regular bit is set, so the Bold bit should be clear.")
+            OS2_SEL_ITALIC_MASK = 1
+            OS2_SEL_BOLD_MASK = 1 << 5
+            OS2_SEL_REGULAR_MASK = 1 << 6
+            OS2_SEL_USE_TYPO_METRICS_MASK = 1 << 7
+            OS2_SEL_WWS_MASK = 1 << 8
+            if os2_table.fsSelection & OS2_SEL_REGULAR_MASK:
+                if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
+                    warn("head/os2/fsselection", "OS/2",
+                         "fsSelection Regular bit is set, so the Italic bit should be clear.")
+                if os2_table.fsSelection & OS2_SEL_BOLD_MASK:
+                    warn("head/os2/fsselection", "OS/2",
+                         "fsSelection Regular bit is set, so the Bold bit should be clear.")
 
-                if os2_table.fsSelection & OS2_SEL_USE_TYPO_METRICS_MASK:
-                    warn("OS/2",
-                         "UseTypoMetrics bit in fsSelection is set, but should be clear.")
+            if os2_table.fsSelection & OS2_SEL_USE_TYPO_METRICS_MASK:
+                warn("head/os2/fsselection", "OS/2",
+                     "UseTypoMetrics bit in fsSelection is set, but should be clear.")
 
-            if tests.check('head/os2/unicoderange'):
-                check_ul_unicode_range()
+            check_ul_unicode_range()
 
 
     def check_vertical_limits():
         if 'glyf' not in font:
             return
+
         if not tests.check('bounds'):
             return
 
@@ -1269,59 +1298,63 @@ def check_font(font_props, filename_error,
             if font_props.is_ui or deemed_ui:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
                     ymax is not None and ymax > MAX_UI_HEIGHT):
-                    warn(
-                        "Bounds",
-                        "Real yMax for glyph %d (%s) is %d, which is more than "
-                        "%d." % (glyph_index, glyph_name, ymax, MAX_UI_HEIGHT))
+                    warn("bounds/glyph/ui_ymax", "Bounds",
+                         "Real yMax for glyph %d (%s) is %d, which is more than "
+                         "%d." % (glyph_index, glyph_name, ymax, MAX_UI_HEIGHT),
+                         check_test=False)
                 if (tests.checkvalue('bounds/glyph/ui_ymin', glyph_index) and
                     ymin is not None and ymin < MIN_UI_HEIGHT):
-                    warn(
-                        "Bounds",
-                        "Real yMin for glyph %d (%s) is %d, which is less than "
-                        "%d." % (glyph_index, glyph_name, ymin, MIN_UI_HEIGHT))
+                    warn("bounds/glyph/ui_ymin", "Bounds",
+                         "Real yMin for glyph %d (%s) is %d, which is less than "
+                         "%d." % (glyph_index, glyph_name, ymin, MIN_UI_HEIGHT),
+                         check_test=False)
 
             if (tests.checkvalue('bounds/glyph/ymax', glyph_index) and ymax is not None and
                 ymax > ascent_limit):
-                warn(
-                    "Bounds",
-                    "Real yMax for glyph %d (%s) is %d, which is higher than "
-                    "the font's %s (%d), resulting in clipping." %
-                    (glyph_index, glyph_name, ymax, ascent_name, ascent_limit))
+                warn("bounds/glyph/ymax", "Bounds",
+                     "Real yMax for glyph %d (%s) is %d, which is higher than "
+                     "the font's %s (%d), resulting in clipping." %
+                     (glyph_index, glyph_name, ymax, ascent_name, ascent_limit),
+                     check_test=False)
+
             if (tests.checkvalue('bounds/glyph/ymin', glyph_index) and ymin is not None and
                 ymin < descent_limit):
-                warn(
-                    "Bounds",
-                    "Real yMin for glyph %d (%s) is %d, which is lower than "
-                    "the font's %s (%d), resulting in clipping." %
-                    (glyph_index, glyph_name, ymin, descent_name, descent_limit))
+                warn("bounds/glyph/ymin", "Bounds",
+                     "Real yMin for glyph %d (%s) is %d, which is lower than "
+                     "the font's %s (%d), resulting in clipping." %
+                     (glyph_index, glyph_name, ymin, descent_name, descent_limit),
+                     check_test=False)
 
         if tests.check('bounds/font'):
             if font_props.is_ui or deemed_ui:
-                if tests.check('bounds/font/ui_ymax') and font_ymax > MAX_UI_HEIGHT:
-                    warn("Bounds", "Real yMax is %d, but it should be less "
+                if font_ymax > MAX_UI_HEIGHT:
+                    warn("bounds/font/ui_ymax", "Bounds",
+                         "Real yMax is %d, but it should be less "
                          "than or equal to %d." % (font_ymax, MAX_UI_HEIGHT))
-                if tests.check('bounds/font/ui_ymin') and font_ymin < MIN_UI_HEIGHT:
-                    warn(
-                        "Bounds",
-                        "Real yMin is %d, but it should be greater than or equal "
-                        "to %d." % (font_ymin, MIN_UI_HEIGHT))
+                if font_ymin < MIN_UI_HEIGHT:
+                    warn("bounds/font/ui_ymin", "Bounds",
+                         "Real yMin is %d, but it should be greater than or equal "
+                         "to %d." % (font_ymin, MIN_UI_HEIGHT))
             else:
                 hhea_table = font["hhea"]
-                if tests.check('bounds/font/ymax') and font_ymax > hhea_table.ascent:
-                    warn("Bounds", "Real yMax %d, but it should be less "
+                if font_ymax > hhea_table.ascent:
+                    warn("bounds/font/ymax", "Bounds",
+                         "Real yMax %d, but it should be less "
                          "than or equal to the value of Ascent in 'hhea' table, "
                          "which is %d." % (font_ymax, hhea_table.ascent))
-                if tests.check('bounds/font/ymin') and font_ymin < hhea_table.descent:
-                    warn("Bounds", "Real yMin is %d, but it should be greater "
+                if font_ymin < hhea_table.descent:
+                    warn("bounds/font/ymin", "Bounds",
+                         "Real yMin is %d, but it should be greater "
                          "than or equal to the value of Descent in 'hhea' table, "
                          "which is %d." % (font_ymin, hhea_table.descent))
-
 
     def check_for_intersections_and_off_curve_extrema():
         if 'glyf' not in font:
             return
+
         if not tests.check('paths'):
             return
+
         glyf_table = font['glyf']
         for glyph_index in range(len(glyf_table.glyphOrder)):
             glyph_name = glyf_table.glyphOrder[glyph_index]
@@ -1361,9 +1394,9 @@ def check_font(font_props, filename_error,
                               continue
                             out_of_box = curve_has_off_curve_extrema(curve)
                             if out_of_box > 0:
-                                warn("Extrema", "The glyph '%s' is missing "
-                                     "on-curve extreme points in the segment "
-                                     "between point %d=%s and point %d=%s "
+                                warn("paths/extrema", "Extrema",
+                                     "The glyph '%s' is missing on-curve extreme points "
+                                     "in the segment between point %d=%s and point %d=%s "
                                      "by %f units."
                                      % (glyph_name,
                                         point,
@@ -1371,21 +1404,24 @@ def check_font(font_props, filename_error,
                                         next_point,
                                         glyph.coordinates[next_point],
                                         out_of_box),
-                                      extrema_details)
+                                      extrema_details,
+                                     check_test=False)
                     start_point = end_point + 1
                     all_contours.append(curves_in_contour)
 
                 if check_intersection:
                     result = curves_intersect(all_contours)
                     if result:
-                        warn("Intersection",
+                        warn("paths/intersection", "Intersection",
                              "The glyph '%s' has intersecting "
-                             "outlines: %s" % (glyph_name, result))
+                             "outlines: %s" % (glyph_name, result),
+                             check_test=False)
 
     def check_gdef_table(cmap):
         """Validate the GDEF table."""
         if not tests.check('gdef'):
             return
+
         mark_glyphs = [code for code in cmap
                        if unicode_data.category(code) == 'Mn']
         try:
@@ -1401,23 +1437,24 @@ def check_font(font_props, filename_error,
                 "mark glyph",
                 "component glyph"]
             if mark_glyphs and not class_def:
-                if tests.check('gdef/classdef/not_present'):
-                    warn("Glyph Class",
-                         "There is no GlyphClassDef subtable of GDEF table in the "
-                         "font, while there are non-spacing combining characters: %s."
-                         % printable_unicode_range(mark_glyphs))
+                warn("gdef/classdef/not_present", "Glyph Class",
+                     "There is no GlyphClassDef subtable of GDEF table in the "
+                     "font, while there are non-spacing combining characters: %s."
+                     % printable_unicode_range(mark_glyphs),
+                     is_error=False)
             elif mark_glyphs and not is_indic:
                 for code in mark_glyphs:
                     glyph = cmap[code]
                     if glyph not in class_def:
                         if tests.checkvalue('gdef/classdef/unlisted', code):
-                            warn("Glyph Class",
+                            warn("gdef/classdef/unlisted", "Glyph Class",
                                  "Glyph %s (U+%04X %s) is a combining mark, but is not "
                                  "assigned a value in the GDEF/GlyphClassDef table."
-                                 % (glyph, code, unicode_data.name(code)))
+                                 % (glyph, code, unicode_data.name(code)),
+                                 is_error=False, check_test=False)
                     elif (tests.checkvalue('gdef/classdef/combining_mismatch', code) and
                           class_def[glyph] != 3):
-                        warn("Glyph Class",
+                        warn("gdef/classdef/combining_mismatch", "Glyph Class",
                              "Glyph %s (U+%04X %s) is a combining mark, but is "
                              "defined as class %d (%s) in the GDEF/GlyphClassDef "
                              "table." % (
@@ -1425,7 +1462,8 @@ def check_font(font_props, filename_error,
                                  code,
                                  unicode_data.name(code),
                                  class_def[glyph],
-                                 names_of_classes[class_def[glyph]]))
+                                 names_of_classes[class_def[glyph]]),
+                             is_error=False, check_test=False)
 
             if class_def and not is_indic:
                 for code in cmap:
@@ -1436,14 +1474,15 @@ def check_font(font_props, filename_error,
                             klass == 3
                             and unicode_data.category(code) != "Mn"
                             and code not in noto_data.ACCEPTABLE_AS_COMBINING):
-                            warn("Glyph Class",
+                            warn("gdef/classdef/not_combining_mismatch", "Glyph Class",
                                  "Glyph %s (U+%04X %s) is defined as class 3 "
                                  "(non-spacing) in the GDEF/GlyphClassDef table, "
                                  "but is of general category %s." % (
                                      cmap[code],
                                      code,
                                      unicode_data.name(code),
-                                     unicode_data.category(code)))
+                                     unicode_data.category(code)),
+                                 is_error=False, check_test=False)
 
         if tests.check('gdef/attachlist'):
             # check for duplicate attachment points in AttachList table
@@ -1457,15 +1496,13 @@ def check_font(font_props, filename_error,
             for index, attach_point in enumerate(attach_point_list):
                 points = attach_point.PointIndex
                 if len(set(points)) != len(points):
-                    if tests.check('gdef/attachlist/duplicates'):
-                        warn("Attach List",
-                             "Entry #%d in GDEF.AttachList has duplicate points,"
-                             "resulting in being rejected as a web font." % index)
+                    warn("gdef/attachlist/duplicates", "Attach List",
+                         "Entry #%d in GDEF.AttachList has duplicate points,"
+                         "resulting in being rejected as a web font." % index)
                 elif sorted(points) != points:
-                    if tests.check('gdef/attachlists/out_of_order'):
-                        warn("Attach List",
-                             "Points in entry #%d in GDEF.AttachList are not in "
-                             "increasing order." % index)
+                    warn("gdef/attachlists/out_of_order", "Attach List",
+                         "Points in entry #%d in GDEF.AttachList are not in "
+                         "increasing order." % index)
 
         if tests.check('gdef/ligcaretlist'):
             # check that every ligature has a ligature caret in GDEF
@@ -1482,24 +1519,22 @@ def check_font(font_props, filename_error,
                     lig_caret_list_coverage = None
 
                 if not lig_caret_list_coverage:
-                    if tests.check('gdef/ligcaretlist/not_present') and not is_indic:
-                        warn(
-                            "Ligature Class",
-                            "There is no LigCaretList data in the GDEF table, but "
-                            "there are ligatures defined in GDEF: %s."
-                            % ", ".join(ligatures))
+                    if not is_indic:
+                        warn("gdef/ligcaretlist/not_present", "Ligature Class",
+                             "There is no LigCaretList data in the GDEF table, but "
+                             "there are ligatures defined in GDEF: %s."
+                             % ", ".join(ligatures))
                 else:
                     if set(lig_caret_list_coverage.glyphs) - set(ligatures):
-                        if tests.check('gdef/ligcaretlist/not_ligature'):
-                            warn("Ligature Class",
-                                 "Some glyphs are defined to have ligature carets in "
-                                 "GDEF table, but are not defined as ligatures in the "
-                                 "table: %s." % ", ".join(sorted(
-                                     set(lig_caret_list_coverage.glyphs) -
-                                     set(ligatures))))
+                        warn("gdef/ligcaretlist/not_ligature", "Ligature Class",
+                             "Some glyphs are defined to have ligature carets in "
+                             "GDEF table, but are not defined as ligatures in the "
+                             "table: %s." % ", ".join(sorted(
+                                 set(lig_caret_list_coverage.glyphs) -
+                                 set(ligatures))))
                     elif set(ligatures) - set(lig_caret_list_coverage.glyphs):
-                        if tests.check('gdef/ligcaretlist/unlisted') and not is_indic:
-                            warn("Ligature Class",
+                        if not is_indic:
+                            warn("gdef/ligcaretlist/unlisted", "Ligature Class",
                                  "Some glyphs are defined as ligatures in "
                                  "the GDEF table, but don't have ligature carets: %s."
                                  % ", ".join(sorted(
@@ -1538,10 +1573,12 @@ def check_font(font_props, filename_error,
         ]
         if not font_props.is_cjk and human_readable_script_name(font_props.script) in whitelist:
             return
-        if tests.check('complex/gpos/missing') and ("GPOS" not in font):
-            warn("GPOS", "There is no GPOS table in the font.")
-        if tests.check('complex/gsub/missing') and ("GSUB" not in font):
-            warn("GSUB", "There is no GSUB table in the font.")
+        if "GPOS" not in font:
+            warn("complex/gpos/missing", "GPOS",
+                 "There is no GPOS table in the font.")
+        if "GSUB" not in font:
+            warn("complex/gsub/missing", "GSUB",
+                 "There is no GSUB table in the font.")
         #TODO: Add more script-specific checks
 
     def check_for_bidi_pairs(cmap):
@@ -1587,8 +1624,8 @@ def check_font(font_props, filename_error,
         for code in sorted(cmap):
             if (unicode_data.is_private_use(code)
                     or not unicode_data.mirrored(code)):
-                if tests.check('bidi/rtlm_non_mirrored') and cmap[code] in rtlm:
-                    warn("Bidi",
+                if cmap[code] in rtlm:
+                    warn("bidi/rtlm_non_mirrored", "Bidi",
                          "The 'rtlm' feature in the font applies to the glyph "
                          "for U+%04X (%s), but it shouldn't, since the "
                          "character is not bidi mirroring." % (
@@ -1597,22 +1634,23 @@ def check_font(font_props, filename_error,
 
             # The following tests are only applied to bidi mirroring characters
             if code in ompl:
-                if tests.check('bidi/ompl_rtlm') and cmap[code] in rtlm:
-                    warn("Bidi",
+                if cmap[code] in rtlm:
+                    warn("bidi/ompl_rtlm", "Bidi",
                          "The 'rtlm' feature in the font applies to the glyph "
                          "for U+%04X (%s), but it shouldn't, since the "
                          "character is in the OMPL list." % (code, cmap[code]))
 
                 mirrored_pair = ompl[code]
-                if tests.check('bidi/ompl_missing_pair') and mirrored_pair not in cmap:
-                    warn("Bidi",
+                if mirrored_pair not in cmap:
+                    warn("bidi/ompl_missing_pair", "Bidi",
                          "The character U+%04X (%s) is supported in the font, "
                          "but its bidi mirrored pair U+%04X (%s) is not." % (
                              code, unicode_data.name(code),
                              mirrored_pair, unicode_data.name(mirrored_pair)))
             else:
-                if tests.check('bidi/rtlm_unlisted') and cmap[code] not in rtlm:
-                    warn("Bidi", "No 'rtlm' feature is applied to the glyph "
+                if cmap[code] not in rtlm:
+                    warn("bidi/rtlm_unlisted", "Bidi",
+                         "No 'rtlm' feature is applied to the glyph "
                          "for U+%04X (%s), but one should be applied, since "
                          "the character is a bidi mirroring character that is "
                          "not in the OMPL list." % (
@@ -1621,35 +1659,40 @@ def check_font(font_props, filename_error,
     def check_hints():
         if not 'glyf' in font:
             return
+
         if not tests.check('hints'):
             return
+
         expected_to_be_hinted = font_props.is_hinted
         expected_to_be_unhinted = not expected_to_be_hinted
 
         # There should be no fpgm, prep, or cvt tables in unhinted fonts
-        if tests.check('hints/unexpected_tables') and expected_to_be_unhinted:
+        if expected_to_be_unhinted:
             for table_name in ['fpgm', 'prep', 'cvt']:
                 if table_name in font:
-                    warn("Hints",
+                    warn("hints/unexpected_tables", "Hints",
                          "The font is supposed to be unhinted, but it has "
                          "a '%s' table." % table_name)
 
         glyf_table = font['glyf']
+        check_unexpected_bytecode = tests.check('hints/unexpected_bytecode')
         for glyph_index in range(len(glyf_table.glyphOrder)):
             glyph_name = glyf_table.glyphOrder[glyph_index]
             glyph = glyf_table[glyph_name]
             if glyph.numberOfContours > 0:
                 bytecode = glyph.program.bytecode
                 if expected_to_be_unhinted:
-                    if tests.check('hints/unexpected_bytecode') and bytecode:
-                        warn("Hints",
+                    if check_unexpected_bytecode and bytecode:
+                        warn("hints/unexpected_bytecode", "Hints",
                              "The font is supposed to be unhinted, but "
-                             "glyph '%s' has hints." % glyph_name)
+                             "glyph '%s' has hints." % glyph_name,
+                             check_test=False)
                 else:
                     if not bytecode and tests.checkvalue('hints/missing_bytecode', glyph_index):
-                        warn("Hints",
+                        warn("hints/missing_bytecode", "Hints",
                              "The font is supposed to be hinted, but "
-                             "glyph '%s' (%d) doesn't have hints." % (glyph_name, glyph_index))
+                             "glyph '%s' (%d) doesn't have hints." % (glyph_name, glyph_index),
+                             check_test=False)
 
 
     def check_explicit_advances():
@@ -1662,7 +1705,8 @@ def check_font(font_props, filename_error,
         def get_horizontal_advance(codepoint):
             return font_data.get_glyph_horizontal_advance(font, cmap[codepoint])
 
-        def expect_width(codepoint, expected, low_divisor=None, high_divisor=None):
+        def expect_width(codepoint, expected, low_divisor=None, high_divisor=None,
+                         label='advances/whitespace'):
             # it is ok if the font does not support the tested codepoint
             if codepoint not in cmap:
                 return
@@ -1678,9 +1722,10 @@ def check_font(font_props, filename_error,
                 if abs(adv - exp) > slop:
                     glyph_name = cmap[codepoint]
                     glyph_id = font.getGlyphID(glyph_name)
-                    warn("Advances",
+                    warn(label, "Advances",
                          "The advance of U+%04x (%s, glyph %d) is %d, but expected %d." %
-                         (codepoint, glyph_name, glyph_id, adv, exp))
+                         (codepoint, glyph_name, glyph_id, adv, exp),
+                         check_test=False)
             else:
                 # note name switch, since the higher divisor returns the lower value
                 high_exp = int(round(float(expected) / low_divisor))
@@ -1688,10 +1733,11 @@ def check_font(font_props, filename_error,
                 if not (low_exp - slop <= adv <= high_exp + slop):
                     glyph_name = cmap[codepoint]
                     glyph_id = font.getGlyphID(glyph_name)
-                    warn("Advances",
+                    warn(label, "Advances",
                          "The advance of U+%04x (%s, glyph %d) is %d, but expected between "
                          "%d and %d." % (codepoint, glyph_name, glyph_id, adv, low_exp,
-                                         high_exp))
+                                         high_exp),
+                         check_test=False)
 
         digit_char = ord('0')
         period_char = ord('.')
@@ -1707,14 +1753,15 @@ def check_font(font_props, filename_error,
                     digit = ord('0') + i
                     width = get_horizontal_advance(digit)
                     if width != digit_width:
-                        warn("Advances",
+                        warn("advances/digits", "Advances",
                              "The advance of '%s' (%d) is different from that of '0' (%d)." %
-                             (chr(digit), width, digit_width))
+                             (chr(digit), width, digit_width),
+                             check_test=False)
 
         if period_char in cmap:
             period_width = get_horizontal_advance(period_char)
             if tests.check('advances/comma_period') and comma_char in cmap:
-                expect_width(comma_char, period_width)
+                expect_width(comma_char, period_width, label='advances/comma_period')
 
         if tests.check('advances/whitespace'):
             if tab_char in cmap or nbsp_char in cmap:
@@ -1748,8 +1795,10 @@ def check_font(font_props, filename_error,
     def check_stems(cmap):
         if not 'glyf' in font:
             return
+
         if not tests.check('stem'):
             return
+
         # Only implemented for Ogham, currently
         # FIXME: Add support for Arabic, Syriac, Mongolian, Phags-Pa,
         # Devanagari, Bengali, etc
@@ -1759,25 +1808,29 @@ def check_font(font_props, filename_error,
 
         glyf_table = font['glyf']
         metrics_dict = font['hmtx'].metrics
+        check_left_joining = tests.check('stem/left_joining')
+        check_right_joining = tests.check('stem/right_joining')
         for code in all_joining & set(cmap):
             glyph_name = cmap[code]
             advance_width, lsb = metrics_dict[glyph_name]
-            if tests.check('stem/left_joining') and code in joins_to_left:
+            if check_left_joining and code in joins_to_left:
                 if lsb != 0:
-                    warn("Stem",
+                    warn("stem/left_joining", "Stem",
                          "The glyph for U+%04X (%s) is supposed to have a stem "
                          "connecting to the left, but its left side bearing "
                          "is %d instead of 0."
-                         % (code, unicode_data.name(code), lsb))
-            if tests.check('stem/right_joining') and code in joins_to_right:
+                         % (code, unicode_data.name(code), lsb),
+                         check_test=False)
+            if check_right_joining and code in joins_to_right:
                 glyph = glyf_table[glyph_name]
                 rsb = advance_width - (lsb + glyph.xMax - glyph.xMin)
                 if rsb != -70:
-                    warn("Stem",
+                    warn("stem/right_joining", "Stem",
                          "The glyph for U+%04X (%s) is supposed to have a stem "
                          "connecting to the right, but it's right side bearing "
                          "is %d instead of -70."
-                         % (code, unicode_data.name(code), rsb))
+                         % (code, unicode_data.name(code), rsb),
+                         check_test=False)
 
 
     def check_accessiblity(cmap):
@@ -1810,15 +1863,18 @@ def check_font(font_props, filename_error,
                         reported_list.append((glyph_name, glyph_id))
             if reported_list:
                 report_info = ', '.join('%s (%d)' % t for t in sorted(reported_list))
-                warn("Reachabily",
+                warn("reachable", "Reachabily",
                      "The following %d glyphs are unreachable in the font: %s." %
-                     (len(reported_glyphs), report_info))
+                     (len(reported_glyphs), report_info),
+                     check_test=False)
 
     ### actual start of check_font fn
 
     # python 2.7 does not have nonlocal, so hack around it
     suppressed_err_count = [0]
     err_count = [0]
+    suppressed_warn_count = [0]
+    warn_count = [0]
 
     font_path = os.path.expanduser(font_props.file_path)
     font = ttLib.TTFont(font_path)
@@ -1843,12 +1899,12 @@ def check_font(font_props, filename_error,
     tests = lint_spec.get_tests(fi)
 
     if filename_error:
-        if filename_error == 'script' and tests.check('filename/script'):
-            warn("File name",
+        if filename_error == 'script':
+            warn("filename/script", "File name",
                  "Style %s also needs a script mentioned in the "
                  "file name." % font_props.style)
-        elif filename_error == 'name' and tests.check('filename/name'):
-            warn("File name",
+        elif filename_error == 'name':
+            warn("filename/name", "File name",
                  "File name '%s' does not match the Noto font naming guidelines."
                  % os.path.basename(font_props.file_path))
 
@@ -1868,8 +1924,9 @@ def check_font(font_props, filename_error,
     # This must be done at the very end, since the subsetter may change the font
     check_accessiblity(cmap)
 
-    warn("info",
-         "supported characters: " + printable_unicode_range(cmap.keys()))
+    warn("info", "info",
+         "supported characters: " + printable_unicode_range(cmap.keys()),
+         check_test=False)
 
     if runlog:
         log = sorted(tests.runlog())
@@ -1972,6 +2029,10 @@ def main():
         "--dump_font_props",
         help="write font props for files",
         action="store_true")
+    parser.add_argument(
+        "-nw", "--nowarn",
+        help="suppress warning messages",
+        action="store_true")
 
     arguments = parser.parse_args()
 
@@ -1987,7 +2048,7 @@ def main():
     lint_spec = get_lint_spec(arguments.config_file, arguments.config)
 
     if arguments.csv and arguments.csv_header:
-        print("Script,Style,Variant,Weight,Manufacturer,Category,Hint Status,"
+        print("Type,Script,Style,Variant,Weight,Manufacturer,Category,Hint Status,"
             "File Name,Revision,Issue")
 
     for font_file_path in arguments.font_files:
@@ -1999,7 +2060,8 @@ def main():
                    arguments.skiplog,
                    arguments.csv,
                    arguments.info,
-                   arguments.extrema_details)
+                   arguments.extrema_details,
+                   arguments.nowarn)
     count = len(arguments.font_files)
     if arguments.font_props_file:
         font_props_list = parse_font_props(arguments.font_props_file)
@@ -2012,7 +2074,8 @@ def main():
                         arguments.skiplog,
                         arguments.csv,
                         arguments.info,
-                        arguments.extrema_details)
+                        arguments.extrema_details,
+                        arguments.nowarn)
 
 
     if not arguments.csv:
