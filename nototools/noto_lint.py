@@ -33,6 +33,7 @@ import sys
 
 from fontTools import subset
 from fontTools import ttLib
+from fontTools.ttLib.tables import otTables
 from fontTools.misc import arrayTools
 from fontTools.misc import bezierTools
 from fontTools.pens import basePen
@@ -1541,6 +1542,25 @@ def check_font(font_props, filename_error,
                                      set(ligatures) -
                                      set(lig_caret_list_coverage.glyphs))))
 
+    def check_complex_stylistic_set_name_ids(gsub_or_gpos):
+        GSUB_OR_GPOS = gsub_or_gpos.upper()
+        table = font[GSUB_OR_GPOS].table
+        if not table.FeatureList:
+          return
+
+        name_id_set = None
+        for index in range(table.FeatureList.FeatureCount):
+          record = table.FeatureList.FeatureRecord[index]
+          params = record.Feature.FeatureParams
+          if isinstance(params, otTables.FeatureParamsStylisticSet):
+            if not name_id_set:
+              name_id_set = {r.nameID for r in font['name'].names}
+            if not params.UINameID in name_id_set:
+              warn("complex/%s/ui_name_id" % gsub_or_gpos, GSUB_OR_GPOS,
+                   "Feature index %s (%s) has UINameID %d but it is not in the name table" % (
+                       index, record.FeatureTag, params.UINameID))
+
+
     def check_gpos_and_gsub_tables():
         if not tests.check('complex'):
             return
@@ -1572,12 +1592,19 @@ def check_font(font_props, filename_error,
         ]
         if not font_props.is_cjk and human_readable_script_name(font_props.script) in whitelist:
             return
+
         if "GPOS" not in font:
             warn("complex/gpos/missing", "GPOS",
                  "There is no GPOS table in the font.")
+        else:
+            check_complex_stylistic_set_name_ids('gpos')
+
         if "GSUB" not in font:
             warn("complex/gsub/missing", "GSUB",
                  "There is no GSUB table in the font.")
+        else:
+            check_complex_stylistic_set_name_ids('gsub')
+
         #TODO: Add more script-specific checks
 
     def check_for_bidi_pairs(cmap):
