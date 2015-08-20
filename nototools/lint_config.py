@@ -372,8 +372,10 @@ class TestSpec(object):
   complex -- gpos and gsub tests
     gpos
       missing
+      ui_name_id -- FeatureParamsStylisticSet.UINameID not in name table
     gsub
       missing
+      ui_name_id -- FeatureParamsStylisticSet.UINameID not in name table
   bidi -- tests bidi pairs, properties
     rtlm_non_mirrored -- rtlm GSUB feature applied to private-use or non-mirrored character
     ompl_rtlm -- rtlm GSUB feature applied to ompl char
