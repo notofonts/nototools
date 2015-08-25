@@ -462,8 +462,8 @@ ASCENT = 2189
 DESCENT = -600
 
 
-_last_printed_file_name = None
-
+_cur_file_name = None
+_printed_file_name = False
 
 def make_compact_scripts_regex(scripts=None):
     """Creates a regular expression that accepts all compact scripts names.
@@ -569,21 +569,19 @@ def font_properties_from_name(file_path):
 def check_font(font_props, filename_error,
                lint_spec, runlog=False, skiplog=False,
                csv_flag=False, info_flag=False,
-               extrema_details=True, nowarn=False):
+               extrema_details=True, nowarn=False,
+               quiet=False):
 
     def warn(test_name, category_name, message, details=True, is_error=True, check_test=True):
-        global _last_printed_file_name
+        global _cur_file_name, _printed_file_name
 
         if check_test and not tests.check(test_name):
           return
 
         interesting_part_of_file_name = ",".join(font_props.file_path.split("/")[-2:])
-        if interesting_part_of_file_name != _last_printed_file_name:
-            _last_printed_file_name = interesting_part_of_file_name
-            if not csv_flag:
-                print "Automatic testing for '%s', %s:" % (
-                    interesting_part_of_file_name,
-                    printable_font_versions(font))
+        if interesting_part_of_file_name != _cur_file_name:
+            _cur_file_name = interesting_part_of_file_name
+            _printed_file_name = False
 
         # Assumes "info" only and always comes at the end of
         # processing a file.
@@ -597,15 +595,21 @@ def check_font(font_props, filename_error,
                 else:
                     return "%d %ss" % (count, msg)
 
-            if not csv_flag:
-                ec = err_count[0]
+            ec = err_count[0]
+            wc = warn_count[0]
+            if not csv_flag and (not quiet or ec or (wc and not nowarn)):
+                if not _printed_file_name:
+                    _printed_file_name = True
+                    print "Automatic testing for '%s', %s:" % (
+                        _cur_file_name,
+                        printable_font_versions(font))
+
                 se = suppressed_err_count[0]
                 if not se:
                     print "Found %s." % pluralize_errmsg(ec)
                 else:
                     print "Found %s (%s hidden)." % (pluralize_errmsg(ec),
                                                      "all" if se == ec else se)
-                wc = warn_count[0]
                 if wc and not nowarn:
                     sw = suppressed_warn_count[0]
                     if not sw and wc:
@@ -634,6 +638,12 @@ def check_font(font_props, filename_error,
 
         if nowarn and not is_error:
             return
+
+        if not csv_flag and not _printed_file_name:
+            _printed_file_name = True
+            print "Automatic testing for '%s', %s:" % (
+                _cur_file_name,
+                printable_font_versions(font))
 
         err_type = 'Info' if category_name is "info" else "Error" if is_error else "Warning"
         if csv_flag:
@@ -2059,6 +2069,10 @@ def main():
         "-nw", "--nowarn",
         help="suppress warning messages",
         action="store_true")
+    parser.add_argument(
+        "-q", "--quiet",
+        help="don't print file names unless there are errors or warnings",
+        action="store_true")
 
     arguments = parser.parse_args()
 
@@ -2087,7 +2101,8 @@ def main():
                    arguments.csv,
                    arguments.info,
                    arguments.extrema_details,
-                   arguments.nowarn)
+                   arguments.nowarn,
+                   arguments.quiet)
     count = len(arguments.font_files)
     if arguments.font_props_file:
         font_props_list = parse_font_props(arguments.font_props_file)
@@ -2101,7 +2116,8 @@ def main():
                         arguments.csv,
                         arguments.info,
                         arguments.extrema_details,
-                        arguments.nowarn)
+                        arguments.nowarn,
+                        arguments.quiet)
 
 
     if not arguments.csv:
