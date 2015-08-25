@@ -439,6 +439,21 @@ ENGLISH_LANGUAGE_NAMES = {
     'zmi': u'Negeri Sembilan Malay',
 }
 
+# Supplement mapping of languages to scripts
+LANG_TO_SCRIPTS = {
+    'nan': ['Hant'],
+    'yue': ['Hant'],
+    'hak': ['Hans'],
+}
+
+# Supplement mapping of regions to lang_scripts
+REGION_TO_LANG_SCRIPTS = {
+    'CN': ['yue-Hans', 'yue-Hant'],
+    'HK': ['hak-Hant', 'hak-Hans'],
+    'MY': ['zh-Hans'],
+    'TW': ['nan-Hant'],
+}
+
 PARENT_LOCALES = {
     'ky-Latn': 'root',
     'sd-Deva': 'root',

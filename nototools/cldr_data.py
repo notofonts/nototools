@@ -128,6 +128,10 @@ def _parse_supplemental_data():
             script, lang, ', '.join(_LANG_TO_SCRIPTS[lang]))
         _LANG_TO_SCRIPTS[lang].add(script)
 
+  # Supplement lang to script mapping with extra locale data
+  for lang, scripts in extra_locale_data.LANG_TO_SCRIPTS.iteritems():
+    _LANG_TO_SCRIPTS[lang] |= set(scripts)
+
   # Use extra locale data's likely subtag info to change the supplemental
   # data we got from the language and territory elements.
   # 1) Add the script to the scripts for the language
@@ -152,6 +156,9 @@ def _parse_supplemental_data():
       print 'extra lang_script %s not in cldr for %s, adding' % (
           lang_script, region)
       _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
+
+  for territory, lang_scripts in extra_locale_data.REGION_TO_LANG_SCRIPTS.iteritems():
+    _REGION_TO_LANG_SCRIPTS[territory] |= set(lang_scripts)
 
   for tag in root.iter('parentLocale'):
     parent = tag.get('parent')
