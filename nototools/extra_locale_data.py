@@ -484,6 +484,9 @@ EXEMPLARS = {
   'und-Mtei': r'[\uabc0-\uabe2]',
   'und-Orkh': r'[\U010c00-\U010c48]',
   'und-Phag': r'[\ua840-\ua877]',
+  'und-Qaae': r'[\u2702\u2708\u2747\U01f603\U01f6dc\U01f614\U01F63a\U01f680\U01f683\U01f685'
+              r'\U01f699\U01f6a2\U01f6b2\U01f170\U01f171\U01f197\U01f232\u231a\u231b\u260e'
+              r'\u2614\u2615\u26fa\U1f335\U1f34e\U1f3e1\U1f3e2\U1f419\U1f41e\U1f41f\U1f422]',
   'und-Saur': r'[\ua882-\ua8b3]',
   'und-Sund': r'[\u1b83-\u1ba0]',
   'und-Sylo': r'[\ua800-\ua82b]',
