@@ -91,7 +91,6 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
   # - Kufi doesn't support all characters needed for Khowar
   # - Kufi doesn't support all characters needed for Kashmiri
   kufi_lang_scrs = family_id_to_lang_scrs['kufi-arab']
-  print 'kufi lang scrs:', kufi_lang_scrs
   for lang_scr in ['ur-Arab', 'khw-Arab', 'ks-Arab']:
     if not lang_scr in lang_scrs:
       print 'Patch kufi: %s not found' % lang_scr
