@@ -62,7 +62,7 @@ def all_scripts():
     return frozenset(result)
 
 
-def script_name_for_report(script):
+def script_name_for_report(script_key):
     return (
         '(Urdu)' if script_key == 'Aran' else
         '(Historic)' if script_key == 'HST' else
@@ -399,15 +399,6 @@ FontProps = collections.namedtuple(
     'filepath, family, style, script, variant, weight, slope, fmt, license_type, '
     'is_hinted, is_mono, is_UI, is_cjk, subset')
 
-def weight_slope_name(noto_font):
-    weight_and_slope = noto_font.weight
-    if noto_font.slope:
-        if noto_font.weight == 'Regular':
-            weight_and_slope = noto_font.slope
-        else:
-            weight_and_slope += noto_font.slope
-    return weight_and_slope
-
 def font_properties_from_name(file_path):
     noto_font = noto_fonts.get_noto_font(file_path)
     if not noto_font:
@@ -417,6 +408,7 @@ def font_properties_from_name(file_path):
     vendor = 'Adobe' if noto_font.is_cjk else 'Monotype'
     char_version = 6.0 if noto_font.family == 'Noto' else 8.0
     return FontProps(is_google, vendor, char_version, *noto_font)
+
 
 def get_font_properties_with_fallback(file_path):
     props = font_properties_from_name(file_path)
@@ -432,6 +424,7 @@ def get_font_properties_with_fallback(file_path):
         True, 'Monotype', 6.0,
         file_path, 'Noto', style, script, '', weight, None, 'ttf', 'apache',
         False, False, bool(ui), False, ''), 'name'
+
 
 def check_font(font_props, filename_error,
                lint_spec, runlog=False, skiplog=False,
@@ -523,16 +516,18 @@ def check_font(font_props, filename_error,
 
         err_type = 'Info' if category_name is "info" else "Error" if is_error else "Warning"
         if csv_flag:
+            names = []
+            if font_props.weight != 'Regular' or not font_props.slope:
+                names.append(font_props.weight)
+            if font_props.slope:
+                names.append(font_props.slope)
+            subfamily = ''.join(names)
             print ('%s,%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
                 err_type,
                 script_name_for_report(font_props.script),
-                font_props.style,
+                font_props.style if font_props.style else '',
                 font_props.variant if font_props.variant else '',
-                'UI' if font_props.is_UI else '',
-                'Mono' if font_props.is_mono else '',
-                subset if font_props.subset else '',
-                font_props.weight,
-                font_props.slope,
+                subfamily,
                 font_data.get_name_records(font)[8].split()[0],
                 category_name,
                 interesting_part_of_file_name,
@@ -541,7 +536,6 @@ def check_font(font_props, filename_error,
         else:
             print "%s <%s> %s" % (err_type[0], test_name, message.encode('UTF-8'))
         sys.stdout.flush()
-
 
     def code_range_to_set(code_range):
         """Converts a code range output by _parse_code_ranges to a set."""
@@ -601,16 +595,12 @@ def check_font(font_props, filename_error,
         return name
 
     def get_expected_subfamily_name():
-        if font_props.is_cjk:
-            name = ''
-        else:
-            names = []
-            if font_props.weight != 'Regular' or not font_props.slope:
-              names.append(font_props.weight)
-            if font_props.slope:
-              names.append(font_props.slope)
-            name = ' '.join(names)
-        return name
+        names = []
+        if font_props.weight != 'Regular' or not font_props.slope:
+            names.append(font_props.weight)
+        if font_props.slope:
+            names.append(font_props.slope)
+        return ' '.join(names)
 
     def get_expected_cjk_subfamily_name():
         return 'Regular'
@@ -1513,7 +1503,6 @@ def check_font(font_props, filename_error,
                    "Feature index %s (%s) has UINameID %d but it is not in the name table" % (
                        index, record.FeatureTag, params.UINameID))
 
-
     def check_gpos_and_gsub_tables():
         if not tests.check('complex'):
             return
@@ -1674,7 +1663,6 @@ def check_font(font_props, filename_error,
                              "glyph '%s' (%d) doesn't have hints." % (glyph_name, glyph_index),
                              check_test=False)
 
-
     def check_explicit_advances():
         """Check some cases where we expect advances to be explicitly related."""
         if not tests.check('advances'):
@@ -1771,7 +1759,6 @@ def check_font(font_props, filename_error,
             expect_width(0x200A, em_width, 10, 16) # hair space
             expect_width(0x200B, 0) # zero width space
 
-
     def check_stems(cmap):
         if not 'glyf' in font:
             return
@@ -1812,7 +1799,6 @@ def check_font(font_props, filename_error,
                          % (code, unicode_data.name(code), rsb),
                          check_test=False)
 
-
     def check_accessiblity(cmap):
         """Test if all glyphs are accessible through cmap, decomps, or GSUB.
 
@@ -1847,6 +1833,7 @@ def check_font(font_props, filename_error,
                      "The following %d glyphs are unreachable in the font: %s." %
                      (len(reported_glyphs), report_info),
                      check_test=False)
+
 
     ### actual start of check_font fn
 
@@ -1951,8 +1938,10 @@ def parse_font_props(font_props_file):
   spec_data = json.loads(font_spec)
   return [FontProps(**m) for m in spec_data]
 
+
 def write_font_props(font_props):
   print json.dumps(font_props._asdict())
+
 
 def main():
     default_config_file = notoconfig.values.get('lint_config')
@@ -2032,7 +2021,7 @@ def main():
     lint_spec = get_lint_spec(arguments.config_file, arguments.config)
 
     if arguments.csv and arguments.csv_header:
-        print("Type,Script,Style,Variant,UI,Mono,Subset,Weight,Slope,Manufacturer,Category,"
+        print("Type,Script,Style,Variant,Subfamily,Manufacturer,Category,"
               "Hint Status,File Name,Revision,Issue")
 
     for font_file_path in arguments.font_files:
@@ -2063,7 +2052,6 @@ def main():
                         arguments.extrema_details,
                         arguments.nowarn,
                         arguments.quiet)
-
 
     if not arguments.csv:
         print "------"
