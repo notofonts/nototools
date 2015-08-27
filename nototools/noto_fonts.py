@@ -80,7 +80,7 @@ NotoFont = collections.namedtuple(
 
 _NOTO_FONT_NAME_REGEX = re.compile(
     '(Arimo|Cousine|Tinos|Noto)'
-    '(Sans|Serif|Naskh|Kufi|Nastaliq)?'
+    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji)?'
     '(Mono)?'
     '(.*?)'
     '(UI|Eastern|Estrangela|Western)?'
@@ -113,9 +113,9 @@ def get_noto_font(filepath):
   else:
     subset = None
 
-  # Special-case style, not in font name.
-  if script == 'Emoji':
-    style = 'Sans'
+  # Special-case emoji style
+  if style == 'Emoji':
+    script = 'Qaae'
 
   if not script:
     script = 'LGC'
