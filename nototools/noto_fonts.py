@@ -240,7 +240,7 @@ def get_font_family_name(font_file):
 # this information is held in a NotoFont that is the representative member.  Fields are:
 # - name: name of the family
 # - family_id: a family_id for the family
-# - rep_member: the representative member, some of its data is common to all members)
+# - rep_member: the representative member, some of its data is common to all members
 # - charset: the character set, must the the same for all members
 # - hinted_members: list of members that are hinted
 # - unhinted_members: list of members that are unhinted
