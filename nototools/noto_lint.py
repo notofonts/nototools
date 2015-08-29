@@ -61,14 +61,15 @@ def all_scripts():
     result.add('Urdu')
     return frozenset(result)
 
-
+_script_key_to_report_name = {
+    'Aran': '(Urdu)',
+    'HST': '(Historic)',
+    'LGC': '(LGC)'
+}
 def script_name_for_report(script_key):
-    return (
-        '(Urdu)' if script_key == 'Aran' else
-        '(Historic)' if script_key == 'HST' else
-        '(LGC)' if script_key == 'LGC' else
-        unicode_data.human_readable_script_name(script_key))
-
+    if script_key in _script_key_to_report_name:
+      return _script_key_to_report_name[script_key]
+    return unicode_data.human_readable_script_name(script_key)
 
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
