@@ -89,7 +89,7 @@ _NOTO_FONT_NAME_REGEX = re.compile(
     '(Italic)?'
     '\.(ttf|ttc|otf)')
 
-_EXT_REGEX = re.compile(r'(?:.*\.(?:ttf|ttc|otf)$)')
+_EXT_REGEX = re.compile(r'.*\.(?:ttf|ttc|otf)$')
 
 def get_noto_font(filepath):
   """Return NotoFont if filepath points to a noto font, or None if we can't
