@@ -130,6 +130,10 @@ def _create_script_to_default_lang(lang_script_data):
     for script in unused:
       script_to_unused[script].add(lang)
 
+  # Add scripts without langs.
+  all_scripts.add('Zsym')
+  all_scripts.add('Qaae')
+
   for script in sorted(all_scripts):
     default_lang = cldr_data.get_likely_subtags('und-' + script)[0]
 

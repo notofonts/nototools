@@ -61,11 +61,8 @@ def get_script_to_family_ids(family_map):
   """The keys in the returned map are all the supported scripts."""
   script_to_family_ids = collections.defaultdict(set)
   for key in family_map:
-    script = family_map[key].rep_member.script
-    if script == 'LGC':
-      for script in ['Latn', 'Grek', 'Cyrl']:
-        script_to_family_ids[script].add(key)
-    else:
+    script_key = family_map[key].rep_member.script
+    for script in noto_fonts.script_key_to_scripts(script_key):
       script_to_family_ids[script].add(key)
   return script_to_family_ids
 
@@ -380,7 +377,7 @@ def get_sample_infos(lang_scr, rtl):
   return sample_infos
 
 
-def get_family_id_to_default_lang_scr(family_id_to_lang_scrs):
+def get_family_id_to_default_lang_scr(family_id_to_lang_scrs, families):
   """Return a mapping from family id to default lang tag, for families
   that have multiple lang tags.  This is based on likely subtags and
   the script of the family (Latn for LGC).
@@ -388,22 +385,15 @@ def get_family_id_to_default_lang_scr(family_id_to_lang_scrs):
 
   family_id_to_default_lang_scr = {}
   for family_id, lang_scrs in family_id_to_lang_scrs.iteritems():
-    parts = family_id.split('-')
-    if len(parts) == 1:
-      # 'sans' or 'serif'
-      script = 'Latn'
-    else:
-      script = parts[1].capitalize()
+    script_key = families[family_id].rep_member.script
+    primary_script = noto_fonts.script_key_to_scripts(script_key)[0]
 
-    if script == 'Aran':
+    if script_key == 'Aran':
       # patch for Nastaliq
-      script = 'Arab'
       lang = 'ur'
-    elif script == 'Zsym' or lang_data.is_excluded_script(script):
-      lang = 'und'
     else:
-      lang = lang_data.script_to_default_lang(script)
-    lang_scr = lang + '-' + script
+      lang = lang_data.script_to_default_lang(primary_script)
+    lang_scr = lang + '-' + primary_script
 
     if lang_scr not in lang_scrs:
       print 'default lang_scr \'%s\' not listed for family %s %s' % (
@@ -633,9 +623,9 @@ class WebGen(object):
     # Sort families by English name, except 'Noto Sans' and 'Noto Serif' come first
     family_ids = [family_id for family_id
                   in family_id_to_lang_scr_to_sample_key
-                  if family_id != 'sans' and family_id != 'serif']
+                  if family_id != 'sans-lgc' and family_id != 'serif-lgc']
     family_ids = sorted(family_ids, key=lambda f: families[f].name)
-    sorted_ids = ['sans', 'serif']
+    sorted_ids = ['sans-lgc', 'serif-lgc']
     sorted_ids.extend(family_ids)
     for k in sorted_ids:
       family = families[k]
@@ -704,6 +694,14 @@ class WebGen(object):
 
     self.write_json(data_obj, 'data')
 
+  def _sorted_displayed_members(self, family):
+    members = [m for m in (family.hinted_members or family.unhinted_members)
+               if not m.is_mono]
+    # sort non-italic before italic
+    return sorted(members,
+                  key=lambda f: str(css_weight(f.weight)) + '-' +
+                  ('b' if css_style(f.slope) == 'italic' else 'a'))
+
   def build_family_json(self, family_id, family, lang_scrs_map, lang_scr_sort_order,
                         regions, css_info, default_lang_scr):
     family_obj = collections.OrderedDict()
@@ -731,12 +729,8 @@ class WebGen(object):
       family_obj['ranges'] = get_charset_info(family.charset)
 
     fonts_obj = []
-    members = [m for m in (family.hinted_members or family.unhinted_members)
-               if m.variant != 'Mono']
-    # sort non-italic before italic
-    for font in sorted(members,
-                       key=lambda f: str(css_weight(f.weight)) + '-' +
-                       ('b' if css_style(f.slope) == 'italic' else 'a')):
+    displayed_members = self._sorted_displayed_members(family)
+    for font in displayed_members:
       weight_style = collections.OrderedDict()
       weight_style['weight'] = css_weight(font.weight)
       weight_style['style'] = css_style(font.slope)
@@ -790,9 +784,10 @@ class WebGen(object):
     self.write_json(meta_obj, 'meta')
 
   def build_family_images(self, family, lang_scr, is_rtl, sample_text, attrib, sample_key):
-    family_id = family.rep_member.key
+    family_id = family.family_id
     is_cjk = family.rep_member.is_cjk
-    for font in family.hinted_members or family.unhinted_members:
+    displayed_members = self._sorted_displayed_members(family)
+    for font in displayed_members:
       weight = css_weight(font.weight)
       style = css_style(font.slope)
       image_file_name = '%s_%s_%d_%s.svg' % (family_id, lang_scr, weight, style)
@@ -871,7 +866,13 @@ class WebGen(object):
     #  'family_id_to_lang_scrs', 'family_id_to_default_lang_scr']
     debug = frozenset([])
 
-    fonts = noto_fonts.get_noto_fonts()
+    def use_in_web(font):
+      return (not font.subset and
+              not font.is_UI and
+              not font.fmt == 'ttc' and
+              not font.script in {'CJK', 'HST', 'Qaae'} and
+              not font.family in {'Arimo', 'Cousine', 'Tinos'})
+    fonts = [font for font in noto_fonts.get_noto_fonts() if use_in_web(font)]
     families = noto_fonts.get_families(fonts)
 
     if 'families' in debug:
@@ -919,7 +920,7 @@ class WebGen(object):
     region_to_family_ids = get_region_to_family_ids(family_id_to_regions)
 
     family_id_to_default_lang_scr = get_family_id_to_default_lang_scr(
-        family_id_to_lang_scrs)
+        family_id_to_lang_scrs, families)
     if 'family_id_to_default_lang_scr' in debug:
       print '\nfamily id to default lang scr'
       for family_id, lang_scr in family_id_to_default_lang_scr.iteritems():
@@ -935,7 +936,7 @@ class WebGen(object):
     # all families have a default language, and that is in the sample list
     error_list = []
     for family in families.values():
-      family_id = family.rep_member.key
+      family_id = family.family_id
       if not family_id in family_id_to_lang_scr_to_sample_key:
         error_list.append('no entry for family %s' % family_id)
         continue
