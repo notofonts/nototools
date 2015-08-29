@@ -519,7 +519,8 @@ class TestSpec(object):
   def enable_tag(self, tag_seg):
     m = self.tag_rx.match(tag_seg)
     if not m:
-      raise ValueError('TestSpec could not parse ' + tag_spec)
+      raise ValueError('TestSpec could not parse:\n  "%s"\n'
+                       'expecting:\n  "<tag_name> except|only cp|gid <value>+"'% tag_seg)
     self.enable(m.group(1), relation=m.group(2), arg_type=m.group(3), arg=m.group(4))
 
   def disable(self, tag):
