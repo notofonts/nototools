@@ -67,9 +67,8 @@ _script_key_to_report_name = {
     'LGC': '(LGC)'
 }
 def script_name_for_report(script_key):
-    if script_key in _script_key_to_report_name:
-      return _script_key_to_report_name[script_key]
-    return unicode_data.human_readable_script_name(script_key)
+    return (_script_key_to_report_name.get(script_key, None) or
+            unicode_data.human_readable_script_name(script_key))
 
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
