@@ -1760,6 +1760,17 @@ def check_font(font_props, filename_error,
             expect_width(0x200A, em_width, 10, 16) # hair space
             expect_width(0x200B, 0) # zero width space
 
+        if tests.check('advances/spacing_marks'):
+          spacing_marks = lint_config.parse_int_ranges(
+              "02C8 02CA-02D7 02DE 02DF 02EC 02ED 02EF-02F2 02F4-02FF", True)
+          for cp in spacing_marks:
+            if cp not in cmap:
+              continue
+            if not get_horizontal_advance(cp):
+              warn("advances/spacing_marks", "Advances",
+                   "The spacing mark %s (%04x) should have a non-zero advance." % (
+                       unichr(cp), cp));
+
     def check_stems(cmap):
         if not 'glyf' in font:
             return

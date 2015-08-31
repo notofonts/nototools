@@ -389,6 +389,7 @@ class TestSpec(object):
     digits -- checks that ASCII digits have same advance as digit zero
     comma_period -- checks that comma and period have same advance
     whitespace -- checks for expected advance relationships in whitespace
+    spacing_marks -- checks that particular spacing marks have non-zero advances
   stem -- stem widths
     left_joining -- non-zero lsb
     right_joining -- rsb not -70
