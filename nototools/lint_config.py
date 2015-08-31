@@ -313,6 +313,7 @@ class TestSpec(object):
     designer_url
     license
     license_url
+    unused -- checks for unused entries in name table
   cmap -- cmap table tests
     tables
       missing
