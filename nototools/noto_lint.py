@@ -1674,7 +1674,7 @@ def check_font(font_props, filename_error,
             return font_data.get_glyph_horizontal_advance(font, cmap[codepoint])
 
         def expect_width(codepoint, expected, low_divisor=None, high_divisor=None,
-                         label='advances/whitespace'):
+                         label='advances/whitespace', is_error=True):
             # it is ok if the font does not support the tested codepoint
             if codepoint not in cmap:
                 return
@@ -1693,7 +1693,7 @@ def check_font(font_props, filename_error,
                     warn(label, "Advances",
                          "The advance of U+%04x (%s, glyph %d) is %d, but expected %d." %
                          (codepoint, glyph_name, glyph_id, adv, exp),
-                         check_test=False)
+                         check_test=False, is_error=is_error)
             else:
                 # note name switch, since the higher divisor returns the lower value
                 high_exp = int(round(float(expected) / low_divisor))
@@ -1705,7 +1705,7 @@ def check_font(font_props, filename_error,
                          "The advance of U+%04x (%s, glyph %d) is %d, but expected between "
                          "%d and %d." % (codepoint, glyph_name, glyph_id, adv, low_exp,
                                          high_exp),
-                         check_test=False)
+                         check_test=False, is_error=is_error)
 
         digit_char = ord('0')
         period_char = ord('.')
@@ -1729,7 +1729,8 @@ def check_font(font_props, filename_error,
         if period_char in cmap:
             period_width = get_horizontal_advance(period_char)
             if tests.check('advances/comma_period') and comma_char in cmap:
-                expect_width(comma_char, period_width, label='advances/comma_period')
+                expect_width(comma_char, period_width, label='advances/comma_period',
+                             is_error=False)
 
         if tests.check('advances/whitespace'):
             if tab_char in cmap or nbsp_char in cmap:

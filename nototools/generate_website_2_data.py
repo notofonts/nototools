@@ -135,8 +135,7 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
 
         sample_key_for_lang = None
         for info in sample_infos:
-          sample = info[1]
-          sample_key = info[3]
+          sample, _, sample_key = info
 
           full_key = sample_key + '-' + family_id
           if full_key in tested_keys:
@@ -334,9 +333,8 @@ def sample_text_from_exemplar(exemplar):
   return ' '.join(exemplar)
 
 
-def get_sample_infos(lang_scr, rtl):
+def get_sample_infos(lang_scr):
   """Return a list of tuples of:
-  - true if rtl, false if not
   - a short sample text string
   - an attribution key, one of
     UN: official UN translation, needs attribution
@@ -354,22 +352,22 @@ def get_sample_infos(lang_scr, rtl):
   if sample_text is not None:
     src_key = lang_scr + '_udhr'
     attr = get_attribution(src_key)
-    sample_infos.append((rtl, sample_text, attr, src_key))
+    sample_infos.append((sample_text, attr, src_key))
 
   lang, script = lang_scr.split('-')
   if lang != 'und':
     exemplar, src_key = cldr_data.get_exemplar_and_source(lang_scr)
     if exemplar is not None:
-      sample_infos.append((rtl, sample_text_from_exemplar(exemplar), 'none', src_key))
+      sample_infos.append((sample_text_from_exemplar(exemplar), 'none', src_key))
 
   src_key = 'und-' + script + '_chars'
   sample_text = get_sample_from_sample_file(src_key)
   if sample_text is not None:
-    sample_infos.append((rtl, sample_text, 'none', src_key))
+    sample_infos.append((sample_text, 'none', src_key))
 
   exemplar, src_key = cldr_data.get_exemplar_and_source('und-' + script)
   if exemplar is not None:
-    sample_infos.append((rtl, sample_text_from_exemplar(exemplar), 'none', src_key))
+    sample_infos.append((sample_text_from_exemplar(exemplar), 'none', src_key))
 
   if not sample_infos:
     print '!No sample info for %s' % lang_scr
@@ -671,6 +669,8 @@ class WebGen(object):
       names = lang_data.lang_script_to_names(lang_scr)
       english_name = names[0]
       lang_obj['name'] = english_name
+      if cldr_data.is_rtl(lang_scr):
+        lang_obj['rtl'] = True
       lang_obj['families'] = sorted(lang_scr_to_family_ids[lang_scr])
       native_names = [n for n in names[1:] if n != english_name]
       if native_names:
@@ -756,12 +756,10 @@ class WebGen(object):
 
     samples_obj = collections.OrderedDict()
     for sample_key in sorted(sample_key_to_info):
-      rtl, sample, attrib, _ = sample_key_to_info[sample_key]
+      text, attrib, _ = sample_key_to_info[sample_key]
       sample_obj = collections.OrderedDict()
-      sample_obj['sample'] = sample
+      sample_obj['text'] = text
       sample_obj['attrib'] = attrib
-      if rtl:
-        sample_obj['rtl'] = rtl
       samples_obj[sample_key] = sample_obj
     meta_obj['samples'] = samples_obj
 
@@ -783,9 +781,10 @@ class WebGen(object):
 
     self.write_json(meta_obj, 'meta')
 
-  def build_family_images(self, family, lang_scr, is_rtl, sample_text, attrib, sample_key):
+  def build_family_images(self, family, lang_scr, sample_text, attrib, sample_key):
     family_id = family.family_id
     is_cjk = family.rep_member.is_cjk
+    is_rtl = cldr_data.is_rtl(lang_scr)
     displayed_members = self._sorted_displayed_members(family)
     for font in displayed_members:
       weight = css_weight(font.weight)
@@ -827,8 +826,8 @@ class WebGen(object):
       # language.  But most of the samples with the same font and text will be the
       # same, because the fonts generally only customize for a few language tags.
       for lang_scr, sample_key in lang_scr_to_sample_key.iteritems():
-        is_rtl, sample_text, attrib, _ = sample_key_to_info[sample_key]
-        self.build_family_images(family, lang_scr, is_rtl, sample_text, attrib, sample_key)
+        sample_text, attrib, _ = sample_key_to_info[sample_key]
+        self.build_family_images(family, lang_scr, sample_text, attrib, sample_key)
 
   def build_ttc_zips(self):
     """Generate zipped versions of the ttc files and put in pkgs directory."""
@@ -872,7 +871,7 @@ class WebGen(object):
               not font.fmt == 'ttc' and
               not font.script in {'CJK', 'HST', 'Qaae'} and
               not font.family in {'Arimo', 'Cousine', 'Tinos'})
-    fonts = [font for font in noto_fonts.get_noto_fonts() if use_in_web(font)]
+    fonts = filter(use_in_web, noto_fonts.get_noto_fonts())
     families = noto_fonts.get_families(fonts)
 
     if 'families' in debug:
@@ -896,8 +895,7 @@ class WebGen(object):
         print 'no family supports script in %s' % lang_scr
         continue
 
-      rtl = cldr_data.is_rtl(lang_scr)
-      sample_infos = get_sample_infos(lang_scr, rtl)
+      sample_infos = get_sample_infos(lang_scr)
       if not sample_infos:
         continue
 

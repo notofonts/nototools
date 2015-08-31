@@ -160,7 +160,7 @@ LIKELY_SUBTAGS = {
     'myx': ('myx', 'Latn', 'UG'),  # Masaaba
     'myz': ('myz', 'Mand', 'ZZ'),  # Classical Mandaic
     'mzn': ('mzn', 'Arab', 'IR'),  # Mazanderani
-    'nan': ('nan', 'Hans', 'CN'),  # Min Nan Chinese
+    'nan': ('nan', 'Latn', 'CN'),  # Min Nan Chinese
     'ndc': ('ndc', 'Latn', 'MZ'),  # Ndau
     'ngl': ('ngl', 'Latn', 'MZ'),  # Lomwe
     'nia': ('nia', 'Latn', 'ID'),  # Nias
@@ -441,17 +441,18 @@ ENGLISH_LANGUAGE_NAMES = {
 
 # Supplement mapping of languages to scripts
 LANG_TO_SCRIPTS = {
-    'nan': ['Hant'],
+    'hak': ['Hans', 'Hant', 'Latn'],
+    'nan': ['Hans', 'Hant', 'Latn'],
     'yue': ['Hant'],
-    'hak': ['Hans'],
 }
 
 # Supplement mapping of regions to lang_scripts
 REGION_TO_LANG_SCRIPTS = {
-    'CN': ['yue-Hans', 'yue-Hant'],
-    'HK': ['hak-Hant', 'hak-Hans'],
+    'CN': ['nan-Latn', 'yue-Hans', 'yue-Hant'],
+    'HK': ['hak-Hant', 'hak-Hans', 'hak-Latn'],
+    'MN': ['mn-Mong'],
     'MY': ['zh-Hans'],
-    'TW': ['nan-Hant'],
+    'TW': ['nan-Hant', 'nan-Latn'],
 }
 
 PARENT_LOCALES = {

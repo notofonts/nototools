@@ -21,6 +21,16 @@ disable bounds/font/ymax
 filename like Emoji
 disable filename/name
 
+filename like Glagolitic
+disable complex
+enable cmap/script_required except cp 0487 a66f
+
+filename like Hanunoo
+enable gdef/classdef/combining_mismatch except cp 1734
+
+filename like Mongolian
+enable gdef/classdef/not_combining_mismatch except cp 180e
+
 filename like Nastaliq
 # TODO: (dougfelt) find a better way of making these exceptions
 enable bounds/glyph/ymin except gid 222 223 250 280 882 887 950 959 974
