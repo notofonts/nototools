@@ -75,7 +75,7 @@ LIKELY_SUBTAGS = {
     'dtp': ('dtp', 'Latn', 'MY'),  # Central Dusun
     'egl': ('egl', 'Latn', 'IT'),  # Emilian
     'egy': ('egy', 'Egyp', 'ZZ'),  # Ancient Egyptian
-    'eka': ('eka', 'Egyp', 'NG'),  # Ekajuk
+    'eka': ('eka', 'Latn', 'NG'),  # Ekajuk
     'eky': ('eky', 'Kali', 'TH'),  # Eastern Kayah
     'esu': ('esu', 'Latn', 'US'),  # Central Yupik
     'ett': ('ett', 'Ital', 'IT'),  # Etruscan
