@@ -639,9 +639,28 @@ def check_font(font_props, filename_error,
         name += '-' + font_props.weight
         return name
 
+    def _check_unused_names():
+      # For now, just a warning, and we don't actually check if other tables use it.
+      # Add those checks as we need them.  See the GPOS/GSUB checks of name references
+      # for an example of how we'd check.
+      if not tests.check('name/unused'):
+        return
+      names = font_data.get_name_records(font)
+      for i in names:
+        # names 255 and below are reserved for standard names
+        # names 256-32767 are for use by font tables
+        # names 23 and 24 are for use by CPAL, so it might be considered a mistake if
+        # these are present and no CPAL table is present or it doesn't use them.  Not
+        # checking this for now.
+        if i >= 256:
+          warn('name/unused', 'Name', 'Name table has record #%d: "%s"' %
+               (i, names[i]), is_error=False)
+
     def check_name_table():
         if not tests.check('name'):
           return
+
+        _check_unused_names()
 
         if font_props.is_cjk:
            check_name_table_cjk()
@@ -1759,6 +1778,17 @@ def check_font(font_props, filename_error,
             # see http://www.microsoft.com/typography/developers/fdsspec/spaces.htm
             expect_width(0x200A, em_width, 10, 16) # hair space
             expect_width(0x200B, 0) # zero width space
+
+        if tests.check('advances/spacing_marks'):
+          spacing_marks = lint_config.parse_int_ranges(
+              "02C8 02CA-02D7 02DE 02DF 02EC 02ED 02EF-02F2 02F4-02FF", True)
+          for cp in spacing_marks:
+            if cp not in cmap:
+              continue
+            if not get_horizontal_advance(cp):
+              warn("advances/spacing_marks", "Advances",
+                   "The spacing mark %s (%04x) should have a non-zero advance." % (
+                       unichr(cp), cp));
 
     def check_stems(cmap):
         if not 'glyf' in font:
