@@ -644,7 +644,9 @@ class WebGen(object):
       else:
         num_fonts = len(family.hinted_members or family.unhinted_members)
       family_obj['fonts'] = num_fonts
-      family_obj['langs'] = len(family_id_to_lang_scr_to_sample_key[k])
+      # only displayed langs -- see build_family_json lang_scrs
+      lang_scrs_map = family_id_to_lang_scr_to_sample_key[k]
+      family_obj['langs'] = sum([1 for l in lang_scrs_map if not l.startswith('und-')])
       family_obj['regions'] = len(family_id_to_regions[k])
 
       families_obj[k] = family_obj
@@ -869,7 +871,7 @@ class WebGen(object):
       return (not font.subset and
               not font.is_UI and
               not font.fmt == 'ttc' and
-              not font.script in {'CJK', 'HST', 'Qaae'} and
+              not font.script in {'CJK', 'HST'} and
               not font.family in {'Arimo', 'Cousine', 'Tinos'})
     fonts = filter(use_in_web, noto_fonts.get_noto_fonts())
     families = noto_fonts.get_families(fonts)
