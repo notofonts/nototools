@@ -58,7 +58,7 @@ def print_keys(key_list):
 
 def compare_table_info(base_info, target_info):
   biggest_deltas = []
-  other_count = 0
+  others = [] # checksum changes
   added = []
   removed = []
 
@@ -73,7 +73,7 @@ def compare_table_info(base_info, target_info):
       delta = t_len - b_len
       if delta == 0:
         if b_tup[1] != t_tup[1]:
-          other_count += 1
+          others.append(k)
         continue
       biggest_deltas.append((k, delta))
 
@@ -92,9 +92,13 @@ def compare_table_info(base_info, target_info):
         return t[0]
       return '%s(%+d)' % t
     biggest_delta_strings = [print_delta(t) for t in biggest_deltas]
-    if other_count > 0 and len(biggest_deltas) < 5:
+    # if a table changed size, the head table will change the checksum, don't
+    # report this.
+    others = [k for k in others if k != 'head']
+    if len(others) > 0 and len(biggest_deltas) < 5:
+      other_count = len(others)
       biggest_delta_strings.append('%s other%s' %
-        (other_count, 's' if other_count != 1 else ''))
+                                   (other_count, 's' if other_count != 1 else ''))
     result.append('changed ' + ', '.join(biggest_delta_strings))
   if added:
     result.append('added ' + ', '.join('%s(%s)' % t for t in sorted(added)))
