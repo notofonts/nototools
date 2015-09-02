@@ -75,7 +75,7 @@ LIKELY_SUBTAGS = {
     'dtp': ('dtp', 'Latn', 'MY'),  # Central Dusun
     'egl': ('egl', 'Latn', 'IT'),  # Emilian
     'egy': ('egy', 'Egyp', 'ZZ'),  # Ancient Egyptian
-    'eka': ('eka', 'Egyp', 'NG'),  # Ekajuk
+    'eka': ('eka', 'Latn', 'NG'),  # Ekajuk
     'eky': ('eky', 'Kali', 'TH'),  # Eastern Kayah
     'esu': ('esu', 'Latn', 'US'),  # Central Yupik
     'ett': ('ett', 'Ital', 'IT'),  # Etruscan
@@ -485,9 +485,12 @@ EXEMPLARS = {
   'und-Mtei': r'[\uabc0-\uabe2]',
   'und-Orkh': r'[\U010c00-\U010c48]',
   'und-Phag': r'[\ua840-\ua877]',
-  'und-Qaae': r'[\u2702\u2708\u2747\U01f603\U01f6dc\U01f614\U01F63a\U01f680\U01f683\U01f685'
-              r'\U01f699\U01f6a2\U01f6b2\U01f170\U01f171\U01f197\U01f232\u231a\u231b\u260e'
-              r'\u2614\u2615\u26fa\U1f335\U1f34e\U1f3e1\U1f3e2\U1f419\U1f41e\U1f41f\U1f422]',
+  'und-Qaae': r'[\u2049\u231a\u231b\u2600\u260e\u2614\u2615\u26fa\u2708\u2709'
+              r'\u270f\u3297\U01f004\U01f170\U01f193\U01f197\U01f30d\U01f318\U01f332\U01f334'
+              r'\U01f335\U01f344\U01f346\U01f352\U01f381\U01f393\U01f3a7\U01f3b8\U01f3e1\U01f402'
+              r'\U01f40a\U01f418\U01f419\U01f41b\U01f41f\U01f422\U01f424\U01f427\U01f44c\U01f44d'
+              r'\U01f453\U01f463\U01f4bb\U01f4ce\U01f4d3\U01f4d6\U01f4e1\U01f4fb\U01f511\U01f525'
+              r'\U01f565\U01F63a\U01f680\U01f681\U01f683\U01f686\U01f68c\U01f6a2\U01f6a3\U01f6b4]',
   'und-Saur': r'[\ua882-\ua8b3]',
   'und-Sund': r'[\u1b83-\u1ba0]',
   'und-Sylo': r'[\ua800-\ua82b]',
