@@ -86,7 +86,7 @@ value_list: -- numbers or ranges separated by whitespace, no space around hyphen
   (<number> | <number>'-'<number>)+
 """
 
-def parse_int_ranges(range_string, is_hex, sep=' '):
+def parse_int_ranges(range_string, is_hex=True, sep=' '):
   """Returns a set of ints from a string of numbers or ranges separated by sep.
   A range is two values separated by hyphen with no intervening separator."""
   result = set()
@@ -113,9 +113,12 @@ def parse_int_ranges(range_string, is_hex, sep=' '):
   return result
 
 
-def write_int_ranges(int_values, in_hex, sep=' '):
+def write_int_ranges(int_values, in_hex=True, sep=' '):
   """From a set or list of ints, generate a string representation that can
   be parsed by parse_int_ranges to return the original values (not order_preserving)."""
+
+  if not int_values:
+    return ''
 
   num_list = []
 
