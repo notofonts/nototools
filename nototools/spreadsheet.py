@@ -16,35 +16,16 @@
 
 """Get information from the status spreadsheet with MTI"""
 
-SPREADSHEET_NAME = 'GoogleChrome_WeeklyScriptStatus - ReworkStatus.csv'
+SPREADSHEET_NAME = 'Noto Project Status (Phase II)- go-noto - Unicode-Monotype.csv'
 
 import argparse
 import csv
 import os
 from os import path
+import re
 
 from nototools import noto_fonts
-"""
-{'Styles': 'Sans Regular', 'Status': 'QA approved 4/17/2014', 'Version Tested': '1.01', 'SCRIPT': 'Brahmi', 'Xiangye Report dated 4/17/2015 - # of issues': 'PASSED', 'Note': '', 'Google Acceptance Date': '6/6/2014', 'ISSUE\xc2\xa0REPORT FILE NAME (internal)': '_Brahmi_IssueReport.xlsx', 'Date Delivered to Google': '4/17/2014'}
-"""
 
-# map script/style combo to what we'd actually expect to see
-FIXES = {
-    ('Emoji', 'Sans Regular'): ('', 'Emoji Regular'),
-    ('Kufi', 'Regular'): ('Arabic', 'Kufi Regular'),
-    ('Kufi', 'Bold'): ('Arabic', 'Kufi Bold'),
-    ('Kufi', 'Sans UI Regular'): ('Latin', 'Sans UI Regular'),
-    ('Kufi', 'Sans UI Italic'): ('Latin', 'Sans UI Italic'),
-    ('Kufi', 'Sans UI Bold'): ('Latin', 'Sans UI Bold'),
-    ('Kufi', 'Sans UI Bold Italic'): ('Latin', 'Sans UI Bold Italic'),
-    ('Mongolian', 'Bold'): ('Mongolian', 'Sans Bold'),
-    ('Naskh Arabic', 'Sans Regular'): ('Arabic', 'Naskh Regular'),
-    ('Naskh Arabic', 'Sans Bold'): ('Arabic', 'Naskh Bold'),
-    ('Naskh Arabic', 'Sans UI Regular'): ('Arabic', 'Naskh UI Regular'),
-    ('Naskh Arabic', 'Sans UI Bold'): ('Arabic', 'Naskh UI Bold'),
-    ('Nastaliq', 'Regular'): ('Arabic', 'Nastaliq Regular'),
-    ('Syriac Estrangelo', 'Sans Regular'): ('Syriac Estrangela', 'Sans Regular'),
-    }
 
 def check_spreadsheet(src_file):
   filenames = set()
@@ -52,63 +33,19 @@ def check_spreadsheet(src_file):
   with open(src_file) as csvfile:
     reader = csv.DictReader(csvfile)
     for index, row in enumerate(reader):
-      script_name = row['SCRIPT'].replace('\u00a0', ' ')
-      if script_name == 'SERIF INDICS':
-        # ignore serifs, not delivered yet
-        break
 
-      style_name = row['Styles'].replace('\u00a0', ' ')
-      if not style_name:
-        # assume blank row
-        continue
-
-      if not script_name:
-        script_name = prev_script_name
-      else:
-        prev_script_name = script_name
-
-      if (script_name, style_name) in FIXES:
-        script_name, style_name = FIXES[(script_name, style_name)]
-
-      # handle script + variant, i.e. Syriac
-      script_name = script_name.replace(' ', '')
-
-      style_parts = style_name.split(' ')
-      style = style_parts[0]
-      variant = ''
-      if len(style_parts) == 1:
-        print '--> bad styles info "%s"' % style_name
-        continue
-
-      if len(style_parts) == 2:
-        weight_slope = style_parts[1]
-      else:
-        if style_parts[-2] == 'Bold' and style_parts[-1] == 'Italic':
-          style_parts = style_parts[:-2]
-          style_parts.append('BoldItalic')
-        if len(style_parts) == 2:
-          weight_slope = style_parts[1]
-        elif len(style_parts) == 3:
-          variant = style_parts[1]
-          weight_slope = style_parts[2]
-        else:
-          print '--> bad styles info "%s"' % style_name
-          continue
-
-      deliver_date = row['Date Delivered to Google']
-      accept_date = row['Google Acceptance Date']
+      fonts = row['Fonts'].replace('\u00a0', ' ')
+      hinting = row['Hinting']
+      status = row['Status']
+      accepted_version = row['Accepted Version']
+      eta = row['ETA']
       note = row['Note']
-      version_tested = row['Version Tested']
 
-      file_script_name = ('' if script_name == 'Latin' else
-                          'Urdu' if script_name == 'Arabic' and style == 'Nastaliq' else
-                          script_name)
-      filename = 'Noto%s%s%s-%s.ttf' % (style, file_script_name, variant, weight_slope)
-      print ','.join([str(index + 2),script_name, style_name, filename])
-      if filename in filenames:
-        print 'already have file named %s' % filename
-      else:
-        filenames.add(filename)
+      # family script style (variant UI) weight, mostly
+      if not re.match(r'Noto ((?:Arabic (?:Kufi|Naskh))|Color Emoji|Emoji|Sans|Serif|Urdu Nastaliq)'
+                      r'(.*?)(:? (UI))? (Thin|Light|DemiLight|Regular|Medium|Bold|Black|Italic|Bold Italic)', fonts):
+        print 'Did not match "%s"' % fonts
+  return
 
   fonts = noto_fonts.get_noto_fonts()
   noto_filenames = set([path.basename(font.filepath) for font in fonts
