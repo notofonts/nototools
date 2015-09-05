@@ -276,11 +276,11 @@ def get_families(fonts):
     if not rep_member:
       raise ValueError('Family %s does not have a representative font.' % family_id)
 
-    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]: # 9 adds the two Mono variants
+    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 8, 9]: # 9 adds the two Mono variants
       raise ValueError('Family %s has %d hinted_members (%s)' % (
           family_id, len(hinted_members), [path.basename(font.filepath) for font in hinted_members]))
 
-    if unhinted_members and not len(unhinted_members) in [1, 2, 4]:
+    if unhinted_members and not len(unhinted_members) in [1, 2, 4, 8]:
       raise ValueError('Family %s has %d unhinted_members (%s)' % (
           family_id, len(unhinted_members), [
               path.basename(font.filepath) for font in unhinted_members]))
