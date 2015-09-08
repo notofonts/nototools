@@ -520,7 +520,7 @@ def get_exemplar_and_source(loc_tag):
   # don't use exemplars encoded without script if the requested script is not
   # the default
   m = LSRV_RE.match(loc_tag)
-  script = m.group(1) if m else None
+  script = m.group(2) if m else None
   while loc_tag != 'root':
     for directory in ['common', 'seed', 'exemplars']:
       exemplar = get_exemplar_from_file(
