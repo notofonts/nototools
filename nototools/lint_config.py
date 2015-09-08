@@ -288,8 +288,28 @@ class FontCondition(object):
     return True
 
   def __repr__(self):
-    output = ['%s: %s' % (k,v) for k,v in self.__dict__.iteritems() if v]
-    return 'FontCondition(%s)' % ', '.join(output)
+    def value_str(value):
+      if isinstance(value, basestring):
+        cond_name = 'is'
+        cond_value = value
+      else:
+        fn = value[0]
+        val = value[1]
+        cond_name = None
+        for fn_text, fn_obj in FontCondition.fn_map.iteritems():
+          if fn == fn_obj:
+            cond_name = fn_text
+            break
+        if cond_name == 'like':
+          cond_value = val.pattern
+        else:
+          if not cond_name:
+            cond_name = str(fn)
+          cond_value = str(val)
+      return '%s %s' % (cond_name, cond_value)
+
+    output = ['\n  %s: %s' % (k,value_str(v)) for k,v in self.__dict__.iteritems() if v]
+    return 'condition:%s' % ''.join(output)
 
 
 class TestSpec(object):
@@ -571,10 +591,10 @@ class TestSpec(object):
     output = []
     if enable_list:
       output.append('enable:')
-      output.extend(sorted(enable_list))
+      output.extend('  %s' % item for item in sorted(enable_list))
     if disable_list:
       output.append('disable:')
-      output.extend(sorted(disable_list))
+      output.extend('  %s' % item for item in sorted(disable_list))
     return '\n'.join(output)
 
 
@@ -656,7 +676,7 @@ class LintSpec(object):
     return LintTests(frozenset(result), options)
 
   def __repr__(self):
-    return 'spec:\n' + '\nspec:\n'.join(str(spec) for spec in self.specs)
+    return '--- spec ---\n' + '\n--- spec ---\n'.join('%s\n%s' % spec for spec in self.specs)
 
 
 def parse_spec(spec, lint_spec=None):
@@ -716,9 +736,10 @@ def main():
   parser.add_argument('--comments', help='list tags with comments when present', action='store_true')
   parser.add_argument('--filters', help='list tags with filters when present', action='store_true')
   parser.add_argument('--spec', help='prints the syntax', action='store_true')
+  parser.add_argument('--parsefile', help='prints the parsed spec', metavar='spec')
   args = parser.parse_args()
 
-  if not (args.tags or args.comments or args.filters or args.spec):
+  if not (args.tags or args.comments or args.filters or args.spec or args.parsefile):
     print 'nothing to do.'
     return
 
@@ -740,6 +761,10 @@ def main():
         print '  ' + filter
       if comment:
         print '  -- ' + comment
+
+  if args.parsefile:
+    print parse_spec_file(args.parsefile)
+
 
 if __name__ == '__main__':
     main()
