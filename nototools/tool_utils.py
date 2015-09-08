@@ -40,7 +40,7 @@ def temp_chdir(path):
     os.chdir(saved_dir)
 
 
-noto_re = re.compile(r'\[(tools|fonts|emoji|cjk)\]/(.*)')
+noto_re = re.compile(r'\[(tools|fonts|emoji|cjk|adobe|mti)\](.*)')
 def resolve_path(path):
   """Resolve a path that might use noto path shorthand."""
 
@@ -49,7 +49,12 @@ def resolve_path(path):
   m = noto_re.match(path)
   if m:
     base, rest = m.groups()
-    key = 'noto_' + base
+    if base == 'adobe':
+      key = 'adobe_data'
+    elif base == 'mti':
+      key = 'monotype_data'
+    else:
+      key = 'noto_' + base
     if not key in notoconfig.values:
       raise ValueError('notoconfig has no entry for %s' % key)
     base = notoconfig.values.get(key)

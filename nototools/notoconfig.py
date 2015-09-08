@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Read config file for noto tools"""
+"""Read config file for noto tools.  One could also just define some
+environment variables, but using Python for this lets you keep your
+environment and shell prefs clean."""
 
 import os
 
@@ -34,3 +36,21 @@ def _setup():
         values[k.strip()] = v.strip()
 
 _setup()
+
+# convenience for common stuff, should be in local .notoconfig file.
+
+def noto_tools(default=''):
+  """Local path to git nototools git repo"""
+  return values.get('noto_tools', default)
+
+def noto_fonts(default=''):
+  """Local path to git noto-font git repo"""
+  return values.get('noto_fonts', default)
+
+def noto_cjk(default=''):
+  """Local path to git noto-cjk git repo"""
+  return values.get('noto_cjk', default)
+
+def noto_emoji(default=''):
+  """Local path to git noto-emoji git repo"""
+  return values.get('noto_emoji', default)
