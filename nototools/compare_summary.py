@@ -23,8 +23,9 @@ import filecmp
 import os
 import os.path
 
-import summary
-import noto_lint
+from nototools import noto_lint
+from nototools import summary
+from nototools import tool_utils
 
 def summary_to_map(summary_list):
   result = {}
@@ -214,8 +215,10 @@ def compare_summary(base_root, target_root, name=None, comparefn=tuple_compare,
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('base_root', help='root of directory tree, base for comparison')
-  parser.add_argument('target_root', help='root of directory tree, target for comparison')
+  parser.add_argument('-b', '--base_root', help='root of directory tree, base for comparison '
+                      '(default [fonts])', metavar='dir', default='[fonts]')
+  parser.add_argument('-t', '--target_root', help='root of directory tree, target for comparison',
+                      metavar='dir', required=True)
   parser.add_argument('--name', help='only examine files whose subpath+names contain this regex')
   parser.add_argument('--compare_size', help='include size in comparisons',
                       action='store_true')
@@ -227,6 +230,9 @@ def main():
                       default=True, dest='show_paths')
   args = parser.parse_args()
 
+  args.base_root = tool_utils.resolve_path(args.base_root)
+  args.target_root = tool_utils.resolve_path(args.target_root)
+
   if not os.path.isdir(args.base_root):
     print 'base_root %s does not exist or is not a directory' % args.base_root
     return
@@ -235,13 +241,10 @@ def main():
     print 'target_root %s does not exist or is not a directory' % args.target_root
     return
 
-  base_root = os.path.abspath(args.base_root)
-  target_root = os.path.abspath(args.target_root)
-
   comparefn = tuple_compare if args.compare_size else tuple_compare_no_size
 
-  compare_summary(base_root, target_root, args.name, comparefn, args.added, args.removed,
-                  args.identical, args.show_paths)
+  compare_summary(args.base_root, args.target_root, args.name, comparefn,
+                  args.added, args.removed, args.identical, args.show_paths)
 
 if __name__ == '__main__':
   main()
