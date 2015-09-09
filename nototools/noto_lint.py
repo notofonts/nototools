@@ -573,7 +573,7 @@ def check_font(font_props, filename_error,
         ranges = unicode_data._parse_code_ranges(noto_data.CJK_RANGES_TXT)
         return code_range_to_set(ranges) & unicode_data.defined_characters()
 
-    def get_expected_family_name():
+    def _get_expected_noncjk_family_name():
         name_parts = [font_props.family,
                       font_props.style]
         if font_props.is_google:
@@ -594,7 +594,7 @@ def check_font(font_props, filename_error,
             name_parts.append('UI')
         return ' '.join(filter(None, name_parts))
 
-    def get_expected_cjk_family_name():
+    def _get_expected_cjk_family_name():
         name = 'Noto ' + font_props.style
         if font_props.is_mono:
             name += ' Mono'
@@ -602,16 +602,24 @@ def check_font(font_props, filename_error,
             name += ' ' + font_props.subset
         else:
             cjk_script_to_name = {
-                'Jpan': 'JP',
-                'Kore': 'KR',
-                'Hans': 'SC',
-                'Hant': 'TC'
+                'Jpan': ' JP',
+                'Kore': ' KR',
+                'Hans': ' SC',
+                'Hant': ' TC',
+                'CJK' : ' JP',  # TODO(dougfelt) fix to reflect fontNumber
             }
-            name += ' CJK ' + cjk_script_to_name[font_props.script]
+            name += ' CJK' + cjk_script_to_name[font_props.script]
         name += ' ' + font_props.weight
         return name
 
+    def get_expected_family_name():
+        if font_props.is_google and font_props.is_cjk:
+            return _get_expected_cjk_family_name()
+        return _get_expected_noncjk_family_name()
+
     def get_expected_subfamily_name():
+        if font_props.is_google and font_props.is_cjk:
+          return 'Regular'
         names = []
         if font_props.weight != 'Regular' or not font_props.slope:
             names.append(font_props.weight)
@@ -619,27 +627,23 @@ def check_font(font_props, filename_error,
             names.append(font_props.slope)
         return ' '.join(names)
 
-    def get_expected_cjk_subfamily_name():
-        return 'Regular'
-
     def get_expected_full_name():
+        if font_props.is_google and font_props.is_cjk:
+          return _get_expected_cjk_family_name()
         name = get_expected_family_name()
         expected_subfamily_name = get_expected_subfamily_name()
         if expected_subfamily_name != 'Regular':
           name += ' ' + expected_subfamily_name
         return name
 
-    def get_expected_cjk_full_name():
-        return get_expected_cjk_family_name()
-
-    def get_expected_postscript_name():
+    def _get_expected_noncjk_postscript_name():
         name = get_expected_family_name()
         expected_subfamily_name = get_expected_subfamily_name()
         if expected_subfamily_name != 'Regular':
           name += '-' + expected_subfamily_name
         return name.replace(' ', '')
 
-    def get_expected_cjk_postscript_name():
+    def _get_expected_cjk_postscript_name():
         name = 'Noto' + font_props.style
         if font_props.is_mono:
             name += 'Mono'
@@ -650,11 +654,46 @@ def check_font(font_props, filename_error,
                 'Jpan': 'jp',
                 'Kore': 'kr',
                 'Hans': 'sc',
-                'Hant': 'tc'
+                'Hant': 'tc',
+                'CJK': 'jp'  # TODO(dougfelt) fix to reflect fontNumber
             }
             name += 'CJK' + cjk_script_to_name[font_props.script]
         name += '-' + font_props.weight
         return name
+
+    def get_expected_postscript_name():
+        if font_props.is_google and font_props.is_cjk:
+            return _get_expected_cjk_postscript_name()
+        return _get_expected_noncjk_postscript_name()
+
+    def get_expected_copyright_re():
+      if font_props.is_google:
+          if font_props.vendor == 'Adobe':
+              return ADOBE_COPYRIGHT_RE
+          elif font_props.vendor == 'Monotype':
+              return GOOGLE_COPYRIGHT_RE
+      return None
+
+    def get_expected_trademark_name():
+        if font_props.is_google:
+            return "%s is a trademark of Google Inc." % font_props.family
+        return None
+
+    def get_expected_license_name():
+        if font_props.is_google:
+            if font_props.license_type == 'sil':
+                return SIL_LICENSE
+            elif font_props.license_type == 'apache':
+                return APACHE_LICENSE
+        return None
+
+    def get_expected_license_url_name():
+        if font_props.is_google:
+            if font_props.license_type == 'sil':
+                return SIL_LICENSE_URL
+            elif font_props.license_type == 'apache':
+                return APACHE_LICENSE_URL
+        return None
 
     def _check_unused_names():
       # For now, just a warning, and we don't actually check if other tables use it.
@@ -679,22 +718,21 @@ def check_font(font_props, filename_error,
 
         _check_unused_names()
 
-        if font_props.is_cjk:
-           check_name_table_cjk()
-           return
-
         names = font_data.get_name_records(font)
 
-        # Check family name
+        expected_copyright_re = get_expected_copyright_re()
         expected_family_name = get_expected_family_name()
         expected_subfamily_name = get_expected_subfamily_name()
         expected_full_name = get_expected_full_name()
         expected_postscript_name = get_expected_postscript_name()
+        expected_license_name = get_expected_license_name()
+        expected_license_url_name = get_expected_license_url_name()
+        expected_trademark_name = get_expected_trademark_name()
 
-        if font_props.is_google and not re.match(GOOGLE_COPYRIGHT_RE, names[0]):
+        if expected_copyright_re and not re.match(expected_copyright_re, names[0]):
             warn("name/copyright", "Copyright",
                  "Copyright message doesn't match template: '%s'\n%s" % (
-                     names[0], GOOGLE_COPYRIGHT_RE))
+                     names[0], expected_copyright_re))
 
         if names[1] != expected_family_name:
             warn("name/family", "Family name",
@@ -715,14 +753,21 @@ def check_font(font_props, filename_error,
         # whether or not the font is hinted
 
         if tests.check('name/version'):
-            match = re.match(r"Version (\d{1,5})\.(\d{1,5})", names[5])
+            version_string = names[5]
+            idx = version_string.find(';')
+            if idx >= 0:
+                version_string = version_string[:idx]
+            match = re.match(r"Version (\d{1,5})\.(\d{1,5})", version_string)
             if match:
                 major_version = match.group(1)
                 minor_version = match.group(2)
                 if ((0 <= int(major_version) <= 65535)
                     and (0 <= int(minor_version) <= 65535)):
-                    match_end = names[5][match.end():]
+                    match_end = version_string[match.end():]
                     if (font_props.is_google and
+                        # don't expect hinting suffix in adobe/cff fonts
+                        not font_props.vendor == 'adobe' and
+                        font_props.fmt in ['ttf', 'ttc'] and
                         (font_props.is_hinted and match_end != "") or
                         (not font_props.is_hinted and match_end not in ["", " uh"])):
                         warn("name/version/hinted_suffix", "Version",
@@ -738,8 +783,8 @@ def check_font(font_props, filename_error,
                                  font_revision, major_version, minor_version))
                 else:
                     warn("name/version/out_of_range", "Version",
-                         "Version string has numerical parts out of "
-                         "[0, 65535]: '%s'." % names[5])
+                         "Version string has numerical parts outside the range "
+                         "[0, 65535]: '%s'." % version_string)
             else:
                 warn("name/version/expected_pattern", "Version",
                      "Version string is irregular: '%s'." % names[5])
@@ -752,8 +797,7 @@ def check_font(font_props, filename_error,
         if 7 not in names:
             warn("name/trademark", "Trademark",
                  "Trademark in 'name' table is not set.")
-        elif font_props.is_google and (
-            names[7] != "%s is a trademark of Google Inc." % font_props.family):
+        elif expected_trademark_name and names[7] != expected_trademark_name:
             warn("name/trademark", "Trademark",
                  "Trademark message doesn't match template: '%s'." % names[7])
 
@@ -787,117 +831,14 @@ def check_font(font_props, filename_error,
         if 13 not in names:
             warn("name/license", "License",
                  "The License field in 'name' table is not set.")
-        elif names[13] != APACHE_LICENSE:
+        elif expected_license_name and names[13] != expected_license_name:
             warn("name/license", "License",
                  "License message doesn't match template: '%s'." % names[13])
 
         if 14 not in names:
             warn("name/license_url", "License",
                  "The License URL in 'name' table is not set.")
-        elif names[14] != APACHE_LICENSE_URL:
-            warn("name/license_url", "License",
-                 "License URL doesn't match template: '%s'." % names[14])
-
-
-    def check_name_table_cjk():
-        names = font_data.get_name_records(font)
-
-        # Check family name
-        expected_family_name = get_expected_cjk_family_name()
-        expected_subfamily_name = get_expected_cjk_subfamily_name()
-        expected_full_name = get_expected_cjk_full_name()
-        expected_postscript_name = get_expected_cjk_postscript_name()
-
-
-        if not re.match(ADOBE_COPYRIGHT_RE, names[0]):
-            warn("name/copyright", "Copyright",
-                 "Copyright message doesn't match template: '%s': \n%s" %
-                 (names[0], ADOBE_COPYRIGHT_RE))
-
-        if names[1] != expected_family_name:
-            warn("name/family", "Family name",
-                 "Font family name is '%s', but was expecting '%s'." % (
-                     names[1], expected_family_name))
-
-        if names[2] != expected_subfamily_name:
-            warn("name/subfamily", "Sub-family name",
-                 "Font subfamily name is '%s', but was expecting '%s'." % (
-                     names[2], expected_subfamily_name))
-
-        if names[4] != expected_full_name:
-            warn("name/full", "Font name",
-                 "Full font name is '%s', but was expecting '%s'." % (
-                     names[4], expected_full_name))
-
-        # CFF font hinting isn't a thing we expect to see in a version string
-
-        version_string = names[5]
-        idx = version_string.find(';')
-        if idx >= 0:
-          version_string = version_string[:idx]
-        if tests.check('name/version'):
-            match = re.match(r"Version (\d{1,5})\.(\d{1,5})", version_string)
-            if match:
-                major_version = match.group(1)
-                minor_version = match.group(2)
-                if ((0 <= int(major_version) <= 65535)
-                    and (0 <= int(minor_version) <= 65535)):
-                    accuracy = len(minor_version)
-                    font_revision = printable_font_revision(font, accuracy)
-                    if font_revision != major_version + "." + minor_version:
-                        warn("name/version/match_head", "Font Revision",
-                             "fontRevision in 'head' table is %s, "
-                             "while font version in 'name' table is %s.%s." % (
-                                 font_revision, major_version, minor_version))
-                else:
-                    warn("name/version/out_of_range", "Version",
-                         "Version string has numerical parts outside the range "
-                         "[0, 65535]: '%s'." % version_string)
-            else:
-                warn("name/version/expected_pattern", "Version",
-                     "Version string is irregular: '%s'." % names[5])
-
-        if names[6] != expected_postscript_name:
-            warn("name/postscript", "Postscript name",
-                 "Postscript name is '%s', but was expecting '%s'." % (
-                     names[6], expected_postscript_name))
-
-        if names[7] != "Noto is a trademark of Google Inc.":
-            warn("name/trademark", "Trademark",
-                 "Trademark message doesn't match template: '%s'." % names[7])
-
-        if 8 not in names:
-            warn("name/manufacturer", "Manufacturer",
-                 "Manufacturer name in 'name' table is not set.")
-
-        if 9 not in names:
-            warn("name/designer", "Designer",
-                 "Designer name in 'name' table is not set.")
-
-        if 10 not in names:
-            warn("name/description", "Description",
-                 "The description field in 'name' table is not set.")
-
-        if 11 not in names:
-            warn("name/vendor_url", "Vendor",
-                 "The Vendor URL field in 'name' table is not set.")
-        elif names[11] != NOTO_URL:
-            warn("name/vendor_url", "Vendor",
-                 "Vendor URL field doesn't match template: '%s'." % names[11])
-
-        if 12 not in names:
-            warn("name/designer_url", "Designer",
-                 "The Designer URL field in 'name' table is not set.")
-        elif not names[12].startswith('http://'):
-            warn("name/designer_url", "Designer",
-                 "The Designer URL field in 'name' is not an "
-                 "http URL: '%s'." % names[12])
-
-        if names[13] != SIL_LICENSE:
-            warn("name/license", "License",
-                 "License message doesn't match template: '%s'." % names[13])
-
-        if names[14] != SIL_LICENSE_URL:
+        elif expected_license_url_name and names[14] != expected_license_url_name:
             warn("name/license_url", "License",
                  "License URL doesn't match template: '%s'." % names[14])
 
@@ -1884,6 +1825,9 @@ def check_font(font_props, filename_error,
 
     font_path = path.expanduser(font_props.filepath)
     if font_path.endswith('.ttc'):
+      # For NotoSansCJK.ttc fontNum 0 is the 'Jpan' version, but lint doesn't know
+      # how to deal with ttc fonts properly yet.
+      # TODO(dougfelt) fix this
       font = ttLib.TTFont(font_path, fontNumber=0)
     else:
       font = ttLib.TTFont(font_path)
