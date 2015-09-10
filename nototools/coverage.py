@@ -13,10 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Routines for character coverage of fonts."""
 
-__author__ = "roozbeh@google.com (Roozbeh Pournader)"
+__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import argparse
 import codecs
@@ -42,11 +41,12 @@ def character_set(font):
   """
   if type(font) is str:
     font = ttLib.TTFont(font)
-  cmap_table = font["cmap"]
+  cmap_table = font['cmap']
   cmaps = {}
   for table in cmap_table.tables:
     if (table.format, table.platformID, table.platEncID) in [
-        (4, 3, 1), (12, 3, 10)]:
+        (4, 3, 1), (12, 3, 10)
+    ]:
       cmaps[table.format] = table.cmap
   if 12 in cmaps:
     cmap = cmaps[12]
@@ -62,12 +62,12 @@ def convert_set_to_ranges(charset):
   working_set = set(charset)
   output_list = []
   while working_set:
-      start = min(working_set)
-      end = start + 1
-      while end in working_set:
-          end += 1
-      output_list.append((start, end - 1))
-      working_set.difference_update(range(start, end))
+    start = min(working_set)
+    end = start + 1
+    while end in working_set:
+      end += 1
+    output_list.append((start, end - 1))
+    working_set.difference_update(range(start, end))
   return output_list
 
 
@@ -76,14 +76,15 @@ def _print_char_info(chars):
     try:
       name = unicode_data.name(char)
     except ValueError:
-      name = "<Unassigned>"
-    print "U+%04X %s" % (char, name)
+      name = '<Unassigned>'
+    print 'U+%04X %s' % (char, name)
 
 
 def _write_char_text(chars, filepath, chars_per_line):
-  text = [unichr(cp) for cp in chars if not unicode_data.category(cp)[0] in ['M','C','Z']]
+  text = [unichr(cp) for cp in chars
+          if not unicode_data.category(cp)[0] in ['M', 'C', 'Z']]
   filename, _ = path.splitext(path.basename(filepath))
-  m = re.match(r'(.*)-Regular|Bold|Italic|BoldItalic', filename)
+  m = re.match(r'(.*)-(?:Regular|Bold|Italic|BoldItalic)', filename)
   if m:
     filename = m.group(1)
   filename += '_chars.txt'
@@ -92,8 +93,8 @@ def _write_char_text(chars, filepath, chars_per_line):
   if chars_per_line > 0:
     lines = []
     for n in range(0, len(text), chars_per_line):
-      substr = text[n:n+chars_per_line]
-      lines.append(' '.join([cp for cp in substr]))
+      substr = text[n:n + chars_per_line]
+      lines.append(' '.join(cp for cp in substr))
     text = '\n'.join(lines)
   with codecs.open(filename, 'w', 'utf-8') as f:
     f.write(text)
@@ -112,23 +113,30 @@ def _process_font(filepath, args):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('files', help='Files to dump', metavar='file', nargs='+')
-  parser.add_argument('--ranges', help='Dump cmap as hex ranges', action='store_true')
-  parser.add_argument('--text', help='Dump cmap as sample text', action='store_true')
-  parser.add_argument('--info', help='Dump cmap as cp and unicode name, one per line',
+  parser.add_argument('--ranges',
+                      help='Dump cmap as hex ranges',
                       action='store_true')
-  parser.add_argument('--chars_per_line', help='Format text in lines of at most this '
+  parser.add_argument('--text',
+                      help='Dump cmap as sample text',
+                      action='store_true')
+  parser.add_argument('--info',
+                      help='Dump cmap as cp and unicode name, one per line',
+                      action='store_true')
+  parser.add_argument('--chars_per_line',
+                      help='Format text in lines of at most this '
                       'many codepoints,  0 to format as a single line',
-                      type=int, metavar='N', default=32)
+                      type=int,
+                      metavar='N',
+                      default=32)
   args = parser.parse_args()
 
   if not (args.ranges or args.text or args.info):
     args.info = True
 
-  """Outputs the character coverage of all fonts given on the command line."""
   for fontpath in args.files:
     print 'Font: ' + path.normpath(fontpath)
     _process_font(fontpath, args)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+  main()
