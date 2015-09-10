@@ -53,11 +53,12 @@ _NAME_ID_LABELS = {
     _LICENSE_URL_ID: 'license url',
 }
 
-_SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
-                "Version 1.1. This Font Software is distributed on an \"AS IS\" "
-                "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
-                "or implied. See the SIL Open Font License for the specific language, "
-                "permissions and limitations governing your use of this Font Software.")
+_SIL_LICENSE = (
+    'This Font Software is licensed under the SIL Open Font License, '
+    'Version 1.1. This Font Software is distributed on an "AS IS" '
+    'BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express '
+    'or implied. See the SIL Open Font License for the specific language, '
+    'permissions and limitations governing your use of this Font Software.')
 
 _SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
 
@@ -83,7 +84,8 @@ def _swat_fonts(dst_root, dry_run):
   def family_key(family):
       return _FAMILY_KEYS[family]
   def script_key(script):
-      return _SCRIPT_KEYS.get(script, None) or cldr_data.get_english_script_name(script)
+      return (_SCRIPT_KEYS.get(script, None) or
+              cldr_data.get_english_script_name(script))
   def compare_key(font):
     return (font.family,
             font.style,
@@ -103,6 +105,9 @@ def _swat_font(noto_font, dst_root, dry_run):
   basename, ext = path.splitext(path.basename(filepath))
   if noto_font.is_cjk:
     print '# Skipping cjk font %s' % basename
+    return
+  if noto_font.fmt == 'ttc':
+    print '# Skipping ttc font, rebuild these from swatted parts.'
     return
 
   ttfont = ttLib.TTFont(filepath, fontNumber=0)
@@ -150,14 +155,16 @@ def _swat_font(noto_font, dst_root, dry_run):
   fixed_revision = misc.fixedTools.floatToFixed(float_revision, 16)
   rt_float_rev = misc.fixedTools.fixedToFloat(fixed_revision, 16)
   rt_float_rev_int = int(rt_float_rev)
-  rt_float_rev_frac = int(round((rt_float_rev - rt_float_rev_int) * 10 ** accuracy))
-  rt_new_revision = str(rt_float_rev_int) + '.' + str(rt_float_rev_frac).zfill(accuracy)
+  rt_float_rev_frac = int(round((rt_float_rev - rt_float_rev_int) *
+                                10 ** accuracy))
+  rt_new_revision = (str(rt_float_rev_int) + '.' +
+                     str(rt_float_rev_frac).zfill(accuracy))
   if new_revision != rt_new_revision:
     print '! Could not update new revision, expected \'%s\' but got \'%s\'' % (
         new_revision, rt_new_revision)
     return
 
-  new_version_string = 'Version ' + new_revision;
+  new_version_string = 'Version ' + new_revision
   if not noto_font.is_hinted:
     new_version_string += ' uh'
 
@@ -166,9 +173,11 @@ def _swat_font(noto_font, dst_root, dry_run):
   new_trademark = "%s is a trademark of Google Inc." % noto_font.family
 
   # description field should be set.
-  # Roozbeh has note, make sure design field has information on whether the font is hinted.
+  # Roozbeh has note, make sure design field has information
+  # on whether the font is hinted.
   # Missing in Lao and Khmer, default in Cham.
-  if cldr_data.get_english_script_name(noto_font.script) in ['Lao', 'Khmer', 'Cham']:
+  if (cldr_data.get_english_script_name(noto_font.script) in
+      ['Lao', 'Khmer', 'Cham']):
     new_description = (
         'Data %shinted. Noto %s is a humanist %sserif typeface designed for '
         'user interfaces and electronic communication.' % (
@@ -277,9 +286,12 @@ def _swat_font(noto_font, dst_root, dry_run):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('-n', '--dry_run', help='Do not write fonts', action='store_true')
-  parser.add_argument('--dst_root', help='root of destination', default='/tmp/swat')
-  parser.add_argument('--details', help='show change details', action='store_true')
+  parser.add_argument('-n', '--dry_run', help='Do not write fonts',
+                      action='store_true')
+  parser.add_argument('--dst_root', help='root of destination',
+                      default='/tmp/swat')
+  parser.add_argument('--details', help='show change details',
+                      action='store_true')
   args = parser.parse_args()
 
   _swat_fonts(args.dst_root, args.dry_run)
