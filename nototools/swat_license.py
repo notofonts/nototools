@@ -29,9 +29,29 @@ from nototools import noto_fonts
 from fontTools import ttLib
 from fontTools import misc
 
+_COPYRIGHT_ID = 0
 _VERSION_ID = 5
+_TRADEMARK_ID = 7
+_MANUFACTURER_ID = 8
+_DESIGNER_ID = 9
+_DESCRIPTION_ID = 10
+_VENDOR_URL_ID = 11
+_DESIGNER_URL_ID = 12
 _LICENSE_ID = 13
 _LICENSE_URL_ID = 14
+
+_NAME_ID_LABELS = {
+    _COPYRIGHT_ID: 'copyright',
+    _VERSION_ID: 'version',
+    _TRADEMARK_ID: 'trademark',
+    _MANUFACTURER_ID: 'manufacturer',
+    _DESIGNER_ID: 'designer',
+    _DESCRIPTION_ID: 'description',
+    _VENDOR_URL_ID: 'vendor url',
+    _DESIGNER_URL_ID: 'designer url',
+    _LICENSE_ID: 'license',
+    _LICENSE_URL_ID: 'license url',
+}
 
 _SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
                 "Version 1.1. This Font Software is distributed on an \"AS IS\" "
@@ -40,6 +60,9 @@ _SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License,
                 "permissions and limitations governing your use of this Font Software.")
 
 _SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
+
+_NOTO_URL = "http://www.google.com/get/noto/"
+
 
 _SCRIPT_KEYS = {
     'Aran': 'Urdu',
@@ -53,6 +76,8 @@ _FAMILY_KEYS = {
   'Tinos': 'c',
   'Noto': 'd',
 }
+
+_CHANGES = {}
 
 def _swat_fonts(dst_root, dry_run):
   def family_key(family):
@@ -92,7 +117,7 @@ def _swat_font(noto_font, dst_root, dry_run):
     if x == -1:
       x = filepath.find('noto-emoji')
   if x == -1:
-    print 'Could not identify noto root'
+    print '! Could not identify noto root'
     return
 
   dst_file = path.join(dst_root, filepath[x:])
@@ -135,46 +160,111 @@ def _swat_font(noto_font, dst_root, dry_run):
   new_version_string = 'Version ' + new_revision;
   if not noto_font.is_hinted:
     new_version_string += ' uh'
-  if version_remainder != ' uh':
-    print '# omitting version remainder \'%s\'' % version_remainder
 
   print '%s: %s' % ('Would write' if dry_run else 'Writing', dst_file)
 
-  # vendor url
-  NOTO_URL = "http://www.google.com/get/noto/"
+  new_trademark = "%s is a trademark of Google Inc." % noto_font.family
 
-  # trademark message
-  TRADEMARK = "%s is a trademark of Google Inc." % family
-
-  # description field - should be set.  Roozbeh has note, make sure design field has
-  # information on whether the font is hinted.
+  # description field should be set.
+  # Roozbeh has note, make sure design field has information on whether the font is hinted.
   # Missing in Lao and Khmer, default in Cham.
-  if noto_font.script in ['Lao', 'Khmer', 'Cham']:
-    decription = (
-        'Data %shinted. Noto %s is a humanist %s serif typeface designed for user interfaces '
-        'and electronic communication.' % (
-            '' if hinted else 'un',
-            'Sans' if sans else 'Serif',
-            'sans ' if sans else ''))
-  elif noto_font.vendor is 'Monotype':
-    description = (
-      'Data %shinted. Designed by Monotype design team.' % '' if hinted else 'un'))
+  if cldr_data.get_english_script_name(noto_font.script) in ['Lao', 'Khmer', 'Cham']:
+    new_description = (
+        'Data %shinted. Noto %s is a humanist %sserif typeface designed for '
+        'user interfaces and electronic communication.' % (
+            '' if noto_font.is_hinted else 'un',
+            noto_font.style,
+            'sans ' if noto_font.style == 'Sans' else ''))
+  # elif noto_font.vendor is 'Monotype':
+  elif not noto_font.is_cjk and noto_font.family == 'Noto':
+    new_description = (
+      'Data %shinted. Designed by Monotype design team.' %
+      ('' if noto_font.is_hinted else 'un'))
   else:
-    print '# could not generate description'
-    description = None
+    new_description = None
 
-  # Designer name
+  if re.match(r'^Copyright 201\d Google Inc. All Rights Reserved\.$',
+              names[_COPYRIGHT_ID]):
+    new_copyright = None
+  else:
+    new_copyright = '!!'
+
+  if names.get(_DESIGNER_ID) in [
+      'Steve Matteson',
+      'Monotype Design Team',
+      'Danh Hong',
+      ]:
+    new_designer = None
+  elif names.get(_DESIGNER_ID) == 'Monotype Design team':
+    new_designer = 'Monotype Design Team'
+  elif (_DESIGNER_ID not in names
+        and cldr_data.get_english_script_name(noto_font.script) == 'Khmer'):
+    new_designer = 'Danh Hong'
+  else:
+    new_designer = '!!'
+
+  if names.get(_DESIGNER_URL_ID) in [
+      'http://www.monotype.com/studio',
+      'http://www.monotypeimaging.com/ProductsServices/TypeDesignerShowcase',
+      'http://www.khmertype.org',
+      ]:
+    new_designer_url = None
+  elif names.get(_DESIGNER_URL_ID) in [
+      'http://www.khmertype.blogspot.com',
+      'http://www.khmertype.blogspot.com/',
+      'http://khmertype.blogspot.com/',
+      'http://wwwkhmertype.blogspot.com.com/',
+      ]:
+    new_designer_url = 'http://www.khmertype.org'
+  else:
+    new_designer_url = '!!'
+
+  if names.get(_MANUFACTURER_ID) in [
+      'Monotype Imaging Inc.',
+      'Danh Hong',
+      ]:
+    new_manufacturer = None
+  else:
+    new_manufacturer = '!!'
+
+  def update(name_id, new, newText=None):
+    old = names.get(name_id)
+    if new and (new != old):
+      if not dry_run and not '!!' in new:
+        font_data.set_name_record(ttfont, name_id, new, addIfMissing='win')
+
+      label = _NAME_ID_LABELS[name_id]
+      oldText = '\'%s\'' % old if old else 'None'
+      newText = newText or ('\'%s\'' % new)
+      print '%s:\n  old: %s\n  new: %s' % (label, oldText, newText or new)
+
+      label_change = _CHANGES.get(label)
+      if not label_change:
+        label_change = {}
+        _CHANGES[label] = label_change
+      new_val_change = label_change.get(new)
+      if not new_val_change:
+        new_val_change = {}
+        label_change[new] = new_val_change
+      old_val_fonts = new_val_change.get(old)
+      if not old_val_fonts:
+        old_val_fonts = []
+        new_val_change[old] = old_val_fonts
+      old_val_fonts.append(noto_font.filepath)
+
+  update(_COPYRIGHT_ID, new_copyright)
+  update(_VERSION_ID, new_version_string)
+  update(_TRADEMARK_ID, new_trademark)
+  update(_MANUFACTURER_ID, new_manufacturer)
+  update(_DESIGNER_ID, new_designer)
+  update(_DESCRIPTION_ID, new_description)
+  update(_VENDOR_URL_ID, _NOTO_URL)
+  update(_DESIGNER_URL_ID, new_designer_url)
+  update(_LICENSE_ID, _SIL_LICENSE, newText='(OFL)')
+  update(_LICENSE_URL_ID, _SIL_LICENSE_URL)
 
   if dry_run:
     return
-
-  font_data.set_name_record(ttfont, _LICENSE_ID, _SIL_LICENSE)
-  font_data.set_name_record(ttfont, _LICENSE_URL_ID, _SIL_LICENSE_URL)
-  font_data.set_name_record(ttfont, _VERSION_ID, new_version_string)
-  font_data.set_name_record(ttfont, _VENDOR_URL, NOTO_URL)
-  font_data.set_name_record(ttfont, _TRADMARK, TRADEMARK)
-  if description:
-    font_data.set_name_record(ttfont, _DESCRIPTION, description)
 
   ttfont['head'].fontRevision = float_revision
 
@@ -189,9 +279,28 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('-n', '--dry_run', help='Do not write fonts', action='store_true')
   parser.add_argument('--dst_root', help='root of destination', default='/tmp/swat')
+  parser.add_argument('--details', help='show change details', action='store_true')
   args = parser.parse_args()
 
   _swat_fonts(args.dst_root, args.dry_run)
+
+  print '------\nchange summary\n'
+  for name_key in sorted(_CHANGES):
+    print '%s:' % name_key
+    new_vals = _CHANGES[name_key]
+    for new_val in sorted(new_vals):
+      print '  change to \'%s\':' % new_val
+      old_vals = new_vals[new_val]
+      for old_val in sorted(old_vals):
+        print '    from %s (%d files)%s' % (
+            '\'%s\'' % old_val if old_val else 'None',
+            len(old_vals[old_val]), ':' if args.details else '')
+        if args.details:
+          for file_name in sorted(old_vals[old_val]):
+            x = file_name.rfind('/')
+            if x > 0:
+              x = file_name.rfind('/', 0, x)
+            print '      ' + file_name[x:]
 
 
 if __name__ == "__main__":
