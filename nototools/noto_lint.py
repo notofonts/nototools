@@ -1883,10 +1883,7 @@ def check_font(font_props, filename_error,
     warn_count = [0]
 
     font_path = path.expanduser(font_props.filepath)
-    if font_path.endswith('.ttc'):
-      font = ttLib.TTFont(font_path, fontNumber=0)
-    else:
-      font = ttLib.TTFont(font_path)
+    font = ttLib.TTFont(font_path)
 
     is_indic = font_props.script in {
         "Deva", "Beng", "Guru", "Gujr", "Orya",
