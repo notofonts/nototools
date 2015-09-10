@@ -57,6 +57,36 @@ SAMPLE_TEXT_DIR = path.join(TOOLS_DIR, 'sample_texts')
 APACHE_LICENSE_LOC = path.join(FONTS_DIR, 'LICENSE')
 SIL_LICENSE_LOC = path.join(CJK_DIR, 'LICENSE')
 
+
+def check_families(family_map):
+  # ensure the count of fonts in a family is what we expect
+  for family in family_map.values():
+    hinted_members = family.hinted_members
+    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]: # 9 adds the two Mono variants
+      raise ValueError('Family %s has %d hinted_members (%s)' % (
+          family_id, len(hinted_members), [path.basename(font.filepath) for font in hinted_members]))
+
+    unhinted_members = family.unhinted_members
+    if unhinted_members and not len(unhinted_members) in [1, 2, 4]:
+      raise ValueError('Family %s has %d unhinted_members (%s)' % (
+          family_id, len(unhinted_members), [
+              path.basename(font.filepath) for font in unhinted_members]))
+
+    if hinted_members and unhinted_members and len(hinted_members) != len(unhinted_members):
+      # Let's not consider this an error for now.  Just drop the members with the higher number
+      # of fonts, assuming it's a superset of the fonts in the smaller set, so that the fonts
+      # we provide and display are available to all users.  This means website users will not be
+      # able to get these fonts via the website.
+      #
+      # We'll keep the representative font and not try to change it.
+      print 'Family %s has %d hinted members but %d unhinted memberts' % (
+          family_id, len(hinted_members), len(unhinted_members))
+      if len(hinted_members) < len(unhinted_members):
+        family.unhinted_members = []
+      else:
+        family.hinted_members = []
+
+
 def get_script_to_family_ids(family_map):
   """The keys in the returned map are all the supported scripts."""
   script_to_family_ids = collections.defaultdict(set)
@@ -875,6 +905,8 @@ class WebGen(object):
               not font.family in {'Arimo', 'Cousine', 'Tinos'})
     fonts = filter(use_in_web, noto_fonts.get_noto_fonts())
     families = noto_fonts.get_families(fonts)
+
+    check_families(families)
 
     if 'families' in debug:
       print '\nfamilies'
