@@ -78,16 +78,16 @@ _FAMILY_KEYS = {
   'Noto': 'd',
 }
 
-_CHANGES = {}
+_changes = {}
 
 def _swat_fonts(dst_root, dry_run):
   def family_key(family):
-      return _FAMILY_KEYS[family]
+      return _FAMILY_KEYS.get(family, 'x' + family)
   def script_key(script):
       return (_SCRIPT_KEYS.get(script, None) or
               cldr_data.get_english_script_name(script))
   def compare_key(font):
-    return (font.family,
+    return (family_key(font.family),
             font.style,
             script_key(font.script),
             'a' if font.is_hinted else '',
@@ -247,10 +247,10 @@ def _swat_font(noto_font, dst_root, dry_run):
       newText = newText or ('\'%s\'' % new)
       print '%s:\n  old: %s\n  new: %s' % (label, oldText, newText or new)
 
-      label_change = _CHANGES.get(label)
+      label_change = _changes.get(label)
       if not label_change:
         label_change = {}
-        _CHANGES[label] = label_change
+        _changes[label] = label_change
       new_val_change = label_change.get(new)
       if not new_val_change:
         new_val_change = {}
@@ -297,9 +297,9 @@ def main():
   _swat_fonts(args.dst_root, args.dry_run)
 
   print '------\nchange summary\n'
-  for name_key in sorted(_CHANGES):
+  for name_key in sorted(_changes):
     print '%s:' % name_key
-    new_vals = _CHANGES[name_key]
+    new_vals = _changes[name_key]
     for new_val in sorted(new_vals):
       print '  change to \'%s\':' % new_val
       old_vals = new_vals[new_val]
