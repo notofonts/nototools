@@ -20,6 +20,8 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 from nototools import opentype_data
 
+from fontTools.ttLib.tables._n_a_m_e import NameRecord
+
 def get_name_records(font):
     """Get a font's 'name' table records as a dictionary of Unicode strings."""
     name_table = font['name']
@@ -32,14 +34,18 @@ def get_name_records(font):
     return names
 
 
-def set_name_record(font, record_id, value):
+def set_name_record(font, record_id, value, addIfMissing=''):
     """Sets a record in the 'name' table to a given string.
 
-    Assumes that the record already exists. If it doesn't, it doesn't add it.
+    Assumes that the record already exists. If it doesn't, it only adds it
+    if addIfMissing is set.  Pass 'win' to add a record in 3/1/0x409 (win UCS2 en-US)
+    and/or 'mac' to add a record in 1/0/0 (mac-roman English), separate by comma
+    if you want both.
 
     If 'value' is None, the name record is dropped."""
     records_to_drop = set()
     names = font['name'].names
+    added = []
     for record_number, record in enumerate(names):
         name_ids = (record.platformID, record.platEncID, record.langID)
         if name_ids not in [(3, 1, 0x409), (1, 0, 0)]:
@@ -50,8 +56,36 @@ def set_name_record(font, record_id, value):
             else:
                 if name_ids == (1, 0, 0):
                     record.string = value.encode('mac-roman')
+                    added.append('mac')
                 else:  # (3, 1, 0x409)
                     record.string = value.encode('UTF-16BE')
+                    added.append('win')
+
+    if addIfMissing and value:
+        for key in addIfMissing.split(','):
+            if key in added:
+                continue
+
+            if key == 'win':
+                nr = NameRecord()
+                nr.nameID = record_id
+                nr.platformID = 3
+                nr.platEncID = 1
+                nr.langID = 0x409
+                nr.string = value.encode('UTF-16BE')
+            elif key == 'mac':
+                nr = NameRecord()
+                nr.nameID = record_id
+                nr.platformID = 1
+                nr.platEncID = 0
+                nr.langID = 0
+                nr.string = value.encode('mac-roman')
+            else:
+                nr = None
+
+            if nr:
+                names.append(nr)
+
     if records_to_drop:
         font['name'].names = [
             record for record_number, record in enumerate(names)
