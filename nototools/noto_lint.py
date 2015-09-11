@@ -602,13 +602,12 @@ def check_font(font_props, filename_error,
             name += ' ' + font_props.subset
         else:
             cjk_script_to_name = {
-                'Jpan': ' JP',
-                'Kore': ' KR',
-                'Hans': ' SC',
-                'Hant': ' TC',
-                'CJK' : ' JP',  # TODO(dougfelt) fix to reflect fontNumber
+                'Jpan': 'JP',
+                'Kore': 'KR',
+                'Hans': 'SC',
+                'Hant': 'TC'
             }
-            name += ' CJK' + cjk_script_to_name[font_props.script]
+            name += ' CJK ' + cjk_script_to_name[font_props.script]
         name += ' ' + font_props.weight
         return name
 
@@ -654,8 +653,7 @@ def check_font(font_props, filename_error,
                 'Jpan': 'jp',
                 'Kore': 'kr',
                 'Hans': 'sc',
-                'Hant': 'tc',
-                'CJK': 'jp'  # TODO(dougfelt) fix to reflect fontNumber
+                'Hant': 'tc'
             }
             name += 'CJK' + cjk_script_to_name[font_props.script]
         name += '-' + font_props.weight
