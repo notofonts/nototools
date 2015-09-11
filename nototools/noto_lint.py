@@ -50,6 +50,23 @@ from nototools import unicode_data
 
 NOTO_URL = "http://www.google.com/get/noto/"
 
+ADOBE_COPYRIGHT_RE = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
+                      u"\(http://www.adobe.com/\)\.")
+
+SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
+               "Version 1.1. This Font Software is distributed on an \"AS IS\" "
+               "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
+               "or implied. See the SIL Open Font License for the specific language, "
+               "permissions and limitations governing your use of this Font Software.")
+
+SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
+
+GOOGLE_COPYRIGHT_RE = r'Copyright 201\d Google Inc. All Rights Reserved\.'
+
+APACHE_LICENSE = "Licensed under the Apache License, Version 2.0"
+
+APACHE_LICENSE_URL = "http://www.apache.org/licenses/LICENSE-2.0"
+
 # from wikipedia windows 1252 page.  As of windows 98.
 WIN_ANSI_CODEPOINTS = (
     '0000-007f 00A0-00ff 20ac 201a 0192 201e 2026 2020 2021 02c6 2030 0160 2039 0152 017d'
@@ -674,10 +691,10 @@ def check_font(font_props, filename_error,
         expected_full_name = get_expected_full_name()
         expected_postscript_name = get_expected_postscript_name()
 
-        if font_props.is_google and not re.match(
-            r'Copyright 201\d Google Inc. All Rights Reserved.$', names[0]):
+        if font_props.is_google and not re.match(GOOGLE_COPYRIGHT_RE, names[0]):
             warn("name/copyright", "Copyright",
-                 "Copyright message doesn't match template: '%s'." % names[0])
+                 "Copyright message doesn't match template: '%s'\n%s" % (
+                     names[0], GOOGLE_COPYRIGHT_RE))
 
         if names[1] != expected_family_name:
             warn("name/family", "Family name",
@@ -770,14 +787,14 @@ def check_font(font_props, filename_error,
         if 13 not in names:
             warn("name/license", "License",
                  "The License field in 'name' table is not set.")
-        elif names[13] != "Licensed under the Apache License, Version 2.0":
+        elif names[13] != APACHE_LICENSE:
             warn("name/license", "License",
                  "License message doesn't match template: '%s'." % names[13])
 
         if 14 not in names:
             warn("name/license_url", "License",
                  "The License URL in 'name' table is not set.")
-        elif names[14] != "http://www.apache.org/licenses/LICENSE-2.0":
+        elif names[14] != APACHE_LICENSE_URL:
             warn("name/license_url", "License",
                  "License URL doesn't match template: '%s'." % names[14])
 
@@ -792,19 +809,10 @@ def check_font(font_props, filename_error,
         expected_postscript_name = get_expected_cjk_postscript_name()
 
 
-        ADOBE_COPYRIGHT = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
-                           u"\(http://www.adobe.com/\).")
-        SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
-                       "Version 1.1. This Font Software is distributed on an \"AS IS\" "
-                       "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
-                       "or implied. See the SIL Open Font License for the specific language, "
-                       "permissions and limitations governing your use of this Font Software.")
-        SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
-
-        if not re.match(ADOBE_COPYRIGHT, names[0]):
+        if not re.match(ADOBE_COPYRIGHT_RE, names[0]):
             warn("name/copyright", "Copyright",
                  "Copyright message doesn't match template: '%s': \n%s" %
-                 (names[0], ADOBE_COPYRIGHT))
+                 (names[0], ADOBE_COPYRIGHT_RE))
 
         if names[1] != expected_family_name:
             warn("name/family", "Family name",
