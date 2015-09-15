@@ -584,7 +584,7 @@ class WebGen(object):
     return os.stat(zippath).st_size
 
   def build_family_zips(self, key, family):
-    zip_name = family.name.replace(' ', '')
+    zip_name = noto_fonts.get_family_filename(family)
     hinted_size = 0
     unhinted_size = 0
     if family.hinted_members:
@@ -881,7 +881,7 @@ class WebGen(object):
       zip_basename = filename + '.zip'
       zip_path = path.join(self.pkgs, zip_basename)
       if path.isfile(zip_path):
-          print("Continue: assuming built %s is valid." % zip_basename)
+          print("Assuming built %s is valid." % zip_basename)
           continue
       oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
       pairs = [(path.join(CJK_DIR, filename), filename),
