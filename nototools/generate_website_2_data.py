@@ -891,6 +891,18 @@ class WebGen(object):
       print "Wrote " + zip_path
       print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
 
+    # NotoSansCJK.ttc.zip already has been zipped for size reasons because git doesn't
+    # like very large files. So it wasn't in the above files. For our purposes ideally it
+    # would have the license file in it, but it doesn't.  So we have to copy the zip and
+    # add the license to the copy.
+    filename = 'NotoSansCJK.ttc.zip'
+    src_zip = path.join(CJK_DIR, filename)
+    dst_zip = path.join(self.pkgs, filename)
+    shutil.copy2(src_zip, dst_zip)
+    pairs = [(SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+    tool_utils.generate_zip_with_7za_from_filepairs(pairs, dst_zip)
+
+
   def generate(self):
     if self.clean:
       self.clean_target_dir()
