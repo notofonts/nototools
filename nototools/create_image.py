@@ -191,11 +191,11 @@ _italic_map = {
 def _get_style(style_name):
   if not style_name:
     return pango.STYLE_NORMAL
-  style = _style_map.get(style_name)
+  style = _italic_map.get(style_name)
   if style:
     return style
   raise ValueError('could not recognize style \'%s\'\naccepted values are %s' %
-                   (style_name, ', '.join(sorted(_style_map.keys()))))
+                   (style_name, ', '.join(sorted(_italic_map.keys()))))
 
 
 def render_codes(code_list, font_name, weight_name, style_name, font_size, lang, ext):
