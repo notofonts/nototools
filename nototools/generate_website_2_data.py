@@ -60,7 +60,7 @@ SIL_LICENSE_LOC = path.join(CJK_DIR, 'LICENSE')
 
 def check_families(family_map):
   # ensure the count of fonts in a family is what we expect
-  for family in family_map.values():
+  for family_id, family in family_map.iteritems():
     hinted_members = family.hinted_members
     if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]: # 9 adds the two Mono variants
       raise ValueError('Family %s has %d hinted_members (%s)' % (
@@ -81,10 +81,16 @@ def check_families(family_map):
       # We'll keep the representative font and not try to change it.
       print 'Family %s has %d hinted members but %d unhinted memberts' % (
           family_id, len(hinted_members), len(unhinted_members))
+      # The namedtuples are immutable, so we need to break them apart and reform them
+      name = family.name
+      rep_member = family.rep_member
+      charset = family.charset;
       if len(hinted_members) < len(unhinted_members):
-        family.unhinted_members = []
+        unhinted_members = []
       else:
-        family.hinted_members = []
+        hinted_members = []
+      family_map[family_id] = noto_fonts.NotoFamily(
+          name, family_id, rep_member, charset, hinted_members, unhinted_members)
 
 
 def get_script_to_family_ids(family_map):
