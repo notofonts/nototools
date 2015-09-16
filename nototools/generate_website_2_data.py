@@ -45,6 +45,8 @@ from nototools import noto_fonts
 from nototools import tool_utils
 from nototools import unicode_data
 
+# This fails if .notoconfig is not in your home dir or does not define the
+# requested values.
 TOOLS_DIR = notoconfig.values['noto_tools']
 FONTS_DIR = notoconfig.values['noto_fonts']
 CJK_DIR = notoconfig.values['noto_cjk']
