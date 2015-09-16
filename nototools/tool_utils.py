@@ -41,12 +41,14 @@ def temp_chdir(path):
 
 
 noto_re = re.compile(r'\[(tools|fonts|emoji|cjk|adobe|mti)\](.*)')
-def resolve_path(path):
-  """Resolve a path that might use noto path shorthand."""
+def resolve_path(somepath):
+  """Resolve a path that might start with noto path shorthand. If
+  the path is empty, is '-', or the shorthand is not defined,
+  returns None. Example: '[fonts]/hinted'."""
 
-  if not path or path == '-':
+  if not somepath or somepath == '-':
     return None
-  m = noto_re.match(path)
+  m = noto_re.match(somepath)
   if m:
     base, rest = m.groups()
     if base == 'adobe':
@@ -56,13 +58,13 @@ def resolve_path(path):
     else:
       key = 'noto_' + base
     if not key in notoconfig.values:
-      raise ValueError('notoconfig has no entry for %s' % key)
+      print 'notoconfig has no entry for %s' % key
+      return None
     base = notoconfig.values.get(key)
-    path = os.path.join(base, rest)
-  path = os.path.expanduser(path)
-  path = os.path.abspath(path)
-  path = os.path.realpath(path)
-  return path
+    while rest.startswith(path.sep):
+      rest = rest[len(path.sep):]
+    somepath = path.join(base, rest)
+  return path.realpath(path.abspath(path.expanduser(somepath)))
 
 
 def check_dir_exists(dirpath):
