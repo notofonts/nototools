@@ -599,7 +599,7 @@ def check_font(font_props, filename_error,
             # HST, Aran are special-cased.
             script = font_props.script
             if script in _script_key_to_font_name:
-                name_parts.append(_script_key_to_font_name(script))
+                name_parts.append(_script_key_to_font_name[script])
             else:
                 name_parts.append(preferred_script_name(script))
         name_parts.append(font_props.variant)
