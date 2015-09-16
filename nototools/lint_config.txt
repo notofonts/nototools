@@ -9,8 +9,15 @@ disable extrema
 filename like Avestan
 disable gpos/missing
 
+filename like Batak
+enable gdef/classdef/not_combining_mismatch except cp 1bee
+
 filename like Bengali
 enable script_required except cp 951-952
+
+filename like Cherokee
+# deferred to phase 3
+enable script_required except cp 300-302 304 30b-30c 323-324 330-331
 
 filename like Devanagari
 enable bounds/glyph/ui_ymin except gid 788
@@ -27,6 +34,9 @@ enable cmap/script_required except cp 0487 a66f
 
 filename like Hanunoo
 enable gdef/classdef/combining_mismatch except cp 1734
+
+filename like MeeteiMayek
+enable gdef/classdef/not_combining_mismatch except cp abe9-abea
 
 filename like Mongolian
 enable gdef/classdef/not_combining_mismatch except cp 180e
