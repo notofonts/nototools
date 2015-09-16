@@ -26,11 +26,13 @@ from nototools import coverage
 from nototools import font_data
 from nototools import lang_data
 from nototools import notoconfig
+from nototools import tool_utils
 from nototools import unicode_data
 
-FONTS_DIR = notoconfig.values['noto_fonts']
-EMOJI_DIR = notoconfig.values['noto_emoji']
-CJK_DIR = notoconfig.values['noto_cjk']
+# The '[xxx]' syntax is used to get the noto-xxx value from notoconfig.
+NOTO_FONT_PATHS = [
+    '[fonts]/hinted', '[fonts]/unhinted', '[fonts]/alpha', '[emoji]', '[cjk]']
+
 
 ODD_SCRIPTS = {
   'CJKjp': 'Jpan',
@@ -92,7 +94,7 @@ _NOTO_FONT_NAME_REGEX = re.compile(
 _EXT_REGEX = re.compile(r'.*\.(?:ttf|ttc|otf)$')
 
 def get_noto_font(filepath):
-  """Return NotoFont if filepath points to a noto font, or None if we can't
+  """Return a NotoFont if filepath points to a noto font, or None if we can't
   process the path."""
 
   filedir, filename = os.path.split(filepath)
@@ -194,19 +196,14 @@ def noto_font_to_family_id(notofont):
   return key.lower()
 
 
-def get_noto_fonts():
-  """Scan Noto dirs for fonts, and create a Font object for each one that we will use
-  in the web site.  Return a list of these Font objects."""
+def get_noto_fonts(paths=NOTO_FONT_PATHS):
+  """Scan paths for fonts, and create a NotoFont for each one, returning a list
+  of these.  'paths' defaults to the standard noto font paths, using notoconfig."""
+
+  font_dirs = filter(None, [tool_utils.resolve_path(p) for p in paths])
+  print 'Getting fonts from: %s' % font_dirs
 
   all_fonts = []
-
-  font_dirs = [
-    path.join(FONTS_DIR, 'hinted'),
-    path.join(FONTS_DIR, 'unhinted'),
-    path.join(FONTS_DIR, 'alpha'),
-    EMOJI_DIR,
-    CJK_DIR]
-
   for font_dir in font_dirs:
     for filename in os.listdir(font_dir):
       if not _EXT_REGEX.match(filename):
