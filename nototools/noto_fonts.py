@@ -293,3 +293,22 @@ def get_families(fonts):
         name, family_id, rep_member, charset, hinted_members, unhinted_members)
 
   return families
+
+
+def get_family_filename(family):
+  """Returns a filename to use for a family zip of hinted/unhinted members.  This
+     is basically the postscript name with weight/style removed.
+  """
+  font = ttLib.TTFont(family.rep_member.filepath, fontNumber=0)
+  name_record = font_data.get_name_records(font)
+  try:
+    name = name_record[6]
+    ix = name.find('-')
+    if ix >= 0:
+      name = name[:ix]
+  except KeyError:
+    name = name_record[1]
+    if name.endswith('Regular'):
+      name = name.rsplit(' ', 1)[0]
+    name = name.replace(' ', '')
+  return name

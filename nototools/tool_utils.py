@@ -93,7 +93,7 @@ def generate_zip_with_7za(root_dir, file_paths, archive_path):
 
 def generate_zip_with_7za_from_filepairs(pairs, archive_path):
   """Pairs are source/destination path pairs. The source will be put into the
-  zip with name destination.  The destination must be a suffix of the source."""
+  zip with name destination."""
 
   staging_dir = '/tmp/stage_7za'
   if os.path.exists(staging_dir):

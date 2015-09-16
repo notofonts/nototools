@@ -60,7 +60,7 @@ SIL_LICENSE_LOC = path.join(CJK_DIR, 'LICENSE')
 
 def check_families(family_map):
   # ensure the count of fonts in a family is what we expect
-  for family in family_map.values():
+  for family_id, family in family_map.iteritems():
     hinted_members = family.hinted_members
     if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]: # 9 adds the two Mono variants
       raise ValueError('Family %s has %d hinted_members (%s)' % (
@@ -81,10 +81,16 @@ def check_families(family_map):
       # We'll keep the representative font and not try to change it.
       print 'Family %s has %d hinted members but %d unhinted memberts' % (
           family_id, len(hinted_members), len(unhinted_members))
+      # The namedtuples are immutable, so we need to break them apart and reform them
+      name = family.name
+      rep_member = family.rep_member
+      charset = family.charset;
       if len(hinted_members) < len(unhinted_members):
-        family.unhinted_members = []
+        unhinted_members = []
       else:
-        family.hinted_members = []
+        hinted_members = []
+      family_map[family_id] = noto_fonts.NotoFamily(
+          name, family_id, rep_member, charset, hinted_members, unhinted_members)
 
 
 def get_script_to_family_ids(family_map):
@@ -511,9 +517,32 @@ def css_style(style_value):
         return 'italic'
 
 
+_DEBUG_KEYS = frozenset([
+  'families', 'script_to_family_ids', 'lang_scr_to_sample_infos',
+  'family_id_to_lang_scrs', 'family_id_to_lang_scr_to_sample_key',
+  'sample_key_to_info', 'family_id_to_regions', 'region_to_family_ids',
+  'family_id_to_default_lang_scr',
+    ])
+
+def check_debug(debug):
+  if debug == None:
+    return frozenset()
+  elif not debug:
+    return _DEBUG_KEYS
+
+  for key in debug:
+    if not key in _DEBUG_KEYS:
+      print 'Bad debug key(s) found.  Keys are:\n  %s' % (
+        '\n  '.join(sorted(_DEBUG_KEYS)))
+      raise ValueError()
+
+  return frozenset(debug)
+
+
 class WebGen(object):
 
-  def __init__(self, target, clean, pretty_json, no_zips=False, no_images=False, no_css=False, no_data=False, no_build=False):
+  def __init__(self, target, clean, pretty_json, no_zips=False, no_images=False,
+               no_css=False, no_data=False, no_build=False, debug=None):
     self.target = target
     self.clean = clean
     self.pretty_json = pretty_json
@@ -522,6 +551,7 @@ class WebGen(object):
     self.no_css = no_css
     self.no_data = no_data
     self.no_build = no_build or (no_zips and no_images and no_css and no_data)
+    self.debug = check_debug(debug)
 
     self.pkgs = path.join(target, 'pkgs')
     self.fonts = path.join(target, 'fonts')
@@ -578,7 +608,7 @@ class WebGen(object):
     return os.stat(zippath).st_size
 
   def build_family_zips(self, key, family):
-    zip_name = family.name.replace(' ', '')
+    zip_name = noto_fonts.get_family_filename(family)
     hinted_size = 0
     unhinted_size = 0
     if family.hinted_members:
@@ -875,7 +905,7 @@ class WebGen(object):
       zip_basename = filename + '.zip'
       zip_path = path.join(self.pkgs, zip_basename)
       if path.isfile(zip_path):
-          print("Continue: assuming built %s is valid." % zip_basename)
+          print("Assuming built %s is valid." % zip_basename)
           continue
       oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
       pairs = [(path.join(CJK_DIR, filename), filename),
@@ -885,17 +915,24 @@ class WebGen(object):
       print "Wrote " + zip_path
       print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
 
+    # NotoSansCJK.ttc.zip already has been zipped for size reasons because git doesn't
+    # like very large files. So it wasn't in the above files. For our purposes ideally it
+    # would have the license file in it, but it doesn't.  So we have to copy the zip and
+    # add the license to the copy.
+    filename = 'NotoSansCJK.ttc.zip'
+    src_zip = path.join(CJK_DIR, filename)
+    dst_zip = path.join(self.pkgs, filename)
+    shutil.copy2(src_zip, dst_zip)
+    pairs = [(SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+    tool_utils.generate_zip_with_7za_from_filepairs(pairs, dst_zip)
+
+
   def generate(self):
     if self.clean:
       self.clean_target_dir()
 
     if not self.no_build:
       self.ensure_target_dirs_exist()
-
-    # debug/print
-    # ['families', 'script_to_family_ids', 'used_lang_data',
-    #  'family_id_to_lang_scrs', 'family_id_to_default_lang_scr']
-    debug = frozenset([])
 
     def use_in_web(font):
       return (not font.subset and
@@ -908,16 +945,23 @@ class WebGen(object):
 
     check_families(families)
 
-    if 'families' in debug:
-      print '\nfamilies'
+    if 'families' in self.debug:
+      print '\n#debug families'
       for family_id, family in sorted(families.iteritems()):
-        print family_id, family.rep_member.script
+        print '%s (%s, %s)' % (
+            family_id, family.name, noto_fonts.get_family_filename(family))
+        if family.hinted_members:
+          print '  hinted: %s' % ', '.join(sorted(
+              [path.basename(m.filepath) for m in family.hinted_members]))
+        if family.unhinted_members:
+          print '  unhinted: %s' % ', '.join(sorted(
+              [path.basename(m.filepath) for m in family.unhinted_members]))
 
     script_to_family_ids = get_script_to_family_ids(families)
-    if 'script_to_family_ids' in debug:
-      print '\nscript to family ids'
+    if 'script_to_family_ids' in self.debug:
+      print '\n#debug script to family ids'
       for script, family_ids in sorted(script_to_family_ids.iteritems()):
-        print script, family_ids
+        print '%s: %s' % (script, ', '.join(sorted(family_ids)))
 
     all_lang_scrs = set(['und-' + script for script in script_to_family_ids])
     all_lang_scrs.update(lang_data.lang_scripts())
@@ -935,28 +979,53 @@ class WebGen(object):
 
       lang_scr_to_sample_infos[lang_scr] = sample_infos
 
-    if 'lang_scr_to_sample_infos' in debug:
-      print '\nlang+script to sample infos'
+    if 'lang_scr_to_sample_infos' in self.debug:
+      print '\n#debug lang+script to sample infos'
       for lang_scr, info_list in sorted(lang_scr_to_sample_infos.iteritems()):
         for info in info_list:
-          print '%s key: %s rtl: %s attrib: %s len: %d' % (
-              lang_scr, info[3], info[0], info[2], len(info[1]))
+          print '%s: %s, %s, len %d' % (
+              lang_scr, info[2], info[1], len(info[0]))
 
     family_id_to_lang_scrs = get_family_id_to_lang_scrs(
         lang_scr_to_sample_infos.keys(), script_to_family_ids)
+    if 'family_id_to_lang_scrs' in self.debug:
+      print '\n#debug family id to list of lang+script'
+      for family_id, lang_scrs in sorted(family_id_to_lang_scrs.iteritems()):
+        print '%s: (%d) %s' % (family_id, len(lang_scrs), ' '.join(sorted(lang_scrs)))
 
     family_id_to_lang_scr_to_sample_key, sample_key_to_info = get_family_id_to_lang_scr_to_sample_key(
         family_id_to_lang_scrs, families, lang_scr_to_sample_infos)
+    if 'family_id_to_lang_scr_to_sample_key' in self.debug:
+      print '\n#debug family id to map from lang+script to sample key'
+      for family_id, lang_scr_to_sample_key in sorted(
+          family_id_to_lang_scr_to_sample_key.iteritems()):
+        print '%s (%d):' % (family_id, len(lang_scr_to_sample_key))
+        for lang_scr, sample_key in sorted(lang_scr_to_sample_key.iteritems()):
+          print '  %s: %s' % (lang_scr, sample_key)
+    if 'sample_key_to_info' in self.debug:
+      print '\n#debug sample key to sample info'
+      for sample_key, info in sorted(sample_key_to_info.iteritems()):
+        print '%s: %s, len %d' % (
+            sample_key, info[1], len(info[0]))
 
     family_id_to_regions = get_family_id_to_regions(family_id_to_lang_scr_to_sample_key)
+    if 'family_id_to_regions' in self.debug:
+      print '\n#debug family id to regions'
+      for family_id, regions in sorted(family_id_to_regions.iteritems()):
+        print '%s: (%d) %s' % (family_id, len(regions), ', '.join(sorted(regions)))
+
     region_to_family_ids = get_region_to_family_ids(family_id_to_regions)
+    if 'region_to_family_ids' in self.debug:
+      print '\n#debug region to family ids'
+      for region, family_ids in sorted(region_to_family_ids.iteritems()):
+        print '%s: (%d) %s' % (region, len(family_ids), ', '.join(sorted(family_ids)))
 
     family_id_to_default_lang_scr = get_family_id_to_default_lang_scr(
         family_id_to_lang_scrs, families)
-    if 'family_id_to_default_lang_scr' in debug:
-      print '\nfamily id to default lang scr'
-      for family_id, lang_scr in family_id_to_default_lang_scr.iteritems():
-        print family_id, lang_scr
+    if 'family_id_to_default_lang_scr' in self.debug:
+      print '\n#debug family id to default lang scr'
+      for family_id, lang_scr in sorted(family_id_to_default_lang_scr.iteritems()):
+        print '%s: %s' % (family_id, lang_scr)
 
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
@@ -1017,7 +1086,7 @@ class WebGen(object):
       family_css_info = self.build_css(families)
 
     if self.no_data:
-      print 'skipping data output%s' % reason
+      print 'skipping data output'
     else:
       self.build_data_json(family_id_to_lang_scr_to_sample_key,
                            families, family_zip_info, universal_zip_info,
@@ -1038,7 +1107,6 @@ class WebGen(object):
                         sample_key_to_info)
 
 
-
 def main():
     """Outputs data files for the noto website."""
 
@@ -1057,11 +1125,13 @@ def main():
     parser.add_argument('-nc', '--no_css', help='skip css generation', action='store_true')
     parser.add_argument('-n', '--no_build', help='skip build of zip, image, data, and css',
                         action='store_true')
+    parser.add_argument('-d', '--debug', help='types of information to dump during build',
+                        nargs='*')
     args = parser.parse_args();
 
     webgen = WebGen(args.target, args.clean, args.pretty_json,
                     no_zips=args.no_zips, no_images=args.no_images, no_css=args.no_css,
-                    no_data=args.no_data, no_build=args.no_build)
+                    no_data=args.no_data, no_build=args.no_build, debug=args.debug)
     webgen.generate()
 
 

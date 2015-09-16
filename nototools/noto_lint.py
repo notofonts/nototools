@@ -78,14 +78,24 @@ def all_scripts():
     result.add('Urdu')
     return frozenset(result)
 
+
+def preferred_script_name(script_key):
+  try:
+    return unicode_data.human_readable_script_name(script_key)
+  except:
+    return cldr_data.get_english_Script_name(script_key)
+
+
 _script_key_to_report_name = {
     'Aran': '(Urdu)',
     'HST': '(Historic)',
     'LGC': '(LGC)'
 }
+
 def script_name_for_report(script_key):
     return (_script_key_to_report_name.get(script_key, None) or
-            unicode_data.human_readable_script_name(script_key))
+            preferred_script_name(script_key))
+
 
 def printable_unicode_range(input_char_set):
     char_set = set(input_char_set) # copy
@@ -573,6 +583,13 @@ def check_font(font_props, filename_error,
         ranges = unicode_data._parse_code_ranges(noto_data.CJK_RANGES_TXT)
         return code_range_to_set(ranges) & unicode_data.defined_characters()
 
+    _script_key_to_font_name = {
+        'Aran': 'Urdu',
+        'HST': 'Historic',
+        'LGC': None,
+        'Qaae': None,
+    }
+
     def _get_expected_noncjk_family_name():
         name_parts = [font_props.family,
                       font_props.style]
@@ -581,12 +598,10 @@ def check_font(font_props, filename_error,
             # LGC name leaves off script ('Noto Sans')
             # HST, Aran are special-cased.
             script = font_props.script
-            name_parts.append(
-                'Urdu' if script == 'Aran' else
-                'Historic' if script == 'HST' else
-                None if script == 'LGC' else
-                None if script == 'Qaae' else
-                unicode_data.human_readable_script_name(script))
+            if script in _script_key_to_font_name:
+                name_parts.append(_script_key_to_font_name(script))
+            else:
+                name_parts.append(preferred_script_name(script))
         name_parts.append(font_props.variant)
         if font_props.is_mono:
             name_parts.append('Mono')
@@ -1474,32 +1489,31 @@ def check_font(font_props, filename_error,
             return
 
         whitelist = [
-          "Carian",
-          "Cypriot",
-          "Deseret",
-          "Egyptian Hieroglyphs",
-          "Imperial Aramaic",
-          "Linear B",
-          "Lisu",
-          "Lycian",
-          "Lydian",
-          "Ogham",
-          "Ol Chiki",
-          "Old Italic",
-          "Old Persian",
-          "Old South Arabian",
-          "Old Turkic",
-          "Osmanya",
-          "Phoenician",
-          "Runic",
-          "Shavian",
-          "Cuneiform",
-          "Ugaritic",
-          "Vai",
-          "Yi",
+            'Cari',  # Carian
+            'Cprt',  # Cypriot
+            'Dsrt',  # Deseret
+            'Egyp',  # Egyptian Hieroglyphs
+            'Armi',  # Imperial Aramaic
+            'Linb',  # Linear B
+            'Lisu',  # Lisu
+            'Lyci',  # Lycian
+            'Lydi',  # Lydian
+            'Ogam',  # Ogham
+            'Olck',  # Ol Chiki
+            'Ital',  # Old Italic
+            'Xpeo',  # Old Persian
+            'Sarb',  # Old South Arabian
+            'Orkh',  # Old Turkic
+            'Osma',  # Osmanya
+            'Phnx',  # Phoenician
+            'Runr',  # Runic
+            'Shaw',  # Shavian
+            'Xsux',  # Cuneiform
+            'Ugar',  # Ugaritic
+            'Vaii',  # Vai
+            'Yiii',  # Yi
         ]
-        if (font_props.script not in ['LGC', 'HST', 'Aran', 'Qaae'] and
-            unicode_data.human_readable_script_name(font_props.script) in whitelist):
+        if font_props.script in whitelist:
             return
 
         if "GPOS" not in font:
