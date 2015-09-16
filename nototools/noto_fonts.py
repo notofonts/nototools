@@ -224,7 +224,7 @@ def get_noto_fonts():
 
 
 def get_font_family_name(font_file):
-    font = ttLib.TTFont(font_file)
+    font = ttLib.TTFont(font_file, fontNumber=0)
     name_record = font_data.get_name_records(font)
     try:
       name = name_record[16]
@@ -261,6 +261,7 @@ def get_families(fonts):
     hinted_members = []
     unhinted_members = []
     rep_member = None
+    rep_backup = None  # used in case all fonts are ttc fonts
     for font in fonts:
       if font.is_hinted:
         hinted_members.append(font)
@@ -271,42 +272,43 @@ def get_families(fonts):
           # We assume here that there's no difference between a hinted or unhinted
           # rep_member in terms of what we use it for.  The other filters are to ensure
           # the fontTools font name is a good stand-in for the family name.
-          rep_member = font
+          if font.fmt == 'ttc' and not rep_backup:
+            rep_backup = font
+          else:
+            rep_member = font
 
+    rep_member = rep_member or rep_backup
     if not rep_member:
       raise ValueError('Family %s does not have a representative font.' % family_id)
-
-    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 8, 9]: # 9 adds the two Mono variants
-      raise ValueError('Family %s has %d hinted_members (%s)' % (
-          family_id, len(hinted_members), [path.basename(font.filepath) for font in hinted_members]))
-
-    if unhinted_members and not len(unhinted_members) in [1, 2, 4, 8]:
-      raise ValueError('Family %s has %d unhinted_members (%s)' % (
-          family_id, len(unhinted_members), [
-              path.basename(font.filepath) for font in unhinted_members]))
-
-    if hinted_members and unhinted_members and len(hinted_members) != len(unhinted_members):
-      # Let's not consider this an error for now.  Just drop the members with the higher number
-      # of fonts, assuming it's a superset of the fonts in the smaller set, so that the fonts
-      # we provide and display are available to all users.  This means website users will not be
-      # able to get these fonts via the website.
-      #
-      # We'll keep the representative font and not try to change it.
-      print 'Family %s has %d hinted members but %d unhinted memberts' % (
-          family_id, len(hinted_members), len(unhinted_members))
-      if len(hinted_members) < len(unhinted_members):
-        unhinted_members = []
-      else:
-        hinted_members = []
 
     name = get_font_family_name(rep_member.filepath)
 
     if rep_member.fmt in {'ttf', 'otf'}:
       charset = coverage.character_set(rep_member.filepath)
     else:
-      charset = NotImplemented
+      # was NotImplemented, but bool(NotImplemented) is True
+      charset = None
 
     families[family_id] = NotoFamily(
         name, family_id, rep_member, charset, hinted_members, unhinted_members)
 
   return families
+
+
+def get_family_filename(family):
+  """Returns a filename to use for a family zip of hinted/unhinted members.  This
+     is basically the postscript name with weight/style removed.
+  """
+  font = ttLib.TTFont(family.rep_member.filepath, fontNumber=0)
+  name_record = font_data.get_name_records(font)
+  try:
+    name = name_record[6]
+    ix = name.find('-')
+    if ix >= 0:
+      name = name[:ix]
+  except KeyError:
+    name = name_record[1]
+    if name.endswith('Regular'):
+      name = name.rsplit(' ', 1)[0]
+    name = name.replace(' ', '')
+  return name

@@ -26,6 +26,10 @@ from nototools import extra_locale_data
 TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
+# control print of debug/trace info when we synthesize the data
+
+_DEBUG = False
+
 # Maps from a less-specific tag to tuple of lang, script, region
 # Keys either have a lang or 'und'.  If lang, then script or region.  If und,
 # then either script or region or both.
@@ -124,8 +128,9 @@ def _parse_supplemental_data():
     if und_scr in _LIKELY_SUBTAGS:
       lang = _LIKELY_SUBTAGS[und_scr][0]
       if lang != 'und' and script not in _LANG_TO_SCRIPTS[lang]:
-        print 'lang to scripts missing script %s for %s (from %s)' % (
-            script, lang, ', '.join(_LANG_TO_SCRIPTS[lang]))
+        if _DEBUG:
+          print 'lang to scripts missing script %s for %s (from %s)' % (
+              script, lang, ', '.join(_LANG_TO_SCRIPTS[lang]))
         _LANG_TO_SCRIPTS[lang].add(script)
 
   # Supplement lang to script mapping with extra locale data
@@ -142,19 +147,22 @@ def _parse_supplemental_data():
     region = tags[2]
     lang_scripts = _LANG_TO_SCRIPTS[lang]
     if script not in lang_scripts:
-      print 'extra likely subtags lang %s has script %s but supplemental only has [%s]' % (
-          lang, script, ', '.join(sorted(lang_scripts)))
+      if _DEBUG:
+        print 'extra likely subtags lang %s has script %s but supplemental only has [%s]' % (
+            lang, script, ', '.join(sorted(lang_scripts)))
       if len(lang_scripts) == 1:
         replacement = set([script])
-        print 'replacing %s with %s' % (lang_scripts, replacement)
+        if _DEBUG:
+          print 'replacing %s with %s' % (lang_scripts, replacement)
         _LANG_TO_SCRIPTS[lang] = replacement
       else:
         _LANG_TO_SCRIPTS[lang].add(script)
     lang_script = lang + '-' + script
     # skip ZZ region
     if region != 'ZZ' and lang_script not in _REGION_TO_LANG_SCRIPTS[region]:
-      print 'extra lang_script %s not in cldr for %s, adding' % (
-          lang_script, region)
+      if _DEBUG:
+        print 'extra lang_script %s not in cldr for %s, adding' % (
+            lang_script, region)
       _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
 
   for territory, lang_scripts in extra_locale_data.REGION_TO_LANG_SCRIPTS.iteritems():
@@ -187,6 +195,7 @@ def lang_to_regions(lang):
     return _LANG_TO_REGIONS[lang]
   except:
     return None
+
 
 def lang_to_scripts(lang):
   _parse_supplemental_data()
@@ -225,7 +234,8 @@ def get_likely_subtags(lang_tag):
         # stop default to 'en' for unknown scripts
         break
 
-  print 'no likely subtag for %s' % lang_tag
+  if _DEBUG:
+    print 'no likely subtag for %s' % lang_tag
   tags = lang_tag.split('-')
   return (tags[0], tags[1] if len(tags) > 1 else 'Zzzz', tags[2] if len(tags) > 2 else 'ZZ')
 
@@ -246,7 +256,8 @@ def is_script_rtl(script):
   try:
     return _SCRIPT_METADATA[script][5] == 'YES'
   except KeyError:
-    print 'No script metadata for %s' % script
+    if _DEBUG:
+      print 'No script metadata for %s' % script
     return False
 
 
@@ -390,7 +401,8 @@ def get_english_language_name(lang_scr):
         return name
       except KeyError:
         pass
-  print 'No English name for \'%s\'' % lang_scr
+  if _DEBUG:
+    print 'No English name for \'%s\'' % lang_scr
   return None
 
 
@@ -399,7 +411,8 @@ def get_english_region_name(region):
   try:
     return _ENGLISH_TERRITORY_NAMES[region]
   except KeyError:
-    print 'No English name for region %s' % region
+    if _DEBUG:
+      print 'No English name for region %s' % region
     return ''
 
 
@@ -520,7 +533,7 @@ def get_exemplar_and_source(loc_tag):
   # don't use exemplars encoded without script if the requested script is not
   # the default
   m = LSRV_RE.match(loc_tag)
-  script = m.group(1) if m else None
+  script = m.group(2) if m else None
   while loc_tag != 'root':
     for directory in ['common', 'seed', 'exemplars']:
       exemplar = get_exemplar_from_file(
@@ -541,7 +554,8 @@ def loc_tag_to_lsrv(loc_tag):
   Supplies likely script if missing."""
   m = LSRV_RE.match(loc_tag)
   if not m:
-    print 'regex did not match locale \'%s\'' % loc_tag
+    if _DEBUG:
+      print 'regex did not match locale \'%s\'' % loc_tag
     return None
   lang = m.group(1)
   script = m.group(2)
