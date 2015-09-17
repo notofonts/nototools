@@ -64,9 +64,11 @@ def check_families(family_map):
   # ensure the count of fonts in a family is what we expect
   for family_id, family in family_map.iteritems():
     hinted_members = family.hinted_members
-    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]: # 9 adds the two Mono variants
+    # 9 for the two Mono variants
+    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]:
       raise ValueError('Family %s has %d hinted_members (%s)' % (
-          family_id, len(hinted_members), [path.basename(font.filepath) for font in hinted_members]))
+          family_id, len(hinted_members), [
+              path.basename(font.filepath) for font in hinted_members]))
 
     unhinted_members = family.unhinted_members
     if unhinted_members and not len(unhinted_members) in [1, 2, 4]:
@@ -74,16 +76,21 @@ def check_families(family_map):
           family_id, len(unhinted_members), [
               path.basename(font.filepath) for font in unhinted_members]))
 
-    if hinted_members and unhinted_members and len(hinted_members) != len(unhinted_members):
-      # Let's not consider this an error for now.  Just drop the members with the higher number
-      # of fonts, assuming it's a superset of the fonts in the smaller set, so that the fonts
-      # we provide and display are available to all users.  This means website users will not be
-      # able to get these fonts via the website.
+    if (hinted_members and unhinted_members and len(hinted_members) !=
+        len(unhinted_members)):
+
+      # Let's not consider this an error for now.  Just drop the members with
+      # the higher number of fonts, assuming it's a superset of the fonts in the
+      # smaller set, so that the fonts we provide and display are available to
+      # all users.  This means website users will not be able to get these fonts
+      # via the website.
       #
       # We'll keep the representative font and not try to change it.
       print 'Family %s has %d hinted members but %d unhinted memberts' % (
           family_id, len(hinted_members), len(unhinted_members))
-      # The namedtuples are immutable, so we need to break them apart and reform them
+
+      # The namedtuples are immutable, so we need to break them apart and reform
+      # them
       name = family.name
       rep_member = family.rep_member
       charset = family.charset;
@@ -148,15 +155,18 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
 def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
                                            families,
                                            lang_scr_to_sample_infos):
-    """For each lang_scr + family combination, determine which sample to use from
-    those available for the lang_scr.  If the family can't display any of the
-    samples, report an error, the lang will not be added to those supported
-    by the family.  If the family supports no languages, also report an error.
+
+    """For each lang_scr + family combination, determine which sample to use
+    from those available for the lang_scr.  If the family can't display any
+    of the samples, report an error, the lang will not be added to those
+    supported by the family.  If the family supports no languages, also
+    report an error.
 
     The returned value is a tuple:
     - a map from family_id to another map, which is:
       - a map from lang_scr to sample_key
     - a map from sample_key to sample info
+
     """
 
     family_id_to_lang_scr_to_sample_key = {}
@@ -178,14 +188,16 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
           full_key = sample_key + '-' + family_id
           if full_key in tested_keys:
             if full_key in failed_keys:
-              print 'family %s already rejected sample %s (lang %s)' % (family_id, sample_key, lang_scr)
+              print 'family %s already rejected sample %s (lang %s)' % (
+                  family_id, sample_key, lang_scr)
               continue
           else:
             failed_cps = set()
             tested_keys.add(full_key)
             charset = families[family_id].charset
             for cp in sample:
-              if ord(cp) in [0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010]:
+              if ord(cp) in [
+                  0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010]:
                 continue
               if ord(cp) not in charset:
                 failed_cps.add(ord(cp))
@@ -193,11 +205,13 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
             if failed_cps:
               print 'family %s rejects sample %s for lang %s:\n  %s' % (
                   family_id, sample_key, lang_scr,
-                  '\n  '.join('%04x (%s)' % (cp, unichr(cp)) for cp in sorted(failed_cps)))
+                  '\n  '.join('%04x (%s)' % (
+                      cp, unichr(cp)) for cp in sorted(failed_cps)))
               failed_keys.add(full_key)
               continue
 
-          print 'family %s accepts sample %s for lang %s' % (family_id, sample_key, lang_scr)
+          print 'family %s accepts sample %s for lang %s' % (
+              family_id, sample_key, lang_scr)
 
           sample_key_for_lang = sample_key
           if sample_key not in sample_key_to_info:
@@ -232,7 +246,8 @@ def get_family_id_to_regions(family_id_to_lang_scr_to_sample_key):
 
   family_id_to_regions = collections.defaultdict(set)
   warnings = set()
-  for family_id, lang_scr_to_sample_key in family_id_to_lang_scr_to_sample_key.iteritems():
+  for (family_id, lang_scr_to_sample_key in
+       family_id_to_lang_scr_to_sample_key.iteritems()):
     for lang_scr in lang_scr_to_sample_key:
       if lang_scr in lang_scr_to_regions:
         for region in lang_scr_to_regions[lang_scr]:
@@ -261,15 +276,17 @@ def get_named_lang_scrs(family_id_to_lang_scr_to_sample_key):
   named_lang_scrs = lang_data.lang_scripts()
   supported_lang_scrs = set()
   for family_id in family_id_to_lang_scr_to_sample_key:
-    lang_scrs = [l for l in family_id_to_lang_scr_to_sample_key[family_id].keys()
-                 if l in named_lang_scrs]
+    lang_scrs = [
+        l for l in family_id_to_lang_scr_to_sample_key[family_id].keys()
+        if l in named_lang_scrs]
     supported_lang_scrs.update(lang_scrs)
   return supported_lang_scrs
 
 
 def get_lang_scr_sort_order(lang_scrs):
-  """Return a sort order for lang_scrs based on the english name, but clustering related
-  languages."""
+  """Return a sort order for lang_scrs based on the english name, but
+  clustering related languages."""
+
   def lang_key(lang_scr):
     name = lang_data.lang_script_to_names(lang_scr)[0]
     if name.endswith (' script)'):
@@ -300,21 +317,22 @@ def get_lang_scr_sort_order(lang_scrs):
   n = 0
   tag_order = {}
   for lang_scr in sorted_lang_scrs:
-    # print '%10s: %s' % (lang_scr, cldr_data.get_english_language_name(lang_scr))
     tag_order[lang_scr] = n
     n += 1
   return tag_order
 
 
 def get_charset_info(charset):
-  """Returns an encoding of the charset as pairs of lengths of runs of chars to skip and
-  chars to include.  Each length is written as length - 1 in hex-- except when length ==
-  1, which is written as the empty string-- and separated from the next length by a comma.
-  Thus successive commas indicate a length of 1, a 1 indicates a length of 2, and so on.
-  Since the minimum representable length is 1, the base is -1 so that the first run (a
-  skip) of 1 can be output as a comma to then start the first included character at 0 if
-  need be.  Only as many pairs of values as are needed to encode the last run of included
-  characters."""
+
+  """Returns an encoding of the charset as pairs of lengths of runs of chars
+  to skip and chars to include.  Each length is written as length - 1 in
+  hex-- except when length == 1, which is written as the empty string-- and
+  separated from the next length by a comma.  Thus successive commas
+  indicate a length of 1, a 1 indicates a length of 2, and so on.  Since
+  the minimum representable length is 1, the base is -1 so that the first
+  run (a skip) of 1 can be output as a comma to then start the first
+  included character at 0 if need be.  Only as many pairs of values as are
+  needed to encode the last run of included characters."""
 
   ranges = coverage.convert_set_to_ranges(charset)
   prev = -1
@@ -396,7 +414,8 @@ def get_sample_infos(lang_scr):
   if lang != 'und':
     exemplar, src_key = cldr_data.get_exemplar_and_source(lang_scr)
     if exemplar is not None:
-      sample_infos.append((sample_text_from_exemplar(exemplar), 'none', src_key))
+      sample_infos.append(
+          (sample_text_from_exemplar(exemplar), 'none', src_key))
 
   src_key = 'und-' + script + '_chars'
   sample_text = get_sample_from_sample_file(src_key)
@@ -616,7 +635,8 @@ class WebGen(object):
     if family.hinted_members:
       hinted_size = self.create_zip(zip_name + '-hinted', family.hinted_members)
     if family.unhinted_members:
-      unhinted_size = self.create_zip(zip_name + '-unhinted', family.unhinted_members)
+      unhinted_size = self.create_zip(
+          zip_name + '-unhinted', family.unhinted_members)
     return zip_name, hinted_size, unhinted_size
 
   def build_zips(self, families):
@@ -629,8 +649,10 @@ class WebGen(object):
     hinted_fonts = []
     unhinted_fonts = []
     for family_data in families.values():
-      hinted_fonts.extend(family_data.hinted_members or family_data.unhinted_members)
-      unhinted_fonts.extend(family_data.unhinted_members or family_data.hinted_members)
+      hinted_fonts.extend(
+          family_data.hinted_members or family_data.unhinted_members)
+      unhinted_fonts.extend(
+          family_data.unhinted_members or family_data.hinted_members)
     hinted_size = self.create_zip('Noto-hinted', hinted_fonts)
     unhinted_size = self.create_zip('Noto-unhinted', unhinted_fonts)
     return 'Noto', hinted_size, unhinted_size
@@ -680,7 +702,9 @@ class WebGen(object):
 
     data_obj = collections.OrderedDict()
     families_obj = collections.OrderedDict()
-    # Sort families by English name, except 'Noto Sans' and 'Noto Serif' come first
+
+    # Sort families by English name, except 'Noto Sans' and 'Noto Serif'
+    # come first
     family_ids = [family_id for family_id
                   in family_id_to_lang_scr_to_sample_key
                   if family_id != 'sans-lgc' and family_id != 'serif-lgc']
@@ -708,7 +732,8 @@ class WebGen(object):
       family_obj['fonts'] = num_fonts
       # only displayed langs -- see build_family_json lang_scrs
       lang_scrs_map = family_id_to_lang_scr_to_sample_key[k]
-      family_obj['langs'] = sum([1 for l in lang_scrs_map if not l.startswith('und-')])
+      family_obj['langs'] = sum(
+          [1 for l in lang_scrs_map if not l.startswith('und-')])
       family_obj['regions'] = len(family_id_to_regions[k])
 
       families_obj[k] = family_obj
@@ -722,7 +747,8 @@ class WebGen(object):
       for lang_scr in lang_scrs:
         lang_scr_to_family_ids[lang_scr].add(family_id)
 
-    # Dont list 'und-' lang tags, these are for default samples and not listed in the UI
+    # Dont list 'und-' lang tags, these are for default samples and not
+    # listed in the UI
     lang_scrs = [l for l in lang_scr_to_family_ids if not l.startswith('und-')]
 
     langs_obj = collections.OrderedDict()
@@ -766,15 +792,17 @@ class WebGen(object):
                   key=lambda f: str(css_weight(f.weight)) + '-' +
                   ('b' if css_style(f.slope) == 'italic' else 'a'))
 
-  def build_family_json(self, family_id, family, lang_scrs_map, lang_scr_sort_order,
-                        regions, css_info, default_lang_scr):
+  def build_family_json(
+      self, family_id, family, lang_scrs_map, lang_scr_sort_order, regions,
+      css_info, default_lang_scr):
+
     family_obj = collections.OrderedDict()
     category = get_css_generic_family(family.name)
     if category:
       family_obj['category'] = category
     if lang_scrs_map:
-      # The map includes all samples, but some samples have no language.  These are
-      # not listed.
+      # The map includes all samples, but some samples have no language.
+      # These are not listed.
       lang_scrs = [l for l in lang_scrs_map.keys() if not l.startswith('und-')]
       lang_scrs.sort(key=lambda l: lang_scr_sort_order[l])
       family_obj['langs'] = lang_scrs
@@ -807,13 +835,15 @@ class WebGen(object):
                           families, family_id_to_default_lang_scr,
                           family_id_to_regions, family_css_info,
                           lang_scr_sort_order):
-    for family_id, lang_scrs_map in sorted(family_id_to_lang_scr_to_sample_key.iteritems()):
+    for family_id, lang_scrs_map in sorted(
+        family_id_to_lang_scr_to_sample_key.iteritems()):
       family = families[family_id]
       regions = family_id_to_regions[family_id]
       css_info = family_css_info[family_id]
       default_lang_scr = family_id_to_default_lang_scr[family_id]
-      self.build_family_json(family_id, family, lang_scrs_map, lang_scr_sort_order,
-                             regions, css_info, default_lang_scr)
+      self.build_family_json(
+          family_id, family, lang_scrs_map, lang_scr_sort_order,
+          regions, css_info, default_lang_scr)
 
   def build_misc_json(self, sample_key_to_info, region_data):
     meta_obj = collections.OrderedDict()
@@ -845,7 +875,8 @@ class WebGen(object):
 
     self.write_json(meta_obj, 'meta')
 
-  def build_family_images(self, family, lang_scr, sample_text, attrib, sample_key):
+  def build_family_images(
+      self, family, lang_scr, sample_text, attrib, sample_key):
     family_id = family.family_id
     is_cjk = family.rep_member.is_cjk
     is_rtl = cldr_data.is_rtl(lang_scr)
@@ -885,13 +916,15 @@ class WebGen(object):
       print 'Generating images for %s...' % family.name
       default_lang = family_id_to_default_lang_scr[family_id]
       lang_scr_to_sample_key = family_id_to_lang_scr_to_sample_key[family_id]
-      # We don't know that rendering the same sample text with different languages
-      # is the same, so we have to generate all the samples and name them based on the
-      # language.  But most of the samples with the same font and text will be the
-      # same, because the fonts generally only customize for a few language tags.
+      # We don't know that rendering the same sample text with different
+      # languages is the same, so we have to generate all the samples and
+      # name them based on the language.  But most of the samples with the
+      # same font and text will be the same, because the fonts generally
+      # only customize for a few language tags.
       for lang_scr, sample_key in lang_scr_to_sample_key.iteritems():
         sample_text, attrib, _ = sample_key_to_info[sample_key]
-        self.build_family_images(family, lang_scr, sample_text, attrib, sample_key)
+        self.build_family_images(
+            family, lang_scr, sample_text, attrib, sample_key)
 
   def build_ttc_zips(self):
     """Generate zipped versions of the ttc files and put in pkgs directory."""
@@ -902,7 +935,8 @@ class WebGen(object):
     # separately.
     # For now at least, the only .ttc fonts are the CJK fonts
 
-    filenames = [path.basename(f) for f in os.listdir(CJK_DIR) if f.endswith('.ttc')]
+    filenames = [path.basename(f) for f in os.listdir(CJK_DIR)
+                 if f.endswith('.ttc')]
     for filename in filenames:
       zip_basename = filename + '.zip'
       zip_path = path.join(self.pkgs, zip_basename)
@@ -917,10 +951,11 @@ class WebGen(object):
       print "Wrote " + zip_path
       print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
 
-    # NotoSansCJK.ttc.zip already has been zipped for size reasons because git doesn't
-    # like very large files. So it wasn't in the above files. For our purposes ideally it
-    # would have the license file in it, but it doesn't.  So we have to copy the zip and
-    # add the license to the copy.
+    # NotoSansCJK.ttc.zip already has been zipped for size reasons because
+    # git doesn't like very large files. So it wasn't in the above
+    # files. For our purposes ideally it would have the license file in it,
+    # but it doesn't.  So we have to copy the zip and add the license to
+    # the copy.
     filename = 'NotoSansCJK.ttc.zip'
     src_zip = path.join(CJK_DIR, filename)
     dst_zip = path.join(self.pkgs, filename)
@@ -993,10 +1028,12 @@ class WebGen(object):
     if 'family_id_to_lang_scrs' in self.debug:
       print '\n#debug family id to list of lang+script'
       for family_id, lang_scrs in sorted(family_id_to_lang_scrs.iteritems()):
-        print '%s: (%d) %s' % (family_id, len(lang_scrs), ' '.join(sorted(lang_scrs)))
+        print '%s: (%d) %s' % (
+            family_id, len(lang_scrs), ' '.join(sorted(lang_scrs)))
 
-    family_id_to_lang_scr_to_sample_key, sample_key_to_info = get_family_id_to_lang_scr_to_sample_key(
-        family_id_to_lang_scrs, families, lang_scr_to_sample_infos)
+    family_id_to_lang_scr_to_sample_key, sample_key_to_info = (
+        get_family_id_to_lang_scr_to_sample_key(
+            family_id_to_lang_scrs, families, lang_scr_to_sample_infos))
     if 'family_id_to_lang_scr_to_sample_key' in self.debug:
       print '\n#debug family id to map from lang+script to sample key'
       for family_id, lang_scr_to_sample_key in sorted(
@@ -1010,23 +1047,27 @@ class WebGen(object):
         print '%s: %s, len %d' % (
             sample_key, info[1], len(info[0]))
 
-    family_id_to_regions = get_family_id_to_regions(family_id_to_lang_scr_to_sample_key)
+    family_id_to_regions = get_family_id_to_regions(
+        family_id_to_lang_scr_to_sample_key)
     if 'family_id_to_regions' in self.debug:
       print '\n#debug family id to regions'
       for family_id, regions in sorted(family_id_to_regions.iteritems()):
-        print '%s: (%d) %s' % (family_id, len(regions), ', '.join(sorted(regions)))
+        print '%s: (%d) %s' % (
+            family_id, len(regions), ', '.join(sorted(regions)))
 
     region_to_family_ids = get_region_to_family_ids(family_id_to_regions)
     if 'region_to_family_ids' in self.debug:
       print '\n#debug region to family ids'
       for region, family_ids in sorted(region_to_family_ids.iteritems()):
-        print '%s: (%d) %s' % (region, len(family_ids), ', '.join(sorted(family_ids)))
+        print '%s: (%d) %s' % (
+            region, len(family_ids), ', '.join(sorted(family_ids)))
 
     family_id_to_default_lang_scr = get_family_id_to_default_lang_scr(
         family_id_to_lang_scrs, families)
     if 'family_id_to_default_lang_scr' in self.debug:
       print '\n#debug family id to default lang scr'
-      for family_id, lang_scr in sorted(family_id_to_default_lang_scr.iteritems()):
+      for family_id, lang_scr in sorted(
+          family_id_to_default_lang_scr.iteritems()):
         print '%s: %s' % (family_id, lang_scr)
 
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
@@ -1052,7 +1093,8 @@ class WebGen(object):
       for lang_scr in lang_scr_to_sample_key:
         sample_key = lang_scr_to_sample_key[lang_scr]
         if not sample_key:
-          error_list.append('no sample key for lang %s in family %s' % (lang_scr, sample_key))
+          error_list.append(
+              'no sample key for lang %s in family %s' % (lang_scr, sample_key))
           continue
         if not sample_key in sample_key_to_info:
           error_list.append('no sample for sample key: %s' % sample_key)
@@ -1119,21 +1161,29 @@ def main():
                         action='store_true')
     parser.add_argument('-t', '--target', help='target dir, default %s' %
                         default_target, default=default_target, metavar='dir')
-    parser.add_argument('-pj', '--pretty_json', help='generate additional pretty json',
+    parser.add_argument('-pj', '--pretty_json',
+                        help='generate additional pretty json',
                         action='store_true')
-    parser.add_argument('-nz', '--no_zips', help='skip zip generation', action='store_true')
-    parser.add_argument('-ni', '--no_images', help='skip image generation', action='store_true')
-    parser.add_argument('-nd', '--no_data', help='skip data generation', action='store_true')
-    parser.add_argument('-nc', '--no_css', help='skip css generation', action='store_true')
-    parser.add_argument('-n', '--no_build', help='skip build of zip, image, data, and css',
+    parser.add_argument('-nz', '--no_zips', help='skip zip generation',
                         action='store_true')
-    parser.add_argument('-d', '--debug', help='types of information to dump during build',
+    parser.add_argument('-ni', '--no_images', help='skip image generation',
+                        action='store_true')
+    parser.add_argument('-nd', '--no_data', help='skip data generation',
+                        action='store_true')
+    parser.add_argument('-nc', '--no_css', help='skip css generation',
+                        action='store_true')
+    parser.add_argument('-n', '--no_build',
+                        help='skip build of zip, image, data, and css',
+                        action='store_true')
+    parser.add_argument('-d', '--debug',
+                        help='types of information to dump during build',
                         nargs='*')
     args = parser.parse_args();
 
     webgen = WebGen(args.target, args.clean, args.pretty_json,
-                    no_zips=args.no_zips, no_images=args.no_images, no_css=args.no_css,
-                    no_data=args.no_data, no_build=args.no_build, debug=args.debug)
+                    no_zips=args.no_zips, no_images=args.no_images,
+                    no_css=args.no_css, no_data=args.no_data,
+                    no_build=args.no_build, debug=args.debug)
     webgen.generate()
 
 
