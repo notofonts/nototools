@@ -88,6 +88,8 @@ _changes = {}
 
 _autofix = collections.defaultdict(list)
 
+_ttc_fonts = {}
+
 def _swat_fonts(dst_root, dry_run):
   def family_key(family):
       return _FAMILY_KEYS.get(family, 'x' + family)
@@ -108,34 +110,48 @@ def _swat_fonts(dst_root, dry_run):
   for font in sorted(fonts, key=compare_key):
     _swat_font(font, dst_root, dry_run)
 
+  if _ttc_fonts:
+    _construct_ttc_fonts(fonts, dst_root, dry_run)
 
-def _swat_font(noto_font, dst_root, dry_run):
-  filepath = noto_font.filepath
-  basename, ext = path.splitext(path.basename(filepath))
-  if noto_font.is_cjk:
-    print '# Skipping cjk font %s' % basename
-    return
-  if noto_font.fmt == 'ttc':
-    print '# Skipping ttc font, rebuild %s from updated parts:' % basename
-    print '  ' + '\n  '.join(ttc_utils.ttcfile_filenames(filepath))
-    return
 
-  ttfont = ttLib.TTFont(filepath, fontNumber=0)
-
-  names = font_data.get_name_records(ttfont)
-
-  print '-----\nUpdating %s' % filepath
-  # create relative root path
+def _noto_relative_path(filepath):
+  """Return relative path from some noto root, or None"""
   x = filepath.find('noto-fonts')
   if x == -1:
     x = filepath.find('noto-cjk')
     if x == -1:
       x = filepath.find('noto-emoji')
   if x == -1:
-    print '! Could not identify noto root'
-    return
+    return None
+  return filepath[x:]
 
   dst_file = path.join(dst_root, filepath[x:])
+
+def _swat_font(noto_font, dst_root, dry_run):
+  filepath = noto_font.filepath
+  basename = path.basename(filepath)
+  dir_and_basename = path.join(path.basename(path.dirname(filepath)), basename)
+  if noto_font.is_cjk:
+    print '# Skipping cjk font %s' % basename
+    return
+  if noto_font.fmt == 'ttc':
+    print '# Deferring ttc font %s' % basename
+    _ttc_fonts[noto_font] = ttc_utils.ttcfile_filenames(filepath)
+    return
+
+  ttfont = ttLib.TTFont(filepath, fontNumber=0)
+
+  names = font_data.get_name_records(ttfont)
+
+  # create relative root path
+  rel_filepath = _noto_relative_path(filepath)
+  if not rel_filepath:
+    raise ValueError('Could not identify noto root of %s' % filepath)
+    return
+
+  print '-----\nUpdating %s' % rel_filepath
+
+  dst_file = path.join(dst_root, rel_filepath)
 
   version = names[_VERSION_ID]
   m = re.match(r'Version (\d{1,5})\.(\d{1,5})(.*)', version)
@@ -219,10 +235,13 @@ def _swat_font(noto_font, dst_root, dry_run):
 
   if names.get(_DESIGNER_URL_ID) in [
       'http://www.monotype.com/studio',
-      'http://www.monotypeimaging.com/ProductsServices/TypeDesignerShowcase',
       'http://www.khmertype.org',
       ]:
     new_designer_url = None
+  elif names.get(_DESIGNER_URL_ID) in [
+      'http://www.monotypeimaging.com/ProductsServices/TypeDesignerShowcase',
+      ]:
+    new_designer_url = 'http://www.monotype.com/studio'
   elif names.get(_DESIGNER_URL_ID) in [
       'http://www.khmertype.blogspot.com',
       'http://www.khmertype.blogspot.com/',
@@ -231,7 +250,7 @@ def _swat_font(noto_font, dst_root, dry_run):
       ]:
     new_designer_url = 'http://www.khmertype.org'
   else:
-    new_designer_url = '!!'
+    new_designer_url = '!!!'
 
   if names.get(_MANUFACTURER_ID) in [
       'Monotype Imaging Inc.',
@@ -239,12 +258,12 @@ def _swat_font(noto_font, dst_root, dry_run):
       ]:
     new_manufacturer = None
   else:
-    new_manufacturer = '!!'
+    new_manufacturer = '!!!'
 
   def update(name_id, new, newText=None):
     old = names.get(name_id)
     if new and (new != old):
-      if not dry_run and not '!!' in new:
+      if not dry_run and not '!!!' in new:
         font_data.set_name_record(ttfont, name_id, new, addIfMissing='win')
 
       label = _NAME_ID_LABELS[name_id]
@@ -307,6 +326,69 @@ def _swat_font(noto_font, dst_root, dry_run):
     os.makedirs(dst_dir)
   ttfont.save(dst_file)
   print 'Wrote file.'
+
+
+def _construct_ttc_fonts(fonts, dst_root, dry_run):
+  # _ttc_fonts contains a map from a font path to a list of likely names
+  # of the component fonts.  The component names are based off the
+  # postscript name in the name table of the component, so 1) might not
+  # accurately represent the font, and 2) don't indicate whether the
+  # component is hinted.  We deal with the former by rejecting and
+  # reporting ttcs where any name fails to match, and with the latter
+  # by assuming all the components are hinted or not based on whether
+  # the original is in a 'hinted' or 'unhinted' directory.
+
+  # build a map from basename to a list of noto_font objects
+  basename_to_fonts = collections.defaultdict(list)
+  for font in fonts:
+    if font.fmt != 'ttc':
+      basename = path.basename(font.filepath)
+      basename_to_fonts[basename].append(font)
+
+  for ttcfont, components in sorted(_ttc_fonts.iteritems()):
+    rel_filepath = _noto_relative_path(ttcfont.filepath)
+    print '-----\nBuilding %s' % rel_filepath
+
+    component_list = []
+    # note the component order must match the original ttc, so
+    # we must process in the provided order.
+    for component in components:
+      possible_components = basename_to_fonts.get(component)
+      if not possible_components:
+        print '! no match for component named %s in %s' % (
+            component, rel_path)
+        component_list = []
+        break
+
+      matched_possible_component = None
+      for possible_component in possible_components:
+        if possible_component.is_hinted == ttcfont.is_hinted:
+          if matched_possible_component:
+            print '! already matched possible component %s for %s' % (
+                matched_possible_component.filename,
+                possible_component_filename)
+            matched_possible_component = None
+            break
+          matched_possible_component = possible_component
+      if not matched_possible_component:
+        print 'no matched component named %s' % component
+        component_list = []
+        break
+      component_list.append(matched_possible_component)
+    if not component_list:
+      print '! cannot generate ttc font %s' % rel_path
+      continue
+
+    print 'components:\n  ' + '\n  '.join(
+        _noto_relative_path(font.filepath) for font in component_list)
+    if dry_run:
+      return
+
+    dst_ttc = path.join(dst_root, rel_filepath)
+    src_files = [path.join(dst_root, _noto_relative_path(font.filepath))
+                 for font in component_list]
+    ttc_utils.build_ttc(dst_ttc, src_files)
+    print 'Built %s' % dst_ttc
 
 
 def main():
