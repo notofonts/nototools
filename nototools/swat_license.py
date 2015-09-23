@@ -18,13 +18,16 @@
 
 
 import argparse
+import collections
 import os
 from os import path
 import re
 
+from nototools import autofix_for_release
 from nototools import cldr_data
 from nototools import font_data
 from nototools import noto_fonts
+from nototools import ttc_utils
 
 from fontTools import ttLib
 from fontTools import misc
@@ -64,7 +67,6 @@ _SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
 
 _NOTO_URL = "http://www.google.com/get/noto/"
 
-
 _SCRIPT_KEYS = {
     'Aran': 'Urdu',
     'HST': 'Historic',
@@ -78,7 +80,13 @@ _FAMILY_KEYS = {
   'Noto': 'd',
 }
 
+_HINTED_TABLES_TO_DROP = autofix_for_release.TABLES_TO_DROP
+_UNHINTED_TABLES_TO_DROP = (autofix_for_release.TABLES_TO_DROP +
+                            ['fpgm', 'prep', 'cvt'])
+
 _changes = {}
+
+_autofix = collections.defaultdict(list)
 
 def _swat_fonts(dst_root, dry_run):
   def family_key(family):
@@ -100,6 +108,7 @@ def _swat_fonts(dst_root, dry_run):
   for font in sorted(fonts, key=compare_key):
     _swat_font(font, dst_root, dry_run)
 
+
 def _swat_font(noto_font, dst_root, dry_run):
   filepath = noto_font.filepath
   basename, ext = path.splitext(path.basename(filepath))
@@ -107,7 +116,8 @@ def _swat_font(noto_font, dst_root, dry_run):
     print '# Skipping cjk font %s' % basename
     return
   if noto_font.fmt == 'ttc':
-    print '# Skipping ttc font, rebuild these from swatted parts.'
+    print '# Skipping ttc font, rebuild %s from updated parts:' % basename
+    print '  ' + '\n  '.join(ttc_utils.ttcfile_filenames(filepath))
     return
 
   ttfont = ttLib.TTFont(filepath, fontNumber=0)
@@ -178,12 +188,7 @@ def _swat_font(noto_font, dst_root, dry_run):
   # Missing in Lao and Khmer, default in Cham.
   if (cldr_data.get_english_script_name(noto_font.script) in
       ['Lao', 'Khmer', 'Cham']):
-    new_description = (
-        'Data %shinted. Noto %s is a humanist %sserif typeface designed for '
-        'user interfaces and electronic communication.' % (
-            '' if noto_font.is_hinted else 'un',
-            noto_font.style,
-            'sans ' if noto_font.style == 'Sans' else ''))
+    new_description =  'Data %shinted.' % ('' if noto_font.is_hinted else 'un')
   # elif noto_font.vendor is 'Monotype':
   elif not noto_font.is_cjk and noto_font.family == 'Noto':
     new_description = (
@@ -272,6 +277,26 @@ def _swat_font(noto_font, dst_root, dry_run):
   update(_LICENSE_ID, _SIL_LICENSE, newText='(OFL)')
   update(_LICENSE_URL_ID, _SIL_LICENSE_URL)
 
+  if autofix_for_release.fix_fstype(ttfont):
+    _autofix['fstype'].append(noto_font.filepath)
+  if autofix_for_release.fix_vendor_id(ttfont):
+    _autofix['vendor_id'].append(noto_font.filepath)
+  if autofix_for_release.fix_attachlist(ttfont):
+    _autofix['attachlist'].append(noto_font.filepath)
+  if noto_font.is_hinted:
+    tables_to_drop = _HINTED_TABLES_TO_DROP
+  else:
+    tables_to_drop = _UNHINTED_TABLES_TO_DROP
+    if autofix_for_release.drop_hints(ttfont):
+      _autofix['drop_hints'].append(noto_font.filepath)
+  if autofix_for_release.drop_tables(ttfont, tables_to_drop):
+    _autofix['drop_tables'].append(noto_font.filepath)
+  if noto_font.family == 'Noto':
+    if autofix_for_release.fix_linegap(ttfont):
+      _autofix['linegap'].append(noto_font.filepath)
+  if autofix_for_release.fix_os2_unicoderange(ttfont):
+    _autofix['os2_unicoderange'].append(noto_font.filepath)
+
   if dry_run:
     return
 
@@ -288,8 +313,9 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('-n', '--dry_run', help='Do not write fonts',
                       action='store_true')
-  parser.add_argument('--dst_root', help='root of destination',
-                      default='/tmp/swat')
+  parser.add_argument('--dst_root',
+                      help='root of destination (default /tmp/swat)',
+                      metavar='dst', default='/tmp/swat')
   parser.add_argument('--details', help='show change details',
                       action='store_true')
   args = parser.parse_args()
@@ -313,6 +339,16 @@ def main():
             if x > 0:
               x = file_name.rfind('/', 0, x)
             print '      ' + file_name[x:]
+
+  print '------\nautofix summary\n'
+  for fix_key in sorted(_autofix):
+    fixed_files = _autofix[fix_key]
+    print '%s (%d):' % (fix_key, len(fixed_files))
+    for file_name in sorted(fixed_files):
+      x = file_name.rfind('/')
+      if x > 0:
+        x = file_name.rfind('/', 0, x)
+        print '    ' + file_name[x:]
 
 
 if __name__ == "__main__":
