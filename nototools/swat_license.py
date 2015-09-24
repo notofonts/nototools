@@ -125,12 +125,10 @@ def _noto_relative_path(filepath):
     return None
   return filepath[x:]
 
-  dst_file = path.join(dst_root, filepath[x:])
 
 def _swat_font(noto_font, dst_root, dry_run):
   filepath = noto_font.filepath
   basename = path.basename(filepath)
-  dir_and_basename = path.join(path.basename(path.dirname(filepath)), basename)
   if noto_font.is_cjk:
     print '# Skipping cjk font %s' % basename
     return
@@ -147,7 +145,6 @@ def _swat_font(noto_font, dst_root, dry_run):
   rel_filepath = _noto_relative_path(filepath)
   if not rel_filepath:
     raise ValueError('Could not identify noto root of %s' % filepath)
-    return
 
   print '-----\nUpdating %s' % rel_filepath
 
@@ -382,7 +379,7 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
     print 'components:\n  ' + '\n  '.join(
         _noto_relative_path(font.filepath) for font in component_list)
     if dry_run:
-      return
+      continue
 
     dst_ttc = path.join(dst_root, rel_filepath)
     src_files = [path.join(dst_root, _noto_relative_path(font.filepath))
