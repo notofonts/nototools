@@ -21,8 +21,11 @@ import collections
 import os
 from os import path
 import struct
+import subprocess
 
 from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
+
+from nototools import tool_utils
 
 _ttcHeader = '>4sLL'
 _ttcHeaderSize = struct.calcsize(_ttcHeader)
@@ -177,11 +180,22 @@ def ttc_filenames(ttc, data):
   return names
 
 
+def build_ttc(output_path, file_list,
+              tool_path='[afdko]/FDK/Tools/SharedData/FDKScripts/otf2otc.py'):
+  """Use AFDKO to build a .ttc file from a list of input files."""
+  otf2otc = tool_utils.resolve_path(tool_path)
+  if not otf2otc:
+    raise ValueError('can not resolve %s' % tool_path)
+
+  # capture and discard standard output, the tool is noisy
+  subprocess.check_output(['python', otf2otc, '-o', output_path] + file_list)
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('-f', dest='ttcfile', help='ttc file to parse',
                       metavar='ttc', required=True)
-  parser.add_argument('-o', dest='op', help='operation to perform',
+  parser.add_argument('-o', dest='op', help='operation to perform (dump, names)',
                       metavar='op', choices=['dump','names'], default='names')
   args = parser.parse_args()
 
