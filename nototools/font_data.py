@@ -18,9 +18,22 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
+import re
+
 from nototools import opentype_data
 
 from fontTools.ttLib.tables._n_a_m_e import NameRecord
+
+
+WEIGHTS = {
+    'Thin': 250,
+    'Light': 300,
+    'Regular': 400,
+    'Medium': 500,
+    'Bold': 700,
+    'Black': 900,
+}
+
 
 def get_name_records(font):
     """Get a font's 'name' table records as a dictionary of Unicode strings."""
@@ -161,9 +174,36 @@ def font_version(font):
 
 
 def font_name(font):
-    """Returns the font name from the 'name' table."""
+    """Returns the full font name from the 'name' table."""
     names = get_name_records(font)
     return names[4]
+
+
+def family_name(font, base_name):
+    """Extracts the family name from the full name, including "Condensed"."""
+    name = font_name(font)
+    return re.match('%s( Condensed)?' % base_name, name).group(0)
+
+
+def weight_name(font):
+    """Extracts the weight from the full name."""
+    return font_style(font, just_weight=True)
+
+
+def font_style(font, just_weight=False):
+    """Extracts style info from full name."""
+    name = font_name(font)
+
+    # accept a weight, weight followed by Italic, or just Italic
+    # also happens to accept Italic followed by Italic, but that's probably fine
+    match = re.search('(%s|Italic)( Italic)?' % '|'.join(WEIGHTS.keys()), name)
+
+    if match is None:
+        return 'Regular'
+    if just_weight:
+        weight = match.group(1)
+        return 'Regular' if weight == 'Italic' else weight
+    return match.group(0)
 
 
 def printable_font_revision(font, accuracy=2):
