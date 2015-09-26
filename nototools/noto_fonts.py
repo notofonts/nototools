@@ -174,12 +174,12 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
 
 def match_filename(filename, family_name):
-    """Parse just the file name."""
+    """Match just the file name."""
     fields = ['(%s)' % family_name] + _FONT_NAME_REGEX
     return re.match(''.join(fields), filename)
 
 
-def match_weight(name):
+def parse_weight(name):
     """Parse the weight specifically from a name."""
     match = re.search('|'.join(WEIGHTS.keys()), name)
     if not match:
