@@ -246,8 +246,7 @@ def get_family_id_to_regions(family_id_to_lang_scr_to_sample_key):
 
   family_id_to_regions = collections.defaultdict(set)
   warnings = set()
-  for (family_id, lang_scr_to_sample_key in
-       family_id_to_lang_scr_to_sample_key.iteritems()):
+  for family_id, lang_scr_to_sample_key in family_id_to_lang_scr_to_sample_key.iteritems():
     for lang_scr in lang_scr_to_sample_key:
       if lang_scr in lang_scr_to_regions:
         for region in lang_scr_to_regions[lang_scr]:
@@ -621,9 +620,9 @@ class WebGen(object):
         pairs.append((font.filepath, path.basename(font.filepath)))
         license_types.add(font.license_type)
       if 'apache' in license_types:
-        pairs.append((APACHE_LICENSE_LOC, 'LICENSE.txt'))
+        pairs.append((APACHE_LICENSE_LOC, 'LICENSE_APACHE.txt'))
       if 'sil' in license_types:
-        pairs.append((SIL_LICENSE_LOC, 'LICENSE_CJK.txt'))
+        pairs.append((SIL_LICENSE_LOC, 'LICENSE_OFL.txt'))
       tool_utils.generate_zip_with_7za_from_filepairs(pairs, zippath)
       print 'Created zip %s' % zippath
     return os.stat(zippath).st_size
@@ -945,7 +944,7 @@ class WebGen(object):
           continue
       oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
       pairs = [(path.join(CJK_DIR, filename), filename),
-               (SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+               (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
       tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
       newsize = os.stat(zip_path).st_size
       print "Wrote " + zip_path
@@ -960,7 +959,7 @@ class WebGen(object):
     src_zip = path.join(CJK_DIR, filename)
     dst_zip = path.join(self.pkgs, filename)
     shutil.copy2(src_zip, dst_zip)
-    pairs = [(SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+    pairs = [(SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
     tool_utils.generate_zip_with_7za_from_filepairs(pairs, dst_zip)
 
 
