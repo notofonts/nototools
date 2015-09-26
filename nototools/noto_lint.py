@@ -693,19 +693,17 @@ def check_font(font_props, filename_error,
         return None
 
     def get_expected_license_name():
-        if font_props.is_google:
-            if font_props.license_type == 'sil':
-                return SIL_LICENSE
-            elif font_props.license_type == 'apache':
-                return APACHE_LICENSE
+        if font_props.license_type == 'sil':
+            return SIL_LICENSE
+        if font_props.license_type == 'apache':
+            return APACHE_LICENSE
         return None
 
     def get_expected_license_url_name():
-        if font_props.is_google:
-            if font_props.license_type == 'sil':
-                return SIL_LICENSE_URL
-            elif font_props.license_type == 'apache':
-                return APACHE_LICENSE_URL
+        if font_props.license_type == 'sil':
+            return SIL_LICENSE_URL
+        if font_props.license_type == 'apache':
+            return APACHE_LICENSE_URL
         return None
 
     def _check_unused_names():

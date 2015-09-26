@@ -108,7 +108,7 @@ def get_noto_font(filepath):
 
   is_cjk = filedir.endswith('noto-cjk')
 
-  license_type = 'sil' if is_cjk else 'apache'
+  license_type = 'sil'
 
   if script in ['JP', 'KR', 'TC', 'SC']:
     subset = script
