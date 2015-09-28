@@ -91,16 +91,16 @@ WEIGHTS = {
     'Black': 900
 }
 
-_FONT_NAME_REGEX = [
+_FONT_NAME_REGEX = (
     # family should be prepended
-    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji)?',
-    '(Mono)?',
-    '(.*?)',
-    '(UI|Eastern|Estrangela|Western)?',
-    '-',
-    '(%s)' % '|'.join([''] + WEIGHTS.keys()),
-    '(Italic)?',
-    '\.(ttf|ttc|otf)']
+    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji)?'
+    '(Mono)?'
+    '(.*?)'
+    '(UI|Eastern|Estrangela|Western)?'
+    '-' +
+    '(%s)' % '|'.join([''] + WEIGHTS.keys()) +
+    '(Italic)?'
+    '\.(ttf|ttc|otf)')
 
 _EXT_REGEX = re.compile(r'.*\.(?:ttf|ttc|otf)$')
 
@@ -175,8 +175,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
 def match_filename(filename, family_name):
     """Match just the file name."""
-    fields = ['(%s)' % family_name] + _FONT_NAME_REGEX
-    return re.match(''.join(fields), filename)
+    return re.match('(%s)' % family_name + _FONT_NAME_REGEX, filename)
 
 
 def parse_weight(name):
