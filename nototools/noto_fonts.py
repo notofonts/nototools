@@ -81,25 +81,36 @@ NotoFont = collections.namedtuple(
     'filepath, family, style, script, variant, weight, slope, fmt, license_type, '
     'is_hinted, is_mono, is_UI, is_cjk, subset')
 
-_NOTO_FONT_NAME_REGEX = re.compile(
-    '(Arimo|Cousine|Tinos|Noto)'
+
+WEIGHTS = {
+    'Thin': 250,
+    'Light': 300,
+    'DemiLight': 350,
+    'Regular': 400,
+    'Medium': 500,
+    'Bold': 700,
+    'Black': 900
+}
+
+_FONT_NAME_REGEX = (
+    # family should be prepended
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji)?'
     '(Mono)?'
     '(.*?)'
     '(UI|Eastern|Estrangela|Western)?'
-    '-'
-    '(|Black|Bold|DemiLight|Light|Medium|Regular|Thin)'
+    '-' +
+    '(%s)' % '|'.join([''] + WEIGHTS.keys()) +
     '(Italic)?'
     '\.(ttf|ttc|otf)')
 
 _EXT_REGEX = re.compile(r'.*\.(?:ttf|ttc|otf)$')
 
-def get_noto_font(filepath):
+def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   """Return a NotoFont if filepath points to a noto font, or None if we can't
   process the path."""
 
   filedir, filename = os.path.split(filepath)
-  match = _NOTO_FONT_NAME_REGEX.match(filename)
+  match = match_filename(filename, family_name)
   if match:
     family, style, mono, script, variant, weight, slope, fmt = match.groups()
   else:
@@ -161,6 +172,19 @@ def get_noto_font(filepath):
 
   return NotoFont(filepath, family, style, script, variant, weight, slope, fmt,
                   license_type, is_hinted, is_mono, is_UI, is_cjk, subset)
+
+
+def match_filename(filename, family_name):
+    """Match just the file name."""
+    return re.match('(%s)' % family_name + _FONT_NAME_REGEX, filename)
+
+
+def parse_weight(name):
+    """Parse the weight specifically from a name."""
+    match = re.search('|'.join(WEIGHTS.keys()), name)
+    if not match:
+        return 'Regular'
+    return match.group(0)
 
 
 def script_key_to_scripts(script_key):
