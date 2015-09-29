@@ -246,7 +246,8 @@ def get_family_id_to_regions(family_id_to_lang_scr_to_sample_key):
 
   family_id_to_regions = collections.defaultdict(set)
   warnings = set()
-  for family_id, lang_scr_to_sample_key in family_id_to_lang_scr_to_sample_key.iteritems():
+  for tup in family_id_to_lang_scr_to_sample_key.iteritems():
+    family_id, lang_scr_to_sample_key = tup
     for lang_scr in lang_scr_to_sample_key:
       if lang_scr in lang_scr_to_regions:
         for region in lang_scr_to_regions[lang_scr]:
