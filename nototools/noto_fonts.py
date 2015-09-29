@@ -31,7 +31,8 @@ from nototools import unicode_data
 
 # The '[xxx]' syntax is used to get the noto-xxx value from notoconfig.
 NOTO_FONT_PATHS = [
-    '[fonts]/hinted', '[fonts]/unhinted', '[fonts]/alpha', '[emoji]', '[cjk]']
+    '[fonts]/hinted', '[fonts]/unhinted', '[fonts]/alpha', '[emoji]/fonts',
+    '[cjk]']
 
 
 ODD_SCRIPTS = {
@@ -73,8 +74,8 @@ def convert_to_four_letter(script_name):
 # - is_mono: boolean, true if monospace (currently only CJK Latin range)
 # - is_UI: boolean, true if has UI metrics
 # - is_cjk: boolean, true if a CJK font (from Adobe)
-# - subset: name of cjk subset (KR, JA, SC, TC) for reduced-charset fonts targetted at these
-#     languages
+# - subset: name of cjk subset (KR, JA, SC, TC) for reduced-charset fonts
+#     targeted at these languages
 NotoFont = collections.namedtuple(
     'NotoFont',
     'filepath, family, style, script, variant, weight, slope, fmt, license_type, '
@@ -119,7 +120,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
   is_cjk = filedir.endswith('noto-cjk')
 
-  license_type = 'sil' if is_cjk else 'apache'
+  license_type = 'sil'
 
   if script in ['JP', 'KR', 'TC', 'SC']:
     subset = script
@@ -162,15 +163,15 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
   if is_cjk:
     is_hinted = True
-  elif filedir.endswith('alpha') or filedir.endswith('emoji'):
+  elif filedir.endswith('alpha') or filedir.endswith('emoji/fonts'):
     is_hinted = False
   else:
     hint_status = path.basename(filedir)
     assert hint_status in ['hinted', 'unhinted']
     is_hinted = hint_status == 'hinted'
 
-  return NotoFont(filepath, family, style, script, variant, weight, slope, fmt, license_type,
-                  is_hinted, is_mono, is_UI, is_cjk, subset)
+  return NotoFont(filepath, family, style, script, variant, weight, slope, fmt,
+                  license_type, is_hinted, is_mono, is_UI, is_cjk, subset)
 
 
 def match_filename(filename, family_name):
