@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import collections
 import os
 from os import path
@@ -27,8 +28,10 @@ TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
 # control print of debug/trace info when we synthesize the data
-
 _DEBUG = False
+
+# for inspection/debugging, allow turning off of extra locale data
+_USE_EXTRA_LOCALE_DATA = True
 
 # Maps from a less-specific tag to tuple of lang, script, region
 # Keys either have a lang or 'und'.  If lang, then script or region.  If und,
@@ -102,7 +105,8 @@ def _parse_supplemental_data():
 #       continue  # Skip non-official languages
       lang = child.get('type')
       if lang == 'und':
-        # no point, this data is typically uninhabited small islands and Antarctica
+        # no point, this data is typically uninhabited small islands and
+        # Antarctica
         continue
       ix = lang.find('_')
       if ix == -1:
@@ -137,36 +141,39 @@ def _parse_supplemental_data():
   for lang, scripts in extra_locale_data.LANG_TO_SCRIPTS.iteritems():
     _LANG_TO_SCRIPTS[lang] |= set(scripts)
 
-  # Use extra locale data's likely subtag info to change the supplemental
-  # data we got from the language and territory elements.
-  # 1) Add the script to the scripts for the language
-  # 2) Add the lang_script to the lang_scripts for the region
-  for tags in extra_locale_data.LIKELY_SUBTAGS.values():
-    lang = tags[0]
-    script = tags[1]
-    region = tags[2]
-    lang_scripts = _LANG_TO_SCRIPTS[lang]
-    if script not in lang_scripts:
-      if _DEBUG:
-        print 'extra likely subtags lang %s has script %s but supplemental only has [%s]' % (
-            lang, script, ', '.join(sorted(lang_scripts)))
-      if len(lang_scripts) == 1:
-        replacement = set([script])
+  if _USE_EXTRA_LOCALE_DATA:
+    # Use extra locale data's likely subtag info to change the supplemental
+    # data we got from the language and territory elements.
+    # 1) Add the script to the scripts for the language
+    # 2) Add the lang_script to the lang_scripts for the region
+    for tags in extra_locale_data.LIKELY_SUBTAGS.values():
+      lang = tags[0]
+      script = tags[1]
+      region = tags[2]
+      lang_scripts = _LANG_TO_SCRIPTS[lang]
+      if script not in lang_scripts:
         if _DEBUG:
-          print 'replacing %s with %s' % (lang_scripts, replacement)
-        _LANG_TO_SCRIPTS[lang] = replacement
-      else:
-        _LANG_TO_SCRIPTS[lang].add(script)
-    lang_script = lang + '-' + script
-    # skip ZZ region
-    if region != 'ZZ' and lang_script not in _REGION_TO_LANG_SCRIPTS[region]:
-      if _DEBUG:
-        print 'extra lang_script %s not in cldr for %s, adding' % (
-            lang_script, region)
-      _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
+          print ('extra likely subtags lang %s has script %s but supplemental '
+                 'only has [%s]') % (
+                     lang, script, ', '.join(sorted(lang_scripts)))
+        if len(lang_scripts) == 1:
+          replacement = set([script])
+          if _DEBUG:
+            print 'replacing %s with %s' % (lang_scripts, replacement)
+          _LANG_TO_SCRIPTS[lang] = replacement
+        else:
+          _LANG_TO_SCRIPTS[lang].add(script)
+      lang_script = lang + '-' + script
+      # skip ZZ region
+      if region != 'ZZ' and lang_script not in _REGION_TO_LANG_SCRIPTS[region]:
+        if _DEBUG:
+          print 'extra lang_script %s not in cldr for %s, adding' % (
+              lang_script, region)
+        _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
 
-  for territory, lang_scripts in extra_locale_data.REGION_TO_LANG_SCRIPTS.iteritems():
-    _REGION_TO_LANG_SCRIPTS[territory] |= set(lang_scripts)
+    for tup in extra_locale_data.REGION_TO_LANG_SCRIPTS.iteritems():
+      territory, lang_scripts = tup
+      _REGION_TO_LANG_SCRIPTS[territory] |= set(lang_scripts)
 
   for tag in root.iter('parentLocale'):
     parent = tag.get('parent')
@@ -237,7 +244,8 @@ def get_likely_subtags(lang_tag):
   if _DEBUG:
     print 'no likely subtag for %s' % lang_tag
   tags = lang_tag.split('-')
-  return (tags[0], tags[1] if len(tags) > 1 else 'Zzzz', tags[2] if len(tags) > 2 else 'ZZ')
+  return (tags[0], tags[1] if len(tags) > 1 else 'Zzzz',
+          tags[2] if len(tags) > 2 else 'ZZ')
 
 
 _SCRIPT_METADATA = {}
@@ -359,7 +367,8 @@ _ENGLISH_SCRIPT_NAMES = {}
 _ENGLISH_TERRITORY_NAMES = {}
 
 def _parse_english_labels():
-  global _ENGLISH_LANGUAGE_NAMES, _ENGLISH_SCRIPT_NAMES, _ENGLISH_TERRITORY_NAMES
+  global _ENGLISH_LANGUAGE_NAMES, _ENGLISH_SCRIPT_NAMES
+  global _ENGLISH_TERRITORY_NAMES
 
   if _ENGLISH_LANGUAGE_NAMES:
     return
@@ -544,7 +553,8 @@ def get_exemplar_and_source(loc_tag):
     if exemplar:
       return exemplar, loc_tag + '_ex_extra'
     loc_tag = parent_locale(loc_tag)
-    if loc_tag == 'root' or (script and get_likely_subtags(loc_tag)[1] != script):
+    if loc_tag == 'root' or (
+        script and get_likely_subtags(loc_tag)[1] != script):
       break
   return None, None
 
@@ -605,15 +615,17 @@ def _init_lang_scr_to_lit_pops():
       lit_pop = int(population * pop_percent * lang_lit_percent)
       tmp_map[lang_scr].append((region, lit_pop))
 
-  # make it a bit more useful by sorting the value list in order of decreasing population
-  # and converting the list to a tuple
+  # make it a bit more useful by sorting the value list in order of decreasing
+  # population and converting the list to a tuple
   for lang_scr, values in tmp_map.iteritems():
-    _lang_scr_to_lit_pops[lang_scr] = tuple(sorted(values, key=lambda (r, p): (-p, r)))
+    _lang_scr_to_lit_pops[lang_scr] = tuple(
+        sorted(values, key=lambda (r, p): (-p, r)))
 
 
 def get_lang_scr_to_lit_pops():
-  """Return a mapping from lang_scr to a list of tuples of region and population sorted
-  in descending order by population."""
+  """Return a mapping from lang_scr to a list of tuples of region and
+  population sorted in descending order by population.
+  """
   if not _lang_scr_to_lit_pops:
     _init_lang_scr_to_lit_pops()
   return _lang_scr_to_lit_pops;
@@ -641,3 +653,35 @@ def get_lang_scrs_by_decreasing_global_lit_pop():
     result.append((global_pop, lang_scr))
   result.sort(reverse=True)
   return result
+
+
+def main():
+  global _DEBUG, _USE_EXTRA_LOCALE_DATA
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '-r', '--region_to_lang',  help='dump region to lang script info',
+      metavar='region', nargs='*')
+  parser.add_argument(
+      '-d', '--debug', help='turn on debug flag when building data',
+      action='store_true')
+  parser.add_argument(
+      '-nx', '--no_extra', help='turn off extra locale data',
+      action='store_true')
+
+  args = parser.parse_args();
+  if args.debug:
+    _DEBUG = True
+  if args.no_extra:
+    _USE_EXTRA_LOCALE_DATA = False
+
+  if args.region_to_lang != None:
+    print 'region to lang+script'
+    regions = args.region_to_lang or sorted(known_regions())
+    for r in regions:
+      print '%s (%s):' % (r, get_english_region_name(r))
+      for ls in sorted(region_to_lang_scripts(r)):
+        print '  %s' % ls
+
+
+if __name__ == "__main__":
+    main()
