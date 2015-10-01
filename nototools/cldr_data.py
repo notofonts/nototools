@@ -121,6 +121,8 @@ def _parse_supplemental_data():
         lang = lang[:ix]
       lang_script = lang + '-' + script
       _REGION_TO_LANG_SCRIPTS[territory].add(lang_script)
+      _LANG_TO_REGIONS[lang].add(territory)
+      _LANG_TO_SCRIPTS[lang].add(script)
 
   # Use likely subtag data mapping script to lang to extend lang_to_scripts.
   known_scripts = set()
@@ -170,10 +172,15 @@ def _parse_supplemental_data():
           print 'extra lang_script %s not in cldr for %s, adding' % (
               lang_script, region)
         _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
+        _LANG_TO_REGIONS[lang].add(region)
 
     for tup in extra_locale_data.REGION_TO_LANG_SCRIPTS.iteritems():
       territory, lang_scripts = tup
       _REGION_TO_LANG_SCRIPTS[territory] |= set(lang_scripts)
+      for lang_script in lang_scripts:
+        lang, script = lang_script.split('-')
+        _LANG_TO_REGIONS[lang].add(territory)
+        _LANG_TO_SCRIPTS[lang].add(script)
 
   for tag in root.iter('parentLocale'):
     parent = tag.get('parent')
