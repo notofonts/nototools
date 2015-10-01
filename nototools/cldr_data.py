@@ -137,11 +137,11 @@ def _parse_supplemental_data():
               script, lang, ', '.join(_LANG_TO_SCRIPTS[lang]))
         _LANG_TO_SCRIPTS[lang].add(script)
 
-  # Supplement lang to script mapping with extra locale data
-  for lang, scripts in extra_locale_data.LANG_TO_SCRIPTS.iteritems():
-    _LANG_TO_SCRIPTS[lang] |= set(scripts)
-
   if _USE_EXTRA_LOCALE_DATA:
+    # Supplement lang to script mapping with extra locale data
+    for lang, scripts in extra_locale_data.LANG_TO_SCRIPTS.iteritems():
+      _LANG_TO_SCRIPTS[lang] |= set(scripts)
+
     # Use extra locale data's likely subtag info to change the supplemental
     # data we got from the language and territory elements.
     # 1) Add the script to the scripts for the language
@@ -659,8 +659,14 @@ def main():
   global _DEBUG, _USE_EXTRA_LOCALE_DATA
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '-r', '--region_to_lang',  help='dump region to lang script info',
+      '-rl', '--region_to_lang',  help='dump region to lang script info',
       metavar='region', nargs='*')
+  parser.add_argument(
+      '-lr', '--lang_to_region', help='dump lang to region info',
+      metavar='lang', nargs='*')
+  parser.add_argument(
+      '-ls', '--lang_to_script', help='dump lang to script info',
+      metavar='lang', nargs='*')
   parser.add_argument(
       '-d', '--debug', help='turn on debug flag when building data',
       action='store_true')
@@ -681,6 +687,22 @@ def main():
       print '%s (%s):' % (r, get_english_region_name(r))
       for ls in sorted(region_to_lang_scripts(r)):
         print '  %s' % ls
+
+  if args.lang_to_region != None:
+    print 'lang to region'
+    langs = args.lang_to_region or sorted(known_langs())
+    for l in langs:
+      print '%s (%s):' % (l, get_english_language_name(l))
+      for r in sorted(lang_to_regions(l)):
+        print '  %s' % r
+
+  if args.lang_to_script != None:
+    print 'lang to script'
+    langs = args.lang_to_script or sorted(known_langs())
+    for l in langs:
+      print '%s (%s):' % (l, get_english_language_name(l))
+      for s in sorted(lang_to_scripts(l)):
+        print '  %s' % s
 
 
 if __name__ == "__main__":
