@@ -145,6 +145,32 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
       if not kufi_lang_scrs:
         break
 
+  # lad patches:
+  # - lad is written in a style of Hebrew called Rashi, not sure
+  #   if we support it so let's exclude it for now
+  hebr_lang_scrs = family_id_to_lang_scrs['sans-hebr']
+  for lang_scr in ['lad-Hebr']:
+    if not lang_scr in lang_scrs:
+      print 'Patch lad: %s not found' % lang_scr
+    else:
+      hebr_lang_scrs.remove(lang_scr)
+      print 'removed %s from sans-hebr' % lang_scr
+      if not hebr_lang_scrs:
+        break;
+
+  # ja patches:
+  # - we generate all permutations of ja, including ja-Kana and
+  #   ja-Hiri, but ja-Jpan subsumes these, so omit them.
+  jpan_lang_scrs = family_id_to_lang_scrs['sans-jpan']
+  for lang_scr in ['ja-Kana', 'ja-Hira']:
+    if not lang_scr in lang_scrs:
+      print 'Patch jpan: %s not found' % lang_scr
+    else:
+      jpan_lang_scrs.remove(lang_scr)
+      print 'removed %s from sans-jpan' % lang_scr
+      if not jpan_lang_scrs:
+        break;
+
   for f, ls in family_id_to_lang_scrs.iteritems():
     if not ls:
       print '!family %s has no lang' % f
