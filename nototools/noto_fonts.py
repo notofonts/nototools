@@ -188,17 +188,36 @@ def parse_weight(name):
 
 
 def script_key_to_scripts(script_key):
-  """First script in list is the 'default' script."""
+  """Return a set of scripts for a script key.  The script key is used by
+  a font to define the set of scripts it supports.  Some keys are ours,
+  e.g. 'LGC', and some are standard script codes that map to multiple
+  scripts, like 'Jpan'.  In either case we need to be able to map a script
+  code (either unicode character script code, or more general iso script
+  code) to a font, and we do so by finding it in the list returned here."""
   if script_key == 'LGC':
-    return ['Latn', 'Grek', 'Cyrl']
+    return frozenset(['Latn', 'Grek', 'Cyrl'])
   elif script_key == 'Aran':
-    return ['Arab']
+    return frozenset(['Arab'])
   elif script_key == 'HST':
     raise ValueError('!do not know scripts for HST script key')
   else:
-    if script_key not in lang_data.scripts():
-      raise ValueError('!not a script: %s' % script_key)
-    return [script_key]
+    return lang_data.script_includes(script_key)
+
+
+def script_key_to_primary_script(script_key):
+  """We need a default script for a font, and fonts using a 'script key' support
+  multiple fonts.  This lets us pick a default sample for a font based on it.
+  The sample is named with a script that can include 'Jpan' so 'Jpan' should be
+  the primary script in this case."""
+  if script_key == 'LGC':
+    return 'Latn'
+  if script_key == 'Aran':
+    return 'Arab'
+  if script_key == 'HST':
+    raise ValueError('!do not know scripts for HST script key')
+  if script_key not in lang_data.scripts():
+    raise ValueError('!not a script key: %s' % script_key)
+  return script_key
 
 
 def noto_font_to_family_id(notofont):

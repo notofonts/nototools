@@ -37,6 +37,23 @@ from nototools import unicode_data
 def is_excluded_script(script_code):
   return script_code in ['Zinh', 'Zyyy', 'Zzzz']
 
+
+def script_includes(script_code):
+  """Returns a set of script codes 'included' by the provided one.  Intended to
+  deal with script codes like 'Jpan' used to describe writing systems that
+  use/require multiple scripts.  The script code itself (and other subsets)
+  are also included in the result."""
+  if script_code not in scripts():
+    raise ValueError('!not a script code: %s' % script_code)
+  if script_code == 'Hrkt':
+    return frozenset(['Hrkt', 'Hira', 'Kana'])
+  if script_code == 'Jpan':
+    return frozenset(['Jpan', 'Hrkt', 'Hani', 'Hira', 'Kana'])
+  if script_code == 'Kore':
+    return frozenset(['Kore', 'Hang'])
+  return frozenset([script_code])
+
+
 def _create_lang_data():
   """Generates language data from CLDR plus extensions.
   Returns a mapping from lang to a tuple of:

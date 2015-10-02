@@ -441,7 +441,7 @@ def get_family_id_to_default_lang_scr(family_id_to_lang_scrs, families):
   family_id_to_default_lang_scr = {}
   for family_id, lang_scrs in family_id_to_lang_scrs.iteritems():
     script_key = families[family_id].rep_member.script
-    primary_script = noto_fonts.script_key_to_scripts(script_key)[0]
+    primary_script = noto_fonts.script_key_to_primary_script(script_key)
 
     if script_key == 'Aran':
       # patch for Nastaliq
