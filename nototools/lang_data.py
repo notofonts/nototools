@@ -16,13 +16,15 @@
 # limitations under the License.
 
 """
-Functions to return information on scripts and langs, primarily for the Noto website.
+Functions to return information on scripts and langs, primarily for the
+Noto website.
 
-The data is generated based on information in cldr_data and unicode_data, and cached
-in this module.  The primary functions return the primary language for
-each script (sometimes 'und', e.g. for Dsrt), and the names for each lang_script that
-has an english name (in english and in the script when known).  Other functions return
-the set of scripts and the set of lang_scripts (that have english names).
+The data is generated based on information in cldr_data and unicode_data,
+and cached in this module.  The primary functions return the primary
+language for each script (sometimes 'und', e.g. for Dsrt), and the names
+for each lang_script that has an English name (in English and in the script
+when known).  Other functions return the set of scripts and the set of
+lang_scripts (that have english names).
 """
 
 import argparse
@@ -117,7 +119,8 @@ def _create_lang_data():
     if lang in used_lang_scripts:
       if lang in all_lang_scripts:
         unused_set = all_lang_scripts[lang] - used_lang_scripts[lang]
-        lang_data[lang] = (used_lang_scripts[lang].copy(), unused_set if unused_set else set())
+        lang_data[lang] = (used_lang_scripts[lang].copy(),
+                           unused_set if unused_set else set())
       else:
         lang_data[lang] = (used_lang_scripts[lang].copy(), set())
     else:
@@ -128,7 +131,8 @@ def _create_lang_data():
 
 def _langs_with_no_scripts(lang_script_data):
   """Return a set of langs with no scripts in lang_script_data."""
-  return set([k for k in lang_script_data if not (lang_script_data[k][0] or lang_script_data[k][1])])
+  return set([k for k in lang_script_data
+              if not (lang_script_data[k][0] or lang_script_data[k][1])])
 
 
 def _remove_keys_from_dict(keys, some_dict):
@@ -137,13 +141,13 @@ def _remove_keys_from_dict(keys, some_dict):
 
 
 def _create_script_to_default_lang(lang_script_data):
-  """Iterates over all the scripts in lang_script_data, and returns a map from each script
-  to the default language code, generally based on cldr likely subtag data.  This assigns
-  'en' to Latn by fiat (cldr defaults to 'und').  Some other scripts (e.g. Dsrt) just
-  get 'und'.
+  """Iterates over all the scripts in lang_script_data, and returns a map
+  from each script to the default language code, generally based on cldr
+  likely subtag data.  This assigns 'en' to Latn by fiat (cldr defaults to
+  'und').  Some other scripts (e.g. Dsrt) just get 'und'.
 
-  This checks that the default lang for a script actually uses that script in lang_script_data,
-  when the default lang is not 'und'.
+  This checks that the default lang for a script actually uses that script
+  in lang_script_data, when the default lang is not 'und'.
   """
 
   script_to_default_lang = {}
@@ -165,11 +169,6 @@ def _create_script_to_default_lang(lang_script_data):
 
   for script in sorted(all_scripts):
     default_lang = cldr_data.get_likely_subtags('und-' + script)[0]
-
-    # CLDR has no names for these, and two are collectives, so it's simpler to omit them.
-    # if script in ['Kthi', 'Khar', 'Brah']:
-    #   print 'likely lang for %s is %s, replace with und' % (script, default_lang)
-    #   default_lang = 'und'
 
     if default_lang == 'und':
       if script == 'Latn':
@@ -198,11 +197,12 @@ def _create_script_to_default_lang(lang_script_data):
 
 def _create_lang_script_to_names(lang_script_data):
   """Generate a map from lang-script to English (and possibly native) names.
-  Whether the script is included in the name depends on the number of used and unused scripts.
-  If there's one used script, that script is omitted.
-  Else if there's no used script and one unused script, that script is omitted.
-  Else the script is included.
-  If there's no English name for the lang_script, it is excluded."""
+  Whether the script is included in the name depends on the number of used
+  and unused scripts.  If there's one used script, that script is omitted.
+  Else if there's no used script and one unused script, that script is
+  omitted.  Else the script is included.  If there's no English name for
+  the lang_script, it is excluded.
+  """
 
   lang_to_names = {}
   for lang in lang_script_data:
@@ -225,10 +225,12 @@ def _create_lang_script_to_names(lang_script_data):
       if not en_name:
         print '!No english name for %s' % lang_script
         continue
-      native_name = cldr_data.get_native_language_name(lang_script, exclude_script)
+      native_name = cldr_data.get_native_language_name(
+          lang_script, exclude_script)
       if native_name == en_name:
         native_name = None
-      lang_to_names[lang_script] = [en_name, native_name] if native_name else [en_name]
+      lang_to_names[lang_script] = (
+          [en_name, native_name] if native_name else [en_name])
 
   return lang_to_names
 
