@@ -105,6 +105,12 @@ def _create_lang_data():
     elif _DEBUG:
       print '### script %s with unknown language already seen' % script
 
+  # Patch: ensure ryu-Jpan exists
+  # - Okinawan can be written in either Kana or a combination of Hira
+  #   and Kanji. Rather than take a strong position on this, add a
+  #   mapping to Jpan.
+  all_lang_scripts['ryu'].add('Jpan')
+
   all_langs = used_lang_scripts.keys() + all_lang_scripts.keys()
   lang_data = {}
   for lang in all_langs:
