@@ -467,16 +467,18 @@ NATIVE_NAMES = {
 }
 
 EXEMPLARS = {
-#  'ain-Jpan': r'[\u30a0-\u30ff \u31f0-\u31ff]',
   'und-Avst': r'[\U010b00-\U010b35]',
   'und-Bali': r'[\u1b05-\u1b33]',
   'und-Bamu': r'[\ua6a0-\ua6ef]',
   'und-Cham': r'[\uaa00-\uaa28 \uaa50-\uaa59]',
   'und-Copt': r'[\u2c80-\u2cb1]',
   'und-Egyp': r'[\U013000-\U01303f]',
+  'und-Hira': r'[\u3041-\u3096\u3099-\u309f\U01b000-\U01b001]',
   'und-Java': r'[\ua984-\ua9b2]',
   'und-Kali': r'[\ua90a-\ua925 \ua900-\ua909]',
-  'und-Khar': r'[\U010a10-\U010a13\U010a15-\U010a17\U010a19-\U010a33\U010A38-\U010a3a]',
+  'und-Kana': r'[\u30a0-\u30ff \u31f0-\u31ff]',
+  'und-Khar': r'[\U010a10-\U010a13\U010a15-\U010a17\U010a19-\U010a33'
+              r'\U010A38-\U010a3a]',
   'und-Kthi': r'[\U11080-\U110C1]',
   'und-Lana': r'[\u1a20-\u1a4c]',
   'und-Lepc': r'[\u1c00-\u1c23]',
