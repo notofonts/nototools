@@ -448,11 +448,11 @@ LANG_TO_SCRIPTS = {
 
 # Supplement mapping of regions to lang_scripts
 REGION_TO_LANG_SCRIPTS = {
-    'CN': ['nan-Latn', 'yue-Hans', 'yue-Hant'],
-    'HK': ['hak-Hant', 'hak-Hans', 'hak-Latn'],
+    'CN': ['hak-Hans', 'hak-Latn', 'nan-Hans', 'nan-Latn', 'yue-Hans'],
+    'HK': ['yue-Hant'],
     'MN': ['mn-Mong'],
     'MY': ['zh-Hans'],
-    'TW': ['nan-Hant', 'nan-Latn'],
+    'TW': ['hak-Hant', 'hak-Latn', 'nan-Hant', 'nan-Latn'],
 }
 
 PARENT_LOCALES = {
