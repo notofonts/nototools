@@ -34,6 +34,8 @@ import re
 from nototools import cldr_data
 from nototools import unicode_data
 
+_DEBUG = False
+
 def is_excluded_script(script_code):
   return script_code in ['Zinh', 'Zyyy', 'Zzzz']
 
@@ -70,7 +72,8 @@ def _create_lang_data():
       lang, script = lang_script.split('-')
       known_scripts.add(script)
       if lang == 'und':
-        print 'used lang is und for script %s in region %s' % (script, region)
+        if _DEBUG:
+          print 'used lang is und for script %s in region %s' % (script, region)
         continue
       used_lang_scripts[lang].add(script)
       all_lang_scripts[lang].add(script)
@@ -92,11 +95,14 @@ def _create_lang_data():
       continue
     lang = cldr_data.get_likely_subtags('und-' + script)[0]
     if lang != 'und':
+      if _DEBUG and script not in all_lang_scripts[lang]:
+        print '# adding likely lang %s for script %s' % (lang, script)
       all_lang_scripts[lang].add(script)
     elif script not in known_scripts:
-      print 'adding script with unknown language %s' % script
+      if _DEBUG:
+        print '# adding script with unknown language %s' % script
       all_lang_scripts[lang].add(script)
-    else:
+    elif _DEBUG:
       print '### script %s with unknown language already seen' % script
 
   all_langs = used_lang_scripts.keys() + all_lang_scripts.keys()
