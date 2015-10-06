@@ -206,7 +206,8 @@ LIKELY_SUBTAGS = {
     'xnr': ('xnr', 'Deva', 'IN'),  # Kangri
     'xum': ('xum', 'Ital', 'ZZ'),  # Umbrian (dlf)
     'zdj': ('zdj', 'Arab', 'KM'),  # Ngazidja Comorian
-    'und-Mult': ('skr', 'Mult', 'ZZ'), # ancient writing system for Saraiki, Arabic now used
+    'und-Mult': ('skr', 'Mult', 'ZZ'), # ancient writing system for Saraiki,
+                                       # Arabic now used
     'und-Hung': ('ohu', 'Hung', 'ZZ'), # Old Hungarian, Carpathian basin
     'und-Hluw': ('hlu', 'Hluw', 'ZZ'), # Hieroglyphic Luwian
     'und-Ahom': ('aho', 'Ahom', 'ZZ'), # Ahom
@@ -215,7 +216,8 @@ LIKELY_SUBTAGS = {
 
 ENGLISH_SCRIPT_NAMES = {
     'Ahom': u'Ahom',
-    'Cans': u'Canadian Aboriginal', # shorten name for display purposes, match Noto font name
+    'Cans': u'Canadian Aboriginal', # shorten name for display purposes,
+                                    #match Noto font name
     'Hatr': u'Hatran',
     'Mult': u'Multani',
 }
@@ -448,11 +450,11 @@ LANG_TO_SCRIPTS = {
 
 # Supplement mapping of regions to lang_scripts
 REGION_TO_LANG_SCRIPTS = {
-    'CN': ['nan-Latn', 'yue-Hans', 'yue-Hant'],
-    'HK': ['hak-Hant', 'hak-Hans', 'hak-Latn'],
+    'CN': ['hak-Hans', 'hak-Latn', 'nan-Hans', 'nan-Latn', 'yue-Hans'],
+    'HK': ['yue-Hant'],
     'MN': ['mn-Mong'],
     'MY': ['zh-Hans'],
-    'TW': ['nan-Hant', 'nan-Latn'],
+    'TW': ['hak-Hant', 'hak-Latn', 'nan-Hant', 'nan-Latn'],
 }
 
 PARENT_LOCALES = {
@@ -467,16 +469,18 @@ NATIVE_NAMES = {
 }
 
 EXEMPLARS = {
-#  'ain-Jpan': r'[\u30a0-\u30ff \u31f0-\u31ff]',
   'und-Avst': r'[\U010b00-\U010b35]',
   'und-Bali': r'[\u1b05-\u1b33]',
   'und-Bamu': r'[\ua6a0-\ua6ef]',
   'und-Cham': r'[\uaa00-\uaa28 \uaa50-\uaa59]',
   'und-Copt': r'[\u2c80-\u2cb1]',
   'und-Egyp': r'[\U013000-\U01303f]',
+  'und-Hira': r'[\u3041-\u3096\u3099-\u309f\U01b000-\U01b001]',
   'und-Java': r'[\ua984-\ua9b2]',
   'und-Kali': r'[\ua90a-\ua925 \ua900-\ua909]',
-  'und-Khar': r'[\U010a10-\U010a13\U010a15-\U010a17\U010a19-\U010a33\U010A38-\U010a3a]',
+  'und-Kana': r'[\u30a0-\u30ff \u31f0-\u31ff]',
+  'und-Khar': r'[\U010a10-\U010a13\U010a15-\U010a17\U010a19-\U010a33'
+              r'\U010A38-\U010a3a]',
   'und-Kthi': r'[\U11080-\U110C1]',
   'und-Lana': r'[\u1a20-\u1a4c]',
   'und-Lepc': r'[\u1c00-\u1c23]',
@@ -486,11 +490,13 @@ EXEMPLARS = {
   'und-Orkh': r'[\U010c00-\U010c48]',
   'und-Phag': r'[\ua840-\ua877]',
   'und-Qaae': r'[\u2049\u231a\u231b\u2600\u260e\u2614\u2615\u26fa\u2708\u2709'
-              r'\u270f\u3297\U01f004\U01f170\U01f193\U01f197\U01f30d\U01f318\U01f332\U01f334'
-              r'\U01f335\U01f344\U01f346\U01f352\U01f381\U01f393\U01f3a7\U01f3b8\U01f3e1\U01f402'
-              r'\U01f40a\U01f418\U01f419\U01f41b\U01f41f\U01f422\U01f424\U01f427\U01f44c\U01f44d'
-              r'\U01f453\U01f463\U01f4bb\U01f4ce\U01f4d3\U01f4d6\U01f4e1\U01f4fb\U01f511\U01f525'
-              r'\U01f565\U01F63a\U01f680\U01f681\U01f683\U01f686\U01f68c\U01f6a2\U01f6a3\U01f6b4]',
+              r'\u270f\u3297\U01f004\U01f170\U01f193\U01f197\U01f30d\U01f318'
+              r'\U01f332\U01f334\U01f335\U01f344\U01f346\U01f352\U01f381'
+              r'\U01f393\U01f3a7\U01f3b8\U01f3e1\U01f402\U01f40a\U01f418'
+              r'\U01f419\U01f41b\U01f41f\U01f422\U01f424\U01f427\U01f44c'
+              r'\U01f44d\U01f453\U01f463\U01f4bb\U01f4ce\U01f4d3\U01f4d6'
+              r'\U01f4e1\U01f4fb\U01f511\U01f525\U01f565\U01F63a\U01f680'
+              r'\U01f681\U01f683\U01f686\U01f68c\U01f6a2\U01f6a3\U01f6b4]',
   'und-Saur': r'[\ua882-\ua8b3]',
   'und-Sund': r'[\u1b83-\u1ba0]',
   'und-Sylo': r'[\ua800-\ua82b]',
