@@ -17,11 +17,7 @@ setup(name='nototools',
       author_email='noto-font@googlegroups.com',
       url='https://code.google.com/p/noto/',
       # more examples here http://docs.python.org/distutils/examples.html#pure-python-distribution-by-package
-      packages=[
-          'nototools',
-          'nototools.unittests',
-          'nototools.pens',
-      ],
+      packages=['nototools'],
       install_requires=[
           'fontTools',
           # On Mac OS X these need to be installed with homebrew
