@@ -101,7 +101,13 @@ def _write_char_text(chars, filepath, chars_per_line):
 
 
 def _process_font(filepath, args):
-  sorted_chars = sorted(character_set(filepath))
+  char_set = character_set(filepath)
+  if args.limit_set:
+    char_set = char_set & args.limit_set
+    if not char_set:
+      print 'limit excludes all chars in %s' % filepath
+      return
+  sorted_chars = sorted(char_set)
   if args.info:
     _print_char_info(sorted_chars)
   if args.text:
@@ -128,10 +134,21 @@ def main():
                       type=int,
                       metavar='N',
                       default=32)
+  parser.add_argument('--limit',
+                      help='string of hex codepoint ranges limiting cmap '
+                      'to output',
+                      metavar='ranges')
   args = parser.parse_args()
 
   if not (args.ranges or args.text or args.info):
     args.info = True
+
+  if args.limit:
+    args.limit_set = lint_config.parse_int_ranges(args.limit)
+    print 'limit to: ' + lint_config.write_int_ranges(args.limit_set)
+  else:
+    # make sure it exists so checks don't have to care
+    args.limit_set = None
 
   for fontpath in args.files:
     print 'Font: ' + path.normpath(fontpath)
