@@ -28,9 +28,23 @@ import sys
 from fontTools import ttLib
 
 from nototools import font_data
-import notoconfig
+from nototools import notoconfig
+
 
 NOTO_URL = "http://www.google.com/get/noto/"
+
+_LICENSE_ID = 13
+_LICENSE_URL_ID = 14
+
+_SIL_LICENSE = (
+    'This Font Software is licensed under the SIL Open Font License, '
+    'Version 1.1. This Font Software is distributed on an "AS IS" '
+    'BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express '
+    'or implied. See the SIL Open Font License for the specific language, '
+    'permissions and limitations governing your use of this Font Software.')
+
+_SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
+
 
 def fix_revision(font):
     """Fix the revision of the font to match its version."""
@@ -131,6 +145,16 @@ def fix_name_table(font):
         font_data.set_name_record(font, 11, NOTO_URL)
         modified = True
         print 'Updated name table record 11 to "%s"' % NOTO_URL
+
+    if name_records[_LICENSE_ID] != _SIL_LICENSE:
+        font_data.set_name_record(font, _LICENSE_ID, _SIL_LICENSE)
+        modified = True
+        print 'Updated license id'
+
+    if name_records[_LICENSE_URL_ID] != _SIL_LICENSE_URL:
+        font_data.set_name_record(font, _LICENSE_URL_ID, _SIL_LICENSE_URL)
+        modified = True
+        print 'Updated license url'
 
     # TODO: check preferred family/subfamily(16&17)
 
