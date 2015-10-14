@@ -51,6 +51,12 @@ _script_code_to_long_name = {}
 _script_long_name_to_code = {}
 _lower_to_upper_case = {}
 
+# emoji data
+_presentation_default_emoji = None
+_presentation_default_text = None
+_emoji_variants = None
+
+
 def load_data():
     """Loads the data files needed for the module.
 
@@ -553,3 +559,62 @@ def _load_bidi_mirroring_txt():
         char = int(char, 16)
         bmg = int(bmg, 16)
         _bidi_mirroring_glyph_data[char] = bmg
+
+
+def _load_emoji_data():
+  """Parse emoji-data.txt and initialize two sets of characters:
+  - those with a default emoji presentation
+  - those with a default text presentation"""
+
+  global _presentation_default_emoji
+  if _presentation_default_emoji:
+    return
+
+  presentation_default_text = set()
+  presentation_default_emoji = set()
+  line_re = re.compile(r'([0-9A-F]{4,6})\s*;\s*(emoji|text)\s*;')
+  with open_unicode_data_file('emoji-data.txt') as f:
+    for line in f:
+      m = line_re.match(line)
+      if m:
+        cp = int(m.group(1), 16)
+        if m.group(2) == 'emoji':
+          presentation_default_emoji.add(cp)
+        else:
+          presentation_default_text.add(cp)
+  _presentation_default_emoji = frozenset(presentation_default_emoji)
+  _presentation_default_text = frozenset(presentation_default_text)
+
+
+def get_presentation_default_emoji():
+    _load_emoji_data()
+    return _presentation_default_emoji
+
+
+def get_presentation_default_text():
+    _load_emoji_data()
+    return _presentation_default_text
+
+
+def _load_unicode_emoji_variants():
+  """Parse StandardizedVariants.txt and initialize a set of characters
+  that have a defined emoji variant presentation.  All such characters
+  also have a text variant presentation so a single set works for both."""
+
+  global _emoji_variants
+  if _emoji_variants:
+    return
+
+  emoji_variants = set()
+  line_re = re.compile(r'([0-9A-F]{4,6})\s+FE0F\s*;\s*emoji style\s*;')
+  with open_unicode_data_file('StandardizedVariants.txt') as f:
+    for line in f:
+      m = line_re.match(line)
+      if m:
+        emoji_variants.add(int(m.group(1), 16))
+  _emoji_variants = frozenset(emoji_variants)
+
+
+def get_unicode_emoji_variants():
+  _load_unicode_emoji_variants()
+  return _emoji_variants
