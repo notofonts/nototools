@@ -45,7 +45,7 @@ def modify_font(font_name, font, presentation, emoji_variants):
   if not emoji:
     print 'no emoji match those in %s' % font_name
     return
-  uvs = VS_EMOJI if presentation == 'emoji' else VS__TEXT
+  uvs = VS_EMOJI if presentation == 'emoji' else VS_TEXT
   cmap14 = _c_m_a_p.CmapSubtable.newSubtable(14)
   cmap14.cmap = {}
   cmap14.uvsDict = {uvs: [[c, None] for c in sorted(emoji)]}
