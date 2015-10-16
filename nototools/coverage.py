@@ -80,9 +80,12 @@ def _print_char_info(chars):
     print 'U+%04X %s' % (char, name)
 
 
-def _write_char_text(chars, filepath, chars_per_line):
-  text = [unichr(cp) for cp in chars
-          if not unicode_data.category(cp)[0] in ['M', 'C', 'Z']]
+def _write_char_text(chars, filepath, chars_per_line, sep):
+  def accept_cp(cp):
+    cat = unicode_data.category(cp)
+    return cat[0] not in ['M', 'C', 'Z'] or cat == 'Co'
+
+  text = [unichr(cp) for cp in chars if accept_cp(cp)]
   filename, _ = path.splitext(path.basename(filepath))
   m = re.match(r'(.*)-(?:Regular|Bold|Italic|BoldItalic)', filename)
   if m:
@@ -94,7 +97,7 @@ def _write_char_text(chars, filepath, chars_per_line):
     lines = []
     for n in range(0, len(text), chars_per_line):
       substr = text[n:n + chars_per_line]
-      lines.append(' '.join(cp for cp in substr))
+      lines.append(sep.join(cp for cp in substr))
     text = '\n'.join(lines)
   with codecs.open(filename, 'w', 'utf-8') as f:
     f.write(text)
@@ -111,7 +114,7 @@ def _process_font(filepath, args):
   if args.info:
     _print_char_info(sorted_chars)
   if args.text:
-    _write_char_text(sorted_chars, filepath, args.chars_per_line)
+    _write_char_text(sorted_chars, filepath, args.chars_per_line, args.sep)
   if args.ranges:
     print 'ranges:\n  ' + lint_config.write_int_ranges(sorted_chars, True)
 
@@ -125,6 +128,9 @@ def main():
   parser.add_argument('--text',
                       help='Dump cmap as sample text',
                       action='store_true')
+  parser.add_argument('--sep',
+                      help='Separator between chars in text, default space',
+                      default=' ')
   parser.add_argument('--info',
                       help='Dump cmap as cp and unicode name, one per line',
                       action='store_true')
