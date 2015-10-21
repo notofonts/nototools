@@ -137,9 +137,9 @@ def _get_char_names(charset):
       except:
         name = None
       if not name or name == '<control>':
-        name = 'uni_%04x' % cp
+        name = '%04x' % cp
       else:
-        name = name.lower()
+        name = '%04x %s' % (cp, name.lower())
       name_map[name] = cp
 
   return name_map
