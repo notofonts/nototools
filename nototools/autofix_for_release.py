@@ -324,6 +324,8 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
     name_rx = re.compile(name_pat)
     for root, dirs, files in os.walk(src_root):
         for file in files:
+            if path.splitext(file)[1] not in ['.ttf', '.ttc', '.otf']:
+                continue
             src_file = path.join(root, file)
             file_path = src_file[len(src_root)+1:] # +1 to ensure no leading slash.
             if not name_rx.search(file_path):
@@ -333,7 +335,6 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
 
 
 def main():
-
     default_src_root = notoconfig.values.get('alpha')
     default_dst_root = notoconfig.values.get('autofix')
 
@@ -352,15 +353,18 @@ def main():
         # not on command line and not in user's .notoconfig
         print 'no src root specified.'
         return
-    if not path.isdir(args.src_root):
-        print '%s does not exist or is not a directory' % args.src_root
+
+    src_root=path.expanduser(args.src_root)
+    if not path.isdir(src_root):
+        print '%s does not exist or is not a directory' % src_root
         return
 
-    if not path.isdir(args.dst_root):
-        print '%s does not exist or is not a directory' % args.dst_root
+    dst_root=path.expanduser(args.dst_root)
+    if not path.isdir(dst_root):
+        print '%s does not exist or is not a directory' % dst_root
         return
 
-    fix_fonts(args.src_root, args.dst_root, args.name_pat, args.save_unmodified)
+    fix_fonts(src_root, dst_root, args.name_pat, args.save_unmodified)
 
 
 if __name__ == '__main__':
