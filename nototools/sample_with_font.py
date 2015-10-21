@@ -30,20 +30,28 @@ from nototools import unicode_data
 
 from fontTools import ttLib
 
+def _help():
+  print ('enter a string to match or one of the following:\n'
+         '  \'quit\' to exit,\n'
+         '  \'help\' to show these options,\n'
+         '  \'names\' for names,\n'
+         '  \'dump\' to dump the current text,\n'
+         '  \'clear\' to clear the current text,\n'
+         '  \'write\' to be prompted for a filename to write the text to.')
+
+
 def _build_text(name_map, initial_text=''):
   text = initial_text
   print 'build text using map of length %d' % len(name_map)
-  print ('enter \'quit\' to exit, '
-         '\'names\' for names, '
-         '\'dump\' to dump the current text, '
-         '\'clear\' to clear the current text, '
-         '\'write\' to be prompted for a filename to write the text to')
   while True:
     line = raw_input('> ')
     if not line:
       continue
     if line == 'quit':
       break
+    if line == 'help':
+      _help()
+      continue
     if line == 'names':
       print 'names:\n  ' + '\n  '.join(sorted(name_map.keys()))
       continue
@@ -68,6 +76,7 @@ def _build_text(name_map, initial_text=''):
     if not matches:
       print 'no match for "%s"'% line
       continue
+
     if len(matches) == 1:
       print matches[0]
       text += unichr(name_map[matches[0]])
@@ -84,29 +93,36 @@ def _build_text(name_map, initial_text=''):
       if line in m.split(' '):
         new_matches.append(m)
 
+    # if we match a full word, and only one line has this full word, use that
     if len(new_matches) == 1:
       print new_matches[0]
       text += unichr(name_map[new_matches[0]])
       continue
 
-    if not new_matches:
-      new_matches = matches
-
-    while True:
+    select_multiple = True
+    while select_multiple:
       print 'multiple matches:\n  ' + '\n  '.join(
           '[%2d] %s' % (i, n) for i, n in enumerate(matches))
-      line = raw_input('0-%d or q > ' % (len(matches) - 1))
-      if line == 'q':
-        continue
-      try:
-        n = int(line)
-        if n < 0 or n >= len(matches):
-          print '%d out of range' % n
+      while True:
+        line = raw_input('0-%d or q to skip> ' % (len(matches) - 1))
+        if line == 'q':
+          select_multiple = False
+          break
+        try:
+          n = int(line)
+          break
+        except:
           continue
-        text += unichr(name_map[matches[n]])
+
+      if not select_multiple: # q
         break
-      except:
+
+      if n < 0 or n >= len(matches):
+        print '%d out of range' % n
         continue
+
+      text += unichr(name_map[matches[n]])
+      select_multiple = false
 
   print 'done.'
   return text
@@ -116,8 +132,16 @@ def _get_char_names(charset):
   name_map = {}
   if charset:
     for cp in charset:
-      name = unicode_data.name(cp)
-      name_map[name.lower()] = cp
+      try:
+        name = unicode_data.name(cp)
+      except:
+        name = None
+      if not name or name == '<control>':
+        name = 'uni_%04x' % cp
+      else:
+        name = name.lower()
+      name_map[name] = cp
+
   return name_map
 
 
