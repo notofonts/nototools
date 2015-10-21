@@ -354,12 +354,12 @@ def main():
         print 'no src root specified.'
         return
 
-    src_root=path.expanduser(args.src_root)
+    src_root = path.expanduser(args.src_root)
     if not path.isdir(src_root):
         print '%s does not exist or is not a directory' % src_root
         return
 
-    dst_root=path.expanduser(args.dst_root)
+    dst_root = path.expanduser(args.dst_root)
     if not path.isdir(dst_root):
         print '%s does not exist or is not a directory' % dst_root
         return
