@@ -48,6 +48,10 @@ enable bounds/glyph/ymin except gid 222 223 250 280 882 887 950 959 974
 filename like Tamil
 enable script_required except cp 951-952 1cda a8f3
 
+filename like TaiTham
+enable gdef/classdef/combining_mismatch except cp 1a58
+enable gdef/classdef/not_combining_mismatch except cp 1a55
+
 filename like Telugu
 enable script_required except cp 951-952 1cda a8f3
 enable reachable except gid 611
