@@ -207,10 +207,7 @@ EXTRA_CHARACTERS_NEEDED = {
     'Zsym': [0x20BC, 0x20BD, 0x20BE],
 }
 
-
-CHARACTERS_NOT_NEEDED = {
-    'Arab': char_range(0x10E60, 0x10E7E),
-    'Latn': (  # Actually LGC
+LGC_CHARACTERS_NOT_NEEDED = frozenset(
         char_range(0x0370, 0x0373) +
         [0x0376, 0x0377, 0x03CF, 0x0951, 0x0952, 0x1E9C, 0x1E9D, 0x1E9F] +
         char_range(0x1EFA, 0x1EFF) +
@@ -227,7 +224,12 @@ CHARACTERS_NOT_NEEDED = {
         [0xA78D, 0xA78E, 0xA790, 0xA791] +
         char_range(0xA7A0, 0xA7A9) +
         char_range(0xA7FA, 0xA7FF) +
-        [0xA92E, 0xFB00, 0xFB05, 0xFB06]),
+        [0xA92E, 0xFB00, 0xFB05, 0xFB06])
+
+CHARACTERS_NOT_NEEDED = {
+    'Arab': char_range(0x10E60, 0x10E7E),
+    'Latn': LGC_CHARACTERS_NOT_NEEDED,
+    'LGC': LGC_CHARACTERS_NOT_NEEDED,
 }
 
 ACCEPTABLE_AS_COMBINING = {
