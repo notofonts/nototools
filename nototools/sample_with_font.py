@@ -122,7 +122,7 @@ def _build_text(name_map, initial_text=''):
         continue
 
       text += unichr(name_map[matches[n]])
-      select_multiple = false
+      select_multiple = False
 
   print 'done.'
   return text
