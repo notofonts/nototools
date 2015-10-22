@@ -111,7 +111,7 @@ def _build_text(name_map, initial_text=''):
         try:
           n = int(line)
           break
-        except:
+        except ValueError:
           continue
 
       if not select_multiple: # q
