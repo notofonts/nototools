@@ -1,6 +1,9 @@
 # we've not checked this before
 disable head/os2/unicoderange
 
+# assume most variant support is based on cmap 14
+disable complex/gsub/variants
+
 vendor Monotype
 disable trademark # we can swat this ourselves
 disable vendor_url # we just changed this, and can swat it ourselves
@@ -35,15 +38,25 @@ enable cmap/script_required except cp 0487 a66f
 filename like Hanunoo
 enable gdef/classdef/combining_mismatch except cp 1734
 
+filename like Historic
+enable complex/gsub/variants
+disable cmap/variants
+
 filename like MeeteiMayek
 enable gdef/classdef/not_combining_mismatch except cp abe9-abea
 
 filename like Mongolian
 enable gdef/classdef/not_combining_mismatch except cp 180e
+enable complex/gsub/variants
+disable cmap/variants
 
 filename like Nastaliq
 # TODO: (dougfelt) find a better way of making these exceptions
 enable bounds/glyph/ymin except gid 222 223 250 280 882 887 950 959 974
+
+filename like PhagsPa
+enable complex/gsub/variants
+disable cmap/variants
 
 filename like Tamil
 enable script_required except cp 951-952 1cda a8f3
@@ -80,3 +93,7 @@ disable gdef/classdef/not_present
 # Adobe says that most of the glyphs are indeed reachable, so perhaps the linter/ttx is
 # at fault?
 disable reachable
+
+# Adobe has a well-defined list of variation sequences they support in the different CJK
+# fonts.  No point in trying to second-guess them.
+disable cmap/variants

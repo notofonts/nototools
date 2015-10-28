@@ -348,6 +348,7 @@ class TestSpec(object):
     private_use
     non_characters
     disallowed_ascii
+    variants
   head -- head table tests
     hhea
       ascent
@@ -400,6 +401,7 @@ class TestSpec(object):
     gsub
       missing
       ui_name_id -- FeatureParamsStylisticSet.UINameID not in name table
+      variants -- expect standard variants to be supported in gsub
   bidi -- tests bidi pairs, properties
     rtlm_non_mirrored -- rtlm GSUB feature applied to private-use or non-mirrored character
     ompl_rtlm -- rtlm GSUB feature applied to ompl char
