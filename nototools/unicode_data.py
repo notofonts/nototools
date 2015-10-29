@@ -27,6 +27,7 @@ __author__ = (
     "roozbeh@google.com (Roozbeh Pournader) and "
     "cibu@google.com (Cibu Johny)")
 
+import collections
 import os
 from os import path
 import re
@@ -55,6 +56,10 @@ _lower_to_upper_case = {}
 _presentation_default_emoji = None
 _presentation_default_text = None
 _emoji_variants = None
+
+# non-emoji variant data
+_variant_data = None
+_variant_data_cps = None
 
 
 def load_data():
@@ -618,3 +623,74 @@ def _load_unicode_emoji_variants():
 def get_unicode_emoji_variants():
   _load_unicode_emoji_variants()
   return _emoji_variants
+
+
+def _load_variant_data():
+  """Parse StandardizedVariants.txt and initialize all non-emoji variant
+  data.  The data is a mapping from codepoint to a list of tuples of:
+  - variant selector
+  - compatibility character (-1 if there is none)
+  - shaping context (bitmask, 1 2 4 8 for isolate initial medial final)
+  The compatibility character is for cjk mappings that map to 'the same'
+  glyph as another CJK character."""
+
+  global _variant_data, _variant_data_cps
+  if _variant_data:
+    return
+
+  compatibility_re = re.compile(
+      r'\s*CJK COMPATIBILITY IDEOGRAPH-([0-9A-Fa-f]+)')
+  variants = collections.defaultdict(list)
+  with open_unicode_data_file('StandardizedVariants.txt') as f:
+    for line in f:
+      x = line.find('#')
+      if x >= 0:
+        line = line[:x]
+      line = line.strip()
+      if not line:
+        continue
+
+      tokens = line.split(';');
+      cp, var = tokens[0].split(' ')
+      cp = int(cp, 16)
+      varval = int(var, 16)
+      if varval in [0xfe0e, 0xfe0f]:
+        continue  # ignore emoji variants
+      m = compatibility_re.match(tokens[1].strip())
+      compat = int(m.group(1), 16) if m else -1
+      context = 0
+      if tokens[2]:
+        ctx = tokens[2]
+        if ctx.find('isolate') != -1:
+          context += 1
+        if ctx.find('initial') != -1:
+          context += 2
+        if ctx.find('medial') != -1:
+          context += 4
+        if ctx.find('final') != -1:
+          context += 8
+      variants[cp].append((varval, compat, context))
+
+  _variant_data_cps = frozenset(variants.keys())
+  _variant_data = variants
+
+
+def has_variant_data(cp):
+  _load_variant_data
+  return cp in _variant_data
+
+
+def get_variant_data(cp):
+  _load_variant_data()
+  return _variant_data[cp][:] if cp in _variant_data else None
+
+
+def variant_data_cps():
+  _load_variant_data()
+  return _variant_data_cps
+
+
+if __name__ == '__main__':
+  for cp in sorted(variant_data_cps()):
+    print '%04x: %s' % (
+        cp, ', '.join('(%x, %x, %x)' % t for t in get_variant_data(cp)))

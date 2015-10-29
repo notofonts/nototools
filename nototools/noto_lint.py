@@ -30,7 +30,9 @@ import math
 import os
 from os import path
 import re
+import subprocess
 import sys
+import tempfile
 
 from fontTools import subset
 from fontTools import ttLib
@@ -1023,6 +1025,65 @@ def check_font(font_props, filename_error,
 
         return cmap
 
+    def check_variants():
+        if not tests.check('cmap/variants'):
+            return
+
+        cmap = font_data.get_cmap(font)
+        variant_cps = unicode_data.variant_data_cps()
+        cps_with_variants = set(cmap.keys()) & variant_cps
+        if not cps_with_variants:
+            return
+
+        vs_cmap = font_data.get_variation_sequence_cmap(font)
+        if not vs_cmap:
+            num = len(cps_with_variants)
+            info = lint_config.write_int_ranges(cps_with_variants, sep=', ')
+            if len(info) > 50:
+              info = "not shown"
+            warn("cmap/variants", "Variants",
+                 "Font contains %d characters with standard variants, but has "
+                 "no variation selector cmap table (%s)." % (num, info))
+            return
+
+        for cp in sorted(cps_with_variants):
+            for sel, varcp, _ in sorted(unicode_data.get_variant_data(cp)):
+                if not sel in vs_cmap.uvsDict:
+                    warn("cmap/variants", "Variants",
+                         "Char %04x has standard variant selector %04x, but "
+                         "this selector is not in the variant table." %
+                         (cp, sel), check_test=False )
+                    continue
+                sel_info = None
+                for t in vs_cmap.uvsDict[sel]:
+                    if t[0] == cp:
+                        sel_info = t
+                        break
+                if not sel_info:
+                    warn("cmap/variants", "Variants",
+                         "Char %04x has no variant for selector %04x." %
+                         (cp, sel), check_test=False)
+                    continue
+
+                if varcp != -1:
+                    if varcp not in cmap:
+                        warn("cmap/variants", "Variants",
+                             "Char %04x and selector %04x should map to the "
+                             "same glyph as char %04x, but %04x is not in the "
+                             "cmap." % (cp, sel, varcp, varcp),
+                             check_test=False)
+                        continue
+
+                    expected_glyphid = cmap[varcp]
+                    sel_glyphid = sel_info[1] if sel_info[1] else cmap[cp]
+                    if expected_glyphid != sel_glyphid:
+                        warn("cmap/variants", "Variants",
+                             "Char %04x and selector %04x map to glyph %s, "
+                             "which should be the same glyph as is mapped to "
+                             "by %04x, but its glyph is %s." %
+                             (cp, sel, sel_glyphid, varcp, expected_glyphid),
+                             check_test=False)
+
 
     def check_head_tables(cmap):
         if not tests.check('head'):
@@ -1482,6 +1543,77 @@ def check_font(font_props, filename_error,
                    "Feature index %s (%s) has UINameID %d but it is not in the name table" % (
                        index, record.FeatureTag, params.UINameID))
 
+
+    def check_shaping(font_file, strs, context, errors):
+        text = '\n'.join(strs)
+        temp_file = tempfile.NamedTemporaryFile(suffix='.txt')
+        try:
+            temp_file.write(text.encode("utf-8"))
+            temp_file.flush()
+            command = ['hb-shape', '--font-file=%s' % font_file,
+                       '--text-file=%s' % temp_file.name]
+            features = []
+            if context != 'isol':
+                features.append('-isol')
+            if context:
+                features.append(context)
+            command.append('--features=%s' % ','.join(features))
+            # print "command: %s" % ' '.join(command)
+            result = subprocess.check_output(command)
+            for src, res in zip(strs, result.splitlines()):
+                if res.find('|') != -1:
+                    errors.append((src, context, res))
+        finally:
+            temp_file.close()
+
+
+    def check_gsub_variants():
+        """Checks if harfbuzz can use GSUB to generate standard variants"""
+        if not tests.check("complex/gsub/variants"):
+            return
+
+        cmap = font_data.get_cmap(font)
+        variant_cps = unicode_data.variant_data_cps()
+        cps_with_variants = set(cmap.keys()) & variant_cps
+        any_strs = []
+        isolate_strs = []
+        initial_strs = []
+        medial_strs = []
+        final_strs = []
+        for cp in sorted(cps_with_variants):
+            data = unicode_data.get_variant_data(cp)
+            for sel, _, ctx in sorted(data):
+                line = unichr(cp) + unichr(sel);
+                if ctx == 0:
+                  any_strs.append(line)
+                  continue
+                if ctx & 1:
+                  isolate_strs.append(line)
+                if ctx & 2:
+                  initial_strs.append(line)
+                if ctx & 4:
+                  medial_strs.append(line)
+                if ctx & 8:
+                  final_strs.append(line)
+
+        errors = []
+        font_file = font_props.filepath
+        check_shaping(font_file, any_strs, '', errors)
+        check_shaping(font_file, isolate_strs, 'isol', errors)
+        check_shaping(font_file, initial_strs, 'init', errors)
+        check_shaping(font_file, medial_strs, 'medi', errors)
+        check_shaping(font_file, final_strs, 'fina', errors)
+        if errors:
+            erroritems = []
+            for src, context, res in errors:
+                srctext = ' '.join("%04x" % ord(cp) for cp in src)
+                ctx = (" (%s)" % context) if context else ''
+                erroritems.append("%s%s: %s" % (srctext, ctx, res))
+            errorinfo = ', '.join(erroritems)
+            warn("complex/gsub/variants", "GSUB",
+                 "Expected GSUB to generate all standard variants, but %d "
+                 "cases did not (%s)" % (len(errors), errorinfo))
+
     def check_gpos_and_gsub_tables():
         if not tests.check('complex'):
             return
@@ -1525,6 +1657,7 @@ def check_font(font_props, filename_error,
                  "There is no GSUB table in the font.")
         else:
             check_complex_stylistic_set_name_ids('gsub')
+            check_gsub_variants()
 
         #TODO: Add more script-specific checks
 
@@ -1868,6 +2001,7 @@ def check_font(font_props, filename_error,
 
     check_name_table()
     cmap = check_cmap_table()
+    check_variants()
     check_head_tables(cmap)
     check_vertical_limits()
     check_for_intersections_and_off_curve_extrema()
