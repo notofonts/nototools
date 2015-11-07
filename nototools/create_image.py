@@ -20,9 +20,10 @@
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import argparse
+import codecs
 import os
-import os.path
-fonts_conf = os.path.abspath(os.path.join (os.path.dirname(__file__), "fonts.conf"))
+from os import path
+fonts_conf = path.abspath(path.join (path.dirname(__file__), "fonts.conf"))
 os.putenv("FONTCONFIG_FILE", fonts_conf)
 
 import cairo
@@ -45,6 +46,10 @@ class DrawParams:
         self.line_spacing = line_spacing
         self.weight = weight
         self.style = style
+
+    def __repr__(self):
+        return str(self.__dict__)
+
 
 def draw_on_surface(surface, text, params):
     """Draw the string on a pre-created surface and return height."""
@@ -79,6 +84,7 @@ def draw_on_surface(surface, text, params):
     font.set_size(params.font_size * pango.SCALE)
     font.set_style(params.style)
     font.set_weight(params.weight)
+
     layout.set_font_description(font)
 
     layout.set_text(text)
@@ -113,6 +119,7 @@ def create_svg(text, output_path, **kwargs):
     calculated_height = draw_on_surface(temp_surface, text, params)
 
     real_surface = cairo.SVGSurface(output_path, params.width, calculated_height)
+    print 'writing', output_path
     draw_on_surface(real_surface, text, params)
     real_surface.flush()
     real_surface.finish()
@@ -128,13 +135,14 @@ def create_png(text, output_path, **kwargs):
     real_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
         params.width, calculated_height)
     draw_on_surface(real_surface, text, params)
+    print 'writing', output_path
     real_surface.write_to_png(output_path)
 
 
 def create_img(text, output_path, **kwargs):
     """Creates a PNG or SVG image based on the output_path extension,
        from the given text"""
-    ext = (os.path.splitext(output_path)[1]).lower()
+    ext = (path.splitext(output_path)[1]).lower()
     if ext == '.png':
         create_png(text, output_path, **kwargs)
     elif ext == '.svg':
@@ -154,12 +162,14 @@ def test():
             sample_text = input_file.read().strip()
         create_img(sample_text, output_file, **kwargs)
 
-    test('hi-Deva.txt', 'hindi.png', family='Noto Sans Devanagari',
-         language='hi')
-    test('ar-Arab.txt', 'arabic.svg', family='Noto Naskh Arabic',
+    test('hi-Deva_udhr.txt', 'hindi.png', family='Noto Sans',
+         language='hi-Deva')
+    test('ar-Arab_udhr.txt', 'arabic.svg', family='Noto Naskh Arabic',
          language='ar', rtl=True)
-    test('mn-Mong.txt', 'mong.png', family='Noto Sans Mongolian',
+    test('mn-Mong_udhr.txt', 'mong.png', family='Noto Sans',
          language='mn', vertical=True)
+    test('sr-Cyrl_udhr.txt', 'sr_cyrl.png', family='Noto Sans',
+         language='sr-Cyrl', vertical=True)
 
 
 _weight_map = {
@@ -198,29 +208,34 @@ def _get_style(style_name):
                    (style_name, ', '.join(sorted(_italic_map.keys()))))
 
 
-def render_codes(code_list, font_name, weight_name, style_name, font_size, lang, ext):
+def render_codes(file_name, code_list, font_name, weight_name, style_name,
+                 font_size, lang, ext):
     text = u''.join([unichr(int(s, 16)) for s in code_list])
-    render_text(text, font_name, weight_name, style_name, font_size, lang, ext)
+    render_text(file_name, text, font_name, weight_name, style_name, font_size,
+                lang, ext)
 
 
-def render_text(text, font_name, weight_name, style_name, font_size, lang, ext):
+def render_text(file_name, text, font_name, weight_name, style_name, font_size,
+                lang, ext):
     font = font_name or 'Noto Sans'
     font_size = font_size or 32
-    name_strs = ['%x' % ord(cp) for cp in text]
-    name_strs.append(font.replace(' ', ''))
-    if weight_name:
-      name_strs.append(weight_name)
-    if style_name:
-      name_strs.append(style_name)
-    name_strs.append(str(font_size))
-    if lang:
-      name_strs.append(lang)
-    outfile_name = 'sample_' + '_'.join(name_strs) + '.' + ext
+    if not file_name:
+      name_strs = [font.replace(' ', '')]
+      name_strs.extend(['%x' % ord(cp) for cp in text])
+      if weight_name:
+        name_strs.append(weight_name)
+      if style_name:
+        name_strs.append(style_name)
+      name_strs.append(str(font_size))
+      if lang:
+        name_strs.append(lang)
+        file_name = '_'.join(name_strs) + '.' + ext
+
     weight = _get_weight(weight_name)
     style = _get_style(style_name)
-    create_img(text, outfile_name, family=font, weight=weight, style=style,
+    create_img(text, file_name, family=font, weight=weight, style=style,
                language=lang, font_size=font_size)
-    print 'generated ' + outfile_name
+    print 'generated ' + file_name
 
 
 def main():
@@ -229,6 +244,8 @@ def main():
     parser.add_argument('--codes', metavar='hex', nargs='+',
                         help='list of hex codepoints to render')
     parser.add_argument('--text', metavar='str', help='text to render, can include unicode escapes')
+    parser.add_argument('--out', metavar='name', help='name of output file, '
+                        'leave empty to generate a name', default=None)
     parser.add_argument('-f', '--font', metavar='name', help='name of noto font to use')
     parser.add_argument('-b', '--bold', metavar='wt', help="pango weight name", default=None)
     parser.add_argument('-i', '--italic', metavar='it', help="pango style name", default=None)
@@ -245,10 +262,18 @@ def main():
       print 'choose either codes or text'
       return
     if args.codes:
-      render_codes(args.codes, args.font, args.bold, args.italic,
+      render_codes(args.out, args.codes, args.font, args.bold, args.italic,
                    args.size, args.lang, args.type)
     elif args.text:
-      render_text(args.text.decode('unicode-escape'), args.font, args.bold, args.italic,
+      if args.text[0] == '@':
+        if not args.out:
+          args.out = path.splitext(args.text[1:])[0] + '.' + args.type
+        with open(args.text[1:], 'r') as f:
+          args.text = f.read()
+      else:
+        args.text = args.text.decode('unicode-escape')
+      print 'text length %d' % len(args.text)
+      render_text(args.out, args.text, args.font, args.bold, args.italic,
                   args.size, args.lang, args.type)
     else:
       print 'nothing to do'
