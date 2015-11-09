@@ -154,8 +154,6 @@ def create_img(text, output_path, **kwargs):
 def test():
     """Test sample Hindi and Arabic texts."""
 
-    import codecs
-
     def test(text_file, output_file, **kwargs):
         file_path = '../sample_texts/' + text_file
         with codecs.open(file_path, 'r', encoding='UTF-8') as input_file:
@@ -229,7 +227,7 @@ def render_text(file_name, text, font_name, weight_name, style_name, font_size,
       name_strs.append(str(font_size))
       if lang:
         name_strs.append(lang)
-        file_name = '_'.join(name_strs) + '.' + ext
+      file_name = '_'.join(name_strs) + '.' + ext
 
     weight = _get_weight(weight_name)
     style = _get_style(style_name)
