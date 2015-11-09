@@ -246,9 +246,11 @@ def fix_os2_unicoderange(font):
     os2_bitmap = font_data.get_os2_unicoderange_bitmap(font)
     expected_bitmap = font_data.get_cmap_unicoderange_bitmap(font)
     if os2_bitmap != expected_bitmap:
+        old_bitmap_string = font_data.unicoderange_bitmap_to_string(os2_bitmap)
         font_data.set_os2_unicoderange_bitmap(font, expected_bitmap)
         bitmap_string = font_data.unicoderange_bitmap_to_string(expected_bitmap)
-        print ('Set unicoderanges: ' + bitmap_string)
+        print 'Change unicoderanges from:\n  %s\nto:\n  %s' % (
+            old_bitmap_string, bitmap_string)
         return True
     return False
 
