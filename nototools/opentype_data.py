@@ -293,7 +293,10 @@ def collect_unicoderange_info(cmap):
         while index < limit:
             tup = ur_data[index]
             if cp <= tup[1]:
-                range_count += 1
+                # the ranges are disjoint and some characters fall into no
+                # range, e.g. Javanese.
+                if cp >= tup[0]:
+                    range_count += 1
                 break
             if range_count:
                 result.append((range_count, ur_data[index]))
