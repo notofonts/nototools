@@ -880,7 +880,7 @@ def check_font(font_props, filename_error,
         needed_chars &= unicode_data.defined_characters(version=font_props.char_version)
 
         if font_props.style != 'Nastaliq':
-            script = font_props.script if font_props.script != 'LGC' else 'Latn'
+            script = font_props.script
             try:
                 needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[script])
             except KeyError:

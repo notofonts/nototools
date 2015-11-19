@@ -181,6 +181,9 @@ EXTRA_CHARACTERS_NEEDED = {
         0x0300, 0x0304, 0x0305, 0x0307, 0x033F,
         0x0374, 0x0375, 0xFE24, 0xFE25, 0xFE26],
 
+    # latin 1 and 2
+    'LGC': char_range(0x20, 0x7e) + char_range(0xa0, 0xff),
+
     'Lisu': [0x02BC, 0x02CD],  # From Core Specification
 
     'Sylo': [0x2055],  # From Core Specification
