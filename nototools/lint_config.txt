@@ -30,6 +30,8 @@ disable bounds/font/ymax
 
 filename like Emoji
 disable filename/name
+disable cmap/private_use
+disable complex/gpos/missing
 
 filename like Glagolitic
 disable complex
