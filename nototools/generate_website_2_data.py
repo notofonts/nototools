@@ -424,12 +424,18 @@ def get_sample_infos(lang_scr):
     original: public domain translation, does not need attribution
     none: we have no attribution info on this, does not need attribution
   - source key.
-  The list is in order of priority: udhr samples, exemplars for the language,
-  sample text for the script, exemplars for the script."""
+  The list is in order of priority: language texts, udhr samples, exemplars for
+  the language, sample text for the script, exemplars for the script."""
 
   assert '-' in lang_scr
 
   sample_infos = []
+  sample_text = get_sample_from_sample_file(lang_scr + '_text')
+  if sample_text is not None:
+    src_key = lang_scr + '_text'
+    attr = get_attribution(src_key)
+    sample_infos.append((sample_text, attr, src_key))
+
   sample_text = get_sample_from_sample_file(lang_scr + '_udhr')
   if sample_text is not None:
     src_key = lang_scr + '_udhr'
