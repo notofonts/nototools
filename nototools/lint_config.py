@@ -345,7 +345,7 @@ class TestSpec(object):
       format_4_subset_of_12
     required
     script_required except|only cp
-    private_use
+    private_use except|only cp
     non_characters
     disallowed_ascii
     variants
