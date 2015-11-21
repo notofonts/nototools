@@ -43,6 +43,11 @@ filename like Historic
 enable complex/gsub/variants
 disable cmap/variants
 
+filename like Javanese
+disable bounds/font/ymin
+disable bounds/glyph/ymin
+enable gdef/classdef/not_combining_mismatch except cp a9bd a9be a9bf
+
 filename like MeeteiMayek
 enable gdef/classdef/not_combining_mismatch except cp abe9-abea
 
