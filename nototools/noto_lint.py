@@ -396,6 +396,7 @@ def printable_font_versions(font):
 HARD_CODED_FONT_INFO = {
     "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
     "DroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
+    "NotoColorEmoji.ttf": ("", "Qaae", None, "Regular"),
     "NotoEmoji-Regular.ttf": ("", "Qaae", None, "Regular"),
     "NotoNaskh-Regular.ttf": ("Naskh", "Arab", None, "Regular"),
     "NotoNaskh-Bold.ttf": ("Naskh", "Arab", None, "Bold"),
@@ -584,6 +585,10 @@ def check_font(font_props, filename_error,
         """
         ranges = unicode_data._parse_code_ranges(noto_data.CJK_RANGES_TXT)
         return code_range_to_set(ranges) & unicode_data.defined_characters()
+
+    def _emoji_pua_set():
+        """Returns the legacy PUA characters required for Android emoji."""
+        return lint_config.parse_int_ranges('FE4E5-FE4EE FE82C FE82E-FE837')
 
     _script_key_to_font_name = {
         'Aran': 'Urdu',
@@ -855,13 +860,11 @@ def check_font(font_props, filename_error,
             warn("name/license_url", "License",
                  "License URL doesn't match template: '%s'." % names[14])
 
-    def _check_needed_chars(cmap, char_filter):
-        # TODO(roozbeh): check the glyph requirements for controls specified at
-        # https://www.microsoft.com/typography/otspec/recom.htm
-
+    def _get_script_required(cmap):
         needed_chars = set()
         if font_props.script == "Qaae":  # Emoji
-            needed_chars = set()  # TODO: Check emoji coverage
+            # TODO: Check emoji coverage
+            needed_chars = _emoji_pua_set()  # legacy PUA for android emoji
         elif font_props.script == "Zsym":  # Symbols
             needed_chars = _symbol_set()
         elif font_props.script == "LGC":  # LGC really
@@ -895,6 +898,14 @@ def check_font(font_props, filename_error,
                 needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[script])
             except KeyError:
                 pass
+        return needed_chars
+
+
+    def _check_needed_chars(cmap, char_filter):
+        # TODO(roozbeh): check the glyph requirements for controls specified at
+        # https://www.microsoft.com/typography/otspec/recom.htm
+
+        needed_chars = _get_script_required(cmap)
 
         # TODO: also check character coverage against Unicode blocks for
         # characters of script Common or Inherited
@@ -988,13 +999,26 @@ def check_font(font_props, filename_error,
             _check_needed_chars(cmap, tests.get_filter('cmap/script_required'))
 
         if tests.check('cmap/private_use'):
-            privates_in_cmap = {char for char in cmap
-                                if unicode_data.is_private_use(char)}
+            needed_chars = _get_script_required(cmap)
+            pua_filter = tests.get_filter('cmap/private_use')
+            if pua_filter:
+                pua_filter = pua_filter[1].accept
+            def is_unwanted_pua(char):
+                if char in needed_chars:
+                    return False
+                if not unicode_data.is_private_use(char):
+                    return False
+                if not pua_filter:
+                    return True
+                return pua_filter(char)
+
+            privates_in_cmap = {char for char in cmap if is_unwanted_pua(char)}
             if privates_in_cmap:
                 warn("cmap/private_use", "Chars",
-                     "There should be no private use characters defined in the "
-                     "font, but there are: %s."
-                         % printable_unicode_range(privates_in_cmap),
+                     "There should be no (non-required) private use characters "
+                     "defined in the font, but there are %d: %s." % (
+                         len(privates_in_cmap),
+                         printable_unicode_range(privates_in_cmap)),
                      check_test=False)
 
         if tests.check('cmap/non_characters'):
