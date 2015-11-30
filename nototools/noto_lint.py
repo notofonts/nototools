@@ -85,7 +85,7 @@ def preferred_script_name(script_key):
   try:
     return unicode_data.human_readable_script_name(script_key)
   except:
-    return cldr_data.get_english_Script_name(script_key)
+    return cldr_data.get_english_script_name(script_key)
 
 
 _script_key_to_report_name = {
@@ -396,7 +396,6 @@ def printable_font_versions(font):
 HARD_CODED_FONT_INFO = {
     "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
     "DroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
-    "NotoColorEmoji.ttf": ("", "Qaae", None, "Regular"),
     "NotoEmoji-Regular.ttf": ("", "Qaae", None, "Regular"),
     "NotoNaskh-Regular.ttf": ("Naskh", "Arab", None, "Regular"),
     "NotoNaskh-Bold.ttf": ("Naskh", "Arab", None, "Bold"),
@@ -926,7 +925,8 @@ def check_font(font_props, filename_error,
     def check_cmap_table():
         cmap_table = font['cmap']
         cmaps = {}
-        expected_tables = [(4, 3, 1), (12, 3, 10)]
+        # Format 14 is variation sequences
+        expected_tables = [(4, 3, 1), (12, 3, 10), (14, 0, 5)]
         if font_props.is_cjk:
             expected_tables.extend([
                 # Adobe says historically some programs used these to identify
@@ -938,10 +938,8 @@ def check_font(font_props, filename_error,
                 (6, 1, 25), # Simplified Chinese
                 # Adobe says these just point at the windows versions, so there
                 # is no issue.
-                (4, 0, 3),   # Unicode, BMP only
-                (12, 0, 4),  # Unicode, Includes Non-BMP
-                # Required for variation selectors.
-                (14, 0, 5)]) # Unicode, Variation sequences
+                (4, 0, 3),    # Unicode, BMP only
+                (12, 0, 4)])  # Unicode, Includes Non-BMP
         for table in cmap_table.tables:
             if (table.format,
                 table.platformID,
