@@ -587,7 +587,7 @@ def check_font(font_props, filename_error,
 
     def _emoji_pua_set():
         """Returns the legacy PUA characters required for Android emoji."""
-        return lint_config.parse_int_ranges('fe4e5-fe4ee fe82c fe82e-fe837')
+        return lint_config.parse_int_ranges('FE4E5-FE4EE FE82C FE82E-FE837')
 
     _script_key_to_font_name = {
         'Aran': 'Urdu',
@@ -862,6 +862,7 @@ def check_font(font_props, filename_error,
     def _get_script_required(cmap):
         needed_chars = set()
         if font_props.script == "Qaae":  # Emoji
+            # TODO: Check emoji coverage
             needed_chars = _emoji_pua_set()  # legacy PUA for android emoji
         elif font_props.script == "Zsym":  # Symbols
             needed_chars = _symbol_set()
@@ -999,8 +1000,8 @@ def check_font(font_props, filename_error,
             needed_chars = _get_script_required(cmap)
             pua_filter = tests.get_filter('cmap/private_use')
             if pua_filter:
-              pua_filter = pua_filter[1].accept
-            def check_pua(char):
+                pua_filter = pua_filter[1].accept
+            def is_unwanted_pua(char):
                 if char in needed_chars:
                     return False
                 if not unicode_data.is_private_use(char):
@@ -1009,7 +1010,7 @@ def check_font(font_props, filename_error,
                     return True
                 return pua_filter(char)
 
-            privates_in_cmap = {char for char in cmap if check_pua(char)}
+            privates_in_cmap = {char for char in cmap if is_unwanted_pua(char)}
             if privates_in_cmap:
                 warn("cmap/private_use", "Chars",
                      "There should be no (non-required) private use characters "
