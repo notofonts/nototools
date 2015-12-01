@@ -439,57 +439,86 @@ class TestHints(FontTest):
 
 
 class TestGlyphAreas(unittest.TestCase):
-    """Tests that glyph areas between weights have the right ratios."""
+    """Tests that glyph areas between weights have the right ratios.
+
+    Must have the following attributes:
+        master/instance_glyph_sets: Tuples each containing a list of font
+            filenames and a list of glyph sets corresponding to those fonts.
+        master/instance_glyphs_to_test: Lists of glyph names.
+        master/instance_weights_to_test: Lists of weights as strings, should
+            have exactly two master weights and >1 instance weight.
+        exclude: List containing strings which if found in a font filename will
+            exclude that font from testing, e.g. "Condensed", "Italic".
+        whitelist: List containing names of glyphs to not test.
+
+    Glyph sets are used instead of font objects so that either TTFs or UFOs can
+    be tested. `exclude` should be used carefully so that only one
+    master/instance per weight is included from the given glyph sets.
+    """
 
     def setUp(self):
         """Determine which glyphs are intentionally unchanged."""
 
         self.unchanged = set()
-        pen = self.pen = GlyphAreaPen()
-        thin, bold = self.getFonts(self.masters[1], "Roboto", "Thin", "Bold")
-        for glyph in thin:
-            glyph.draw(pen)
-            thin_area = pen.unload()
-            bold[glyph.name].draw(pen)
-            bold_area = pen.unload()
-            if thin_area == bold_area:
-                if thin_area:
-                    self.unchanged.add(glyph.name)
+        master_a, master_b = self.getGlyphSets(
+            self.master_glyph_sets, self.master_weights_to_test)
+
+        pen_a = GlyphAreaPen(master_a)
+        pen_b = GlyphAreaPen(master_b)
+        for name in self.master_glyphs_to_test:
+            if name in self.whitelist:
+                continue
+            master_a[name].draw(pen_a)
+            area_a = pen_a.unload()
+            master_b[name].draw(pen_b)
+            area_b = pen_b.unload()
+            if area_a == area_b:
+                if area_a:
+                    self.unchanged.add(name)
             else:
-                assert thin_area and bold_area
+                assert area_a and area_b
 
-    def getFonts(self, fonts, family, *weights):
-        """Extract fonts of certain family and weights from given font list."""
+    def getGlyphSets(self, glyph_sets, weights):
+        """Filter glyph sets to only those with certain weights."""
 
-        fonts = dict((f.info.styleName, f) for f in fonts
-                     if f.info.familyName == family)
-        return [fonts[w] for w in weights]
+        glyph_set_map = {
+            noto_fonts.parse_weight(font_file): glyph_set
+            for font_file, glyph_set in zip(*glyph_sets)
+            if all(style not in font_file for style in self.exclude)}
+        return [glyph_set_map[w] for w in weights]
 
     def test_output(self):
-        """Test that only empty or intentionally unchanged glyphs are unchanged.
+        """Test that empty or intentionally unchanged glyphs are unchanged, and
+        everything else is changed.
         """
 
-        pen = self.pen
-        thin, regular, bold = self.getFonts(
-            self.loaded_fonts[1], "Roboto", "Thin", "Regular", "Bold")
-        regular_areas = {}
-        for glyph in regular:
-            glyph.draw(pen)
-            regular_areas[glyph.name] = pen.unload()
+        glyph_sets = self.getGlyphSets(
+            self.instance_glyph_sets, self.instance_weights_to_test)
 
-        for other in [thin, bold]:
-            for name, regular_area in regular_areas.iteritems():
-                other[name].draw(pen)
-                other_area = pen.unload()
-                if not regular_area:  # glyph probably contains only components
-                    self.assertFalse(other_area)
+        standard = glyph_sets[0]
+        pen = GlyphAreaPen(standard)
+        areas = {}
+        for name in self.instance_glyphs_to_test:
+            standard[name].draw(pen)
+            areas[name] = pen.unload()
+
+        for other in glyph_sets[1:]:
+            other_pen = GlyphAreaPen(other)
+            for name, area in areas.iteritems():
+                if name in self.whitelist:
                     continue
-                unchanged = regular_area == other_area
-                if unchanged:
-                    msg = name + " has not changed, but should have."
+                other[name].draw(other_pen)
+                other_area = other_pen.unload()
+                if name in self.unchanged or not area:
+                    self.assertEqual(
+                        area, other_area,
+                        name + " has changed, but should not have: %s vs. %s." %
+                        (area, other_area))
                 else:
-                    msg = name + " has changed, but should not have."
-                self.assertEqual(unchanged, name in self.unchanged, msg)
+                    self.assertNotEqual(
+                        area, other_area,
+                        name + " has not changed, but should have: %s vs. %s." %
+                        (area, other_area))
 
 
 class TestSpacingMarks(FontTest):
