@@ -13,13 +13,14 @@
 # limitations under the License.
 
 
-from fontTools.pens.basePen import AbstractPen
+from fontTools.pens.basePen import BasePen
 
 
-class GlyphAreaPen(AbstractPen):
+class GlyphAreaPen(BasePen):
     """Pen used for calculating the area of the contours in a glyph."""
 
-    def __init__(self):
+    def __init__(self, glyph_set):
+        super(GlyphAreaPen, self).__init__(glyph_set)
         self.area = 0
 
     def unload(self):
@@ -29,7 +30,7 @@ class GlyphAreaPen(AbstractPen):
         self.area = 0
         return area
 
-    def moveTo(self, pt):
+    def _moveTo(self, pt):
         """Remember the first point in this contour, in case it's closed. Also
         set the initial value for p0 in this contour, which will always refer to
         the most recent point.
@@ -38,7 +39,7 @@ class GlyphAreaPen(AbstractPen):
         self.first = pt
         self.p0 = pt
 
-    def lineTo(self, pt):
+    def _lineTo(self, pt):
         """Add the signed area beneath the line from the latest point to this
         one. Signed areas cancel each other based on the horizontal direction of
         the line.
@@ -48,12 +49,22 @@ class GlyphAreaPen(AbstractPen):
         self.area += (x1 - x0) * (y1 + y0) / 2.0
         self.p0 = pt
 
-    def curveTo(self, *points):
+    def _qCurveToOne(self, p1, p2):
+        """Add the signed area of this quadratic curve.
+        https://github.com/Pomax/bezierinfo/issues/44
+        """
+
+        x0, y0 = self.p0
+        x1, y1 = p1[0] - x0, p1[1] - y0
+        x2, y2 = p2[0] - x0, p2[1] - y0
+        self.area += (x2 * y1 - x1 * y2) / 3.0
+        self.lineTo(p2)
+
+    def _curveToOne(self, p1, p2, p3):
         """Add the signed area of this cubic curve.
         https://github.com/Pomax/bezierinfo/issues/44
         """
 
-        p1, p2, p3 = points
         x0, y0 = self.p0
         x1, y1 = p1[0] - x0, p1[1] - y0
         x2, y2 = p2[0] - x0, p2[1] - y0
@@ -65,13 +76,6 @@ class GlyphAreaPen(AbstractPen):
         ) * 3.0 / 20
         self.lineTo(p3)
 
-    def closePath(self):
+    def _closePath(self):
         """Add the area beneath this contour's closing line."""
         self.lineTo(self.first)
-
-    def endPath(self):
-        pass
-
-    def addComponent(self, glyphName, transformation):
-        """Don't count components towards the area, for now."""
-        pass

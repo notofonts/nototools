@@ -85,7 +85,7 @@ def preferred_script_name(script_key):
   try:
     return unicode_data.human_readable_script_name(script_key)
   except:
-    return cldr_data.get_english_Script_name(script_key)
+    return cldr_data.get_english_script_name(script_key)
 
 
 _script_key_to_report_name = {
@@ -396,7 +396,6 @@ def printable_font_versions(font):
 HARD_CODED_FONT_INFO = {
     "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
     "DroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
-    "NotoColorEmoji.ttf": ("", "Qaae", None, "Regular"),
     "NotoEmoji-Regular.ttf": ("", "Qaae", None, "Regular"),
     "NotoNaskh-Regular.ttf": ("Naskh", "Arab", None, "Regular"),
     "NotoNaskh-Bold.ttf": ("Naskh", "Arab", None, "Bold"),
@@ -588,7 +587,7 @@ def check_font(font_props, filename_error,
 
     def _emoji_pua_set():
         """Returns the legacy PUA characters required for Android emoji."""
-        return lint_config.parse_int_ranges('fe4e5-fe4ee fe82c fe82e-fe837')
+        return lint_config.parse_int_ranges('FE4E5-FE4EE FE82C FE82E-FE837')
 
     _script_key_to_font_name = {
         'Aran': 'Urdu',
@@ -599,9 +598,11 @@ def check_font(font_props, filename_error,
 
     def _get_expected_noncjk_family_name():
         name_parts = [font_props.family,
+                      'Color' if font_props.variant == 'color' else None,
                       font_props.style]
         if font_props.is_google:
-            # Emoji name comes from the font style alone
+            # Emoji name comes from the font style alone, color emoji
+            # handle 'color' variant specially
             # LGC name leaves off script ('Noto Sans')
             # HST, Aran are special-cased.
             script = font_props.script
@@ -609,7 +610,8 @@ def check_font(font_props, filename_error,
                 name_parts.append(_script_key_to_font_name[script])
             else:
                 name_parts.append(preferred_script_name(script))
-        name_parts.append(font_props.variant)
+        if font_props.variant != 'color':
+            name_parts.append(font_props.variant)
         if font_props.is_mono:
             name_parts.append('Mono')
         if font_props.is_UI:
@@ -863,6 +865,7 @@ def check_font(font_props, filename_error,
     def _get_script_required(cmap):
         needed_chars = set()
         if font_props.script == "Qaae":  # Emoji
+            # TODO: Check emoji coverage
             needed_chars = _emoji_pua_set()  # legacy PUA for android emoji
         elif font_props.script == "Zsym":  # Symbols
             needed_chars = _symbol_set()
@@ -926,7 +929,8 @@ def check_font(font_props, filename_error,
     def check_cmap_table():
         cmap_table = font['cmap']
         cmaps = {}
-        expected_tables = [(4, 3, 1), (12, 3, 10)]
+        # Format 14 is variation sequences
+        expected_tables = [(4, 3, 1), (12, 3, 10), (14, 0, 5)]
         if font_props.is_cjk:
             expected_tables.extend([
                 # Adobe says historically some programs used these to identify
@@ -938,10 +942,8 @@ def check_font(font_props, filename_error,
                 (6, 1, 25), # Simplified Chinese
                 # Adobe says these just point at the windows versions, so there
                 # is no issue.
-                (4, 0, 3),   # Unicode, BMP only
-                (12, 0, 4),  # Unicode, Includes Non-BMP
-                # Required for variation selectors.
-                (14, 0, 5)]) # Unicode, Variation sequences
+                (4, 0, 3),    # Unicode, BMP only
+                (12, 0, 4)])  # Unicode, Includes Non-BMP
         for table in cmap_table.tables:
             if (table.format,
                 table.platformID,
@@ -1001,8 +1003,8 @@ def check_font(font_props, filename_error,
             needed_chars = _get_script_required(cmap)
             pua_filter = tests.get_filter('cmap/private_use')
             if pua_filter:
-              pua_filter = pua_filter[1].accept
-            def check_pua(char):
+                pua_filter = pua_filter[1].accept
+            def is_unwanted_pua(char):
                 if char in needed_chars:
                     return False
                 if not unicode_data.is_private_use(char):
@@ -1011,7 +1013,7 @@ def check_font(font_props, filename_error,
                     return True
                 return pua_filter(char)
 
-            privates_in_cmap = {char for char in cmap if check_pua(char)}
+            privates_in_cmap = {char for char in cmap if is_unwanted_pua(char)}
             if privates_in_cmap:
                 warn("cmap/private_use", "Chars",
                      "There should be no (non-required) private use characters "
