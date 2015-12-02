@@ -598,9 +598,11 @@ def check_font(font_props, filename_error,
 
     def _get_expected_noncjk_family_name():
         name_parts = [font_props.family,
+                      'Color' if font_props.variant == 'color' else None,
                       font_props.style]
         if font_props.is_google:
-            # Emoji name comes from the font style alone
+            # Emoji name comes from the font style alone, color emoji
+            # handle 'color' variant specially
             # LGC name leaves off script ('Noto Sans')
             # HST, Aran are special-cased.
             script = font_props.script
@@ -608,7 +610,8 @@ def check_font(font_props, filename_error,
                 name_parts.append(_script_key_to_font_name[script])
             else:
                 name_parts.append(preferred_script_name(script))
-        name_parts.append(font_props.variant)
+        if font_props.variant != 'color':
+            name_parts.append(font_props.variant)
         if font_props.is_mono:
             name_parts.append('Mono')
         if font_props.is_UI:

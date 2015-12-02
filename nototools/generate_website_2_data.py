@@ -122,54 +122,58 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
 
   # Nastaliq patches:
   # Additionally map some languages in Arab script to Nastaliq ('Aran')
-  nastaliq_lang_scrs = family_id_to_lang_scrs['nastaliq-aran']
-  for lang_scr in ['bal-Arab', 'hnd-Arab', 'hno-Arab', 'ks-Arab', 'lah-Arab',
-                   'pa-Arab', 'skr-Arab', 'ur-Arab']:
-    if not lang_scr in lang_scrs:
-      print 'Map nastaliq: %s not found' % lang_scr
-    else:
-      print 'added %s to nastaliq' % lang_scr
-      nastaliq_lang_scrs.add(lang_scr)
+  if 'nastaliq-aran' in family_id_to_lang_scrs:
+    nastaliq_lang_scrs = family_id_to_lang_scrs['nastaliq-aran']
+    for lang_scr in ['bal-Arab', 'hnd-Arab', 'hno-Arab', 'ks-Arab', 'lah-Arab',
+                     'pa-Arab', 'skr-Arab', 'ur-Arab']:
+      if not lang_scr in lang_scrs:
+        print 'Map nastaliq: %s not found' % lang_scr
+      else:
+        print 'added %s to nastaliq' % lang_scr
+        nastaliq_lang_scrs.add(lang_scr)
 
   # Kufi patches:
   # - Kufi is broken for Urdu Heh goal (issue #34)
   # - Kufi doesn't support all characters needed for Khowar
   # - Kufi doesn't support all characters needed for Kashmiri
-  kufi_lang_scrs = family_id_to_lang_scrs['kufi-arab']
-  for lang_scr in ['ur-Arab', 'khw-Arab', 'ks-Arab']:
-    if not lang_scr in lang_scrs:
-      print 'Patch kufi: %s not found' % lang_scr
-    else:
-      kufi_lang_scrs.remove(lang_scr)
-      print 'removed %s from kufi' % lang_scr
-      if not kufi_lang_scrs:
-        break
+  if 'kufi-arab' in family_id_to_lang_scrs:
+    kufi_lang_scrs = family_id_to_lang_scrs['kufi-arab']
+    for lang_scr in ['ur-Arab', 'khw-Arab', 'ks-Arab']:
+      if not lang_scr in lang_scrs:
+        print 'Patch kufi: %s not found' % lang_scr
+      else:
+        kufi_lang_scrs.remove(lang_scr)
+        print 'removed %s from kufi' % lang_scr
+        if not kufi_lang_scrs:
+          break
 
   # lad patches:
   # - lad is written in a style of Hebrew called Rashi, not sure
   #   if we support it so let's exclude it for now
-  hebr_lang_scrs = family_id_to_lang_scrs['sans-hebr']
-  for lang_scr in ['lad-Hebr']:
-    if not lang_scr in lang_scrs:
-      print 'Patch lad: %s not found' % lang_scr
-    else:
-      hebr_lang_scrs.remove(lang_scr)
-      print 'removed %s from sans-hebr' % lang_scr
-      if not hebr_lang_scrs:
-        break;
+  if 'sans-hebr' in family_id_to_lang_scrs:
+    hebr_lang_scrs = family_id_to_lang_scrs['sans-hebr']
+    for lang_scr in ['lad-Hebr']:
+      if not lang_scr in lang_scrs:
+        print 'Patch lad: %s not found' % lang_scr
+      else:
+        hebr_lang_scrs.remove(lang_scr)
+        print 'removed %s from sans-hebr' % lang_scr
+        if not hebr_lang_scrs:
+          break;
 
   # ja patches:
   # - we generate all permutations of ja, including ja-Kana and
   #   ja-Hiri, but ja-Jpan subsumes these, so omit them.
-  jpan_lang_scrs = family_id_to_lang_scrs['sans-jpan']
-  for lang_scr in ['ja-Kana', 'ja-Hira']:
-    if not lang_scr in lang_scrs:
-      print 'Patch jpan: %s not found' % lang_scr
-    else:
-      jpan_lang_scrs.remove(lang_scr)
-      print 'removed %s from sans-jpan' % lang_scr
-      if not jpan_lang_scrs:
-        break;
+  if 'sans-jpan' in family_id_to_lang_scrs:
+    jpan_lang_scrs = family_id_to_lang_scrs['sans-jpan']
+    for lang_scr in ['ja-Kana', 'ja-Hira']:
+      if not lang_scr in lang_scrs:
+        print 'Patch jpan: %s not found' % lang_scr
+      else:
+        jpan_lang_scrs.remove(lang_scr)
+        print 'removed %s from sans-jpan' % lang_scr
+        if not jpan_lang_scrs:
+          break;
 
   for f, ls in family_id_to_lang_scrs.iteritems():
     if not ls:
@@ -223,7 +227,8 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
             charset = families[family_id].charset
             for cp in sample:
               if ord(cp) in [
-                  0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010]:
+                  0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010,
+                  0xfe0e, 0xfe0f]:
                 continue
               if ord(cp) not in charset:
                 failed_cps.add(ord(cp))
@@ -741,7 +746,8 @@ class WebGen(object):
                   in family_id_to_lang_scr_to_sample_key
                   if family_id != 'sans-lgc' and family_id != 'serif-lgc']
     family_ids = sorted(family_ids, key=lambda f: families[f].name)
-    sorted_ids = ['sans-lgc', 'serif-lgc']
+    sorted_ids = [fid for fid in ['sans-lgc', 'serif-lgc']
+                  if fid in family_id_to_lang_scr_to_sample_key]
     sorted_ids.extend(family_ids)
     for k in sorted_ids:
       family = families[k]
@@ -916,7 +922,16 @@ class WebGen(object):
     for font in displayed_members:
       weight = css_weight(font.weight)
       style = css_style(font.slope)
-      image_file_name = '%s_%s_%d_%s.svg' % (family_id, lang_scr, weight, style)
+      if font.variant == 'color':
+        imgtype = 'png'
+        fsize = 36
+        lspc = 44
+      else:
+        imgtype = 'svg'
+        fsize = 20
+        lspc = 32
+      image_file_name = '%s_%s_%d_%s.%s' % (
+          family_id, lang_scr, weight, style, imgtype)
       if is_cjk:
         family_suffix = ' ' + font.weight
       else:
@@ -927,7 +942,7 @@ class WebGen(object):
         print "Continue: assuming image file '%s' is valid." % image_location
         continue
       print 'create %s' % image_file_name
-      create_image.create_svg(
+      create_image.create_img(
           sample_text,
           image_location,
           family=family.name + family_suffix,
@@ -935,8 +950,8 @@ class WebGen(object):
           rtl=is_rtl,
           width=685,
           # text is coming out bigger than we expect, perhaps this is why?
-          font_size=int(20 * (72.0/96.0)),
-          line_spacing=int(32 * (72.0/96.0)),
+          font_size=int(fsize * (72.0/96.0)),
+          line_spacing=int(lspc * (72.0/96.0)),
           weight=weight,
           style=style)
 

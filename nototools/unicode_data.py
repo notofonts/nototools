@@ -83,7 +83,7 @@ def load_data():
 
 
 def name(char, *args):
-    """"Returns the name of a character.
+    """Returns the name of a character.
 
     Raises a ValueError exception if the character is undefined, unless an
     extra argument is given, in which cast it will return that argument.
@@ -309,7 +309,7 @@ def web_script_code(script_name):
         if len(script) != 4:
             raise ValueError("script code '%s' is not the right length." % script)
         else:
-            print 'default script code to name \'%s\'' % script
+            print 'web_script_code default name: \'%s\'' % script
     return script
 
 
