@@ -127,10 +127,12 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
     subset = None
 
   # Special-case emoji style
-  if 'Emoji' in style:
+  # (style can be None for e.g. Cousine, causing 'in' to fail, so guard)
+  if style and 'Emoji' in style:
     script = 'Qaae'
     if style == 'ColorEmoji':
-      style = 'Color Emoji'
+      style = 'Emoji'
+      variant = 'color'
 
   if not script:
     script = 'LGC'
