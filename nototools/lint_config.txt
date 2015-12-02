@@ -18,6 +18,9 @@ enable gdef/classdef/not_combining_mismatch except cp 1bee
 filename like Bengali
 enable script_required except cp 951-952
 
+filename like ColorEmoji
+disable cmap/tables/missing # don't need format 4 cmap
+
 filename like Cherokee
 # deferred to phase 3
 enable script_required except cp 300-302 304 30b-30c 323-324 330-331

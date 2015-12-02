@@ -94,12 +94,11 @@ WEIGHTS = {
 
 _FONT_NAME_REGEX = (
     # family should be prepended
-    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji)?'
+    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
     '(Mono)?'
     '(.*?)'
     '(UI|Eastern|Estrangela|Western)?'
-    '-' +
-    '(%s)' % '|'.join([''] + WEIGHTS.keys()) +
+    '(?:-(%s))?' % '|'.join([''] + WEIGHTS.keys()) +
     '(Italic)?'
     '\.(ttf|ttc|otf)')
 
@@ -128,8 +127,10 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
     subset = None
 
   # Special-case emoji style
-  if style == 'Emoji':
+  if 'Emoji' in style:
     script = 'Qaae'
+    if style == 'ColorEmoji':
+      style = 'Color Emoji'
 
   if not script:
     script = 'LGC'
@@ -152,7 +153,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
       print 'unknown script: %s for %s' % (script, filename)
       return
 
-  if weight == '':
+  if not weight:
     weight = 'Regular'
 
   is_mono = mono == 'Mono'
@@ -163,7 +164,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
   if is_cjk:
     is_hinted = True
-  elif filedir.endswith('alpha') or filedir.endswith('emoji/fonts'):
+  elif filedir.endswith('alpha') or 'emoji' in filedir:
     is_hinted = False
   else:
     hint_status = path.basename(filedir)
