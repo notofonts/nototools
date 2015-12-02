@@ -227,7 +227,8 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
             charset = families[family_id].charset
             for cp in sample:
               if ord(cp) in [
-                  0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010]:
+                  0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010,
+                  0xfe0e, 0xfe0f]:
                 continue
               if ord(cp) not in charset:
                 failed_cps.add(ord(cp))
@@ -921,7 +922,16 @@ class WebGen(object):
     for font in displayed_members:
       weight = css_weight(font.weight)
       style = css_style(font.slope)
-      image_file_name = '%s_%s_%d_%s.svg' % (family_id, lang_scr, weight, style)
+      if font.variant == 'color':
+        imgtype = 'png'
+        fsize = 36
+        lspc = 44
+      else:
+        imgtype = 'svg'
+        fsize = 20
+        lspc = 32
+      image_file_name = '%s_%s_%d_%s.%s' % (
+          family_id, lang_scr, weight, style, imgtype)
       if is_cjk:
         family_suffix = ' ' + font.weight
       else:
@@ -932,7 +942,7 @@ class WebGen(object):
         print "Continue: assuming image file '%s' is valid." % image_location
         continue
       print 'create %s' % image_file_name
-      create_image.create_svg(
+      create_image.create_img(
           sample_text,
           image_location,
           family=family.name + family_suffix,
@@ -940,8 +950,8 @@ class WebGen(object):
           rtl=is_rtl,
           width=685,
           # text is coming out bigger than we expect, perhaps this is why?
-          font_size=int(20 * (72.0/96.0)),
-          line_spacing=int(32 * (72.0/96.0)),
+          font_size=int(fsize * (72.0/96.0)),
+          line_spacing=int(lspc * (72.0/96.0)),
           weight=weight,
           style=style)
 
