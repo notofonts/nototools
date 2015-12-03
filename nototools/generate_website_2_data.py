@@ -93,7 +93,7 @@ def check_families(family_map):
       # them
       name = family.name
       rep_member = family.rep_member
-      charset = family.charset;
+      charset = family.charset
       if len(hinted_members) < len(unhinted_members):
         unhinted_members = []
       else:
