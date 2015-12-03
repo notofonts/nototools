@@ -63,13 +63,18 @@ def flag_sequence_name(cps):
   return ''.join(unichr(cp - REGIONAL_INDICATOR_A + ord('A')) for cp in cps)
 
 
+_NAME_FIXES = {
+    'Oclock': "O'Clock",
+    'Mans': "Man's",
+    'Womans': "Woman's",
+    'Mens': "Men's",
+    'Womens': "Women's"
+}
+
 def unicode_name(cp):
   name = unicode_data.name(cp).title()
-  name = name.replace('Oclock', "O'Clock")
-  name = name.replace('Mans', "Man's")
-  name = name.replace('Womans', "Woman's")
-  name = name.replace('Mens', "Men's")
-  name = name.replace('Womens', "Women's")
+  for k, v in _NAME_FIXES.iteritems():
+    name = name.replace(k, v)
   return name
 
 
