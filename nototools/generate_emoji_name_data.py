@@ -14,12 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generate name data for emoji resources."""
+"""Generate name data for emoji resources. Currently in json format."""
 
 import argparse
 import collections
 import glob
-import json
 import os
 from os import path
 from nototools import unicode_data
