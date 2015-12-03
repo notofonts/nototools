@@ -136,12 +136,11 @@ def write_int_ranges(int_values, in_hex=True, sep=' '):
       num_list.append(pair_fmt % (start, prev))
 
   for v in int_values[1:]:
-    if prev:
-      if v == prev + 1:
-        prev += 1
-        continue
-      else:
-        emit()
+    if v == prev + 1:
+      prev += 1
+      continue
+    else:
+      emit()
     start = prev = v
   emit()
   return sep.join(num_list)

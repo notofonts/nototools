@@ -41,6 +41,7 @@ from fontTools.misc import arrayTools
 from fontTools.misc import bezierTools
 from fontTools.pens import basePen
 
+from nototools import cldr_data
 from nototools import font_data
 from nototools import lint_config
 from nototools import notoconfig
