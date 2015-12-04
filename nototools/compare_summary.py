@@ -132,6 +132,7 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
     print '    size: %s vs %s (%s)' % (b_size, t_size, msg)
   table_diffs = compare_table_info(b_tableinfo, t_tableinfo)
   if table_diffs:
+    diff_list.append('table')
     print '    tables: %s' % table_diffs
   if b_numglyphs != t_numglyphs:
     diff_list.append('glyph count')
