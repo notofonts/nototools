@@ -5,8 +5,6 @@ disable head/os2/unicoderange
 disable complex/gsub/variants
 
 vendor Monotype
-disable trademark # we can swat this ourselves
-disable vendor_url # we just changed this, and can swat it ourselves
 disable extrema
 
 filename like Avestan

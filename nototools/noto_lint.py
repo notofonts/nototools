@@ -435,7 +435,10 @@ def font_properties_from_name(file_path):
         return None
 
     is_google = True
-    vendor = 'Adobe' if noto_font.is_cjk else 'Monotype'
+    vendor = ('Adobe' if noto_font.is_cjk
+              else 'KhmerType' if noto_font.script in ['Khmr', 'Cham', 'Laoo']
+              else 'Monotype')
+
     char_version = 6.0 if noto_font.family == 'Noto' else 8.0
     return FontProps(is_google, vendor, char_version, *noto_font)
 
@@ -452,7 +455,7 @@ def get_font_properties_with_fallback(file_path):
     style, script, ui, weight = HARD_CODED_FONT_INFO[basename]
     return FontProps(
         True, 'Monotype', 6.0,
-        file_path, 'Noto', style, script, '', weight, None, 'ttf', 'apache',
+        file_path, 'Noto', style, script, '', weight, None, 'ttf', 'sil',
         False, False, bool(ui), False, ''), 'name'
 
 
@@ -693,7 +696,7 @@ def check_font(font_props, filename_error,
       if font_props.is_google:
           if font_props.vendor == 'Adobe':
               return ADOBE_COPYRIGHT_RE
-          elif font_props.vendor == 'Monotype':
+          else:
               return GOOGLE_COPYRIGHT_RE
       return None
 
