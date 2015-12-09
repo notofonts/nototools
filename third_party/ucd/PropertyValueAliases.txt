@@ -1,9 +1,9 @@
-# PropertyValueAliases-8.0.0.txt
-# Date: 2015-03-11, 22:29:33 GMT [MD]
+# PropertyValueAliases-9.0.0.txt
+# Date: 2015-12-03, 23:12:00 GMT [MS]
+# © 2015 Unicode®, Inc.
+# For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Unicode Character Database
-# Copyright (c) 1991-2015 Unicode, Inc.
-# For terms of use, see http://www.unicode.org/terms_of_use.html
 # For documentation, see http://www.unicode.org/reports/tr44/
 #
 # This file contains aliases for property values used in the UCD.
@@ -401,6 +401,16 @@ blk; Warang_Citi                      ; Warang_Citi
 blk; Yi_Radicals                      ; Yi_Radicals
 blk; Yi_Syllables                     ; Yi_Syllables
 blk; Yijing                           ; Yijing_Hexagram_Symbols
+
+blk; Cyrillic_Ext_C                   ; Cyrillic_Extended_C
+blk; Osage                            ; Osage
+blk; Mongolian_Sup                    ; Mongolian_Supplement
+blk; Bhaiksuki                        ; Bhaiksuki
+blk; Marchen                          ; Marchen
+blk; Ideographic_Symbols              ; Ideographic_Symbols_And_Punctuation
+blk; Tangut                           ; Tangut
+blk; Tangut_Components                ; Tangut_Components
+blk; Glagolitic_Sup                   ; Glagolitic_Supplement
 
 # Canonical_Combining_Class (ccc)
 
@@ -1246,6 +1256,14 @@ sc ; Yiii                             ; Yi
 sc ; Zinh                             ; Inherited                        ; Qaai
 sc ; Zyyy                             ; Common
 sc ; Zzzz                             ; Unknown
+
+sc ; Osge; Osage
+sc ; Bhks; Bhaiksuki
+sc ; Marc; Marchen
+sc ; Tang; Tangut
+
+sc ; Adlm; Adlam
+#sc; ????; Newa
 
 # Script_Extensions (scx)
 
