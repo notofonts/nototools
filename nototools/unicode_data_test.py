@@ -110,7 +110,7 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertEqual(unicode_data.age(0x20BD), '7.0')
         self.assertEqual(unicode_data.age(0x2B820), '8.0')
         # below will fail once unicode 9 character age data updates
-        self.assertIsNone(unicode_data.age(0x104b0))
+        self.assertIsNone(unicode_data.age(0x104B0))
 
     def test_bidi_mirroring_glyph(self):
         """Tests the bidi_mirroring_glyph() method."""

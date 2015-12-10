@@ -56,8 +56,8 @@ def convert_to_four_letter(script_name):
   if not script_name:
     raise ValueError('empty script name')
   if script_name in ODD_SCRIPTS:
-      return ODD_SCRIPTS[script_name]
-  script_code = unicode_data.scripe_code(script_name)
+    return ODD_SCRIPTS[script_name]
+  script_code = unicode_data.script_code(script_name)
   if script_code = 'Zzzz':
     if len(script_name) != 4:
       raise ValueError('no script for %s' % script_name)
