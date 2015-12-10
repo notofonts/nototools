@@ -19,6 +19,7 @@ import collections
 import os
 from os import path
 import re
+import sys
 
 from fontTools import ttLib
 
@@ -58,10 +59,10 @@ def convert_to_four_letter(script_name):
   if script_name in ODD_SCRIPTS:
     return ODD_SCRIPTS[script_name]
   script_code = unicode_data.script_code(script_name)
-  if script_code = 'Zzzz':
+  if script_code == 'Zzzz':
     if len(script_name) != 4:
       raise ValueError('no script for %s' % script_name)
-    print >> sys.std_err, 'defaulting script for %s' % script_name
+    print >> sys.stderr, 'defaulting script for %s' % script_name
     script_code = script_name
   return script_code
 
