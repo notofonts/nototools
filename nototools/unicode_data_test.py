@@ -108,7 +108,9 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertEqual(unicode_data.age(0xE000), '1.1')
         self.assertEqual(unicode_data.age(0xE0021), '3.1')
         self.assertEqual(unicode_data.age(0x20BD), '7.0')
-        self.assertIsNone(unicode_data.age(0x2B820))
+        self.assertEqual(unicode_data.age(0x2B820), '8.0')
+        # below will fail once unicode 9 character age data updates
+        self.assertIsNone(unicode_data.age(0x104b0))
 
     def test_bidi_mirroring_glyph(self):
         """Tests the bidi_mirroring_glyph() method."""
@@ -131,7 +133,8 @@ class UnicodeDataTest(unittest.TestCase):
                          'Greek')
         self.assertEqual(unicode_data.human_readable_script_name('Talu'),
                          'New Tai Lue')
-        self.assertEqual(unicode_data.human_readable_script_name('Nkoo'), 'NKo')
+        self.assertEqual(unicode_data.human_readable_script_name('Nkoo'),
+                         'N\'Ko')
         self.assertEqual(unicode_data.human_readable_script_name('Qaae'),
                          'Emoji')
         self.assertEqual(unicode_data.human_readable_script_name('Zsym'),
