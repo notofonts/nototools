@@ -92,7 +92,7 @@ def _create_lang_data():
     if not is_excluded_script(script):
       all_lang_scripts[lang].add(script)
 
-  for script in unicode_data.all_script_codes():
+  for script in unicode_data.all_scripts():
     if is_excluded_script(script):
       continue
     lang = cldr_data.get_likely_subtags('und-' + script)[0]

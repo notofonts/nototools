@@ -49,7 +49,7 @@ _bidi_mirroring_glyph_data = {}
 _core_properties_data = {}
 _defined_characters = set()
 _script_code_to_long_name = {}
-_script_long_name_to_code = {}
+_folded_script_name_to_code = {}
 _lower_to_upper_case = {}
 
 # emoji data
@@ -265,58 +265,30 @@ def defined_characters(version=None, scr=None):
 
 def _folded_script_name(script_name):
     """Folds a script name to its bare bones for comparison."""
-    return script_name.translate(None, "'_ ").lower()
-
-
-def _is_same_script_name(script1, script2):
-    """Returns true if the two inputs are basically the same script name."""
-    return _folded_script_name(script1) == _folded_script_name(script2)
+    return script_name.translate(None, "'-_ ").lower()
 
 
 def script_code(script_name):
-    """Returns the four-letter ISO 15924 code of a script from its loose name.
+    """Returns the four-letter ISO 15924 code of a script from its long name.
     """
     load_data()
-    for code, code_name in _script_code_to_long_name.iteritems():
-        if _is_same_script_name(code_name, script_name):
-            return code
-    return "Zzzz"  # Unknown
-
-
-def all_script_codes():
-    """Returns a frozenset of all script codes."""
-    load_data()
-    return frozenset(_script_code_to_long_name.keys())
-
-
-def web_script_code(script_name):
-    """Web version of script_code based on generate_website_data.  This
-    returns an unrecognized script_name if it is 4 letters long or fails,
-    unlike script_code which returns 'Zzzz'."""
-    # TODO(dougfelt): see if we can drop this and just use script_code
-
-    load_data()
-    script = None
-    if script_name in _script_long_name_to_code:
-        script = _script_long_name_to_code[script_name]
-    else:
-        for lname in _script_long_name_to_code:
-            if lname.replace('_', '').lower() == script_name.lower():
-                script = _script_long_name_to_code[lname]
-                break
-    if not script:
-        script = script_name
-        if len(script) != 4:
-            raise ValueError("script code '%s' is not the right length." % script)
-        else:
-            print 'web_script_code default name: \'%s\'' % script
-    return script
+    folded_script_name = _folded_script_name(script_name)
+    try:
+      return _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE[folded_script_name]
+    except:
+      return _folded_script_name_to_code.get(folded_script_name, 'Zzzz')
 
 
 _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
-    'Nkoo': 'NKo',
+    'Nkoo': 'N\'Ko',
     'Qaae': 'Emoji',
     'Zsym': 'Symbols',
+    'Phag': 'Phags-Pa',
+}
+
+_HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE = {
+    _folded_script_name(name): code for code, name in
+    _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES.iteritems()
 }
 
 def human_readable_script_name(code):
@@ -325,7 +297,7 @@ def human_readable_script_name(code):
         return _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES[code]
     except KeyError:
         load_data()
-        return _script_code_to_long_name[code].replace('_', ' ')
+        return _script_code_to_long_name[code]
 
 
 def all_scripts():
@@ -494,8 +466,10 @@ def _load_scripts_txt():
         script_ranges = _parse_code_ranges(scripts_txt.read())
 
     for first, last, script_name in script_ranges:
+        folded_script_name = _folded_script_name(script_name)
+        script = _folded_script_name_to_code[folded_script_name]
         for char_code in xrange(first, last+1):
-            _script_data[char_code] = _script_long_name_to_code[script_name]
+            _script_data[char_code] = script
 
 
 def _load_script_extensions_txt():
@@ -551,12 +525,14 @@ def _load_property_value_aliases_txt():
         if data_item[0] == 'sc': # Script
             code = data_item[1]
             long_name = data_item[2]
-            _script_code_to_long_name[code] = long_name
-            _script_long_name_to_code[long_name] = code
+            _script_code_to_long_name[code] = long_name.replace('_', ' ')
+            folded_name = _folded_script_name(long_name)
+            _folded_script_name_to_code[folded_name] = code
 
 
 def _load_bidi_mirroring_txt():
     """Load bidi mirroring glyphs from BidiMirroring.txt."""
+
     with open_unicode_data_file("BidiMirroring.txt") as bidi_mirroring_txt:
         bmg_pairs = _parse_semicolon_separated_data(bidi_mirroring_txt.read())
 
@@ -676,7 +652,7 @@ def _load_variant_data():
 
 
 def has_variant_data(cp):
-  _load_variant_data
+  _load_variant_data()
   return cp in _variant_data
 
 

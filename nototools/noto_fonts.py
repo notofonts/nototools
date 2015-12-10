@@ -56,8 +56,15 @@ def convert_to_four_letter(script_name):
   if not script_name:
     raise ValueError('empty script name')
   if script_name in ODD_SCRIPTS:
-      return ODD_SCRIPTS[script_name]
-  return unicode_data.web_script_code(script_name)
+    return ODD_SCRIPTS[script_name]
+  script_code = unicode_data.script_code(script_name)
+  if script_code = 'Zzzz':
+    if len(script_name) != 4:
+      raise ValueError('no script for %s' % script_name)
+    print >> sys.std_err, 'defaulting script for %s' % script_name
+    script_code = script_name
+  return script_code
+
 
 # NotoFont maps a font path to information we assume the font to have, based on Noto
 # path and naming conventions:
