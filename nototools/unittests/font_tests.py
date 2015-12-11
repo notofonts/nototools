@@ -228,8 +228,10 @@ class TestNames(FontTest):
         for font_file, records in zip(self.font_files, self.names):
             family, weight, slope = self.parse_filename(font_file)
             style = self.build_style(weight, slope)
-            expected_name = family + ' ' + style
-            self.assertEqual(records[3], self.expected_unique_id(expected_name))
+            expected_name = family
+            if style != 'Regular':
+                expected_name += ' ' + style
+            self.assertEqual(records[3], self.expected_unique_id(family, style))
             self.assertEqual(records[4], expected_name)
             self.assertFalse(records.has_key(18))
 
