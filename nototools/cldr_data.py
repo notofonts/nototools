@@ -476,6 +476,7 @@ def unicode_set_string_to_list(us_str):
       pointer = mc_ptr+1
     elif us_str[pointer] == '-':
       while pointer + 1 < len(us_str) and us_str[pointer + 1] == ' ':
+        pointer += 1
         continue
       if pointer + 1 == len(us_str): # hyphen before ']' is special
         result.append('-')
