@@ -234,6 +234,7 @@ def get_likely_script(lang_tag):
 def get_likely_subtags(lang_tag):
   if not lang_tag:
     raise ValueError('empty lang tag')
+  lang_tag = lang_tag.replace('_', '-')
   _parse_likely_subtags()
   tag = lang_tag
   while True:
