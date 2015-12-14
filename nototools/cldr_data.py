@@ -234,6 +234,7 @@ def get_likely_script(lang_tag):
 def get_likely_subtags(lang_tag):
   if not lang_tag:
     raise ValueError('empty lang tag')
+  lang_tag = lang_tag.replace('_', '-')
   _parse_likely_subtags()
   tag = lang_tag
   while True:
@@ -475,6 +476,7 @@ def unicode_set_string_to_list(us_str):
       pointer = mc_ptr+1
     elif us_str[pointer] == '-':
       while pointer + 1 < len(us_str) and us_str[pointer + 1] == ' ':
+        pointer += 1
         continue
       if pointer + 1 == len(us_str): # hyphen before ']' is special
         result.append('-')
@@ -496,9 +498,10 @@ def unicode_set_string_to_list(us_str):
 
 _exemplar_from_file_cache = {}
 
-def get_exemplar_from_file(cldr_file_path):
+def get_exemplar_from_file(cldr_file_path, types=['']):
+  cache_key = cldr_file_path + '_'.join(sorted(types))
   try:
-    return _exemplar_from_file_cache[cldr_file_path]
+    return _exemplar_from_file_cache[cache_key]
   except KeyError:
     pass
 
@@ -509,14 +512,18 @@ def get_exemplar_from_file(cldr_file_path):
     _exemplar_from_file_cache[cldr_file_path] = None
     return None
 
-  exemplars = None
+  exemplars = set()
   for tag in root.iter('exemplarCharacters'):
     if 'type' in tag.attrib:
+      typeval = tag.attrib['type']
+    else:
+      typeval = ''
+    if not typeval in types:
       continue
-    exemplars = unicode_set_string_to_list(tag.text)
+    exemplars |= set(unicode_set_string_to_list(tag.text))
     break
 
-  _exemplar_from_file_cache[cldr_file_path] = exemplars
+  _exemplar_from_file_cache[cldr_file_path] = sorted(exemplars)
   return exemplars
 
 
