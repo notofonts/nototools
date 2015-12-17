@@ -486,14 +486,6 @@ EXEMPLARS = {
   'und-Mtei': r'[\uabc0-\uabe2]',
   'und-Orkh': r'[\U010c00-\U010c48]',
   'und-Phag': r'[\ua840-\ua877]',
-  'und-Qaae': r'[\u2049\u231a\u231b\u2600\u260e\u2614\u2615\u26fa\u2708\u2709'
-              r'\u270f\u3297\U01f004\U01f170\U01f193\U01f197\U01f30d\U01f318'
-              r'\U01f332\U01f334\U01f335\U01f344\U01f346\U01f352\U01f381'
-              r'\U01f393\U01f3a7\U01f3b8\U01f3e1\U01f402\U01f40a\U01f418'
-              r'\U01f419\U01f41b\U01f41f\U01f422\U01f424\U01f427\U01f44c'
-              r'\U01f44d\U01f453\U01f463\U01f4bb\U01f4ce\U01f4d3\U01f4d6'
-              r'\U01f4e1\U01f4fb\U01f511\U01f525\U01f565\U01F63a\U01f680'
-              r'\U01f681\U01f683\U01f686\U01f68c\U01f6a2\U01f6a3\U01f6b4]',
   'und-Saur': r'[\ua882-\ua8b3]',
   'und-Sund': r'[\u1b83-\u1ba0]',
   'und-Sylo': r'[\ua800-\ua82b]',
@@ -501,6 +493,14 @@ EXEMPLARS = {
   'und-Tglg': r'[\u1700-\u170c \u170e-\u1711]',
   'und-Ugar': r'[\U010380-\U01039d \U01039f]',
   'und-Xsux': r'[\U012000-\U01202f]',
+  'und-Zsye': r'[\u2049\u231a\u231b\u2600\u260e\u2614\u2615\u26fa\u2708\u2709'
+              r'\u270f\u3297\U01f004\U01f170\U01f193\U01f197\U01f30d\U01f318'
+              r'\U01f332\U01f334\U01f335\U01f344\U01f346\U01f352\U01f381'
+              r'\U01f393\U01f3a7\U01f3b8\U01f3e1\U01f402\U01f40a\U01f418'
+              r'\U01f419\U01f41b\U01f41f\U01f422\U01f424\U01f427\U01f44c'
+              r'\U01f44d\U01f453\U01f463\U01f4bb\U01f4ce\U01f4d3\U01f4d6'
+              r'\U01f4e1\U01f4fb\U01f511\U01f525\U01f565\U01F63a\U01f680'
+              r'\U01f681\U01f683\U01f686\U01f68c\U01f6a2\U01f6a3\U01f6b4]',
   'und-Zsym': r'[\u20ac\u20b9\u2103\u2109\u2115\u2116\u211a\u211e\u2122'
               r'\u21d0-\u21d3\u2203\u2205\u2207\u2208\u220f\u221e\u2248\u2284'
               r'\u231a\u23e3\u23f3\u2400\u2460\u24b6\u2523\u2533\u2602\u260e'

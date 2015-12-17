@@ -395,15 +395,15 @@ def printable_font_versions(font):
 
 
 HARD_CODED_FONT_INFO = {
-    "AndroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
-    "DroidEmoji.ttf": ("Sans", "Qaae", None, "Regular"),
-    "NotoEmoji-Regular.ttf": ("", "Qaae", None, "Regular"),
+    "AndroidEmoji.ttf": ("Sans", "Zsye", None, "Regular"),
+    "DroidEmoji.ttf": ("Sans", "Zsye", None, "Regular"),
+    "NotoEmoji-Regular.ttf": ("", "Zsye", None, "Regular"),
     "NotoNaskh-Regular.ttf": ("Naskh", "Arab", None, "Regular"),
     "NotoNaskh-Bold.ttf": ("Naskh", "Arab", None, "Bold"),
     "NotoNaskhUI-Regular.ttf": ("Naskh", "Arab", "UI", "Regular"),
     "NotoNaskhUI-Bold.ttf": ("Naskh", "Arab", "UI", "Bold"),
     "NotoSansCypriotSyllabary-Regular.ttf": ("Sans", "Cprt", None, "Regular"),
-    "NotoSansEmoji-Regular.ttf": ("Sans", "Qaae", None, "Regular"),
+    "NotoSansEmoji-Regular.ttf": ("Sans", "Zsye", None, "Regular"),
     "NotoSansKufiArabic-Regular.ttf": ("Kufi", "Arab", None, "Regular"),
     "NotoSansKufiArabic-Bold.ttf": ("Kufi", "Arab", None, "Bold"),
     "NotoSansSymbols-Regular.ttf": ("Sans", "Zsym", None, "Regular"),
@@ -597,7 +597,7 @@ def check_font(font_props, filename_error,
         'Aran': 'Urdu',
         'HST': 'Historic',
         'LGC': None,
-        'Qaae': None,
+        'Zsye': None,
     }
 
     def _get_expected_noncjk_family_name():
@@ -871,7 +871,7 @@ def check_font(font_props, filename_error,
 
     def _get_script_required(cmap):
         needed_chars = set()
-        if font_props.script == "Qaae":  # Emoji
+        if font_props.script == "Zsye":  # Emoji
             # TODO: Check emoji coverage
             needed_chars = _emoji_pua_set()  # legacy PUA for android emoji
         elif font_props.script == "Zsym":  # Symbols
@@ -1043,7 +1043,7 @@ def check_font(font_props, filename_error,
                      check_test=False)
 
         if tests.check('cmap/disallowed_ascii') and not (
-            font_props.script == "Qaae" or
+            font_props.script == "Zsye" or
             font_props.script == "Latn" or
             font_props.script == "LGC" or
             font_props.is_cjk):
