@@ -258,6 +258,8 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
         print '!%s can display no samples for any lang of %s' % (
             family_id, ', '.join(sorted(family_id_to_lang_scrs[family_id])))
       else:
+        print '%s has samples for %s langs' % (
+            family_id, len(lang_scr_to_sample_key))
         family_id_to_lang_scr_to_sample_key[family_id] = lang_scr_to_sample_key
 
     return (family_id_to_lang_scr_to_sample_key, sample_key_to_info)
@@ -824,7 +826,7 @@ class WebGen(object):
 
   def _sorted_displayed_members(self, family):
     members = [m for m in (family.hinted_members or family.unhinted_members)
-               if not m.is_mono]
+               if not (m.is_cjk and m.is_mono)]
     # sort non-italic before italic
     return sorted(members,
                   key=lambda f: str(css_weight(f.weight)) + '-' +
@@ -963,12 +965,13 @@ class WebGen(object):
       print 'Generating images for %s...' % family.name
       default_lang = family_id_to_default_lang_scr[family_id]
       lang_scr_to_sample_key = family_id_to_lang_scr_to_sample_key[family_id]
+
       # We don't know that rendering the same sample text with different
       # languages is the same, so we have to generate all the samples and
       # name them based on the language.  But most of the samples with the
       # same font and text will be the same, because the fonts generally
       # only customize for a few language tags.
-      for lang_scr, sample_key in lang_scr_to_sample_key.iteritems():
+      for lang_scr, sample_key in sorted(lang_scr_to_sample_key.iteritems()):
         sample_text, attrib, _ = sample_key_to_info[sample_key]
         self.build_family_images(
             family, lang_scr, sample_text, attrib, sample_key)
