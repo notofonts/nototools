@@ -215,11 +215,8 @@ LIKELY_SUBTAGS = {
 
 
 ENGLISH_SCRIPT_NAMES = {
-    'Ahom': u'Ahom',
     'Cans': u'Canadian Aboriginal', # shorten name for display purposes,
                                     #match Noto font name
-    'Hatr': u'Hatran',
-    'Mult': u'Multani',
 }
 
 ENGLISH_LANGUAGE_NAMES = {
