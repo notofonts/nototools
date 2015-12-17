@@ -512,7 +512,7 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
     _exemplar_from_file_cache[cldr_file_path] = None
     return None
 
-  exemplars = set()
+  exemplars = []
   for tag in root.iter('exemplarCharacters'):
     if 'type' in tag.attrib:
       typeval = tag.attrib['type']
@@ -520,10 +520,12 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
       typeval = ''
     if not typeval in types:
       continue
-    exemplars |= set(unicode_set_string_to_list(tag.text))
+    # TODO(dougfelt): when multiple types are used, append in fixed order
+    # and don't rely on order in the xml file?
+    exemplars.extend(unicode_set_string_to_list(tag.text))
     break
 
-  _exemplar_from_file_cache[cldr_file_path] = sorted(exemplars)
+  _exemplar_from_file_cache[cldr_file_path] = exemplars
   return exemplars
 
 
