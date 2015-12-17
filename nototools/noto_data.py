@@ -114,7 +114,7 @@ DEEMED_UI_SCRIPTS_SET = frozenset({
   'Geor', # Georgian
   'Hebr', # Hebrew
   'Sinh', # Sinhala
-  'Qaae', # Emoji
+  'Zsye', # Emoji
 })
 
 # Range spec matches "Noto Nastaliq requirements" doc, Tier 1.

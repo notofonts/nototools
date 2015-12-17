@@ -114,7 +114,7 @@ def _create_lang_data():
   all_lang_scripts['ryu'].add('Jpan')
 
   # Patch: see noto-fonts#133 comment on June 8th.
-  all_lang_scripts['tlh'] |= {'Latn', 'Qaak'} # see wikipedia Klingon_alphabets
+  all_lang_scripts['tlh'] |= {'Latn', 'Piqd'}
 
   all_langs = used_lang_scripts.keys() + all_lang_scripts.keys()
   lang_data = {}
@@ -168,10 +168,10 @@ def _create_script_to_default_lang(lang_script_data):
 
   # Add scripts without langs.
   all_scripts.add('Zsym')
-  all_scripts.add('Qaae')
+  all_scripts.add('Zsye')
 
-  # Patch Klingon as default lang for pseudo-script pIqaD
-  script_to_used['Qaak'].add('tlh')
+  # Patch Klingon as default lang for (unused) script pIqaD
+  script_to_used['Piqd'].add('tlh')
 
   for script in sorted(all_scripts):
     default_lang = cldr_data.get_likely_subtags('und-' + script)[0]
@@ -230,7 +230,7 @@ def _create_lang_script_to_names(lang_script_data):
         en_name = cldr_data.get_english_language_name(target)
       if not en_name:
         # Easier than patching the cldr_data, not sure I want to go there.
-        if lang_script == 'tlh-Qaak':
+        if lang_script == 'tlh-Piqd':
           en_name = u'Klingon'
         else:
           print '!No english name for %s' % lang_script

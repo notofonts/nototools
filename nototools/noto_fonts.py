@@ -48,7 +48,7 @@ ODD_SCRIPTS = {
   'NKo': 'Nkoo',
   'SumeroAkkadianCuneiform': 'Xsux',
   'Symbols': 'Zsym',
-  'Emoji': 'Qaae',
+  'Emoji': 'Zsye',
 }
 
 
@@ -137,7 +137,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   # Special-case emoji style
   # (style can be None for e.g. Cousine, causing 'in' to fail, so guard)
   if style and 'Emoji' in style:
-    script = 'Qaae'
+    script = 'Zsye'
     if style == 'ColorEmoji':
       style = 'Emoji'
       variant = 'color'
@@ -240,6 +240,8 @@ def noto_font_to_family_id(notofont):
     tags.append(notofont.family)
   if notofont.style:
     tags.append(notofont.style)
+  if notofont.is_mono and not notofont.is_cjk:
+    tags.append('mono')
   if notofont.is_cjk and notofont.subset:
     tags.append('cjk')
     tags.append(notofont.subset)
@@ -320,7 +322,8 @@ def get_families(fonts):
       else:
         unhinted_members.append(font)
       if not rep_member:
-        if font.weight == 'Regular' and font.slope is None and not font.is_mono:
+        if font.weight == 'Regular' and font.slope is None and not (
+            font.is_cjk and font.is_mono):
           # We assume here that there's no difference between a hinted or unhinted
           # rep_member in terms of what we use it for.  The other filters are to ensure
           # the fontTools font name is a good stand-in for the family name.

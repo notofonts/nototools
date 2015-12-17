@@ -135,7 +135,7 @@ class UnicodeDataTest(unittest.TestCase):
                          'New Tai Lue')
         self.assertEqual(unicode_data.human_readable_script_name('Nkoo'),
                          'N\'Ko')
-        self.assertEqual(unicode_data.human_readable_script_name('Qaae'),
+        self.assertEqual(unicode_data.human_readable_script_name('Zsye'),
                          'Emoji')
         self.assertEqual(unicode_data.human_readable_script_name('Zsym'),
                          'Symbols')

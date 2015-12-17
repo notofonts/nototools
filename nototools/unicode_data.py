@@ -280,10 +280,13 @@ def script_code(script_name):
 
 
 _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
+    'Aran': 'Nastaliq', # not assigned
     'Nkoo': 'N\'Ko',
-    'Qaae': 'Emoji',
-    'Zsym': 'Symbols',
     'Phag': 'Phags-Pa',
+    'Piqd': 'Klingon', # not assigned
+    'Zmth': 'Math', # not assigned
+    'Zsye': 'Emoji', # not assigned
+    'Zsym': 'Symbols', # not assigned
 }
 
 _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE = {
