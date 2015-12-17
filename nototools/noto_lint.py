@@ -64,7 +64,7 @@ SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, 
 
 SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
 
-GOOGLE_COPYRIGHT_RE = r'Copyright 201\d Google Inc. All Rights Reserved\.'
+GOOGLE_COPYRIGHT_RE = r'Copyright 20\d\d Google Inc. All Rights Reserved\.'
 
 APACHE_LICENSE = "Licensed under the Apache License, Version 2.0"
 
@@ -753,7 +753,10 @@ def check_font(font_props, filename_error,
         expected_license_url_name = get_expected_license_url_name()
         expected_trademark_name = get_expected_trademark_name()
 
-        if expected_copyright_re and not re.match(expected_copyright_re, names[0]):
+        if 0 not in names:
+            warn("name/copyright", "Copyright",
+                 "Copyright in 'name' table is not set.")
+        elif expected_copyright_re and not re.match(expected_copyright_re, names[0]):
             warn("name/copyright", "Copyright",
                  "Copyright message doesn't match template: '%s'\n%s" % (
                      names[0], expected_copyright_re))
@@ -1707,7 +1710,12 @@ def check_font(font_props, filename_error,
 
         rtlm = {}
         if "GSUB" in font:
-            feature_record = font["GSUB"].table.FeatureList.FeatureRecord
+            try:
+              feature_record = font["GSUB"].table.FeatureList.FeatureRecord
+            except AttributeError:
+              warn("bidi", "bidi",
+                   "GSUB table with no feature record", is_error=False)
+              feature_record = []
             for record in feature_record:
                 if record.FeatureTag == "rtlm":  # FIXME
                     for lookup_number in record.Feature.LookupListIndex:
@@ -1873,32 +1881,39 @@ def check_font(font_props, filename_error,
                              is_error=False)
 
         if tests.check('advances/whitespace'):
-            if tab_char in cmap or nbsp_char in cmap:
-                space_width = get_horizontal_advance(space_char);
-                if tab_char in cmap:
-                    # see https://www.microsoft.com/typography/otspec/recom.htm
-                    expect_width(tab_char, space_width)
-                if nbsp_char in cmap:
-                    expect_width(nbsp_char, space_width)
+            if font_props.is_mono:
+                space_width = get_horizontal_advance(space_char)
+                cps = [ tab_char, nbsp_char ] + range(0x2000, 0x200B)
+                for cp in cps:
+                    if cp in cmap:
+                        expect_width(cp, space_width)
+            else:
+                if tab_char in cmap or nbsp_char in cmap:
+                    space_width = get_horizontal_advance(space_char);
+                    if tab_char in cmap:
+                        # see https://www.microsoft.com/typography/otspec/recom.htm
+                        expect_width(tab_char, space_width)
+                    if nbsp_char in cmap:
+                        expect_width(nbsp_char, space_width)
 
-            em_width = font['head'].unitsPerEm
-            expect_width(0x2000, em_width, 2) # en_quad
-            expect_width(0x2001, em_width)    # em_quad
-            expect_width(0x2002, em_width, 2) # en_space
-            expect_width(0x2003, em_width)    # em_space
-            expect_width(0x2004, em_width, 3) # three-per-em space
-            expect_width(0x2005, em_width, 4) # four-per-em space
-            expect_width(0x2006, em_width, 6) # six-per-em space
-            if digit_char in cmap:
-                expect_width(0x2007, digit_width) # figure space
-            if period_char in cmap:
-                expect_width(0x2008, period_width) # punctuation space
-            # see http://unicode.org/charts/PDF/U2000.pdf, but microsoft (below)
-            # says French uses 1/8 em.
-            expect_width(0x2009, em_width, 5, 6) # thin space
-            # see http://www.microsoft.com/typography/developers/fdsspec/spaces.htm
-            expect_width(0x200A, em_width, 10, 16) # hair space
-            expect_width(0x200B, 0) # zero width space
+                em_width = font['head'].unitsPerEm
+                expect_width(0x2000, em_width, 2) # en_quad
+                expect_width(0x2001, em_width)    # em_quad
+                expect_width(0x2002, em_width, 2) # en_space
+                expect_width(0x2003, em_width)    # em_space
+                expect_width(0x2004, em_width, 3) # three-per-em space
+                expect_width(0x2005, em_width, 4) # four-per-em space
+                expect_width(0x2006, em_width, 6) # six-per-em space
+                if digit_char in cmap:
+                    expect_width(0x2007, digit_width) # figure space
+                if period_char in cmap:
+                    expect_width(0x2008, period_width) # punctuation space
+                # see http://unicode.org/charts/PDF/U2000.pdf, but microsoft (below)
+                # says French uses 1/8 em.
+                expect_width(0x2009, em_width, 5, 6) # thin space
+                # see http://www.microsoft.com/typography/developers/fdsspec/spaces.htm
+                expect_width(0x200A, em_width, 10, 16) # hair space
+                expect_width(0x200B, 0) # zero width space
 
         if tests.check('advances/spacing_marks'):
           spacing_marks = lint_config.parse_int_ranges(
