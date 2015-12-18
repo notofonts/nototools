@@ -1,4 +1,9 @@
-# Attributions for sample excerpts:#   original - in the public domain, no attribution#   UN - UN, OHCHR, or affiliate, attribute to UN#   other - not a UN translation#   none - not on ohchr, not a UN translationab-Cyrl_udhr.txt: UN
+# Attributions for sample excerpts:
+#   original - in the public domain, no attribution
+#   UN - UN, OHCHR, or affiliate, attribute to UN
+#   other - not a UN translation
+#   none - not on ohchr, not a UN translation
+ab-Cyrl_udhr.txt: UN
 ace-Latn_udhr.txt: other
 ada-Latn_udhr.txt: UN
 ady-Cyrl_udhr.txt: other
