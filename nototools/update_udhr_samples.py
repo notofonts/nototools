@@ -122,7 +122,6 @@ BCP_FIXES = {
   'acu': 'acu', # drop acu_1
   'ak': [('ak-asante', 'aka_asante'), ('ak-fante', 'aka_fante')],
   'cjk': [('cjk', 'cjk'), ('cjk-AO', 'cjk_AO')],
-  'fa': 'pes_2', #drop pes_1
   'ht': [('ht-popular', 'hat_popular'), ('ht-kreyol', 'hat_kreyol')],
   'hus': 'hus', # drop hva, hsf
   'kg': [('kg', 'kng'), ('kg-AO', 'kng_AO')],
@@ -131,22 +130,28 @@ BCP_FIXES = {
   'ny': [('ny-chinyanj', 'nya_chinyanja'), ('ny-chechewa', 'nya_chechewa')], # max 8 chars
   'oc': 'lnc', # drop auv
   'ro': 'ron_2006', # drop 1993, 1953
-  'rom': 'rmn' # drop rmn_1
+  'rom': 'rmn', # drop rmn_1
+  'th': 'tha' # drop tha2
   }
 
 def fix_index(bcp_to_codes):
   """Take a mapping from bcp to a set of file codes, and
   select the mappings we want using a whitelist.  We return
   a mapping from one bcp47 code to one file code."""
+  used_fixes = set()
   result = {}
   for k, v in bcp_to_codes.iteritems():
     if k == 'und':
       print 'skip und'
     elif len(v) == 1:
       result[k] = next(iter(v))
+      if k in BCP_FIXES:
+        print 'skip fix for %s, defined as %s but fixes has %s' % (
+            k, result[k], BCP_FIXES[k])
     elif not k in BCP_FIXES:
       print 'No fix for %s (%s)' % (k, v)
     else:
+      used_fixes.add(k)
       fix = BCP_FIXES[k]
       if isinstance(fix, basestring):
         print 'for %s (%s) select %s' % (k, ', '.join(v), fix)
@@ -157,6 +162,13 @@ def fix_index(bcp_to_codes):
           fixes.append('%s=%s' % (newk, newv))
           result[newk] = newv
         print 'for %s (%s) select %s' % (k, ', '.join(v), ', '.join(fixes))
+
+  unused_fixes = []
+  for k in sorted(BCP_FIXES):
+    if not k in used_fixes:
+      unused_fixes.append(k)
+  if unused_fixes:
+    print 'unused fixes: %s' % ', '.join(unused_fixes)
 
   return result
 
