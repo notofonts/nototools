@@ -91,16 +91,30 @@ class TestMetaInfo(FontTest):
     def setUp(self):
         _, self.fonts = self.loaded_fonts
 
+    def parse_metadata(self, font):
+        """Parse font name to infer weight and slope."""
+
+        font_name = font_data.font_name(font)
+        bold = ('Bold' in font_name) or (
+            self.mark_heavier_as_bold and 'Black' in font_name)
+        italic = 'Italic' in font_name
+        return bold, italic
+
     def test_mac_style(self):
         """Tests the macStyle of the fonts to be correct."""
 
         for font in self.fonts:
-            font_name = font_data.font_name(font)
-            bold = ('Bold' in font_name) or (
-                self.mark_heavier_as_bold and 'Black' in font_name)
-            italic = 'Italic' in font_name
+            bold, italic = self.parse_metadata(font)
             expected_mac_style = (italic << 1) | bold
             self.assertEqual(font['head'].macStyle, expected_mac_style)
+
+    def test_fs_selection(self):
+        """Tests the fsSelection to be correct."""
+
+        for font in self.fonts:
+            bold, italic = self.parse_metadata(font)
+            expected_fs_type = ((bold << 5) | italic) or (1 << 6)
+            self.assertEqual(font['OS/2'].fsSelection, expected_fs_type)
 
     def test_fs_type(self):
         """Tests the fsType of the fonts."""
