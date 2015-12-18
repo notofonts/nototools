@@ -65,6 +65,7 @@ es-Latn_udhr.txt: original
 et-Latn_udhr.txt: other
 eu-Latn_udhr.txt: UN
 evn-Cyrl_udhr.txt: UN
+fa-Arab-AF_udhr.txt: other
 fi-Latn_udhr.txt: UN
 fj-Latn_udhr.txt: UN
 fo-Latn_udhr.txt: UN
@@ -228,6 +229,7 @@ sw-Latn_udhr.txt: UN
 swb-Arab_udhr.txt: other
 ta-Taml_udhr.txt: other
 taj-Deva_udhr.txt: other
+te-Telu_udhr.txt: UN
 tem-Latn_udhr.txt: other
 tet-Latn_udhr.txt: other
 tg-Cyrl_udhr.txt: other
@@ -255,6 +257,7 @@ vai-Vaii_udhr.txt: other
 ve-Latn_udhr.txt: other
 vec-Latn_udhr.txt: none
 vep-Latn_udhr.txt: UN
+vi-Hani_udhr.txt: none
 vi-Latn_udhr.txt: UN
 vmw-Latn_udhr.txt: other
 wa-Latn_udhr.txt: other

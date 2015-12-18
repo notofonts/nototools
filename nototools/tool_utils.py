@@ -176,7 +176,10 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
   tool_generated_files = []
   for f in os.listdir(path.join(repo, subdir)):
     relpath = path.join(subdir, f)
-    commit, date, author, title = git_file_lastlog(repo, relpath).split('\t')
+    lastlog_str = git_file_lastlog(repo, relpath)
+    if not lastlog_str:
+      raise ValueError('file %s in %s not under version control' % (f, subdir))
+    commit, date, author, title = lastlog_str.split('\t')
     if title.startswith(commit_title_prefix):
       tool_generated_files.append(f)
   return tool_generated_files

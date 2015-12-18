@@ -115,7 +115,7 @@
   <udhr f='eml'                iso639-3='rgn'    bcp47='eml'            ohchr='eml'    stage='4' notes='n' loc='44.23,11.72'          region='Europe'      demo='n' n='Emiliano-Romagnolo'/>
   <udhr f='eng'                iso639-3='eng'    bcp47='en'             ohchr='eng'    stage='5' notes='n' loc='53.00,-1.00'          region='Europe'      demo='y' n='English'/>
   <udhr f='epo'                iso639-3='epo'    bcp47='eo'             ohchr='1115'   stage='4' notes='n' loc='49.33,2.81'           region='Other'       demo='n' n='Esperanto'/>
-  <udhr f='est'                iso639-3='est'    bcp47='et'             ohchr='est'    stage='4' notes='n' loc='59.55,22.82'          region='Europe'      demo='n' n='Estonian'/>
+  <udhr f='est'                iso639-3='est'    bcp47='et'             ohchr='est'    stage='4' notes='n' loc='58.55,25.82'          region='Europe'      demo='n' n='Estonian'/>
   <udhr f='eus'                iso639-3='eus'    bcp47='eu'             ohchr='bsq'    stage='4' notes='n' loc='43.28,-1.32'          region='Europe'      demo='n' n='Basque'/>
   <udhr f='eve'                iso639-3='eve'    bcp47='eve'            ohchr='eve'    stage='4' notes='n' loc='70.67,130.91'         region='Asia'        demo='n' n='Even'/>
   <udhr f='evn'                iso639-3='evn'    bcp47='evn'            ohchr='evn'    stage='4' notes='n' loc='53.85,108.63'         region='Asia'        demo='n' n='Evenki'/>
@@ -174,7 +174,7 @@
   <udhr f='ibb'                iso639-3='ibb'    bcp47='ibb'            ohchr='ibb'    stage='4' notes='n' loc='5.15,7.87'            region='Africa'      demo='n' n='Ibibio'/>
   <udhr f='ibo'                iso639-3='ibo'    bcp47='ig'             ohchr='igr'    stage='4' notes='n' loc='4.63,7.23'            region='Africa'      demo='n' n='Igbo'/>
   <udhr f='ido'                iso639-3='ido'    bcp47='io'             ohchr='1120'   stage='4' notes='n' loc='-75,20'               region='Other'       demo='n' n='Ido'/>
-  <udhr f='iii'                iso639-3='iii'    bcp47='ii'             ohchr='iii'    stage='4' notes='n' loc='28.19,102.12'         region='Asia'        demo='y' n='Yi, Sichuan'/>
+  <udhr f='iii'                iso639-3='iii'    bcp47='ii'             ohchr='iii'    stage='4' notes='n' loc='28.19,102.12'         region='Asia'        demo='y' n='Nuosu'/>
   <udhr f='ike'                iso639-3='ike'    bcp47='iu'             ohchr='esb'    stage='4' notes='n' loc='62.17,-75.61'         region='Americas'    demo='n' n='Inuktitut, Eastern Canadian'/>
   <udhr f='ilo'                iso639-3='ilo'    bcp47='ilo'            ohchr='ilo'    stage='4' notes='n' loc='15.94,120.99'         region='Asia'        demo='n' n='Ilocano'/>
   <udhr f='ina'                iso639-3='ina'    bcp47='ia'             ohchr='1119'   stage='4' notes='n' loc='48.20,2.62'           region='Other'       demo='n' n='Interlingua'/>
@@ -248,7 +248,7 @@
   <udhr f='mah'                iso639-3='mah'    bcp47='mh'             ohchr='mzm'    stage='4' notes='n' loc='3.13,170.46'          region='Pacific'     demo='n' n='Marshallese'/>
   <udhr f='mai'                iso639-3='mai'    bcp47='mai'            ohchr=''       stage='4' notes='n' loc='26.38,86.22'          region='Asia'        demo='n' n='Maithili'/>
   <udhr f='mai_2'              iso639-3='mai'    bcp47='mai'            ohchr='mai'    stage='2' notes='n' loc='26.38,86.22'          region='Asia'        demo='n' n='Maithili (2)'/>
-  <udhr f='mal'                iso639-3='mal'    bcp47='ml'             ohchr='mjs'    stage='4' notes='n' loc='9.59,76.77'           region='Asia'        demo='n' n='Malayalam'/>
+  <udhr f='mal'                iso639-3='mal'    bcp47='ml'             ohchr='mjs'    stage='4' notes='n' loc='9.59,76.77'           region='Asia'        demo='y' n='Malayalam'/>
   <udhr f='mam'                iso639-3='mam'    bcp47='mam'            ohchr='mam'    stage='4' notes='n' loc='14.80,-91.72'         region='Americas'    demo='n' n='Mam, Northern'/>
   <udhr f='mar'                iso639-3='mar'    bcp47='mr'             ohchr='mrt'    stage='4' notes='n' loc='17.93,76.67'          region='Asia'        demo='n' n='Marathi'/>
   <udhr f='maz'                iso639-3='maz'    bcp47='maz'            ohchr='maz'    stage='4' notes='n' loc='19.74,-100.02'        region='Americas'    demo='n' n='Mazahua Central'/>
@@ -313,15 +313,15 @@
   <udhr f='pbu'                iso639-3='pbu'    bcp47='ps'             ohchr='pbu'    stage='3' notes='n' loc='35.00,71.33'          region='Asia'        demo='n' n='Pashto, Northern'/>
   <udhr f='pcd'                iso639-3='pcd'    bcp47='pcd'            ohchr='frn2'   stage='4' notes='n' loc='50.28,3.25'           region='Europe'      demo='n' n='Picard'/>
   <udhr f='pcm'                iso639-3='pcm'    bcp47='pcm'            ohchr='pcm'    stage='4' notes='n' loc='9.66,4.21'            region='Africa'      demo='n' n='Pidgin, Nigerian'/>
-  <udhr f='pes_1'              iso639-3='pes'    bcp47='fa'             ohchr='prs'    stage='4' notes='n' loc='28.66,55.16'          region='Asia'        demo='n' n='Farsi, Western (1)'/>
-  <udhr f='pes_2'              iso639-3='pes'    bcp47='fa'             ohchr='prs1'   stage='4' notes='n' loc='28.66,55.16'          region='Asia'        demo='n' n='Farsi, Western (2)'/>
+  <udhr f='pes_1'              iso639-3='pes'    bcp47='fa'             ohchr='prs'    stage='4' notes='n' loc='28.66,55.16'          region='Asia'        demo='n' n='Farsi, Western'/>
+  <udhr f='pes_2'              iso639-3='prs'    bcp47='fa-AF'          ohchr='prs1'   stage='4' notes='n' loc='28.66,55.16'          region='Asia'        demo='n' n='Dari'/>
   <udhr f='pis'                iso639-3='pis'    bcp47='pis'            ohchr='pis'    stage='4' notes='n' loc='-9.57,160.14'         region='Pacific'     demo='n' n='Pijin'/>
   <udhr f='plt'                iso639-3='plt'    bcp47='mg'             ohchr='mex'    stage='4' notes='n' loc='-19.59,47.12'         region='Africa'      demo='n' n='Malagasy, Plateau'/>
   <udhr f='pnb'                iso639-3='pnb'    bcp47='pnb'            ohchr=''       stage='4' notes='n' loc='30.09,75.35'          region='Asia'        demo='n' n='Panjabi, Western'/>
   <udhr f='pol'                iso639-3='pol'    bcp47='pl'             ohchr='pql'    stage='4' notes='n' loc='51.84,18.63'          region='Europe'      demo='n' n='Polish'/>
   <udhr f='pon'                iso639-3='pon'    bcp47='pon'            ohchr='pnf'    stage='4' notes='n' loc='6.87,158.22'          region='Pacific'     demo='n' n='Pohnpeian'/>
   <udhr f='por_BR'             iso639-3='por'    bcp47='pt-BR'          ohchr=''       stage='5' notes='n' loc='-15,-47'              region='Americas'    demo='n' n='Portuguese (Brazil)'/>
-  <udhr f='por_PT'             iso639-3='por'    bcp47='pt-PT'          ohchr='por'    stage='5' notes='n' loc='42.03,-4.19'          region='Europe'      demo='n' n='Portuguese (Portugal)'/>
+  <udhr f='por_PT'             iso639-3='por'    bcp47='pt-PT'          ohchr='por'    stage='5' notes='n' loc='39.91,-8.10'          region='Europe'      demo='n' n='Portuguese (Portugal)'/>
   <udhr f='pov'                iso639-3='pov'    bcp47='pov'            ohchr='gbc'    stage='4' notes='n' loc='13.23,-15.33'         region='Africa'      demo='n' n='Crioulo, Upper Guinea'/>
   <udhr f='ppl'                iso639-3='ppl'    bcp47='ppl'            ohchr='ppl'    stage='4' notes='n' loc='13.89,-89.44'         region='Americas'    demo='n' n='Pipil'/>
   <udhr f='prq'                iso639-3='prq'    bcp47='prq'            ohchr='cpp'    stage='4' notes='n' loc='-10.98,-74.92'        region='Americas'    demo='n' n='Ashéninka Perené'/>
@@ -364,7 +364,7 @@
   <udhr f='shk'                iso639-3='shk'    bcp47='shk'            ohchr='shk'    stage='4' notes='n' loc='9.85,31.79'           region='Africa'      demo='n' n='Shilluk'/>
   <udhr f='shn'                iso639-3='shn'    bcp47='shn'            ohchr='sjn'    stage='2' notes='n' loc='21.60,98.03'          region='Asia'        demo='n' n='Shan'/>
   <udhr f='shp'                iso639-3='shp'    bcp47='shp'            ohchr='shp'    stage='4' notes='n' loc='-7.17,-74.82'         region='Americas'    demo='n' n='Shipibo-Conibo'/>
-  <udhr f='sin'                iso639-3='sin'    bcp47='si'             ohchr='snh'    stage='4' notes='n' loc='8.00,81.00'           region='Asia'        demo='n' n='Sinhala'/>
+  <udhr f='sin'                iso639-3='sin'    bcp47='si'             ohchr='snh'    stage='5' notes='n' loc='8.00,81.00'           region='Asia'        demo='n' n='Sinhala'/>
   <udhr f='sja'                iso639-3='sja'    bcp47='sja'            ohchr='1126'   stage='2' notes='n' loc='4.26,-77.36'          region='Americas'    demo='n' n='Epena'/>
   <udhr f='skr'                iso639-3='skr'    bcp47='skr'            ohchr='skr'    stage='4' notes='n' loc='29.55,71.91'          region='Asia'        demo='n' n='Seraiki'/>
   <udhr f='slk'                iso639-3='slk'    bcp47='sk'             ohchr='slo'    stage='4' notes='n' loc='48.55,18.78'          region='Europe'      demo='n' n='Slovak'/>
@@ -398,13 +398,14 @@
   <udhr f='tat'                iso639-3='tat'    bcp47='tt'             ohchr='ttr'    stage='4' notes='n' loc='55.00,50.00'          region='Europe'      demo='n' n='Tatar'/>
   <udhr f='tbz'                iso639-3='tbz'    bcp47='tbz'            ohchr='tbz'    stage='4' notes='n' loc='10.16,1.18'           region='Africa'      demo='n' n='Ditammari'/>
   <udhr f='tca'                iso639-3='tca'    bcp47='tca'            ohchr='tca'    stage='4' notes='n' loc='-3.66,-69.87'         region='Americas'    demo='n' n='Ticuna'/>
-  <udhr f='tel'                iso639-3='tel'    bcp47='te'             ohchr='tcw'    stage='2' notes='n' loc='16.45,78.70'          region='Asia'        demo='n' n='Telugu'/>
+  <udhr f='tel'                iso639-3='tel'    bcp47='te'             ohchr='tcw'    stage='4' notes='n' loc='16.45,78.70'          region='Asia'        demo='y' n='Telugu'/>
   <udhr f='tem'                iso639-3='tem'    bcp47='tem'            ohchr='tej'    stage='4' notes='y' loc='8.90,-12.33'          region='Africa'      demo='n' n='Themne'/>
   <udhr f='tet'                iso639-3='tet'    bcp47='tet'            ohchr='ttm'    stage='4' notes='n' loc='-9.11,125.53'         region='Asia'        demo='n' n='Tetun'/>
   <udhr f='tgk'                iso639-3='tgk'    bcp47='tg'             ohchr='pet'    stage='4' notes='n' loc='38.82,68.55'          region='Asia'        demo='n' n='Tajiki'/>
   <udhr f='tgl'                iso639-3='tgl'    bcp47='tl'             ohchr='tgl'    stage='4' notes='n' loc='14.06,121.75'         region='Asia'        demo='n' n='Tagalog'/>
   <udhr f='tgl_tglg'           iso639-3='tgl'    bcp47='tl-Tglg'        ohchr=''       stage='1' notes='n' loc='14.06,121.75'         region='Asia'        demo='y' n='Tagalog (Tagalog)'/>
   <udhr f='tha'                iso639-3='tha'    bcp47='th'             ohchr='thj'    stage='4' notes='n' loc='14.19,100.67'         region='Asia'        demo='y' n='Thai'/>
+  <udhr f='tha2'               iso639-3='tha'    bcp47='th'             ohchr=''       stage='4' notes='n' loc='14.19,100.67'         region='Asia'        demo='n' n='Thai (2)'/>
   <udhr f='thf'                iso639-3='thf'    bcp47='thf'            ohchr='thf'    stage='2' notes='n' loc='28.76,85.77'          region='Asia'        demo='n' n='Thangmi'/>
   <udhr f='thl'                iso639-3='thl'    bcp47='thl'            ohchr='thl'    stage='2' notes='n' loc='27.88,81.78'          region='Asia'        demo='n' n='Tharu, Dangaura'/>
   <udhr f='ths'                iso639-3='ths'    bcp47='ths'            ohchr='ths'    stage='2' notes='n' loc='28.70,83.65'          region='Asia'        demo='n' n='Thakali'/>
@@ -429,7 +430,7 @@
   <udhr f='tzm'                iso639-3='tzm'    bcp47='tzm'            ohchr='tzm'    stage='4' notes='n' loc='32.74,-2.41'          region='Africa'      demo='n' n='Tamazight, Central Atlas'/>
   <udhr f='uig_arab'           iso639-3='uig'    bcp47='ug-Arab'        ohchr='uig'    stage='4' notes='n' loc='43.67,79.75'          region='Asia'        demo='n' n='Uyghur (Arabic)'/>
   <udhr f='uig_latn'           iso639-3='uig'    bcp47='ug-Latn'        ohchr=''       stage='4' notes='n' loc='43.67,79.75'          region='Asia'        demo='n' n='Uyghur (Latin)'/>
-  <udhr f='ukr'                iso639-3='ukr'    bcp47='uk'             ohchr='ukr'    stage='4' notes='n' loc='58.18,24.40'          region='Europe'      demo='n' n='Ukrainian'/>
+  <udhr f='ukr'                iso639-3='ukr'    bcp47='uk'             ohchr='ukr'    stage='4' notes='n' loc='48.18,24.40'          region='Europe'      demo='n' n='Ukrainian'/>
   <udhr f='umb'                iso639-3='umb'    bcp47='umb'            ohchr='mnf'    stage='4' notes='n' loc='-12.48,14.41'         region='Africa'      demo='n' n='Umbundu'/>
   <udhr f='unr'                iso639-3='unr'    bcp47='unr'            ohchr='unr'    stage='2' notes='n' loc='25.04,87.18'          region='Asia'        demo='n' n='Mundari'/>
   <udhr f='ura'                iso639-3='ura'    bcp47='ura'            ohchr='ura'    stage='4' notes='n' loc='-4.44,-75.42'         region='Americas'    demo='n' n='Urarina'/>
@@ -441,6 +442,7 @@
   <udhr f='ven'                iso639-3='ven'    bcp47='ve'             ohchr='tsh'    stage='4' notes='n' loc='-22.19,29.95'         region='Africa'      demo='n' n='Venda'/>
   <udhr f='vep'                iso639-3='vep'    bcp47='vep'            ohchr='vep'    stage='4' notes='n' loc='60.34,34.79'          region='Asia'        demo='n' n='Veps'/>
   <udhr f='vie'                iso639-3='vie'    bcp47='vi'             ohchr='vie'    stage='4' notes='n' loc='18.39,106.76'         region='Asia'        demo='n' n='Vietnamese'/>
+  <udhr f='vie_han'            iso639-3='vie'    bcp47='vi-Hani'        ohchr=''       stage='4' notes='n' loc='18.39,106.76'         region='Asia'        demo='n' n='Vietnamese (Han nom)'/>
   <udhr f='vmw'                iso639-3='vmw'    bcp47='vmw'            ohchr='vmw'    stage='4' notes='n' loc='-14.85,38.81'         region='Africa'      demo='n' n='Makhuwa'/>
   <udhr f='war'                iso639-3='war'    bcp47='war'            ohchr='wry'    stage='4' notes='n' loc='11.49,125.01'         region='Asia'        demo='n' n='Waray-Waray'/>
   <udhr f='wln'                iso639-3='wln'    bcp47='wa'             ohchr='frn1'   stage='4' notes='n' loc='50.22,5.15'           region='Europe'      demo='n' n='Walloon'/>
@@ -452,6 +454,7 @@
   <udhr f='yad'                iso639-3='yad'    bcp47='yad'            ohchr='yad'    stage='4' notes='n' loc='-3.43,-72.22'         region='Americas'    demo='n' n='Yagua'/>
   <udhr f='yao'                iso639-3='yao'    bcp47='yao'            ohchr='yao'    stage='4' notes='n' loc='-13.61,35.24'         region='Africa'      demo='n' n='Yao'/>
   <udhr f='yap'                iso639-3='yap'    bcp47='yap'            ohchr='yps'    stage='4' notes='n' loc='9.56,138.12'          region='Pacific'     demo='n' n='Yapese'/>
+  <udhr f='ybh'                iso639-3='ybh'    bcp47='ybh'            ohchr='ybh'    stage='2' notes='n' loc='27.37,87.93'          region='Asia'        demo='n' n='Yakkha'/>
   <udhr f='ydd'                iso639-3='ydd'    bcp47='yi'             ohchr='ydd'    stage='4' notes='n' loc='51.75,19.42'          region='Asia'        demo='n' n='Yiddish, Eastern'/>
   <udhr f='ykg'                iso639-3='ykg'    bcp47='ykg'            ohchr='ykg'    stage='4' notes='n' loc='65.39,151.32'         region='Asia'        demo='n' n='Yukaghir, Northern'/>
   <udhr f='yor'                iso639-3='yor'    bcp47='yo'             ohchr='yor'    stage='4' notes='n' loc='7.15,3.67'            region='Africa'      demo='n' n='Yoruba'/>
