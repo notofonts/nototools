@@ -1,9 +1,9 @@
 # ScriptExtensions-9.0.0.txt
-# Date: 2015-05-06, 06:14:00 GMT [RP]
+# Date: 2016-01-01, 21:24:00 GMT [RP]
+# © 2015 Unicode®, Inc.
+# For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Unicode Character Database
-# Copyright (c) 1991-2015 Unicode, Inc.
-# For terms of use, see http://www.unicode.org/terms_of_use.html
 # For documentation, see http://www.unicode.org/reports/tr44/
 #
 # The Script_Extensions property indicates which characters are commonly used
@@ -162,10 +162,12 @@ A9CF          ; Bugi Java # Lm       JAVANESE PANGRANGKEP
 
 # Script_Extensions=Cyrl Glag
 
+0484          ; Cyrl Glag # Mn       COMBINING CYRILLIC PALATALIZATION
 0487          ; Cyrl Glag # Mn       COMBINING CYRILLIC POKRYTIE
+2E43          ; Cyrl Glag # Po       DASH WITH LEFT UPTURN
 A66F          ; Cyrl Glag # Mn       COMBINING CYRILLIC VZMET
 
-# Total code points: 2
+# Total code points: 4
 
 # ================================================
 
@@ -232,8 +234,9 @@ A8F3          ; Deva Taml # Lo       DEVANAGARI SIGN CANDRABINDU VIRAMA
 0BE6..0BEF    ; Gran Taml # Nd  [10] TAMIL DIGIT ZERO..TAMIL DIGIT NINE
 0BF0..0BF2    ; Gran Taml # No   [3] TAMIL NUMBER TEN..TAMIL NUMBER ONE THOUSAND
 11303         ; Gran Taml # Mc       GRANTHA SIGN VISARGA
+1133C         ; Gran Taml # Mn       GRANTHA SIGN NUKTA
 
-# Total code points: 16
+# Total code points: 17
 
 # ================================================
 
@@ -347,14 +350,6 @@ A92E          ; Kali Latn Mymr # Po       KAYAH LI SIGN CWI
 
 # ================================================
 
-# Script_Extensions=Arab Mand Mani Phlp Syrc
-
-0640          ; Arab Mand Mani Phlp Syrc # Lm       ARABIC TATWEEL
-
-# Total code points: 1
-
-# ================================================
-
 # Script_Extensions=Bopo Hang Hani Hira Kana
 
 3003          ; Bopo Hang Hani Hira Kana # Po       DITTO MARK
@@ -383,6 +378,14 @@ FE45..FE46    ; Bopo Hang Hani Hira Kana # Po   [2] SESAME DOT..WHITE SESAME DOT
 # Script_Extensions=Deva Knda Mlym Taml Telu
 
 1CDA          ; Deva Knda Mlym Taml Telu # Mn       VEDIC TONE DOUBLE SVARITA
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Adlm Arab Mand Mani Phlp Syrc
+
+0640          ; Adlm Arab Mand Mani Phlp Syrc # Lm       ARABIC TATWEEL
 
 # Total code points: 1
 
