@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All rights reserved.
+# Copyright 2016 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ def font_cmap_data():
           selected_cpset = test_data.cpset
       if differ:
         print >> sys.stderr, '\nscript %s cmaps differ' % script
-        differences = { i.family_name:i.cpset for i in data }
+        differences = {i.family_name: i.cpset for i in data}
         report_set_differences(differences)
     script_to_cmap[script] = selected_cpset
 

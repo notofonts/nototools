@@ -42,7 +42,7 @@ def get_script_to_cmap(csvdata):
   header = None
   data = None
   for n, r in enumerate(csvdata.splitlines()):
-    r = r.strip();
+    r = r.strip()
     if not r:
       continue
     rowdata = r.split(',')
@@ -56,9 +56,7 @@ def get_script_to_cmap(csvdata):
       raise ValueError('row %d had %d cols but expected %d:\n"%s"' % (
           n, len(rowdata), ncols, r))
     for i, v in enumerate(rowdata):
-      v = v.strip()
-      if v.endswith('*'):
-        v = v[:-1]
+      v = v.strip(' \n\t*')
       if not v or v == u'\u001a':
         continue
       try:

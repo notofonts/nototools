@@ -151,10 +151,11 @@ def write_cmap_data(cmap_data, pretty=False):
   return ET.tostring(_build_tree(cmap_data, pretty).getroot(), encoding='utf-8')
 
 
-def create_metadata(program, args=[], date=datetime.date.today()):
+def create_metadata(program, args=None, date=datetime.date.today()):
   """Create a MetaData object from the program, args, and date."""
-  str_args = [(str(arg[0]), str(arg[1])) for arg in args]
-  return MetaData(str(date), program, str_args)
+  return MetaData(
+      str(date), program,
+      [] if not args else [(str(arg[0]), str(arg[1])) for arg in args])
 
 
 def create_table(header, rows):
@@ -168,9 +169,8 @@ def create_table(header, rows):
   for row in rows:
     row = [t.strip() for t in row.split(',')]
     if len(row) != len(header):
-      print >> sys.stderr, 'table has %d cols but row[%d] has %d' % (
-          len(header), len(rowdatas), len(row))
-      raise ValueError('row cols mismatch')
+      raise ValueError('table has %d cols but row[%d] has %d' % (
+          len(header), len(rowdatas), len(row)))
     rowdatas.append(RowData(*row))
   return TableData(header=header, rows=rowdatas)
 
