@@ -87,6 +87,7 @@ class TestMetaInfo(FontTest):
     """Test various meta information."""
 
     mark_heavier_as_bold = False
+    mark_italic_as_oblique = False
 
     def setUp(self):
         _, self.fonts = self.loaded_fonts
@@ -114,6 +115,8 @@ class TestMetaInfo(FontTest):
         for font in self.fonts:
             bold, italic = self.parse_metadata(font)
             expected_fs_type = ((bold << 5) | italic) or (1 << 6)
+            if italic and self.mark_italic_as_oblique:
+                expected_fs_type |= (1 << 9)
             self.assertEqual(font['OS/2'].fsSelection, expected_fs_type)
 
     def test_fs_type(self):
