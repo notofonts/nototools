@@ -210,7 +210,8 @@ def delete_from_cmap(font, chars):
     for table in cmap_table.tables:
         if (table.format, table.platformID, table.platEncID) in UNICODE_CMAPS:
             for char in chars:
-                del table.cmap[char]
+                if char in table.cmap:
+                    del table.cmap[char]
 
 
 def add_to_cmap(font, mapping):
