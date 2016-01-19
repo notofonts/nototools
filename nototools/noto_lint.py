@@ -47,6 +47,7 @@ from nototools import lint_config
 from nototools import notoconfig
 from nototools import noto_data
 from nototools import noto_fonts
+from nototools import noto_names
 from nototools import opentype_data
 from nototools import render
 from nototools import unicode_data
@@ -426,8 +427,10 @@ _processed_files_with_warnings = 0
 FontProps = collections.namedtuple(
     'FontProps',
     'is_google, vendor, char_version, '
-    'filepath, family, style, script, variant, weight, slope, fmt, license_type, '
-    'is_hinted, is_mono, is_UI, is_cjk, subset')
+    'filepath, family, style, script, variant, width, weight, slope, fmt, '
+    'license_type, is_hinted, is_mono, is_UI, is_display, is_cjk, subset')
+
+FAMILY_TO_NAME_INFO = noto_names.read_family_name_info_file()
 
 def font_properties_from_name(file_path):
     noto_font = noto_fonts.get_noto_font(file_path)
@@ -649,6 +652,9 @@ def check_font(font_props, filename_error,
           return 'Regular'
         names = []
         if font_props.weight != 'Regular' or not font_props.slope:
+            if not font_props.weight:
+              print font_props.filepath
+              print 'lint: weight is None'
             names.append(font_props.weight)
         if font_props.slope:
             names.append(font_props.slope)
@@ -736,6 +742,15 @@ def check_font(font_props, filename_error,
           warn('name/unused', 'Name', 'Name table has record #%d: "%s"' %
                (i, names[i]), is_error=False)
 
+    def _noto_font_from_font_props(font_props):
+      fields = """
+          filepath,family,style,script,variant,width,weight,slope,fmt,
+          license_type,is_hinted,is_mono,is_UI,is_display,is_cjk,subset
+      """.split(',')
+      vals = [getattr(font_props, p.strip()) for p in fields]
+      return noto_fonts.NotoFont(*vals)
+
+
     def check_name_table():
         if not tests.check('name'):
           return
@@ -752,6 +767,21 @@ def check_font(font_props, filename_error,
         expected_license_name = get_expected_license_name()
         expected_license_url_name = get_expected_license_url_name()
         expected_trademark_name = get_expected_trademark_name()
+
+        noto_font = _noto_font_from_font_props(font_props)
+        info = noto_names.family_name_data(noto_font, FAMILY_TO_NAME_INFO)
+        def _compare(label, info_name, lint_name):
+          if info_name != lint_name:
+            print '%s differ:\n  info: "%s"\n  lint: "%s"' % (
+                label, info_name, lint_name)
+
+        if info:
+          _compare('family', info.original_family, expected_family_name)
+          _compare('subfamily', info.original_subfamily, expected_subfamily_name)
+          _compare('full', info.full_name, expected_full_name)
+          _compare('postscript', info.postscript_name, expected_postscript_name)
+        else:
+          print 'No info for font.'
 
         if 0 not in names:
             warn("name/copyright", "Copyright",

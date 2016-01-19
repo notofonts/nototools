@@ -74,20 +74,22 @@ def convert_to_four_letter(script_name):
 # - style: type style, e.g. 'Sans', 'Serif', might be None
 # - script: four-letter script code or 'private use' code like 'Aran', 'LGC', 'HST'
 # - variant: script variant like 'UI' or Syriac variants like 'Estrangela'
+# - width: width name ('Condensed') or None
 # - weight: weight name
 # - slope: slope name ('Italic') or None
 # - fmt: 'ttf' or 'otf' or 'otc'
 # - license_type: 'sil' or 'apache'
 # - is_hinted: boolean, true if hinted
-# - is_mono: boolean, true if monospace (currently only CJK Latin range)
+# - is_mono: boolean, true if monospace (currently CJK Latin range, or legacy LGC Mono)
+# - is_display: boolean, true if display
 # - is_UI: boolean, true if has UI metrics
 # - is_cjk: boolean, true if a CJK font (from Adobe)
 # - subset: name of cjk subset (KR, JA, SC, TC) for reduced-charset fonts
 #     targeted at these languages
 NotoFont = collections.namedtuple(
     'NotoFont',
-    'filepath, family, style, script, variant, weight, slope, fmt, license_type, '
-    'is_hinted, is_mono, is_UI, is_cjk, subset')
+    'filepath, family, style, script, variant, width, weight, slope, '
+    'fmt, license_type, is_hinted, is_mono, is_UI, is_display, is_cjk, subset')
 
 
 WEIGHTS = {
@@ -96,7 +98,9 @@ WEIGHTS = {
     'DemiLight': 350,
     'Regular': 400,
     'Medium': 500,
+    'SemiBold': 600,
     'Bold': 700,
+    'ExtraBold': 800,
     'Black': 900
 }
 
@@ -105,8 +109,11 @@ _FONT_NAME_REGEX = (
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
     '(Mono)?'
     '(.*?)'
-    '(UI|Eastern|Estrangela|Western)?'
-    '(?:-(%s))?' % '|'.join([''] + WEIGHTS.keys()) +
+    '(Eastern|Estrangela|Western)?'
+    '(UI)?'
+    '(Display)?'
+    '(Condensed)?'
+    '(?:-(|%s))?' % '|'.join(WEIGHTS.keys()) +
     '(Italic)?'
     '\.(ttf|ttc|otf)')
 
@@ -119,7 +126,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   filedir, filename = os.path.split(filepath)
   match = match_filename(filename, family_name)
   if match:
-    family, style, mono, script, variant, weight, slope, fmt = match.groups()
+    family, style, mono, script, variant, ui, display, width, weight, slope, fmt = match.groups()
   else:
     if _EXT_REGEX.match(filename):
       print '%s did not match font regex' % filename
@@ -145,10 +152,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   if not script:
     script = 'LGC'
   elif script == 'Urdu':
-    # Currently, this code uses 'Aran' as the stand-in script for Arabic written
-    # using Nastaliq.  The font naming uses 'Urdu' which is not a script, but
-    # a language. Not clear which is better, we should just decide on one.
-    # For now, we remap.
+    # Use 'Aran' for languages written in the Nastaliq Arabic style, like Urdu.
+    # The font naming uses 'Urdu' which is not a script, but a language.
     assert family == 'Noto' and style == 'Nastaliq'
     script = 'Aran'
   elif script == 'Historic':
@@ -168,21 +173,20 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
   is_mono = mono == 'Mono'
 
-  is_UI = variant == 'UI'
-  if is_UI:
-    variant = None
-
+  is_UI = ui == 'UI'
+  is_display = display == 'Display'
   if is_cjk:
     is_hinted = True
   elif filedir.endswith('alpha') or 'emoji' in filedir:
     is_hinted = False
   else:
     hint_status = path.basename(filedir)
-    assert hint_status in ['hinted', 'unhinted']
+    # assert hint_status in ['hinted', 'unhinted']
     is_hinted = hint_status == 'hinted'
 
-  return NotoFont(filepath, family, style, script, variant, weight, slope, fmt,
-                  license_type, is_hinted, is_mono, is_UI, is_cjk, subset)
+  return NotoFont(
+      filepath, family, style, script, variant, width, weight, slope, fmt,
+      license_type, is_hinted, is_mono, is_UI, is_display, is_cjk, subset)
 
 
 def match_filename(filename, family_name):
@@ -367,3 +371,21 @@ def get_family_filename(family):
       name = name.rsplit(' ', 1)[0]
     name = name.replace(' ', '')
   return name
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '--dirs', metavar='dir', help='list of directories to find fonts',
+      nargs='+',default=NOTO_FONT_PATHS)
+  args = parser.parse_args()
+  fonts = get_noto_fonts(paths=args.dirs)
+  for font in fonts:
+    print font.filepath
+    for m in ('family,style,script,variant,width,weight,slope,fmt,license_type,'
+              'is_hinted,is_mono,is_UI,is_display,is_cjk,subset'.split(',')):
+      print '  %15s: %s' % (m, getattr(font, m))
+
+
+if __name__ == "__main__":
+    main()
