@@ -139,8 +139,9 @@ def _preferred_cjk_parts(noto_font):
 def _preferred_non_cjk_parts(noto_font):
   """Return a tuple of preferred_family, preferred_subfamily).
 
-  The preferred family is based on the family, script, and variant, the
-  preferred_subfamily is based on the remainder."""
+  The preferred family is based on the family, style, script, and variant, the
+  preferred_subfamily is based on the remainder.
+  """
 
   family_parts = [
       noto_font.family,
@@ -184,7 +185,7 @@ def _shift_parts(family_parts, subfamily_parts, stop_fn):
   'Regular'.  This works because for both original and
   wws subfamilies the order of parts is such that all
   parts that fail the stop_fn precede any that pass.
-  Does not modify the input parts."""
+  Does not modify the input parts lists."""
 
   result_family_parts = family_parts[:]
   limit = len(subfamily_parts)
@@ -286,8 +287,6 @@ def family_name_data(noto_font, family_to_name_info):
     info = family_to_name_info[family_key]
   except:
     print >> sys.stderr, 'no family name info for "%s"' % family_key
-    print >> sys.stderr, '  \n'.join('%s"' % s for s in
-                                     sorted(family_to_name_info.keys()))
     return None
 
   ofn, osfn = _original_names(
@@ -511,7 +510,7 @@ def main():
       FAMILY_NAME_INFO_FILE, nargs='?', const=FAMILY_NAME_INFO_FILE)
   parser.add_argument(
       '-d', '--dirs', metavar='dir', help='font directories to examine '
-      '(use "[noto]" for all noto font dirs)', nargs='*')
+      '(use "[noto]" for noto fonts/cjk/emoji font dirs)', nargs='+')
   parser.add_argument(
       '-f', '--files', metavar='fname', help='fonts to examine', nargs='+')
   parser.add_argument(

@@ -769,19 +769,23 @@ def check_font(font_props, filename_error,
         expected_trademark_name = get_expected_trademark_name()
 
         noto_font = _noto_font_from_font_props(font_props)
-        info = noto_names.family_name_data(noto_font, FAMILY_TO_NAME_INFO)
+        name_info = noto_names.family_name_data(noto_font, FAMILY_TO_NAME_INFO)
+        if not name_info:
+            warn("name/unable_to_check", "Unable to check",
+                 "No name data available for this font.")
+            return
+
         def _compare(label, info_name, lint_name):
           if info_name != lint_name:
             print '%s differ:\n  info: "%s"\n  lint: "%s"' % (
                 label, info_name, lint_name)
 
-        if info:
-          _compare('family', info.original_family, expected_family_name)
-          _compare('subfamily', info.original_subfamily, expected_subfamily_name)
-          _compare('full', info.full_name, expected_full_name)
-          _compare('postscript', info.postscript_name, expected_postscript_name)
-        else:
-          print 'No info for font.'
+        _compare('family', name_info.original_family, expected_family_name)
+        _compare('subfamily', name_info.original_subfamily,
+                 expected_subfamily_name)
+        _compare('full', name_info.full_name, expected_full_name)
+        _compare('postscript', name_info.postscript_name,
+                 expected_postscript_name)
 
         if 0 not in names:
             warn("name/copyright", "Copyright",
@@ -791,20 +795,20 @@ def check_font(font_props, filename_error,
                  "Copyright message doesn't match template: '%s'\n%s" % (
                      names[0], expected_copyright_re))
 
-        if names[1] != expected_family_name:
+        if names[1] != name_info.original_family:
             warn("name/family", "Family name",
                  "Font family name is '%s', but was expecting '%s'." % (
-                     names[1], expected_family_name))
+                     names[1], name_info.original_family))
 
-        if names[2] != expected_subfamily_name:
+        if names[2] != name_info.original_subfamily:
             warn("name/subfamily", "Sub-family name",
                  "Font subfamily name is '%s', but was expecting '%s'." % (
-                     names[2], expected_subfamily_name))
+                     names[2], name_info.original_subfamily))
 
-        if names[4] != expected_full_name:
+        if names[4] != name_info.full_name:
             warn("name/full", "Font name",
                  "Full font name is '%s', but was expecting '%s'." % (
-                     names[4], expected_full_name))
+                     names[4], name_info.full_name))
 
         # TODO(roozbeh): Make sure the description field contains information on
         # whether or not the font is hinted
@@ -846,10 +850,10 @@ def check_font(font_props, filename_error,
                 warn("name/version/expected_pattern", "Version",
                      "Version string is irregular: '%s'." % names[5])
 
-        if names[6] != expected_postscript_name:
+        if names[6] != name_info.postscript_name:
             warn("name/postscript", "Postscript name",
                  "Postscript name is '%s', but was expecting '%s'." % (
-                     names[6], expected_postscript_name))
+                     names[6], name_info.postscript_name))
 
         if 7 not in names:
             warn("name/trademark", "Trademark",
@@ -898,6 +902,27 @@ def check_font(font_props, filename_error,
         elif expected_license_url_name and names[14] != expected_license_url_name:
             warn("name/license_url", "License",
                  "License URL doesn't match template: '%s'." % names[14])
+
+        def _check_name(index, expected, keyname):
+            actual = names.get(index, None)
+            test_key = "name/" + keyname.replace(' ', '_')
+            if expected:
+                if not actual:
+                    warn(test_key, keyname,
+                         "The %s in 'name' table is not set." % keyname)
+                elif expected != actual:
+                    warn(test_key, keyname,
+                         "The %s is '%s' but was expecting '%s'" % (
+                             keyname, actual, expected))
+            elif actual:
+                warn(test_key, keyname,
+                     "Expected no %s but got '%s'" % (keyname, actual))
+
+        _check_name(16, name_info.preferred_family, "preferred family")
+        _check_name(17, name_info.preferred_subfamily, "preferred subfamily")
+        _check_name(21, name_info.wws_family, "wws family")
+        _check_name(22, name_info.wws_subfamily, "wws subfamily")
+
 
     def _get_script_required(cmap):
         needed_chars = set()
