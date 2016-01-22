@@ -52,25 +52,6 @@ from nototools import opentype_data
 from nototools import render
 from nototools import unicode_data
 
-NOTO_URL = "http://www.google.com/get/noto/"
-
-ADOBE_COPYRIGHT_RE = (u"Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
-                      u"\(http://www.adobe.com/\)\.")
-
-SIL_LICENSE = ("This Font Software is licensed under the SIL Open Font License, "
-               "Version 1.1. This Font Software is distributed on an \"AS IS\" "
-               "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
-               "or implied. See the SIL Open Font License for the specific language, "
-               "permissions and limitations governing your use of this Font Software.")
-
-SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
-
-GOOGLE_COPYRIGHT_RE = r'Copyright 20\d\d Google Inc. All Rights Reserved\.'
-
-APACHE_LICENSE = "Licensed under the Apache License, Version 2.0"
-
-APACHE_LICENSE_URL = "http://www.apache.org/licenses/LICENSE-2.0"
-
 # from wikipedia windows 1252 page.  As of windows 98.
 WIN_ANSI_CODEPOINTS = (
     '0000-007f 00A0-00ff 20ac 201a 0192 201e 2026 2020 2021 02c6 2030 0160 2039 0152 017d'
@@ -428,7 +409,8 @@ FontProps = collections.namedtuple(
     'FontProps',
     'is_google, vendor, char_version, '
     'filepath, family, style, script, variant, width, weight, slope, fmt, '
-    'license_type, is_hinted, is_mono, is_UI, is_display, is_cjk, subset')
+    'manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, '
+    'is_cjk, subset')
 
 FAMILY_TO_NAME_INFO = noto_names.read_family_name_info_file()
 
@@ -466,7 +448,7 @@ def check_font(font_props, filename_error,
                lint_spec, runlog=False, skiplog=False,
                csv_flag=False, info_flag=False,
                extrema_details=True, nowarn=False,
-               quiet=False):
+               quiet=False, noto_phase=3):
     global _processed_files
 
     _processed_files += 1
@@ -603,127 +585,6 @@ def check_font(font_props, filename_error,
         'Zsye': None,
     }
 
-    def _get_expected_noncjk_family_name():
-        name_parts = [font_props.family,
-                      'Color' if font_props.variant == 'color' else None,
-                      font_props.style]
-        if font_props.is_google:
-            # Emoji name comes from the font style alone, color emoji
-            # handle 'color' variant specially
-            # LGC name leaves off script ('Noto Sans')
-            # HST, Aran are special-cased.
-            script = font_props.script
-            if script in _script_key_to_font_name:
-                name_parts.append(_script_key_to_font_name[script])
-            else:
-                name_parts.append(preferred_script_name(script))
-        if font_props.variant != 'color':
-            name_parts.append(font_props.variant)
-        if font_props.is_mono:
-            name_parts.append('Mono')
-        if font_props.is_UI:
-            name_parts.append('UI')
-        return ' '.join(filter(None, name_parts))
-
-    def _get_expected_cjk_family_name():
-        name = 'Noto ' + font_props.style
-        if font_props.is_mono:
-            name += ' Mono'
-        if font_props.subset:
-            name += ' ' + font_props.subset
-        else:
-            cjk_script_to_name = {
-                'Jpan': 'JP',
-                'Kore': 'KR',
-                'Hans': 'SC',
-                'Hant': 'TC'
-            }
-            name += ' CJK ' + cjk_script_to_name[font_props.script]
-        name += ' ' + font_props.weight
-        return name
-
-    def get_expected_family_name():
-        if font_props.is_google and font_props.is_cjk:
-            return _get_expected_cjk_family_name()
-        return _get_expected_noncjk_family_name()
-
-    def get_expected_subfamily_name():
-        if font_props.is_google and font_props.is_cjk:
-          return 'Regular'
-        names = []
-        if font_props.weight != 'Regular' or not font_props.slope:
-            if not font_props.weight:
-              print font_props.filepath
-              print 'lint: weight is None'
-            names.append(font_props.weight)
-        if font_props.slope:
-            names.append(font_props.slope)
-        return ' '.join(names)
-
-    def get_expected_full_name():
-        if font_props.is_google and font_props.is_cjk:
-          return _get_expected_cjk_family_name()
-        name = get_expected_family_name()
-        expected_subfamily_name = get_expected_subfamily_name()
-        if expected_subfamily_name != 'Regular':
-          name += ' ' + expected_subfamily_name
-        return name
-
-    def _get_expected_noncjk_postscript_name():
-        name = get_expected_family_name()
-        expected_subfamily_name = get_expected_subfamily_name()
-        if expected_subfamily_name != 'Regular':
-          name += '-' + expected_subfamily_name
-        return name.replace(' ', '')
-
-    def _get_expected_cjk_postscript_name():
-        name = 'Noto' + font_props.style
-        if font_props.is_mono:
-            name += 'Mono'
-        if font_props.subset:
-            name += font_props.subset
-        else:
-            cjk_script_to_name = {
-                'Jpan': 'jp',
-                'Kore': 'kr',
-                'Hans': 'sc',
-                'Hant': 'tc'
-            }
-            name += 'CJK' + cjk_script_to_name[font_props.script]
-        name += '-' + font_props.weight
-        return name
-
-    def get_expected_postscript_name():
-        if font_props.is_google and font_props.is_cjk:
-            return _get_expected_cjk_postscript_name()
-        return _get_expected_noncjk_postscript_name()
-
-    def get_expected_copyright_re():
-      if font_props.is_google:
-          if font_props.vendor == 'Adobe':
-              return ADOBE_COPYRIGHT_RE
-          else:
-              return GOOGLE_COPYRIGHT_RE
-      return None
-
-    def get_expected_trademark_name():
-        if font_props.is_google:
-            return "%s is a trademark of Google Inc." % font_props.family
-        return None
-
-    def get_expected_license_name():
-        if font_props.license_type == 'sil':
-            return SIL_LICENSE
-        if font_props.license_type == 'apache':
-            return APACHE_LICENSE
-        return None
-
-    def get_expected_license_url_name():
-        if font_props.license_type == 'sil':
-            return SIL_LICENSE_URL
-        if font_props.license_type == 'apache':
-            return APACHE_LICENSE_URL
-        return None
 
     def _check_unused_names():
       # For now, just a warning, and we don't actually check if other tables use it.
@@ -745,10 +606,42 @@ def check_font(font_props, filename_error,
     def _noto_font_from_font_props(font_props):
       fields = """
           filepath,family,style,script,variant,width,weight,slope,fmt,
-          license_type,is_hinted,is_mono,is_UI,is_display,is_cjk,subset
+          manufacturer,license_type,is_hinted,is_mono,is_UI,is_display,
+          is_cjk,subset
       """.split(',')
       vals = [getattr(font_props, p.strip()) for p in fields]
       return noto_fonts.NotoFont(*vals)
+
+
+    def _check_name(actual, expected, keyname, is_re):
+        """Set expected to '-' to require any name, set it to None if a name
+        entry should not be present."""
+
+        test_key = "name/" + keyname.replace(' ', '_')
+        if not tests.check(test_key):
+            return
+
+        xre = ' it to match' if is_re else ''
+        if expected:
+            if not actual:
+                if expected == '-':
+                    warn(test_key, keyname, "The %s is not set." % keyname)
+                else:
+                    warn(test_key, keyname,
+                         "The %s is not set, but was expecting%s '%s'" % (
+                             keyname, xre, expected))
+            elif expected != '-':
+                if is_re:
+                    match = re.match(expected, actual)
+                else:
+                    match = expected == actual
+                if not match:
+                    warn(test_key, keyname,
+                         "The %s is '%s' but was expecting%s '%s'" % (
+                             keyname, actual, xre, expected))
+        elif actual:
+            warn(test_key, keyname,
+                 "Expected no %s, but got '%s'" % (keyname, actual))
 
 
     def check_name_table():
@@ -758,139 +651,66 @@ def check_font(font_props, filename_error,
         _check_unused_names()
 
         names = font_data.get_name_records(font)
-
-        expected_copyright_re = get_expected_copyright_re()
-        expected_family_name = get_expected_family_name()
-        expected_subfamily_name = get_expected_subfamily_name()
-        expected_full_name = get_expected_full_name()
-        expected_postscript_name = get_expected_postscript_name()
-        expected_license_name = get_expected_license_name()
-        expected_license_url_name = get_expected_license_url_name()
-        expected_trademark_name = get_expected_trademark_name()
-
         noto_font = _noto_font_from_font_props(font_props)
-        name_info = noto_names.family_name_data(noto_font, FAMILY_TO_NAME_INFO)
-        if not name_info:
+
+        name_data = noto_names.name_table_data(noto_font, FAMILY_TO_NAME_INFO)
+        if not name_data:
             warn("name/unable_to_check", "Unable to check",
                  "No name data available for this font.")
             return
 
-        def _compare(label, info_name, lint_name):
-          if info_name != lint_name:
-            print '%s differ:\n  info: "%s"\n  lint: "%s"' % (
-                label, info_name, lint_name)
+        def _check_idx(idx, expected, keyname):
+          actual = names.get(idx, None)
+          is_re = expected and expected[0] == '^' and expected[-1] == '$'
+          _check_name(actual, expected, keyname, is_re=is_re)
 
-        if False:
-            _compare('family', name_info.original_family, expected_family_name)
-            _compare('subfamily', name_info.original_subfamily,
-                     expected_subfamily_name)
-            _compare('full', name_info.full_name, expected_full_name)
-            _compare('postscript', name_info.postscript_name,
-                     expected_postscript_name)
+        _check_idx(0, name_data.copyright_re, 'copyright')
+        _check_idx(1, name_data.original_family, "family")
+        _check_idx(2, name_data.original_subfamily, "subfamily")
+        _check_idx(3, name_data.unique_id, "unique id")
+        _check_idx(4, name_data.full_name, "full name")
+        _check_idx(5, name_data.version_re, "version")
+        _check_idx(6, name_data.postscript_name, "postscript name")
+        _check_idx(7, name_data.trademark, "trademark")
+        _check_idx(8, name_data.manufacturer, "manufacturer")
+        _check_idx(9, name_data.designer, "designer")
+        _check_idx(10, name_data.description_re, "description")
+        _check_idx(11, name_data.vendor_url, "vendor url")
+        _check_idx(12, name_data.designer_url, "designer url")
+        _check_idx(13, name_data.license_text, "license")
+        _check_idx(14, name_data.license_url, "license_url")
 
-        def _check_name(index, expected, keyname, is_name=True,
-                        is_re=False):
-            """Set expected to '-' to allow any name, set it to None if a name
-            entry should not be present..  Set is_name to False to prevent
-            'name' from being appended to the keyname in the error message.
-            """
+        if noto_font.is_cjk or noto_phase > 2:
+            # 15 reserved
+            _check_idx(16, name_data.preferred_family, "preferred family")
+            _check_idx(17, name_data.preferred_subfamily, "preferred subfamily")
+            # 18-20 (compatible full, sample text, postscript cid) - we don't check these
+            _check_idx(21, name_data.wws_family, "wws family")
+            _check_idx(22, name_data.wws_subfamily, "wws subfamily")
+            # 23-24 (light/dark palette) - we don't check these
 
-            actual = names.get(index, None)
-            test_key = "name/" + keyname.replace(' ', '_')
-            xname = ' name' if is_name else ''
-            xre = ' it to match' if is_re else ''
-            if expected:
-                if not actual:
-                    if expected == '-':
-                        warn(test_key, keyname,
-                             "The %s%s is not set." % (keyname, xname))
-                    else:
-                        warn(test_key, keyname,
-                             "The %s%s is not set, but was expecting%s '%s'" % (
-                                 keyname, xname, xre, expected))
-                elif expected != '-':
-                    if is_re:
-                        match = re.match(expected, actual)
-                    else:
-                        match = expected == actual
-                    if not match:
-                        warn(test_key, keyname,
-                             "The %s%s is '%s' but was expecting%s '%s'" % (
-                                 keyname, xname, actual, xre, expected))
-            elif actual:
-                warn(test_key, keyname,
-                     "Expected no %s%s, but got '%s'" % (
-                         keyname, xname, actual))
+        if not tests.check('name/version'):
+            return
 
-        _check_name(1, name_info.original_family, "family")
-        _check_name(2, name_info.original_subfamily, "subfamily")
-        _check_name(4, name_info.full_name, "full")
-        _check_name(6, name_info.postscript_name, "postscript")
-        _check_name(16, name_info.preferred_family, "preferred family")
-        _check_name(17, name_info.preferred_subfamily, "preferred subfamily")
-        _check_name(21, name_info.wws_family, "wws family")
-        _check_name(22, name_info.wws_subfamily, "wws subfamily")
+        match = re.match(name_data.version_re, names[5])
+        if not match:
+            return # already caught above
 
-        _check_name(0, expected_copyright_re, 'copyright', is_name=False,
-                    is_re=True)
-
-        # TODO(roozbeh): Make sure the description field contains information on
-        # whether or not the font is hinted
-
-        if tests.check('name/version'):
-            version_string = names[5]
-            idx = version_string.find(';')
-            if idx >= 0:
-                version_string = version_string[:idx]
-            match = re.match(r"Version (\d{1,5})\.(\d{1,5})", version_string)
-            if match:
-                major_version = match.group(1)
-                minor_version = match.group(2)
-                if ((0 <= int(major_version) <= 65535)
-                    and (0 <= int(minor_version) <= 65535)):
-                    match_end = version_string[match.end():]
-                    if (font_props.is_google and
-                        # don't expect hinting suffix in adobe/cff fonts
-                        not font_props.vendor == 'adobe' and
-                        font_props.fmt in ['ttf', 'ttc'] and
-                        (font_props.is_hinted and match_end != "") or
-                        (not font_props.is_hinted and match_end not in ["", " uh"])):
-                        warn("name/version/hinted_suffix", "Version",
-                             "Version string '%s' has extra characters at its end." %
-                             names[5])
-
-                    accuracy = len(minor_version)
-                    font_revision = printable_font_revision(font, accuracy)
-                    if font_revision != major_version + "." + minor_version:
-                        warn("name/version/match_head", "Font Revision",
-                             "fontRevision in 'head' table is %s, "
-                             "while font version in 'name' table is %s.%s." % (
-                                 font_revision, major_version, minor_version))
-                else:
-                    warn("name/version/out_of_range", "Version",
-                         "Version string has numerical parts outside the range "
-                         "[0, 65535]: '%s'." % version_string)
-            else:
-                warn("name/version/expected_pattern", "Version",
-                     "Version string is irregular: '%s'." % names[5])
-
-        _check_name(7, expected_trademark_name, "trademark", is_name=False)
-        _check_name(8, '-', "manufacturer")
-        _check_name(9, '-', "designer")
-
-        if font_props.family is not 'Noto':
-            expected_description_re = '-'
-        elif font_props.is_hinted:
-            expected_description = "^Data hinted\.(?:\s.*)"
+        major_version = match.group(1)
+        minor_version = match.group(2)
+        if ((0 <= int(major_version) <= 65535)
+            and (0 <= int(minor_version) <= 65535)):
+            accuracy = len(minor_version)
+            font_revision = printable_font_revision(font, accuracy)
+            if font_revision != major_version + "." + minor_version:
+                warn("name/version/match_head", "Font Revision",
+                     "fontRevision in 'head' table is %s, "
+                     "while font version in 'name' table is %s.%s." % (
+                         font_revision, major_version, minor_version))
         else:
-            expected_description = "^Data unhinted\.(?:\s.*)"
-        _check_name(10, expected_description_re, "description", is_name=False,
-                    is_re=True)
-        _check_name(11, NOTO_URL, "vendor url", is_name=False)
-        _check_name(12, "http://[^ ]+$", "designer url", is_name=False,
-                    is_re=True)
-        _check_name(13, expected_license_name, "license", is_name=False)
-        _check_name(14, expected_license_url_name, "license url", is_name=False)
+            warn("name/version/out_of_range", "Version",
+                 "Version string has numerical parts outside the range "
+                 "[0, 65535]: '%s'." % version_string)
 
 
     def _get_script_required(cmap):
@@ -2198,6 +2018,10 @@ def main():
         "-q", "--quiet",
         help="don't print file names unless there are errors or warnings",
         action="store_true")
+    parser.add_argument(
+        "-p", "--phase",
+        help="set noto phase for lint compatibility (default 3)",
+        type=int, default=3)
 
     arguments = parser.parse_args()
 
@@ -2230,7 +2054,8 @@ def main():
                        arguments.info,
                        arguments.extrema_details,
                        arguments.nowarn,
-                       arguments.quiet)
+                       arguments.quiet,
+                       arguments.phase)
     if arguments.font_props_file:
         font_props_list = parse_font_props(arguments.font_props_file)
         for font_props in font_props_list:
@@ -2243,7 +2068,8 @@ def main():
                         arguments.info,
                         arguments.extrema_details,
                         arguments.nowarn,
-                        arguments.quiet)
+                        arguments.quiet,
+                        arguments.phase)
 
     if not arguments.csv:
         print "------"

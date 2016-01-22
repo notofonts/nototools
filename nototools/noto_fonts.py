@@ -67,20 +67,23 @@ def convert_to_four_letter(script_name):
   return script_code
 
 
-# NotoFont maps a font path to information we assume the font to have, based on Noto
-# path and naming conventions:
+# NotoFont maps a font path to information we assume the font to have, based
+# on Noto path and naming conventions:
 # - filepath: the path name from which we derived the information
 # - family: family name, e.g. 'Arimo', 'Noto'
 # - style: type style, e.g. 'Sans', 'Serif', might be None
-# - script: four-letter script code or 'private use' code like 'Aran', 'LGC', 'HST'
+# - script: four-letter script code or 'private use' code like 'Aran', 'LGC',
+#     'HST'
 # - variant: script variant like 'UI' or Syriac variants like 'Estrangela'
 # - width: width name ('Condensed') or None
 # - weight: weight name
 # - slope: slope name ('Italic') or None
-# - fmt: 'ttf' or 'otf' or 'otc'
+# - fmt: 'ttf', 'otf', or 'otc'
+# - manufacturer: 'Adobe', 'Google', 'Khmertype', or 'Monotype'
 # - license_type: 'sil' or 'apache'
 # - is_hinted: boolean, true if hinted
-# - is_mono: boolean, true if monospace (currently CJK Latin range, or legacy LGC Mono)
+# - is_mono: boolean, true if monospace (currently CJK Latin range, or legacy
+#     LGC Mono)
 # - is_display: boolean, true if display
 # - is_UI: boolean, true if has UI metrics
 # - is_cjk: boolean, true if a CJK font (from Adobe)
@@ -89,7 +92,8 @@ def convert_to_four_letter(script_name):
 NotoFont = collections.namedtuple(
     'NotoFont',
     'filepath, family, style, script, variant, width, weight, slope, '
-    'fmt, license_type, is_hinted, is_mono, is_UI, is_display, is_cjk, subset')
+    'fmt, manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, '
+    'is_cjk, subset')
 
 
 WEIGHTS = {
@@ -106,8 +110,10 @@ WEIGHTS = {
     'Black': 900
 }
 
+
 _FONT_NAME_REGEX = (
-    # family should be prepended
+    # family should be prepended - this is so Roboto can be used with unittests
+    # that use this regex to parse.
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
     '(Mono)?'
     '(.*?)'
@@ -115,9 +121,9 @@ _FONT_NAME_REGEX = (
     '(UI)?'
     '(Display)?'
     '(Condensed)?'
-    '(?:-(|%s))?' % '|'.join(WEIGHTS.keys()) +
-    '(Italic)?'
+    '(?:-(|%s)(Italic)?)?' % '|'.join(WEIGHTS.keys()) +
     '\.(ttf|ttc|otf)')
+
 
 _EXT_REGEX = re.compile(r'.*\.(?:ttf|ttc|otf)$')
 
@@ -128,10 +134,11 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   filedir, filename = os.path.split(filepath)
   match = match_filename(filename, family_name)
   if match:
-    family, style, mono, script, variant, ui, display, width, weight, slope, fmt = match.groups()
+    (family, style, mono, script, variant, ui, display, width, weight,
+     slope, fmt) = match.groups()
   else:
     if _EXT_REGEX.match(filename):
-      print '%s did not match font regex' % filename
+      print >> sys.stderr, '%s did not match font regex' % filename
     return None
 
   is_cjk = filedir.endswith('noto-cjk')
@@ -167,8 +174,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
     try:
       script = convert_to_four_letter(script)
     except ValueError:
-      print 'unknown script: %s for %s' % (script, filename)
-      return
+      print >> sys.stderr, 'unknown script: %s for %s' % (script, filename)
+      return None
 
   if not weight:
     weight = 'Regular'
@@ -183,12 +190,21 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
     is_hinted = False
   else:
     hint_status = path.basename(filedir)
-    # assert hint_status in ['hinted', 'unhinted']
+    if hint_status not in ['hinted', 'unhinted']:
+      print >> sys.stderr, (
+          'unknown hint status for %s, defaulting to unhinted') % filedir
     is_hinted = hint_status == 'hinted'
+
+  manufacturer = (
+      'Adobe' if is_cjk
+      else 'Google' if script == 'Zsye' and variant == 'color'
+      else 'Khmertype' if script in ['Khmr', 'Cham', 'Laoo']
+      else 'Monotype')
 
   return NotoFont(
       filepath, family, style, script, variant, width, weight, slope, fmt,
-      license_type, is_hinted, is_mono, is_UI, is_display, is_cjk, subset)
+      manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, is_cjk,
+      subset)
 
 
 def match_filename(filename, family_name):
@@ -295,12 +311,15 @@ def get_font_family_name(font_file):
     return name
 
 
-# NotoFamily provides additional information about related Noto fonts.  These fonts have
-# weight/slope/other variations but have the same cmap, script support, etc. Most of
-# this information is held in a NotoFont that is the representative member.  Fields are:
+# NotoFamily provides additional information about related Noto fonts.  These
+# fonts have weight/slope/other variations but have the same cmap, script
+# support, etc. Most of this information is held in a NotoFont that is the
+# representative member.  Fields are:
+
 # - name: name of the family
 # - family_id: a family_id for the family
-# - rep_member: the representative member, some of its data is common to all members
+# - rep_member: the representative member, some of its data is common to all
+#     members
 # - charset: the character set, must the the same for all members
 # - hinted_members: list of members that are hinted
 # - unhinted_members: list of members that are unhinted
@@ -310,7 +329,9 @@ NotoFamily = collections.namedtuple(
     'name, family_id, rep_member, charset, hinted_members, unhinted_members')
 
 def get_families(fonts):
-  """Group fonts into families, separate into hinted and unhinted, select representative."""
+  """Group fonts into families, separate into hinted and unhinted, select
+  representative."""
+
   family_id_to_fonts = collections.defaultdict(set)
   families = {}
   for font in fonts:
@@ -330,9 +351,10 @@ def get_families(fonts):
       if not rep_member:
         if font.weight == 'Regular' and font.slope is None and not (
             font.is_cjk and font.is_mono):
-          # We assume here that there's no difference between a hinted or unhinted
-          # rep_member in terms of what we use it for.  The other filters are to ensure
-          # the fontTools font name is a good stand-in for the family name.
+          # We assume here that there's no difference between a hinted or
+          # unhinted rep_member in terms of what we use it for.  The other
+          # filters are to ensure the fontTools font name is a good stand-in
+          # for the family name.
           if font.fmt == 'ttc' and not rep_backup:
             rep_backup = font
           else:
@@ -340,7 +362,8 @@ def get_families(fonts):
 
     rep_member = rep_member or rep_backup
     if not rep_member:
-      raise ValueError('Family %s does not have a representative font.' % family_id)
+      raise ValueError(
+          'Family %s does not have a representative font.' % family_id)
 
     name = get_font_family_name(rep_member.filepath)
 
@@ -357,8 +380,8 @@ def get_families(fonts):
 
 
 def get_family_filename(family):
-  """Returns a filename to use for a family zip of hinted/unhinted members.  This
-     is basically the postscript name with weight/style removed.
+  """Returns a filename to use for a family zip of hinted/unhinted members.
+     This is basically the postscript name with weight/style removed.
   """
   font = ttLib.TTFont(family.rep_member.filepath, fontNumber=0)
   name_record = font_data.get_name_records(font)
@@ -378,15 +401,14 @@ def get_family_filename(family):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--dirs', metavar='dir', help='list of directories to find fonts',
-      nargs='+',default=NOTO_FONT_PATHS)
+      '-d', '--dirs', help='list of directories to find fonts in',
+      metavar='dir', nargs='+',default=NOTO_FONT_PATHS)
   args = parser.parse_args()
   fonts = get_noto_fonts(paths=args.dirs)
   for font in fonts:
     print font.filepath
-    for m in ('family,style,script,variant,width,weight,slope,fmt,license_type,'
-              'is_hinted,is_mono,is_UI,is_display,is_cjk,subset'.split(',')):
-      print '  %15s: %s' % (m, getattr(font, m))
+    for attr in font._fields:
+      print '  %15s: %s' % (attr, getattr(font, attr))
 
 
 if __name__ == "__main__":

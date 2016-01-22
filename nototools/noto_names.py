@@ -55,6 +55,32 @@ from nototools import unicode_data
 
 from xml.etree import ElementTree as ET
 
+# Standard values used in Noto fonts.
+
+# Regex values returned in NameTableData must start with ^ and end with $,
+# since lint uses this to understand the value is a regex.
+
+GOOGLE_COPYRIGHT_RE = r'^Copyright 20\d\d Google Inc. All Rights Reserved\.$'
+
+ADOBE_COPYRIGHT_RE = (
+    u"^Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
+    u"\(http://www.adobe.com/\)\.$")
+
+NOTO_URL = "http://www.google.com/get/noto/"
+
+SIL_LICENSE = (
+    "This Font Software is licensed under the SIL Open Font License, "
+    "Version 1.1. This Font Software is distributed on an \"AS IS\" "
+    "BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express "
+    "or implied. See the SIL Open Font License for the specific language, "
+    "permissions and limitations governing your use of this Font Software.")
+
+SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
+
+APACHE_LICENSE = "Licensed under the Apache License, Version 2.0"
+
+APACHE_LICENSE_URL = "http://www.apache.org/licenses/LICENSE-2.0"
+
 # default file where we store the family name info
 FAMILY_NAME_INFO_FILE = 'family_name_info.xml'
 
@@ -70,14 +96,16 @@ FamilyNameInfo = collections.namedtuple(
     'FamilyNameInfo',
     'limit_original, use_preferred, use_wws')
 
-# Represents expected name table family/subfamily data for a font.
-# Fields expected to be empty are None.
-FamilyNameData = collections.namedtuple(
-    'FamilyNameData',
-    'original_family, original_subfamily, '
-    'preferred_family, preferred_subfamily, '
-    'wws_family, wws_subfamily,'
-    'full_name, postscript_name')
+# Represents expected name table data for a font.
+# Fields expected to be empty are None.  Fields that are expected
+# to be present but have any value are '-'.
+NameTableData = collections.namedtuple(
+    'NameTableData',
+    'copyright_re, original_family, original_subfamily, unique_id, '
+    'full_name, version_re, postscript_name, trademark, manufacturer, '
+    'designer, description_re, vendor_url, designer_url, license_text, '
+    'license_url, preferred_family, preferred_subfamily, wws_family, '
+    'wws_subfamily')
 
 _SCRIPT_KEY_TO_FONT_NAME = {
     'Aran': 'Urdu',
@@ -249,6 +277,14 @@ def _original_names(preferred_family, preferred_subfamily, limited):
       preferred_family, preferred_subfamily, limited=limited))
 
 
+def _copyright_re(noto_font):
+  # See comment at top of file about regex values
+  if noto_font.manufacturer == 'Adobe':
+    return ADOBE_COPYRIGHT_RE
+  else:
+    return GOOGLE_COPYRIGHT_RE
+
+
 def _full_name(preferred_family, preferred_subfamily, keep_regular):
   wws_family, wws_subfamily = _wws_parts(preferred_family, preferred_subfamily)
   result = wws_family[:]
@@ -279,8 +315,104 @@ def _postscript_name(preferred_family, preferred_subfamily, keep_regular):
   return result
 
 
-def family_name_data(noto_font, family_to_name_info):
-  """Returns a family name data for this font given the family_to_name_info."""
+def _version_re(noto_font):
+  # See comment at top of file about regex values
+  if noto_font.manufacturer == 'Adobe':
+    sub_len = 3
+    hint_ext = ''
+  elif noto_font.manufacturer == 'Google':
+    sub_len = 2
+    hint_ext = '' # no 'uh' suffix for unhinted Color Emoji font
+  else:
+    sub_len = 2
+    hint_ext = '' if noto_font.is_hinted else ' uh'
+  return r'^Version ([0-2])\.(\d{%d})%s(?:;.*)?$' % (sub_len, hint_ext)
+
+
+def _trademark(noto_font):
+  return '%s is a trademark of Google Inc.' % noto_font.family
+
+
+def _manufacturer(noto_font):
+  if noto_font.manufacturer == 'Adobe':
+    return 'Adobe Systems Incorporated'
+  if noto_font.manufacturer == 'Monotype':
+    return 'Monotype Imaging Inc.'
+  if noto_font.manufacturer == 'Khmertype':
+    return 'Danh Hong'
+  if noto_font.manufacturer == 'Google':
+    return 'Google, Inc.'
+  raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
+
+
+def _designer(noto_font):
+  if noto_font.manufacturer == 'Adobe':
+    return '-'
+  if noto_font.manufacturer == 'Monotype':
+    if noto_font.family == 'Noto':
+      if noto_font.style == 'Serif' and noto_font.script in [
+          'Beng', 'Gujr', 'Knda', 'Mlym', 'Taml', 'Telu']:
+        return 'Indian Type Foundry'
+      return 'Monotype Design Team'
+    if noto_font.family in ['Arimo', 'Cousine', 'Tinos']:
+      return 'Steve Matteson'
+    raise ValueError('unknown family "%s"' % noto_font.family)
+  if noto_font.manufacturer == 'Khmertype':
+    return 'Danh Hong'
+  if noto_font.manufacturer == 'Google':
+    return 'Google, Inc.'
+  raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
+
+
+def _designer_url(noto_font):
+  if noto_font.manufacturer == 'Adobe':
+    return 'http://www.adobe.com/type/'
+  if noto_font.manufacturer == 'Monotype':
+    return 'http://www.monotype.com/studio'
+  if noto_font.manufacturer == 'Khmertype':
+    return 'http://www.khmertype.org'
+  if noto_font.manufacturer == 'Google':
+    return 'http://www.google.com/get/noto/'
+  raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
+
+
+def _description_re(noto_font):
+  # See comment at top of file about regex values
+  if noto_font.manufacturer == 'Adobe':
+    return '-'
+  if noto_font.manufacturer == 'Monotype':
+    if noto_font.family == 'Noto':
+      return ('^Data %shinted. Designed by Monotype design team.$' %
+              ('' if noto_font.is_hinted else 'un'))
+    # Arimo, Tinos, and Cousine don't currently mention hinting in their
+    # descriptions, but they probably should.
+    # TODO(dougfelt): swat them to fix this.
+    return '-'
+  if noto_font.manufacturer == 'Google' and noto_font.variant == 'color':
+    return 'Color emoji font using CBDT glyph data.'
+  if noto_font.is_hinted:
+    return '^Data hinted\.(?:\s.*)?$'
+  return '^Data unhinted\.(?:\s.*)?$'
+
+
+def _license_text(noto_font):
+  if noto_font.license_type == 'sil':
+    return SIL_LICENSE
+  if noto_font.license_type == 'apache':
+    return APACHE_LICENSE
+  raise ValueError('unknown license type "%s"' % noto_font.license_type)
+
+
+def _license_url(noto_font):
+  if noto_font.license_type == 'sil':
+    return SIL_LICENSE_URL
+  if noto_font.license_type == 'apache':
+    return APACHE_LICENSE_URL
+  raise ValueError('unknown license type "%s"' % noto_font.license_type)
+
+
+def name_table_data(noto_font, family_to_name_info):
+  """Returns a NameTableData for this font given the family_to_name_info."""
   family_parts, subfamily_parts = _preferred_parts(noto_font)
   family_key = ' '.join(family_parts)
   try:
@@ -297,8 +429,6 @@ def family_name_data(noto_font, family_to_name_info):
   pfn, psfn = _preferred_names(
       family_parts, subfamily_parts, info.use_preferred)
   wfn, wsfn = _wws_names(family_parts, subfamily_parts, info.use_wws)
-  fulln = _full_name(family_parts, subfamily_parts, noto_font.is_cjk)
-  psn = _postscript_name(family_parts, subfamily_parts, noto_font.is_cjk)
   if wfn and wfn == pfn:
     wfn = None
   if wsfn and wsfn == psfn:
@@ -307,7 +437,28 @@ def family_name_data(noto_font, family_to_name_info):
     pfn = None
   if psfn and psfn == osfn:
     psfn = None
-  return FamilyNameData(ofn, osfn, pfn, psfn, wfn, wsfn, fulln, psn)
+
+  return NameTableData(
+      copyright_re=_copyright_re(noto_font),
+      original_family=ofn,
+      original_subfamily=osfn,
+      unique_id='-',
+      full_name=_full_name(family_parts, subfamily_parts, noto_font.is_cjk),
+      version_re=_version_re(noto_font),
+      postscript_name=_postscript_name(
+          family_parts, subfamily_parts, noto_font.is_cjk),
+      trademark=_trademark(noto_font),
+      manufacturer=_manufacturer(noto_font),
+      designer=_designer(noto_font),
+      description_re=_description_re(noto_font),
+      vendor_url=NOTO_URL,
+      designer_url=_designer_url(noto_font),
+      license_text=_license_text(noto_font),
+      license_url=_license_url(noto_font),
+      preferred_family=pfn,
+      preferred_subfamily=psfn,
+      wws_family=wfn,
+      wws_subfamily=wsfn)
 
 
 def _create_family_to_subfamilies(noto_fonts):
@@ -431,7 +582,7 @@ def _dump_name_data(name_data):
   if not name_data:
     print '  Error: no name data'
     return
-  for attr in FamilyNameData._fields:
+  for attr in NameTableData._fields:
     value = getattr(name_data, attr)
     if value:
       print '  %20s: %s' % (attr, value)

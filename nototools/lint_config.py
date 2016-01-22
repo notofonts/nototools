@@ -321,13 +321,12 @@ class TestSpec(object):
     copyright
     family
     subfamily
-    full
+    unique_id
+    full_name
     version
-      hinted_suffix
       match_head
       out_of_range
-      expected_pattern
-    postscript
+    postscript_name
     trademark
     manufacturer
     designer
