@@ -28,12 +28,12 @@ also read/write an xml version of this data.
 The other set of routines generates name information for a noto font,
 using the family name info.  The family name info is required.  For
 example, familes whose subfamilies have more weights than regular/bold
-will not include the weight in the original subfamily name, even if a
-particular font instance (not knowing about the structure of the
-entire family) could.
+will have limit_original set, and so will not include the weight in the
+original subfamily name, even if a particular font instance (not knowing
+about the structure of the entire family) could.
 
 The tool api lets you generate the family info file, and/or use it to
-show how a font names would be generated.
+show how one or more fonts' names would be generated.
 
 This of necessity incorporates noto naming conventions-- it expects
 file namess that follow noto conventions, and generates the corresponding
@@ -113,7 +113,7 @@ def _prettify(root, indent=''):
 
 def _preferred_cjk_parts(noto_font):
   # CJK treats mono as part of the family name.  This is odd
-  # but we will go with the Adobe naming.
+  # but we will go with the current Adobe naming.
   family_parts = [
       noto_font.family,
       noto_font.style,
@@ -291,6 +291,9 @@ def family_name_data(noto_font, family_to_name_info):
 
   ofn, osfn = _original_names(
       family_parts, subfamily_parts, info.limit_original)
+  # If we limit the original names (to put weights into the original family)
+  # then we need a preferred name to undo this.  When info is read or generated,
+  # the code should ensure use_preferred is set.
   pfn, psfn = _preferred_names(
       family_parts, subfamily_parts, info.use_preferred)
   wfn, wsfn = _wws_names(family_parts, subfamily_parts, info.use_wws)
@@ -330,11 +333,12 @@ def create_family_to_name_info(noto_fonts):
     family_to_parts[family_key].update(subfamily_parts)
   result = {}
   for key, part_set in family_to_parts.iteritems():
-    # Even through CJK mono fonts are in their only families and have only
-    # bold and regular weights, the weights are limited as though there were
-    # more.
+    # Even through CJK mono fonts are in their own families and have only
+    # bold and regular weights, they behave like they have more weights like
+    # the rest of CJK.
     limit_original = 'CJK' in key or bool(part_set & _NON_ORIGINAL_WEIGHT_PARTS)
-    use_preferred = bool(part_set - _ORIGINAL_PARTS)
+    # If we limit original, then we automatically use_preferred.
+    use_preferred = limit_original or bool(part_set - _ORIGINAL_PARTS)
     use_wws = bool(part_set - _WWS_PARTS)
     result[key] = FamilyNameInfo(limit_original, use_preferred, use_wws)
   return result
@@ -345,6 +349,9 @@ def _build_info_element(family, info):
   for attr in FamilyNameInfo._fields:
     if getattr(info, attr):
       attrs[attr] = 't'
+  # Don't have to write it out since limit_original implies use_preferred
+  if 'limit_original' in attrs and 'use_preferred' in attrs:
+    del attrs['use_preferred']
   return ET.Element('info', attrs)
 
 
@@ -363,9 +370,10 @@ def _build_tree(family_to_name_info, pretty=False):
 def _read_info_element(info_node):
   def bval(attr):
     return bool(info_node.get(attr, False))
+  # limit_original implies use_preferred
   return FamilyNameInfo(
       bval('limit_original'),
-      bval('use_preferred'),
+      bval('limit_original') or bval('use_preferred'),
       bval('use_wws'))
 
 
