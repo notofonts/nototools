@@ -780,35 +780,59 @@ def check_font(font_props, filename_error,
             print '%s differ:\n  info: "%s"\n  lint: "%s"' % (
                 label, info_name, lint_name)
 
-        _compare('family', name_info.original_family, expected_family_name)
-        _compare('subfamily', name_info.original_subfamily,
-                 expected_subfamily_name)
-        _compare('full', name_info.full_name, expected_full_name)
-        _compare('postscript', name_info.postscript_name,
-                 expected_postscript_name)
+        if False:
+            _compare('family', name_info.original_family, expected_family_name)
+            _compare('subfamily', name_info.original_subfamily,
+                     expected_subfamily_name)
+            _compare('full', name_info.full_name, expected_full_name)
+            _compare('postscript', name_info.postscript_name,
+                     expected_postscript_name)
 
-        if 0 not in names:
-            warn("name/copyright", "Copyright",
-                 "Copyright in 'name' table is not set.")
-        elif expected_copyright_re and not re.match(expected_copyright_re, names[0]):
-            warn("name/copyright", "Copyright",
-                 "Copyright message doesn't match template: '%s'\n%s" % (
-                     names[0], expected_copyright_re))
+        def _check_name(index, expected, keyname, is_name=True,
+                        is_re=False):
+            """Set expected to '-' to allow any name, set it to None if a name
+            entry should not be present..  Set is_name to False to prevent
+            'name' from being appended to the keyname in the error message.
+            """
 
-        if names[1] != name_info.original_family:
-            warn("name/family", "Family name",
-                 "Font family name is '%s', but was expecting '%s'." % (
-                     names[1], name_info.original_family))
+            actual = names.get(index, None)
+            test_key = "name/" + keyname.replace(' ', '_')
+            xname = ' name' if is_name else ''
+            xre = ' it to match' if is_re else ''
+            if expected:
+                if not actual:
+                    if expected == '-':
+                        warn(test_key, keyname,
+                             "The %s%s is not set." % (keyname, xname))
+                    else:
+                        warn(test_key, keyname,
+                             "The %s%s is not set, but was expecting%s '%s'" % (
+                                 keyname, xname, xre, expected))
+                elif expected != '-':
+                    if is_re:
+                        match = re.match(expected, actual)
+                    else:
+                        match = expected == actual
+                    if not match:
+                        warn(test_key, keyname,
+                             "The %s%s is '%s' but was expecting%s '%s'" % (
+                                 keyname, xname, actual, xre, expected))
+            elif actual:
+                warn(test_key, keyname,
+                     "Expected no %s%s, but got '%s'" % (
+                         keyname, xname, actual))
 
-        if names[2] != name_info.original_subfamily:
-            warn("name/subfamily", "Sub-family name",
-                 "Font subfamily name is '%s', but was expecting '%s'." % (
-                     names[2], name_info.original_subfamily))
+        _check_name(1, name_info.original_family, "family")
+        _check_name(2, name_info.original_subfamily, "subfamily")
+        _check_name(4, name_info.full_name, "full")
+        _check_name(6, name_info.postscript_name, "postscript")
+        _check_name(16, name_info.preferred_family, "preferred family")
+        _check_name(17, name_info.preferred_subfamily, "preferred subfamily")
+        _check_name(21, name_info.wws_family, "wws family")
+        _check_name(22, name_info.wws_subfamily, "wws subfamily")
 
-        if names[4] != name_info.full_name:
-            warn("name/full", "Font name",
-                 "Full font name is '%s', but was expecting '%s'." % (
-                     names[4], name_info.full_name))
+        _check_name(0, expected_copyright_re, 'copyright', is_name=False,
+                    is_re=True)
 
         # TODO(roozbeh): Make sure the description field contains information on
         # whether or not the font is hinted
@@ -850,78 +874,23 @@ def check_font(font_props, filename_error,
                 warn("name/version/expected_pattern", "Version",
                      "Version string is irregular: '%s'." % names[5])
 
-        if names[6] != name_info.postscript_name:
-            warn("name/postscript", "Postscript name",
-                 "Postscript name is '%s', but was expecting '%s'." % (
-                     names[6], name_info.postscript_name))
+        _check_name(7, expected_trademark_name, "trademark", is_name=False)
+        _check_name(8, '-', "manufacturer")
+        _check_name(9, '-', "designer")
 
-        if 7 not in names:
-            warn("name/trademark", "Trademark",
-                 "Trademark in 'name' table is not set.")
-        elif expected_trademark_name and names[7] != expected_trademark_name:
-            warn("name/trademark", "Trademark",
-                 "Trademark message doesn't match template: '%s'." % names[7])
-
-        if 8 not in names:
-            warn("name/manufacturer", "Manufacturer",
-                 "Manufacturer name in 'name' table is not set.")
-
-        if 9 not in names:
-            warn("name/designer", "Designer",
-                 "Designer name in 'name' table is not set.")
-
-        if 10 not in names:
-            warn("name/description", "Description",
-                 "The description field in 'name' table is not set.")
-
-        if 11 not in names:
-            warn("name/vendor_url", "Vendor",
-                 "The Vendor URL field in 'name' table is not set.")
-        elif names[11] != NOTO_URL:
-            warn("name/vendor_url", "Vendor",
-                 "Vendor URL field doesn't match template: '%s'." % names[11])
-
-        if 12 not in names:
-            warn("name/designer_url", "Designer",
-                 "The Designer URL field in 'name' table is not set.")
-        elif not names[12].startswith('http://'):
-            warn("name/designer_url", "Designer",
-                 "The Designer URL field in 'name' table is not an "
-                 "http URL: '%s'." % names[12])
-
-        if 13 not in names:
-            warn("name/license", "License",
-                 "The License field in 'name' table is not set.")
-        elif expected_license_name and names[13] != expected_license_name:
-            warn("name/license", "License",
-                 "License message doesn't match template: '%s'." % names[13])
-
-        if 14 not in names:
-            warn("name/license_url", "License",
-                 "The License URL in 'name' table is not set.")
-        elif expected_license_url_name and names[14] != expected_license_url_name:
-            warn("name/license_url", "License",
-                 "License URL doesn't match template: '%s'." % names[14])
-
-        def _check_name(index, expected, keyname):
-            actual = names.get(index, None)
-            test_key = "name/" + keyname.replace(' ', '_')
-            if expected:
-                if not actual:
-                    warn(test_key, keyname,
-                         "The %s in 'name' table is not set." % keyname)
-                elif expected != actual:
-                    warn(test_key, keyname,
-                         "The %s is '%s' but was expecting '%s'" % (
-                             keyname, actual, expected))
-            elif actual:
-                warn(test_key, keyname,
-                     "Expected no %s but got '%s'" % (keyname, actual))
-
-        _check_name(16, name_info.preferred_family, "preferred family")
-        _check_name(17, name_info.preferred_subfamily, "preferred subfamily")
-        _check_name(21, name_info.wws_family, "wws family")
-        _check_name(22, name_info.wws_subfamily, "wws subfamily")
+        if font_props.family is not 'Noto':
+            expected_description_re = '-'
+        elif font_props.is_hinted:
+            expected_description = "^Data hinted\.(?:\s.*)"
+        else:
+            expected_description = "^Data unhinted\.(?:\s.*)"
+        _check_name(10, expected_description_re, "description", is_name=False,
+                    is_re=True)
+        _check_name(11, NOTO_URL, "vendor url", is_name=False)
+        _check_name(12, "http://[^ ]+$", "designer url", is_name=False,
+                    is_re=True)
+        _check_name(13, expected_license_name, "license", is_name=False)
+        _check_name(14, expected_license_url_name, "license url", is_name=False)
 
 
     def _get_script_required(cmap):
