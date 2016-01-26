@@ -48,4 +48,9 @@ setup(name='nototools',
                'nototools/scale.py',
                'nototools/subset.py',
                'nototools/subset_symbols.py',
-               'nototools/test_vertical_extents.py'])
+               'nototools/test_vertical_extents.py'],
+      entry_points={
+          'console_scripts': [
+              'fontdiff = nototools.fontdiff.__main__:main',
+          ]
+      })
