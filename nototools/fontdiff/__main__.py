@@ -1,3 +1,28 @@
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+"""Provides the command-line utility `fontdiff`.
+
+Leverages GposDiffFinder or ShapeDiffFinder, depending on what's given via the
+`diff_type` argument. Can compare multiple font pairs via the `match` argument.
+For shaping comparisons, all results are sorted together and the largest
+differences from all pairs are shown first. For GPOS the pairs are still
+compared separately.
+"""
+
+
 import argparse
 import glob
 import os
@@ -34,13 +59,21 @@ def run_multiple(func, filematch, dir_a, dir_b, *args):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('path_a')
-    parser.add_argument('path_b')
-    parser.add_argument('-t', '--diff_type', default='shape')
-    parser.add_argument('-m', '--match')
-    parser.add_argument('-l', '--out_lines', type=int, default=20)
-    parser.add_argument('-w', '--whitelist', nargs='+')
+    parser = argparse.ArgumentParser(description='Compare fonts or ttxn output '
+                                     'pointed to by PATH_A and PATH_B.')
+    parser.add_argument('path_a', metavar='PATH_A')
+    parser.add_argument('path_b', metavar='PATH_B')
+    parser.add_argument('-t', '--diff_type', default='shape',
+                        help='type of comparison to run, "shape" or "gpos" '
+                        '(defaults to "shape"), if "gpos" is provided the '
+                        'input paths should point to ttxn output')
+    parser.add_argument('-m', '--match',
+                        help='if provided, compares all matching files found '
+                        'in PATH_A with respective matches in PATH_B')
+    parser.add_argument('-l', '--out_lines', type=int, default=20,
+                        help='number of differences to print (default 20)')
+    parser.add_argument('-w', '--whitelist', nargs='+',
+                        help='list of one or more glyph names to ignore')
     args = parser.parse_args()
 
     if args.diff_type == 'shape':

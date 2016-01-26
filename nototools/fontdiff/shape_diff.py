@@ -1,3 +1,34 @@
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+"""Provides ShapeDiffFinder, which finds differences in OTF/TTF glyph shapes.
+
+ShapeDiffFinder takes in two paths, to font binaries. It then provides methods
+which compare these fonts, returning a report string and optionally adding to a
+report dictionary. These methods are `find_area_diffs`, which compares glyph
+areas, and `find_rendered_diffs` which compares harfbuzz output using image
+magick.
+
+Neither comparison is ideal. Glyph areas can be the same even if the shapes are
+wildly different. Image comparison is usually either slow (hi-res) or inaccurate
+(lo-res), and can be easily hindered when one glyph's image is a pixel larger
+than another's. Still, these are usually useful for raising red flags and
+catching large errors.
+"""
+
+
 import os
 import subprocess
 
@@ -45,7 +76,7 @@ class ShapeDiffFinder:
         report.append('')
 
     def find_rendered_diffs(self, font_size=24, stats=None):
-        """Find diffs of glyphs as rendered by image magick."""
+        """Find diffs of glyphs as rendered by harfbuzz."""
 
         self.build_names()
         self.build_reverse_cmap()

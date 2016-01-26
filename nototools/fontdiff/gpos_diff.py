@@ -1,3 +1,31 @@
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+"""Provides GposDiffFinder, which finds differences in ttxn feature output.
+
+GposDiffFinder takes in two paths, to plaintext files containing the output of
+ttxn. It provides methods which compare the OpenType feature contents of these
+files: `find_kerning_diffs`, `find_mark_class_diffs`, and
+`find_positioning_diffs`.
+
+Unlike ShapeDiffFinder, the methods don't have a `stats` argument and can't
+accumulate a report between method calls (yet?). They simply report the
+differences via a returned string.
+"""
+
+
 from collections import defaultdict
 import re
 
