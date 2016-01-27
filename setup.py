@@ -51,6 +51,6 @@ setup(name='nototools',
                'nototools/test_vertical_extents.py'],
       entry_points={
           'console_scripts': [
-              'fontdiff = nototools.fontdiff.__main__:main',
+              'fontdiff = nototools.fontdiff:main',
           ]
       })

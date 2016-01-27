@@ -33,7 +33,7 @@ import os
 import subprocess
 
 from fontTools.ttLib import TTFont
-from nototools.pens.glyph_area_pen import GlyphAreaPen
+from glyph_area_pen import GlyphAreaPen
 
 
 class ShapeDiffFinder:

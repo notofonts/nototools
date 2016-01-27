@@ -27,7 +27,7 @@ import argparse
 import glob
 import os
 
-from nototools.fontdiff import gpos_diff, shape_diff
+from nototools import gpos_diff, shape_diff
 
 
 def shape(path_a, path_b, stats):
