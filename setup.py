@@ -23,9 +23,10 @@ setup(name='nototools',
           # On Mac OS X these need to be installed with homebrew
           # 'cairo',
           # 'pango',
-          # 'pygtk'
+          # 'pygtk',
+          # 'imagemagick'
       ],
-      dependency_links=['https://github.com/behdad/fontTools/tarball/master#egg=fontTools-2.5'],
+      dependency_links=['https://github.com/behdad/fontTools/tarball/master#egg=fontTools-3.0'],
       package_data={
           'nototools': [
               'nototools/*.sh',
