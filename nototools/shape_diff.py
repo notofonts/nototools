@@ -83,6 +83,8 @@ class ShapeDiffFinder:
         self.build_names()
         self.build_reverse_cmap()
 
+        hb_input_generators = [
+            hb_input.HbInputGenerator(p, self.reverse_cmap) for p in self.paths]
         path_a, path_b = self.paths
         ordered_names = list(self.names)
         a_png = 'tmp_a.png'
@@ -91,9 +93,8 @@ class ShapeDiffFinder:
         diffs_filename = 'tmp_diffs.txt'
 
         for name in ordered_names:
-            strin, strin_b = [
-                hb_input.hb_input_from_name(f, name, self.reverse_cmap)
-                for f in self.fonts]
+            strin, strin_b = [input_generator.input_from_name(name)
+                              for input_generator in hb_input_generators]
             assert strin == strin_b
 
             # ignore null character and unreachable characters
@@ -186,7 +187,10 @@ class ShapeDiffFinder:
                 report.append('  %s: %s in A, %s in B' %
                               (name, univals[0], univals[1]))
             report.append('')
-        self.reverse_cmap = reverse_cmaps[0]
+
+        # return cmap with only names found in both fonts
+        self.reverse_cmap = {n: v for n, v in reverse_cmaps[0].items()
+                             if n in self.names}
 
     def dump(self):
         """Return the results of run diffs."""
