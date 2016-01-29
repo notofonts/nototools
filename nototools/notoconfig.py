@@ -40,17 +40,21 @@ _setup()
 # convenience for common stuff, should be in local .notoconfig file.
 
 def noto_tools(default=''):
-  """Local path to git nototools git repo"""
+  """Local path to nototools git repo"""
   return values.get('noto_tools', default)
 
 def noto_fonts(default=''):
-  """Local path to git noto-font git repo"""
+  """Local path to noto-font git repo"""
   return values.get('noto_fonts', default)
 
 def noto_cjk(default=''):
-  """Local path to git noto-cjk git repo"""
+  """Local path to noto-cjk git repo"""
   return values.get('noto_cjk', default)
 
 def noto_emoji(default=''):
-  """Local path to git noto-emoji git repo"""
+  """Local path to noto-emoji git repo"""
   return values.get('noto_emoji', default)
+
+def noto_source(default=''):
+  """Local path to noto-source git repo"""
+  return values.get('noto_source', default)

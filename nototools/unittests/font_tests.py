@@ -178,7 +178,7 @@ class TestNames(FontTest):
         family_names = '%s|%s' % (condensed_name_nosp, name_nosp)
 
         filename_match = noto_fonts.match_filename(filename, family_names)
-        family, _, _, _, _, weight, slope, _ = filename_match.groups()
+        family, _, _, _, _, _, _, _, weight, slope, _ = filename_match.groups()
 
         if family == condensed_name_nosp:
             family = self.condensed_family_name
