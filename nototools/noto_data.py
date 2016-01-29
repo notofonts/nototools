@@ -167,8 +167,7 @@ def char_range(start, end):
 COPTIC_EPACT = char_range(0x102E0, 0x102FB)
 ARABIC_MATH = char_range(0x1EE00, 0x1EEF1)
 
-
-EXTRA_CHARACTERS_NEEDED = {
+P3_EXTRA_CHARACTERS_NEEDED = {
     # nothing additional outside block
     'Ahom': [ ],
 
@@ -363,6 +362,51 @@ EXTRA_CHARACTERS_NEEDED = {
     'Zsym': [0x20BC, 0x20BD, 0x20BE] + COPTIC_EPACT,
 }
 
+EXTRA_CHARACTERS_NEEDED = {
+    'Arab': [
+        0x2010, 0x2011,   # Hyphen and non-breaking hyphen need different shapes
+        0x204F, 0x2E41],  # For Sindhi
+
+    'Avst': [0x2E30, 0x2E31],  # From Core Specification and NamesList.txt
+
+    # From http://www.unicode.org/L2/L2014/14064r-n4537r-cherokee.pdf section 8
+    'Cher': [
+        0x0300, 0x0301, 0x0302, 0x0304, 0x030B,
+        0x030C, 0x0323, 0x0324, 0x0330, 0x0331],
+
+    # From Core Specification
+    'Copt': [
+        0x0300, 0x0304, 0x0305, 0x0307, 0x033F,
+        0x0374, 0x0375, 0xFE24, 0xFE25, 0xFE26],
+
+    # latin 1 and 2
+    'LGC': char_range(0x20, 0x7e) + char_range(0xa0, 0xff),
+
+    'Lisu': [0x02BC, 0x02CD],  # From Core Specification
+
+    'Sylo': [0x2055],  # From Core Specification
+
+    # From Core Specification
+    'Syrc': [
+        0x0303, 0x0304, 0x0307, 0x0308, 0x030A, 0x0320,
+        0x0323, 0x0324, 0x0325, 0x032D, 0x032E, 0x0330,
+        0x060C, 0x061B, 0x061F, 0x0640] + char_range(0x064B, 0x0652),
+
+    # From Core Specification & http://www.unicode.org/L2/L2001/01369-n2372.pdf
+    'Tale': [0x0300, 0x0301, 0x0307, 0x0308, 0x030C],
+
+    # From Core Specificaion and
+    # http://www.unicode.org/L2/L2010/10407-ext-tamil-follow2.pdf
+    'Taml': [0x00B2, 0x00B3, 0x2074, 0x2082, 0x2083, 0x2084],
+
+    # From Core Specification and
+    # http://www.unicode.org/L2/L2010/10451-patani-proposal.pdf
+    'Thai': [0x02BC, 0x02D7, 0x0303, 0x0331],
+
+    # Azerbaijani manat, Russian ruble, and Georgian Lari
+    'Zsym': [0x20BC, 0x20BD, 0x20BE],
+}
+
 LGC_CHARACTERS_NOT_NEEDED = frozenset(
         char_range(0x0370, 0x0373) +
         [0x0376, 0x0377, 0x03CF, 0x0951, 0x0952, 0x1E9C, 0x1E9D, 0x1E9F] +
@@ -382,8 +426,14 @@ LGC_CHARACTERS_NOT_NEEDED = frozenset(
         char_range(0xA7FA, 0xA7FF) +
         [0xA92E, 0xFB00, 0xFB05, 0xFB06])
 
-CHARACTERS_NOT_NEEDED = {
+P3_CHARACTERS_NOT_NEEDED = {
     'Arab': char_range(0x10E60, 0x10E7E) + COPTIC_EPACT + ARABIC_MATH,
+    'Latn': LGC_CHARACTERS_NOT_NEEDED,
+    'LGC': LGC_CHARACTERS_NOT_NEEDED,
+}
+
+CHARACTERS_NOT_NEEDED = {
+    'Arab': char_range(0x10E60, 0x10E7E),
     'Latn': LGC_CHARACTERS_NOT_NEEDED,
     'LGC': LGC_CHARACTERS_NOT_NEEDED,
 }
