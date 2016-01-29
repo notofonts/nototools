@@ -164,6 +164,204 @@ def ascii_letters():
 def char_range(start, end):
     return range(start, end+1)
 
+COPTIC_EPACT = char_range(0x102E0, 0x102FB)
+ARABIC_MATH = char_range(0x1EE00, 0x1EEF1)
+
+P3_EXTRA_CHARACTERS_NEEDED = {
+    # nothing additional outside block
+    'Ahom': [ ],
+
+    # According to Roozbeh (and existing fonts) the following punctuation and
+    # digits are used with and interact with Arabic characters.
+    'Arab': char_range(0x0030, 0x0039) + [
+        # exclamation mark, comma, full stop, colon, NBS, guillimets
+        0x0021, 0x002c, 0x002e, 0x003a, 0x00a0, 0x00ab, 0x00bb,
+        0x06dd,           # Arabic end of Ayah
+        0x2010, 0x2011,   # Hyphen and non-breaking hyphen need different shapes
+        0x204F, 0x2E41,   # For Sindhi
+        0xfd3e, 0xfd3f],  # ornate left and right paren (in Noto Naskh)
+
+    # like Arabic, but Sindi is not written in Nastaliq so omitted.
+    'Aran': char_range(0x0030, 0x0039) + [
+        # exclamation mark, comma, full stop, colon, NBS, guillimets
+        0x0021, 0x002c, 0x002e, 0x003a, 0x00a0, 0x00ab, 0x00bb,
+        0x06dd,           # Arabic end of Ayah
+        0x2010, 0x2011,   # Hyphen and non-breaking hyphen need different shapes
+        0xfd3e, 0xfe3f],  # ornate left and right paren (in Noto Naskh)
+
+    # Characters referenced in Armenian encoding cross ref page as shown in
+    # see http://www.unicode.org/L2/L2010/10354-n3924-armeternity.pdf
+    # also see http://man7.org/linux/man-pages/man7/armscii-8.7.html
+    # left and right paren, comma, hyphen-minus, period, section,
+    # no break space, left and right guillimet, hyphen, em dash, ellipsis
+    # presentation forms FB13-FB17
+    'Armn': [0x0028, 0x0029, 0x002C, 0x002D, 0x002E, 0x00A0,
+             0x00A7, 0x00AB, 0x00BB, 0x2010, 0x2014, 0x2026],
+
+    'Avst': [0x2E30, 0x2E31,  # From Core Specification and NamesList.txt
+             0x200C],  # www.unicode.org/L2/L2007/07006r-n3197r-avestan.pdf
+
+    # From http://www.unicode.org/L2/L2014/14064r-n4537r-cherokee.pdf section 8
+    'Cher': [
+        0x0300, 0x0301, 0x0302, 0x0304, 0x030B,
+        0x030C, 0x0323, 0x0324, 0x0330, 0x0331],
+
+    # From Core Specification:
+    # period, colon, semicolon, middle dot
+    # combining: grave, macron, overline, dot above, double overline
+    # greek numeral sign, greek lower numeral sign, comb macrons (lh, rh, cj)
+    # from http://std.dkuug.dk/JTC1/SC2/WG2/docs/n2636.pdf
+    # oblique double hyphen, diaeresis, apostrophe, comb. circumflex, acute,
+    # hyphen-minus, hyphen
+    'Copt': [
+        0x002E, 0x003A, 0x003B, 0x00B7,
+        0x0300, 0x0304, 0x0305, 0x0307, 0x033F,
+        0x0374, 0x0375, 0xFE24, 0xFE25, 0xFE26,
+        0x2E17, 0x0308, 0x2019, 0x0302, 0x0301,
+        0x002D, 0x2010,
+        ],
+
+    # Elbasan
+    # see http://www.unicode.org/L2/L2011/11050-n3985-elbasan.pdf
+    # adds combining overbar and greek numerals for ones and tens, and
+    # both stigma/digamma for 6.
+    # greek capital alpha beta gamma delta epsilon stigma/digamma zeta eta theta
+    # iota kappa lambda mu nu xi omicron pi koppa
+    'Elba': [0x00B7, 0x0305,
+             0x0391, 0x0392, 0x0393, 0x0394, 0x0395,
+             0x03DA, 0x03DD, 0x0396, 0x0397, 0x0398,
+             0x0399, 0x039A, 0x039B, 0x039C, 0x039D,
+             0x039E, 0x039F, 0x03A0, 0x03DE],
+
+    # Ethiopic
+    # See http://abyssiniagateway.net/fidel/l10n/
+    # Recommends combining diaeresis 'for scholarly use', should look Ethiopian.
+    # Also claims hyphen is not used, but a wikipedia page in Amharic does use
+    # it, see
+    # https://am.wikipedia.org/wiki/1_%E1%8A%A5%E1%88%BD%E1%88%98-%E1%8B%B3%E1%8C%8B%E1%8A%95
+    # Western numerals and punctuation should look heavier to match the Ethiopic.
+    # A keyboard standard is here:
+    # See http://www.mcit.gov.et/documents/1268465/1282796/Keyboard+Layout+Standard/a8aa75ca-e125-4e25-872e-380e2a9b2313
+    # digits
+    # combining diaeresis (from abyssiniagateway site)
+    # plus sign, comma, hyphen-minus, period, forward-slash
+    # equals sign, question mark, left and right single and double curly quotes
+    # left and right pointing double angle quotation marks, vertical three dot
+    #   (plus sign to here all from keyboard doc)
+    # exclamation point, left paren, right paren, ellipsis (web sites use them)
+    # hyphen (used in hyphenated names in Amharaic, see wikipedia page)
+    'Ethi': char_range(0x0030, 0x0039) + [
+        0x0308,
+        0x002B, 0x002C, 0x002D, 0x002E, 0x002F,
+        0x003D, 0x003F, 0x2018, 0x2019, 0x201C, 0x201D,
+        0x00AB, 0x00BB, 0x22EE,
+        0x0021, 0x0028, 0x0029, 0x2026,
+        0x2010],
+
+    # Georgian
+    # see example news article: http://www.civil.ge/geo/article.php?id=29970
+    # ascii digits,
+    # exclamation mark, percent, open/close paren, comma, hyphen-minus,
+    # period, colon, semicolon, no break space (appears to be used in numbers)
+    # em-dash, left double quotation mark, double low-9 quotation mark, ellipsis
+    # see core standard:
+    # middle dot, word separator middle dot, archaic punctuation (includes two
+    # dot punctuation at 205A)
+    'Geor': char_range(0x0030, 0x0039) + [
+        0x0021, 0x0025, 0x0028, 0x0029, 0x002C, 0x002D,
+        0x002E, 0x003A, 0x003B, 0x00A0,
+        0x2014, 0x201C, 0x201E, 0x2026,
+        0x00B7, 0x2E31] + char_range(0x2056, 0x205E) + char_range(0x2E2A, 0x2E2D),
+
+    # Hatran
+    # see http://www.unicode.org/L2/L2012/12312-n4324-hatran.pdf (most info, but
+    # not latest assignment, which doesn't have all digits shown here)
+    # single and double vertical line, also ZWNJ in case ligatures need breaking
+    # might want to ligate hatran digit 1 forms 11 (2), 111 (3), 1111 (4) to
+    # look as the suggested (dropped) digits were represented in the doc.
+    'Hatr': [ 0x007C, 0x2016, 0x200C ],
+
+    # Anatolian Hieroglyphs
+    # see http://www.unicode.org/L2/L2012/12213-n4282-anatolian.pdf
+    'Hluw': [0x200B],
+
+    # Old Hungarian
+    # see  http://www.unicode.org/L2/L2012/12168r-n4268r-oldhungarian.pdf
+    # letters with LTR override mirror reverse (!) "which has to be handled by
+    # the rendering engine"
+    # ZWJ, middle dot, two dot punctuation, tricolon, vertical four dots
+    # plus 'standard European punctuation:'
+    # exclamation, comma, hyphen-minus, period, colon,
+    # double high-reversed-9 quote, reversed semicolon, reversed question mark,
+    #   reversed comma, double low-reversed-9 quote,
+    # hyphen (the official one)
+    'Hung': [ 0x200D, 0x2E31, 0x205A, 0x205D, 0x205E,
+              0x0021, 0x002C, 0x002D, 0x002E, 0x003A,
+              0x201F, 0x204F, 0x2E2E, 0x2E41, 0x2E42,
+              0x2010,
+            ],
+
+    # latin 1 and 2
+    'LGC': char_range(0x20, 0x7e) + char_range(0xa0, 0xff),
+
+    'Lisu': [0x02BC, 0x02CD],  # From Core Specification
+
+    # Meriotic Cursive
+    # see http://www.unicode.org/L2/L2009/09188r-n3646-meroitic.pdf
+    # colon, horizontal ellipsis, tricolon
+    'Merc': [ 0x003A, 0x2026, 0x205D ],
+
+    # Multani
+    # see http://www.unicode.org/L2/L2012/12316-multani.pdf
+    # Digits unified with Gurmukhi, but 6 and 7 look like Devanagari, it says.
+    # Glyphic variant of section mark 0x112A9, but how would we represent it...
+    'Mult': char_range(0x0A66, 0x0A6F),
+
+    # Sharada
+    # see http://www.unicode.org/L2/L2009/09074-sharada.pdf
+    # also see http://www.unicode.org/L2/L2015/15255-sharada-vocalic-vs.pdf
+    # which requests a change in the representative glyphs of 111ba and 111bb
+    # (below vowel signs)
+    # Seems self-contained, no other punctuation.
+    'Shrd': [ ],
+
+    # Siddham
+    # see http://www.unicode.org/L2/L2012/12234r-n4294-siddham.pdf
+    # most use in Aast Asia
+    'Sidd': [ ],
+
+    # Sign Writing
+    # As with music notation, we can't lay this out.  Generative glyphs for lots
+    # of hand positions...
+    'Sgnw': [ ],
+
+    'Sylo': [0x2055],  # From Core Specification
+
+    # From Core Specification
+    'Syrc': [
+        0x0303, 0x0304, 0x0307, 0x0308, 0x030A, 0x0320,
+        0x0323, 0x0324, 0x0325, 0x032D, 0x032E, 0x0330,
+        0x060C, 0x061B, 0x061F, 0x0640] + char_range(0x064B, 0x0652),
+
+    # From Core Specification & http://www.unicode.org/L2/L2001/01369-n2372.pdf
+    'Tale': [0x0300, 0x0301, 0x0307, 0x0308, 0x030C],
+
+    # From Core Specificaion and
+    # http://www.unicode.org/L2/L2010/10407-ext-tamil-follow2.pdf
+    'Taml': [0x00B2, 0x00B3, 0x2074, 0x2082, 0x2083, 0x2084],
+
+    # From Core Specification and
+    # http://www.unicode.org/L2/L2010/10451-patani-proposal.pdf
+    'Thai': [0x02BC, 0x02D7, 0x0303, 0x0331],
+
+    'Zmth': ARABIC_MATH,
+
+    # Azerbaijani manat, Russian ruble, and Georgian Lari
+    # Roozbeh says Coptic Epact doesn't belong in the Arabic fonts, though it's
+    # used with Arabic.
+    'Zsym': [0x20BC, 0x20BD, 0x20BE] + COPTIC_EPACT,
+}
+
 EXTRA_CHARACTERS_NEEDED = {
     'Arab': [
         0x2010, 0x2011,   # Hyphen and non-breaking hyphen need different shapes
@@ -227,6 +425,12 @@ LGC_CHARACTERS_NOT_NEEDED = frozenset(
         char_range(0xA7A0, 0xA7A9) +
         char_range(0xA7FA, 0xA7FF) +
         [0xA92E, 0xFB00, 0xFB05, 0xFB06])
+
+P3_CHARACTERS_NOT_NEEDED = {
+    'Arab': char_range(0x10E60, 0x10E7E) + COPTIC_EPACT + ARABIC_MATH,
+    'Latn': LGC_CHARACTERS_NOT_NEEDED,
+    'LGC': LGC_CHARACTERS_NOT_NEEDED,
+}
 
 CHARACTERS_NOT_NEEDED = {
     'Arab': char_range(0x10E60, 0x10E7E),
