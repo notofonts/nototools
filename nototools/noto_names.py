@@ -119,7 +119,7 @@ _SCRIPT_KEY_TO_FONT_NAME = {
 def preferred_script_name(script_key):
   try:
     return unicode_data.human_readable_script_name(script_key)
-  except:
+  except KeyError:
     return cldr_data.get_english_script_name(script_key)
 
 
@@ -417,7 +417,7 @@ def name_table_data(noto_font, family_to_name_info):
   family_key = ' '.join(family_parts)
   try:
     info = family_to_name_info[family_key]
-  except:
+  except KeyError:
     print >> sys.stderr, 'no family name info for "%s"' % family_key
     return None
 
