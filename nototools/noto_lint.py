@@ -1060,24 +1060,7 @@ def check_font(font_props, filename_error,
                      "but should be GOOG." %
                      os2_table.achVendID)
 
-            if font_props.is_cjk:
-                expected_weights = {
-                    'black': 900,
-                    'bold': 700,
-                    'medium': 500,
-                    'regular': 400,
-                    'demilight': 350,
-                    'light': 300,
-                    'thin': 250
-                    }
-            else:
-                expected_weights = {
-                    'bold': 700,
-                    'bolditalic': 700,
-                    'italic': 400,
-                    'regular': 400
-                }
-            expected_weight = expected_weights.get(font_props.weight.lower())
+            expected_weight = noto_fonts.WEIGHTS.get(font_props.weight, None)
             if not expected_weight:
                 raise ValueError('unexpected weight: %s' % font_props.weight)
 
