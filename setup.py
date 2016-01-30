@@ -23,9 +23,10 @@ setup(name='nototools',
           # On Mac OS X these need to be installed with homebrew
           # 'cairo',
           # 'pango',
-          # 'pygtk'
+          # 'pygtk',
+          # 'imagemagick'
       ],
-      dependency_links=['https://github.com/behdad/fontTools/tarball/master#egg=fontTools-2.5'],
+      dependency_links=['https://github.com/behdad/fontTools/tarball/master#egg=fontTools-3.0'],
       package_data={
           'nototools': [
               'nototools/*.sh',
@@ -48,4 +49,9 @@ setup(name='nototools',
                'nototools/scale.py',
                'nototools/subset.py',
                'nototools/subset_symbols.py',
-               'nototools/test_vertical_extents.py'])
+               'nototools/test_vertical_extents.py'],
+      entry_points={
+          'console_scripts': [
+              'fontdiff = nototools.fontdiff:main',
+          ]
+      })

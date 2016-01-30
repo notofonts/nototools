@@ -317,16 +317,16 @@ class TestSpec(object):
     script
     name
   name -- name table tests
+    unable_to_check
     copyright
     family
     subfamily
-    full
+    unique_id
+    full_name
     version
-      hinted_suffix
       match_head
       out_of_range
-      expected_pattern
-    postscript
+    postscript_name
     trademark
     manufacturer
     designer
@@ -335,6 +335,10 @@ class TestSpec(object):
     designer_url
     license
     license_url
+    preferred_family
+    preferred_subfamily
+    wws_family
+    wws_subfamily
     unused -- checks for unused entries in name table
   cmap -- cmap table tests
     tables
