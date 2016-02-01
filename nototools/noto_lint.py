@@ -412,7 +412,6 @@ FontProps = collections.namedtuple(
     'manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, '
     'is_cjk, subset')
 
-FAMILY_TO_NAME_INFO = noto_names.read_family_name_info_file()
 
 def font_properties_from_name(file_path):
     noto_font = noto_fonts.get_noto_font(file_path)
@@ -650,14 +649,16 @@ def check_font(font_props, filename_error,
 
         _check_unused_names()
 
-        names = font_data.get_name_records(font)
         noto_font = _noto_font_from_font_props(font_props)
-
-        name_data = noto_names.name_table_data(noto_font, FAMILY_TO_NAME_INFO)
+        family_to_name_info = noto_names.family_to_name_info_for_phase(
+            noto_phase)
+        name_data = noto_names.name_table_data(noto_font, family_to_name_info)
         if not name_data:
             warn("name/unable_to_check", "Unable to check",
                  "No name data available for this font.")
             return
+
+        names = font_data.get_name_records(font)
 
         def _check_idx(idx, expected, keyname):
           actual = names.get(idx, None)
@@ -2004,7 +2005,7 @@ def main():
     parser.add_argument(
         "-p", "--phase",
         help="set noto phase for lint compatibility (default 3)",
-        type=int, default=3)
+        metavar='phase', type=int, default=3)
 
     arguments = parser.parse_args()
 

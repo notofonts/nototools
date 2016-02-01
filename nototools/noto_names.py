@@ -81,8 +81,10 @@ APACHE_LICENSE = "Licensed under the Apache License, Version 2.0"
 
 APACHE_LICENSE_URL = "http://www.apache.org/licenses/LICENSE-2.0"
 
-# default file where we store the family name info
-FAMILY_NAME_INFO_FILE = 'family_name_info.xml'
+# default files where we store family name info
+FAMILY_NAME_INFO_FILE='family_name_info.xml'
+PHASE_2_FAMILY_NAME_INFO_FILE = 'family_name_info_p2.xml'
+PHASE_3_FAMILY_NAME_INFO_FILE = 'family_name_info_p3.xml'
 
 # Represents what and how we write family names in the name table.
 # If limit_original is true, weights become part of the family name,
@@ -559,7 +561,21 @@ def write_family_name_info(family_to_name_info, pretty=False):
       encoding='utf-8')
 
 
-def read_family_name_info_file(filename=FAMILY_NAME_INFO_FILE):
+_PHASE_TO_NAME_INFO_CACHE = {}
+_PHASE_TO_FILENAME = {
+    2: PHASE_2_FAMILY_NAME_INFO_FILE,
+    3: PHASE_3_FAMILY_NAME_INFO_FILE
+}
+def family_to_name_info_for_phase(phase):
+  """Phase is an int, either 2 or 3."""
+  result = _PHASE_TO_NAME_INFO_CACHE.get(phase, None)
+  if not result and phase in _PHASE_TO_FILENAME:
+    result = read_family_name_info_file(_PHASE_TO_FILENAME[phase])
+    _PHASE_TO_NAME_INFO_CACHE[phase] = result
+  return result
+
+
+def read_family_name_info_file(filename):
   """Returns a map from preferred family name to FontNameInfo."""
   return _read_tree(ET.parse(filename).getroot())
 
@@ -666,7 +682,7 @@ def main():
   dump  - read the family info file, and display the names to generate
           for some fonts.
   write - collect all the names of the provided fonts, and write a family name
-          info file if -i was provided, else write to stdout.
+          info file if one was provided (via -i or -p), else write to stdout.
   test  - collect all the names of the provided fonts, show the family name
           info file that would be generated, and show the names to generate
           for those fonts.
@@ -677,8 +693,10 @@ def main():
       epilog=HELP, formatter_class=argparse.RawDescriptionHelpFormatter)
   parser.add_argument(
       '-i', '--info_file', metavar='fname',
-      help='name of xml family info file (default %s)' %
-      FAMILY_NAME_INFO_FILE, nargs='?', const=FAMILY_NAME_INFO_FILE)
+      help='name of xml family info file, overrides name based on phase')
+  parser.add_argument(
+      '-p', '--phase', metavar = 'phase', type=int,
+      help='determine info file name by phase (2 or 3)')
   parser.add_argument(
       '-d', '--dirs', metavar='dir', help='font directories to examine '
       '(use "[noto]" for noto fonts/cjk/emoji font dirs)', nargs='+')
@@ -703,10 +721,15 @@ def main():
     print 'Please specify at least one directory or file'
     return
 
+  if not args.info_file:
+    if args.phase:
+      args.info_file = _PHASE_TO_FILENAME[args.phase]
+      print 'using info file: "%s"' % args.info_file
+
   if args.cmd == 'dump':
     if not args.info_file:
-      args.info_file = FAMILY_NAME_INFO_FILE
-      print 'reading from "%s"' % args.info_file
+      print 'must specify an info file to dump'
+      return
     if not path.exists(args.info_file):
       print '"%s" does not exist.' % args.info_file
       return
