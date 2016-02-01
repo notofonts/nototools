@@ -93,9 +93,10 @@ class ShapeDiffFinder:
         diffs_filename = 'tmp_diffs.txt'
 
         for name in ordered_names:
-            strin, strin_b = [input_generator.input_from_name(name)
-                              for input_generator in hb_input_generators]
-            assert strin == strin_b
+            hb_args, hb_args_b = [input_generator.input_from_name(name)
+                                  for input_generator in hb_input_generators]
+            assert hb_args == hb_args_b
+            features, text = hb_args
 
             # ignore null character and unreachable characters
             if not strin:
@@ -109,10 +110,12 @@ class ShapeDiffFinder:
 
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
-                '--output-file=%s' % a_png, path_a] + strin)
+                '--output-file=%s' % a_png,
+                '--features=%s' % ','.join(features), path_a, text])
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
-                '--output-file=%s' % b_png, path_b] + strin)
+                '--output-file=%s' % b_png,
+                '--features=%s' % ','.join(features), path_b, text])
             with open(diffs_filename, 'a') as ofile:
                 subprocess.call(
                     ['compare', '-metric', 'AE', a_png, b_png, cmp_png],

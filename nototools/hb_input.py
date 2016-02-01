@@ -13,7 +13,6 @@
 # limitations under the License.
 
 
-
 from fontTools.ttLib import TTFont
 
 from nototools import summary
@@ -26,9 +25,8 @@ class HbInputGenerator(object):
     subprocess.call or something similar.
     """
 
-    def __init__(self, path, reverse_cmap=None):
-        self.path = path
-        self.font = TTFont(path)
+    def __init__(self, font, reverse_cmap=None):
+        self.font = font
         self.reverse_cmap = reverse_cmap or build_reverse_cmap(self.font)
 
     def all_inputs(self):
@@ -37,26 +35,25 @@ class HbInputGenerator(object):
         inputs = []
         glyph_names = self.font.getGlyphOrder()
         for name in glyph_names:
-            inputs.append([self.path] + self.input_from_name(name))
+            inputs.append(self.input_from_name(name))
         return inputs
 
-    def input_from_name(self, name, allow_arg=True):
-        """Given glyph name, return input to harbuzz to render this glyph, not
-        including the font path itself.
-
-        Sometimes this will simply be the glyph itself, other times a feature
-        may need to be active, or a string of glyphs used (for ligatures or
-        contextual substitutions).
-
-        If `allow_arg` is false, no feature argument will be added (used if
-        called recursively).
+    def input_from_name(self, name, features=None):
+        """Given glyph name, return input to harbuzz to render this glyph in the
+        form of a (features, text) tuple, where `features` is a list of feature
+        tags to activate and `text` is an input string.
         """
+
+        if features is None:
+            features = []
 
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
-            return [unichr(self.reverse_cmap[name])]
+            return features, unichr(self.reverse_cmap[name])
 
         # nope, check the substitution features
+        if 'GSUB' not in self.font:
+            return
         gsub = self.font['GSUB'].table
         for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
             for st in lookup.SubTable:
@@ -66,7 +63,7 @@ class HbInputGenerator(object):
                     for glyph, subst in st.mapping.items():
                         if subst == name:
                             return self._input_with_context(
-                                glyph, lookup_index, allow_arg)
+                                gsub, glyph, lookup_index, features)
 
                 # see if this glyph is a ligature
                 elif lookup.LookupType == 4:
@@ -74,22 +71,20 @@ class HbInputGenerator(object):
                         for ligature in ligatures:
                             if ligature.LigGlyph == name:
                                 glyphs = [prefix] + ligature.Component
-                                return self._sequence_from_glyph_names(glyphs)
+                                return self._sequence_from_glyph_names(
+                                    glyphs, features)
 
 
-    def _input_with_context(self, glyph, lookup_index, allow_arg=True):
-        """Given font, input glyph, and lookup index, return input to harfbuzz
+    def _input_with_context(self, gsub, glyph, lookup_index, features):
+        """Given GSUB, input glyph, and lookup index, return input to harfbuzz
         to render the input glyph with the referred-to lookup activated.
         """
 
-        gsub = self.font['GSUB'].table
-
         # try to get a feature tag to activate this lookup
-        if allow_arg:
-            for feature in gsub.FeatureList.FeatureRecord:
-                if lookup_index in feature.Feature.LookupListIndex:
-                    fea_arg = ['--features=%s' % feature.FeatureTag]
-                    return fea_arg + self.input_from_name(glyph)
+        for feature in gsub.FeatureList.FeatureRecord:
+            if lookup_index in feature.Feature.LookupListIndex:
+                features.append(feature.FeatureTag)
+                return self.input_from_name(glyph, features)
 
         # try for a chaining substitution
         for lookup in gsub.LookupList.Lookup:
@@ -105,17 +100,19 @@ class HbInputGenerator(object):
                         glyphs = [st.BacktrackCoverage[0].glyphs[0], glyph]
                     else:
                         continue
-                    return self._sequence_from_glyph_names(glyphs)
+                    return self._sequence_from_glyph_names(glyphs, features)
 
         raise ValueError('Lookup list index %d not found.' % lookup_index)
 
 
-    def _sequence_from_glyph_names(self, glyphs):
+    def _sequence_from_glyph_names(self, glyphs, features):
         """Return a sequence of glyphs from glyph names."""
 
-        return [''.join(
-            ''.join(self.input_from_name(glyph_name, allow_arg=False))
-            for glyph_name in glyphs)]
+        text = []
+        for glyph in glyphs:
+            features, cur_text = self.input_from_name(glyph, features)
+            text.append(cur_text)
+        return features, ''.join(text)
 
 
 def build_reverse_cmap(font):
