@@ -61,6 +61,9 @@ _emoji_variants = None
 _variant_data = None
 _variant_data_cps = None
 
+# proposed emoji
+_proposed_emoji_data = None
+_proposed_emoji_data_cps = None
 
 def load_data():
     """Loads the data files needed for the module.
@@ -667,6 +670,49 @@ def get_variant_data(cp):
 def variant_data_cps():
   _load_variant_data()
   return _variant_data_cps
+
+# proposed emoji
+
+def _load_proposed_emoji_data():
+  """Parse proposed-emoji-9.txt to get cps/names of proposed emoji that are not
+  yet approved for Unicode 9."""
+
+  global _proposed_emoji_data, _proposed_emoji_data_cps
+  if _proposed_emoji_data:
+    return
+
+  _proposed_emoji_data = {}
+  line_re = re.compile(
+      r'^U\+([a-zA-z0-9]{4,5})\s+[^ \t]+\s+[^ \t]+\s+Q\d\s+(.*)$')
+  with open_unicode_data_file('proposed-emoji-9.txt') as f:
+    for line in f:
+      line = line.strip()
+      if not line:
+        continue
+
+      m = line_re.match(line)
+      if not m:
+        # print 'did not match "%s"' % line
+        continue
+      cp = int(m.group(1), 16)
+      name = m.group(2)
+      if cp in _proposed_emoji_data:
+        print 'duplicate emoji %x, old name: %s, new name: %s' % (
+            cp, _proposed_emoji_data[cp], name)
+        continue
+
+      _proposed_emoji_data[cp] = name
+  _proposed_emoji_data_cps = frozenset(_proposed_emoji_data.keys())
+
+
+def proposed_emoji_name(cp):
+  _load_proposed_emoji_data()
+  return _proposed_emoji_data.get(cp, '')
+
+
+def proposed_emoji_cps():
+  _load_proposed_emoji_data()
+  return _proposed_emoji_data_cps
 
 
 if __name__ == '__main__':
