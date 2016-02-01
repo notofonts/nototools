@@ -421,6 +421,16 @@ def name_table_data(noto_font, family_to_name_info):
     print >> sys.stderr, 'no family name info for "%s"' % family_key
     return None
 
+  if not info.limit_original and subfamily_parts not in [
+      ['Regular'],
+      ['Bold'],
+      ['Italic'],
+      ['Bold', 'Italic']]:
+    print >> sys.stderr, (
+        'Error in family name info: %s requires preferred names, but info '
+        'says none are required.' % path.basename(noto_font.filepath))
+    return None
+
   ofn, osfn = _original_names(
       family_parts, subfamily_parts, info.limit_original)
   # If we limit the original names (to put weights into the original family)
@@ -586,11 +596,13 @@ def _dump_name_data(name_data):
     value = getattr(name_data, attr)
     if value:
       print '  %20s: %s' % (attr, value)
+    else:
+      print '  %20s: <none>' % attr
 
 
 def _dump_family_names(noto_fonts, family_to_name_info):
   for font in sorted(noto_fonts, key=lambda f: f.filepath):
-    name_data = family_name_data(font, family_to_name_info)
+    name_data = name_table_data(font, family_to_name_info)
     print font.filepath
     _dump_name_data(name_data)
 
