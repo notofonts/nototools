@@ -191,9 +191,9 @@ class ShapeDiffFinder:
                               (name, univals[0], univals[1]))
             report.append('')
 
-        # return cmap with only names found in both fonts
+        # return cmap with only names used consistently between fonts
         self.reverse_cmap = {n: v for n, v in reverse_cmaps[0].items()
-                             if n in self.names}
+                             if n in self.names and n not in mismatched}
 
     def dump(self):
         """Return the results of run diffs."""
