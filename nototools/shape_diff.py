@@ -23,9 +23,8 @@ magick.
 
 Neither comparison is ideal. Glyph areas can be the same even if the shapes are
 wildly different. Image comparison is usually either slow (hi-res) or inaccurate
-(lo-res), and can be easily hindered when one glyph's image is a pixel larger
-than another's. Still, these are usually useful for raising red flags and
-catching large errors.
+(lo-res). Still, these are usually useful for raising red flags and catching
+large errors.
 """
 
 
@@ -77,7 +76,7 @@ class ShapeDiffFinder:
                 stats.append((diff, name, area1, area2))
         report.append('')
 
-    def find_rendered_diffs(self, font_size=24, stats=None):
+    def find_rendered_diffs(self, font_size=256, stats=None):
         """Find diffs of glyphs as rendered by harfbuzz."""
 
         self.build_names()
@@ -96,13 +95,16 @@ class ShapeDiffFinder:
             hb_args, hb_args_b = [input_generator.input_from_name(name)
                                   for input_generator in hb_input_generators]
             assert hb_args == hb_args_b
-            features, text = hb_args
 
-            # ignore null character and unreachable characters
-            if not strin:
+            # ignore unreachable characters
+            if not hb_args:
                 self.report.append('not tested (unreachable?): %s' % name)
                 continue
-            if unichr(0) in strin:
+
+            features, text = hb_args
+
+            # ignore null character
+            if text == unichr(0):
                 continue
 
             with open(diffs_filename, 'a') as ofile:
@@ -116,6 +118,12 @@ class ShapeDiffFinder:
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % b_png,
                 '--features=%s' % ','.join(features), path_b, text])
+
+            img_info = subprocess.check_output(['identify', a_png]).split()
+            assert img_info[0] == a_png and img_info[1] == 'PNG'
+            subprocess.call([
+                'convert', '-gravity', 'center', '-background', 'black',
+                '-extent', img_info[2], b_png, b_png])
             with open(diffs_filename, 'a') as ofile:
                 subprocess.call(
                     ['compare', '-metric', 'AE', a_png, b_png, cmp_png],
@@ -134,9 +142,7 @@ class ShapeDiffFinder:
         mismatched = {}
         img_size_diffs = []
         for name, diff in diffs:
-            if 'image widths or heights differ' in diff:
-                img_size_diffs.append(name)
-            elif int(diff) != 0:
+            if int(diff) != 0:
                 mismatched[name] = int(diff)
 
         report = self.report
