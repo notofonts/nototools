@@ -23,6 +23,7 @@ import sys
 
 from fontTools import ttLib
 
+from nototools import cldr_data
 from nototools import coverage
 from nototools import font_data
 from nototools import lang_data
@@ -65,6 +66,23 @@ def convert_to_four_letter(script_name):
     print >> sys.stderr, 'defaulting script for %s' % script_name
     script_code = script_name
   return script_code
+
+
+def preferred_script_name(script_key):
+  try:
+    return unicode_data.human_readable_script_name(script_key)
+  except:
+    return cldr_data.get_english_script_name(script_key)
+
+
+_script_key_to_report_name = {
+    'Aran': '(Urdu)',
+    'HST': '(Historic)',
+    'LGC': '(LGC)'
+}
+def script_name_for_report(script_key):
+    return (_script_key_to_report_name.get(script_key, None) or
+            preferred_script_name(script_key))
 
 
 # NotoFont maps a font path to information we assume the font to have, based

@@ -441,3 +441,25 @@ CHARACTERS_NOT_NEEDED = {
 ACCEPTABLE_AS_COMBINING = {
     0x02DE,  # MODIFIER LETTER RHOTIC HOOK
 }
+
+
+def get_extra_characters_needed(script, phase):
+  try:
+    if phase == 2:
+      return set(EXTRA_CHARACTERS_NEEDED[script])
+    if phase == 3:
+      return set(P3_EXTRA_CHARACTERS_NEEDED[script])
+  except KeyError:
+    pass
+  return set()
+
+
+def get_characters_not_needed(script, phase):
+  try:
+    if phase == 2:
+      return set(CHARACTERS_NOT_NEEDED[script])
+    if phase == 3:
+      return set(P3_CHARACTERS_NOT_NEEDED[script])
+  except KeyError:
+    pass
+  return set()

@@ -18,7 +18,7 @@ import collections
 import datetime
 
 from nototools import lint_config
-from nototools import noto_lint
+from nototools import noto_fonts # for script_name_for_report
 
 from xml.etree import ElementTree as ET
 
@@ -185,7 +185,7 @@ def create_table_from_map(script_to_cmap):
   table_rows = []
   for script in sorted(script_to_cmap):
     cmap = script_to_cmap.get(script)
-    name = noto_lint.script_name_for_report(script)
+    name = noto_fonts.script_name_for_report(script)
     count = len(cmap)
     cp_ranges = lint_config.write_int_ranges(cmap)
     table_rows.append(RowData(script, name, str(count), cp_ranges))
