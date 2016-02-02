@@ -43,6 +43,7 @@ from fontTools.pens import basePen
 
 from nototools import cldr_data
 from nototools import font_data
+from nototools import lint_cmap_reqs
 from nototools import lint_config
 from nototools import notoconfig
 from nototools import noto_data
@@ -62,24 +63,6 @@ def all_scripts():
     result = set(unicode_data.all_scripts())
     result.add('Urdu')
     return frozenset(result)
-
-
-def preferred_script_name(script_key):
-  try:
-    return unicode_data.human_readable_script_name(script_key)
-  except:
-    return cldr_data.get_english_script_name(script_key)
-
-
-_script_key_to_report_name = {
-    'Aran': '(Urdu)',
-    'HST': '(Historic)',
-    'LGC': '(LGC)'
-}
-
-def script_name_for_report(script_key):
-    return (_script_key_to_report_name.get(script_key, None) or
-            preferred_script_name(script_key))
 
 
 def printable_unicode_range(input_char_set):
@@ -452,6 +435,17 @@ def check_font(font_props, filename_error,
 
     _processed_files += 1
 
+    def _noto_font_from_font_props(font_props):
+      fields = """
+          filepath,family,style,script,variant,width,weight,slope,fmt,
+          manufacturer,license_type,is_hinted,is_mono,is_UI,is_display,
+          is_cjk,subset
+      """.split(',')
+      vals = [getattr(font_props, p.strip()) for p in fields]
+      return noto_fonts.NotoFont(*vals)
+
+    noto_font = _noto_font_from_font_props(font_props)
+
     def warn(test_name, category_name, message, details=True, is_error=True, check_test=True):
         global _cur_file_name, _printed_file_name
         global _processed_files_with_errors, _processed_files_with_warnings
@@ -541,7 +535,7 @@ def check_font(font_props, filename_error,
             subfamily = ''.join(names)
             print ('%s,%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
                 err_type,
-                script_name_for_report(font_props.script),
+                noto_fonts.script_name_for_report(font_props.script),
                 font_props.style if font_props.style else '',
                 font_props.variant if font_props.variant else '',
                 subfamily,
@@ -554,28 +548,6 @@ def check_font(font_props, filename_error,
             print "%s <%s> %s" % (err_type[0], test_name, message.encode('UTF-8'))
         sys.stdout.flush()
 
-    def code_range_to_set(code_range):
-        """Converts a code range output by _parse_code_ranges to a set."""
-        characters = set()
-        for first, last, _ in code_range:
-            characters.update(range(first, last+1))
-        return frozenset(characters)
-
-    def _symbol_set():
-        """Returns set of characters that should be supported in Noto Symbols.
-        """
-        ranges = unicode_data._parse_code_ranges(noto_data.SYMBOL_RANGES_TXT)
-        return code_range_to_set(ranges) & unicode_data.defined_characters()
-
-    def _cjk_set():
-        """Returns set of characters that will be provided in CJK fonts.
-        """
-        ranges = unicode_data._parse_code_ranges(noto_data.CJK_RANGES_TXT)
-        return code_range_to_set(ranges) & unicode_data.defined_characters()
-
-    def _emoji_pua_set():
-        """Returns the legacy PUA characters required for Android emoji."""
-        return lint_config.parse_int_ranges('FE4E5-FE4EE FE82C FE82E-FE837')
 
     _script_key_to_font_name = {
         'Aran': 'Urdu',
@@ -601,16 +573,6 @@ def check_font(font_props, filename_error,
         if i >= 256:
           warn('name/unused', 'Name', 'Name table has record #%d: "%s"' %
                (i, names[i]), is_error=False)
-
-    def _noto_font_from_font_props(font_props):
-      fields = """
-          filepath,family,style,script,variant,width,weight,slope,fmt,
-          manufacturer,license_type,is_hinted,is_mono,is_UI,is_display,
-          is_cjk,subset
-      """.split(',')
-      vals = [getattr(font_props, p.strip()) for p in fields]
-      return noto_fonts.NotoFont(*vals)
-
 
     def _check_name(actual, expected, keyname, is_re):
         """Set expected to '-' to require any name, set it to None if a name
@@ -649,7 +611,6 @@ def check_font(font_props, filename_error,
 
         _check_unused_names()
 
-        noto_font = _noto_font_from_font_props(font_props)
         family_to_name_info = noto_names.family_to_name_info_for_phase(
             noto_phase)
         name_data = noto_names.name_table_data(noto_font, family_to_name_info)
@@ -714,52 +675,11 @@ def check_font(font_props, filename_error,
                  "[0, 65535]: '%s'." % version_string)
 
 
-    def _get_script_required(cmap):
-        needed_chars = set()
-        if font_props.script == "Zsye":  # Emoji
-            # TODO: Check emoji coverage
-            needed_chars = _emoji_pua_set()  # legacy PUA for android emoji
-        elif font_props.script == "Zsym":  # Symbols
-            needed_chars = _symbol_set()
-        elif font_props.script == "LGC":  # LGC really
-            needed_chars = (
-                unicode_data.defined_characters(scr="Latn")
-                | unicode_data.defined_characters(scr="Grek")
-                | unicode_data.defined_characters(scr="Cyrl"))
-            needed_chars -= _symbol_set()
-            needed_chars -= _cjk_set()
-        elif font_props.script == "Aran":
-            needed_chars = noto_data.urdu_set()
-        else:
-            needed_chars = unicode_data.defined_characters(scr=font_props.script)
-            needed_chars -= _symbol_set()
-
-        needed_chars &= unicode_data.defined_characters(version=font_props.char_version)
-
-        if font_props.style != 'Nastaliq':
-            script = font_props.script
-            try:
-                needed_chars |= set(noto_data.EXTRA_CHARACTERS_NEEDED[script])
-            except KeyError:
-                pass
-
-            try:
-                needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
-            except KeyError:
-                pass
-
-            try:
-                needed_chars -= set(noto_data.CHARACTERS_NOT_NEEDED[script])
-            except KeyError:
-                pass
-        return needed_chars
-
-
     def _check_needed_chars(cmap, char_filter):
         # TODO(roozbeh): check the glyph requirements for controls specified at
         # https://www.microsoft.com/typography/otspec/recom.htm
 
-        needed_chars = _get_script_required(cmap)
+        needed_chars = lint_cmap_reqs.get_required_chars(noto_font, noto_phase)
 
         # TODO: also check character coverage against Unicode blocks for
         # characters of script Common or Inherited
@@ -852,7 +772,8 @@ def check_font(font_props, filename_error,
             _check_needed_chars(cmap, tests.get_filter('cmap/script_required'))
 
         if tests.check('cmap/private_use'):
-            needed_chars = _get_script_required(cmap)
+            needed_chars = lint_cmap_reqs.get_required_chars(
+                noto_font, noto_phase)
             pua_filter = tests.get_filter('cmap/private_use')
             if pua_filter:
                 pua_filter = pua_filter[1].accept
@@ -1831,6 +1752,7 @@ def check_font(font_props, filename_error,
 
 
     ### actual start of check_font fn
+
 
     # python 2.7 does not have nonlocal, so hack around it
     suppressed_err_count = [0]
