@@ -35,6 +35,8 @@ import subprocess
 from fontTools.ttLib import TTFont
 from glyph_area_pen import GlyphAreaPen
 
+from nototools import hb_input
+
 
 class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
@@ -81,6 +83,8 @@ class ShapeDiffFinder:
         self.build_names()
         self.build_reverse_cmap()
 
+        hb_input_generators = [
+            hb_input.HbInputGenerator(p, self.reverse_cmap) for p in self.paths]
         path_a, path_b = self.paths
         ordered_names = list(self.names)
         a_png = 'tmp_a.png'
@@ -88,27 +92,39 @@ class ShapeDiffFinder:
         cmp_png = 'tmp_cmp.png'
         diffs_filename = 'tmp_diffs.txt'
 
-        with open(diffs_filename, 'w') as ofile:
-            for name in ordered_names:
+        for name in ordered_names:
+            hb_args, hb_args_b = [input_generator.input_from_name(name)
+                                  for input_generator in hb_input_generators]
+            assert hb_args == hb_args_b
+            features, text = hb_args
 
-                # ignore null character, and characters without unicode values
-                unival = self.reverse_cmap.get(name, 0)
-                if unival == 0:
-                    continue
+            # ignore null character and unreachable characters
+            if not strin:
+                self.report.append('not tested (unreachable?): %s' % name)
+                continue
+            if unichr(0) in strin:
+                continue
 
-                strin = unichr(unival)
-                subprocess.call([
-                    'hb-view', '--font-size=%d' % font_size,
-                    '--output-file=%s' % a_png, path_a, strin])
-                subprocess.call([
-                    'hb-view', '--font-size=%d' % font_size,
-                    '--output-file=%s' % b_png, path_b, strin])
+            with open(diffs_filename, 'a') as ofile:
+                ofile.write('%s\n' % name)
+
+            subprocess.call([
+                'hb-view', '--font-size=%d' % font_size,
+                '--output-file=%s' % a_png,
+                '--features=%s' % ','.join(features), path_a, text])
+            subprocess.call([
+                'hb-view', '--font-size=%d' % font_size,
+                '--output-file=%s' % b_png,
+                '--features=%s' % ','.join(features), path_b, text])
+            with open(diffs_filename, 'a') as ofile:
                 subprocess.call(
                     ['compare', '-metric', 'AE', a_png, b_png, cmp_png],
                     stderr=ofile)
 
         with open(diffs_filename) as ifile:
-            diffs = ifile.readlines()
+            lines = ifile.readlines()
+        diffs = [(lines[i].strip(), lines[i + 1].strip())
+                 for i in range(0, len(lines), 2)]
 
         os.remove(a_png)
         os.remove(b_png)
@@ -117,7 +133,7 @@ class ShapeDiffFinder:
 
         mismatched = {}
         img_size_diffs = []
-        for name, diff in zip(ordered_names, diffs):
+        for name, diff in diffs:
             if 'image widths or heights differ' in diff:
                 img_size_diffs.append(name)
             elif int(diff) != 0:
@@ -161,9 +177,7 @@ class ShapeDiffFinder:
             return
 
         report = self.report
-        reverse_cmaps = [
-            dict((n, v) for v, n in f['cmap'].tables[1].cmap.items())
-            for f in self.fonts]
+        reverse_cmaps = [hb_input.build_reverse_cmap(f) for f in self.fonts]
         mismatched = {}
         for name in self.names:
             unival_a, unival_b = [m.get(name) for m in reverse_cmaps]
@@ -176,7 +190,10 @@ class ShapeDiffFinder:
                 report.append('  %s: %s in A, %s in B' %
                               (name, univals[0], univals[1]))
             report.append('')
-        self.reverse_cmap = reverse_cmaps[0]
+
+        # return cmap with only names used consistently between fonts
+        self.reverse_cmap = {n: v for n, v in reverse_cmaps[0].items()
+                             if n in self.names and n not in mismatched}
 
     def dump(self):
         """Return the results of run diffs."""
