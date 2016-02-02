@@ -30,12 +30,15 @@ import os
 from nototools import gpos_diff, shape_diff
 
 
-def shape(path_a, path_b, stats):
+def shape(path_a, path_b, stats, diff_type):
     cur_stats = []
     diff_finder = shape_diff.ShapeDiffFinder(
         path_a, path_b, output_lines=-1, ratio_diffs=True)
 
-    diff_finder.find_area_diffs(cur_stats)
+    if diff_type == 'area':
+        diff_finder.find_area_diffs(stats=cur_stats)
+    else:
+        diff_finder.find_rendered_diffs(stats=cur_stats)
 
     basename = os.path.basename(path_a)
     stats.extend(s[0:2] + (basename,) + s[2:] for s in cur_stats)
@@ -63,10 +66,10 @@ def main():
                                      'pointed to by PATH_A and PATH_B.')
     parser.add_argument('path_a', metavar='PATH_A')
     parser.add_argument('path_b', metavar='PATH_B')
-    parser.add_argument('-t', '--diff_type', default='shape',
-                        help='type of comparison to run, "shape" or "gpos" '
-                        '(defaults to "shape"), if "gpos" is provided the '
-                        'input paths should point to ttxn output')
+    parser.add_argument('-t', '--diff_type', default='area',
+                        help='type of comparison to run, "area", "rendered", '
+                        'or "gpos" (defaults to "area"), if "gpos" is provided '
+                        'the input paths should point to ttxn output')
     parser.add_argument('-m', '--match',
                         help='if provided, compares all matching files found '
                         'in PATH_A with respective matches in PATH_B')
@@ -76,30 +79,52 @@ def main():
                         help='list of one or more glyph names to ignore')
     args = parser.parse_args()
 
-    if args.diff_type == 'shape':
+    if args.diff_type in ['area', 'rendered']:
         stats = []
         if args.match:
-            run_multiple(shape, args.match, args.path_a, args.path_b, stats)
+            run_multiple(shape, args.match, args.path_a, args.path_b, stats,
+                         args.diff_type)
         else:
-            shape(args.path_a, args.path_b, stats)
+            shape(args.path_a, args.path_b, stats, args.diff_type)
 
         if not stats:
-            print 'No shape differences found.'
+            print 'No differences found.'
             return
 
         if args.whitelist:
             stats = [s for s in stats if s[1] not in args.whitelist]
         stats.sort()
         stats.reverse()
-        for diff, glyph, font, val_a, val_b in stats[:args.out_lines]:
-            print '%s %s %s (%s vs %s)' % (font, glyph, diff, val_a, val_b)
 
-    else:
+        stat_format = '%s %s'
+
+        # include individual font names if multiple pairs were compared
+        if args.match:
+            stat_format = '%s ' + stat_format
+
+        # include actual area values if areas were compared
+        if args.diff_type == 'area':
+            stat_format += ' (%s vs %s)'
+
+        for stat in stats[:args.out_lines]:
+
+            # print <font> <glyph> <vals>; stats are sorted in reverse priority
+            stat = tuple(list(reversed(stat[:3])) + list(stat[3:]))
+
+            # ignore font name if just one pair was compared
+            if not args.match:
+                stat = stat[1:]
+            print stat_format % stat
+
+    elif args.diff_type == 'gpos':
         if args.match:
             run_multiple(gpos, args.match, args.path_a, args.path_b,
                          args.out_lines)
         else:
             gpos(args.path_a, args.path_b, args.out_lines)
+
+    else:
+        print 'Unrecognized diff type "%s"' % args.diff_type
 
 
 if __name__ == '__main__':
