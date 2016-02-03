@@ -30,7 +30,7 @@ import os
 from nototools import gpos_diff, shape_diff
 
 
-def _shape(path_a, path_b, stats, diff_type):
+def _shape(path_a, path_b, stats, diff_type, render_path):
     cur_stats = []
     diff_finder = shape_diff.ShapeDiffFinder(
         path_a, path_b, output_lines=-1, ratio_diffs=True)
@@ -38,7 +38,8 @@ def _shape(path_a, path_b, stats, diff_type):
     if diff_type == 'area':
         diff_finder.find_area_diffs(stats=cur_stats)
     else:
-        diff_finder.find_rendered_diffs(stats=cur_stats)
+        diff_finder.find_rendered_diffs(stats=cur_stats,
+                                        render_path=render_path)
 
     basename = os.path.basename(path_a)
     stats.extend(s[0:2] + (basename,) + s[2:] for s in cur_stats)
@@ -98,26 +99,29 @@ def main():
                                      'pointed to by PATH_A and PATH_B.')
     parser.add_argument('path_a', metavar='PATH_A')
     parser.add_argument('path_b', metavar='PATH_B')
-    parser.add_argument('-t', '--diff_type', default='area',
+    parser.add_argument('-t', '--diff-type', default='area',
                         help='type of comparison to run, "area", "rendered", '
                         'or "gpos" (defaults to "area"), if "gpos" is provided '
                         'the input paths should point to ttxn output')
     parser.add_argument('-m', '--match',
                         help='if provided, compares all matching files found '
                         'in PATH_A with respective matches in PATH_B')
-    parser.add_argument('-l', '--out_lines', type=int, default=20,
+    parser.add_argument('-l', '--out-lines', type=int, default=20,
                         help='number of differences to print (default 20)')
     parser.add_argument('-w', '--whitelist', nargs='+',
                         help='list of one or more glyph names to ignore')
+    parser.add_argument('--render-path', help='if provided and DIFF_TYPE is '
+                        '"rendered", saves comparison renderings here')
     args = parser.parse_args()
 
     if args.diff_type in ['area', 'rendered']:
         stats = []
         if args.match:
             _run_multiple(_shape, args.match, args.path_a, args.path_b, stats,
-                         args.diff_type)
+                          args.diff_type, args.render_path)
         else:
-            _shape(args.path_a, args.path_b, stats, args.diff_type)
+            _shape(args.path_a, args.path_b, stats, args.diff_type,
+                   args.render_path)
         _dump_shape_stats(stats, args.whitelist, args.out_lines, args.diff_type,
                           multiple_fonts=bool(args.match))
 
