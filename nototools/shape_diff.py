@@ -129,6 +129,8 @@ class ShapeDiffFinder:
 
             if render_path:
                 output_png = os.path.join(render_path, name + '.png')
+                # see for a discussion of this rendering technique:
+                # https://github.com/googlei18n/nototools/issues/162#issuecomment-175885431
                 subprocess.call([
                     'convert',
                     '(', a_png, '-colorspace', 'gray', ')',
