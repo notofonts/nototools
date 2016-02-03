@@ -75,9 +75,10 @@ def _dump_shape_stats(stats, whitelist, out_lines, diff_type, multiple_fonts):
         print stat_format % stat
 
 
-def _gpos(path_a, path_b, out_lines):
-    print '-- %s --' % os.path.basename(path_a)
-    print
+def _gpos(path_a, path_b, out_lines, print_font=False):
+    if print_font:
+        print '-- %s --' % os.path.basename(path_a)
+        print
     diff_finder = gpos_diff.GposDiffFinder(path_a, path_b, 3, out_lines)
     print diff_finder.find_kerning_diffs()
     print diff_finder.find_mark_class_diffs()
@@ -123,7 +124,7 @@ def main():
     elif args.diff_type == 'gpos':
         if args.match:
             _run_multiple(_gpos, args.match, args.path_a, args.path_b,
-                          args.out_lines)
+                          args.out_lines, True)
         else:
             _gpos(args.path_a, args.path_b, args.out_lines)
 
