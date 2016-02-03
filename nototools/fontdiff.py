@@ -31,6 +31,14 @@ from nototools import gpos_diff, shape_diff
 
 
 def _shape(path_a, path_b, stats, diff_type, render_path):
+    """Do a shape comparison (glyph area or rendered) and add results to stats.
+
+    path_a and b refer to binary font files (OTF or TTF). stats should be a
+    list (possibly empty) of <diff, glyph-name, font-name> tuples, for sorting.
+    diff_type and render_path are passed through from the original call to
+    fontdiff.
+    """
+
     cur_stats = []
     diff_finder = shape_diff.ShapeDiffFinder(
         path_a, path_b, output_lines=-1, ratio_diffs=True)
@@ -46,6 +54,15 @@ def _shape(path_a, path_b, stats, diff_type, render_path):
 
 
 def _dump_shape_stats(stats, whitelist, out_lines, diff_type, multiple_fonts):
+    """Dump stats accumulated from calls to _shape.
+
+    Members of stats are passed in with sortable ordering, but are re-ordered
+    for printing. whitelist, out_lines, and diff_type are passed through from
+    the original call to fontdiff. multiple_fonts designates whether these stats
+    have been accumulated from multiple calls or just one; if multiple then the
+    font names from each stats member will be printed as well.
+    """
+
     if not stats:
         print 'No differences found.'
         return
@@ -77,6 +94,13 @@ def _dump_shape_stats(stats, whitelist, out_lines, diff_type, multiple_fonts):
 
 
 def _gpos(path_a, path_b, out_lines, print_font=False):
+    """Do a GPOS table comparison and print results.
+
+    path_a and b refer to plaintext files containing ttxn output. print_font
+    is a boolean flag designating whether to print path_a (useful if _gpos is
+    being called multiple times in succession).
+    """
+
     if print_font:
         print '-- %s --' % os.path.basename(path_a)
         print
@@ -89,6 +113,13 @@ def _gpos(path_a, path_b, out_lines, print_font=False):
 
 
 def _run_multiple(func, filematch, dir_a, dir_b, *args):
+    """Run a comparison function (probably _shape or _gpos) multiple times.
+
+    Runs the given function "func" for each file in dir_a matching filematch,
+    comparing it with a respective file of the same name in dir_b. Variable
+    arguments are passed through when calling func.
+    """
+
     for path_a in glob.glob(os.path.join(dir_a, filematch)):
         path_b = path_a.replace(dir_a, dir_b)
         func(path_a, path_b, *args)
