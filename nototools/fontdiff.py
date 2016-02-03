@@ -131,9 +131,10 @@ def main():
     parser.add_argument('path_a', metavar='PATH_A')
     parser.add_argument('path_b', metavar='PATH_B')
     parser.add_argument('-t', '--diff-type', default='area',
-                        help='type of comparison to run, "area", "rendered", '
-                        'or "gpos" (defaults to "area"), if "gpos" is provided '
-                        'the input paths should point to ttxn output')
+                        choices=('area', 'rendered', 'gpos'),
+                        help='type of comparison to run (defaults to "area"), '
+                        'if "gpos" is provided the input paths should point to '
+                        'ttxn output')
     parser.add_argument('-m', '--match',
                         help='if provided, compares all matching files found '
                         'in PATH_A with respective matches in PATH_B')
@@ -164,7 +165,7 @@ def main():
             _gpos(args.path_a, args.path_b, args.out_lines)
 
     else:
-        print 'Unrecognized diff type "%s"' % args.diff_type
+        assert 0, 'Got unhandled diff type "%s"' % args.diff_type
 
 
 if __name__ == '__main__':
