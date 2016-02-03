@@ -30,6 +30,7 @@ large errors.
 
 import os
 import subprocess
+import tempfile
 
 from fontTools.ttLib import TTFont
 from glyph_area_pen import GlyphAreaPen
@@ -76,7 +77,7 @@ class ShapeDiffFinder:
                 stats.append((diff, name, area1, area2))
         report.append('')
 
-    def find_rendered_diffs(self, font_size=256, stats=None):
+    def find_rendered_diffs(self, font_size=256, stats=None, render_path=None):
         """Find diffs of glyphs as rendered by harfbuzz."""
 
         self.build_names()
@@ -86,10 +87,11 @@ class ShapeDiffFinder:
             hb_input.HbInputGenerator(p, self.reverse_cmap) for p in self.paths]
         path_a, path_b = self.paths
         ordered_names = list(self.names)
-        a_png = 'tmp_a.png'
-        b_png = 'tmp_b.png'
-        cmp_png = 'tmp_cmp.png'
-        diffs_filename = 'tmp_diffs.txt'
+
+        a_png = self._make_tmp_path()
+        b_png = self._make_tmp_path()
+        cmp_png = self._make_tmp_path()
+        diffs_filename = self._make_tmp_path()
 
         for name in ordered_names:
             hb_args, hb_args_b = [input_generator.input_from_name(name)
@@ -124,6 +126,18 @@ class ShapeDiffFinder:
             subprocess.call([
                 'convert', '-gravity', 'center', '-background', 'black',
                 '-extent', img_info[2], b_png, b_png])
+
+            if render_path:
+                output_png = os.path.join(render_path, name + '.png')
+                # see for a discussion of this rendering technique:
+                # https://github.com/googlei18n/nototools/issues/162#issuecomment-175885431
+                subprocess.call([
+                    'convert',
+                    '(', a_png, '-colorspace', 'gray', ')',
+                    '(', b_png, '-colorspace', 'gray', ')',
+                    '(', '-clone', '0-1', '-compose', 'darken', '-composite', ')',
+                    '-channel', 'RGB', '-combine', output_png])
+
             with open(diffs_filename, 'a') as ofile:
                 subprocess.call(
                     ['compare', '-metric', 'AE', a_png, b_png, cmp_png],
@@ -252,3 +266,10 @@ class ShapeDiffFinder:
             a, b = b, a
         ratio = (a / b) if (a and b) else 0
         return (1 - ratio)
+
+    def _make_tmp_path(self):
+        """Return a temporary path, for use in rendering."""
+
+        handle, path = tempfile.mkstemp()
+        os.close(handle)
+        return path
