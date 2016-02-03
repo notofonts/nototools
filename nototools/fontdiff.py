@@ -93,7 +93,7 @@ def _dump_shape_stats(stats, whitelist, out_lines, diff_type, multiple_fonts):
         print stat_format % stat
 
 
-def _gpos(path_a, path_b, out_lines, print_font=False):
+def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
     """Do a GPOS table comparison and print results.
 
     path_a and b refer to plaintext files containing ttxn output. print_font
@@ -104,7 +104,8 @@ def _gpos(path_a, path_b, out_lines, print_font=False):
     if print_font:
         print '-- %s --' % os.path.basename(path_a)
         print
-    diff_finder = gpos_diff.GposDiffFinder(path_a, path_b, 3, out_lines)
+    diff_finder = gpos_diff.GposDiffFinder(path_a, path_b, error_bound,
+                                           out_lines)
     print diff_finder.find_kerning_diffs()
     print diff_finder.find_mark_class_diffs()
     print diff_finder.find_positioning_diffs()
@@ -144,6 +145,9 @@ def main():
                         help='list of one or more glyph names to ignore')
     parser.add_argument('--render-path', help='if provided and DIFF_TYPE is '
                         '"rendered", saves comparison renderings here')
+    parser.add_argument('--gpos-bound', type=int, default=3,
+                        help='error bound to allow for gpos differences, '
+                        'anything below is not printed (default 3)')
     args = parser.parse_args()
 
     if args.diff_type in ['area', 'rendered']:
@@ -160,9 +164,9 @@ def main():
     elif args.diff_type == 'gpos':
         if args.match:
             _run_multiple(_gpos, args.match, args.path_a, args.path_b,
-                          args.out_lines, True)
+                          args.gpos_bound, args.out_lines, True)
         else:
-            _gpos(args.path_a, args.path_b, args.out_lines)
+            _gpos(args.path_a, args.path_b, args.gpos_bound, args.out_lines)
 
     else:
         assert 0, 'Got unhandled diff type "%s"' % args.diff_type
