@@ -1,6 +1,6 @@
 # PropertyValueAliases-9.0.0.txt
-# Date: 2015-12-18, 21:21:17 GMT
-# © 2015 Unicode®, Inc.
+# Date: 2016-01-05, 21:07:41 GMT
+# © 2016 Unicode®, Inc.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Unicode Character Database
@@ -848,6 +848,9 @@ Join_C; Y                             ; Yes                              ; T    
 
 # Joining_Group (jg)
 
+jg ; African_Feh                      ; African_Feh
+jg ; African_Noon                     ; African_Noon
+jg ; African_Qaf                      ; African_Qaf
 jg ; Ain                              ; Ain
 jg ; Alaph                            ; Alaph
 jg ; Alef                             ; Alef
@@ -1116,11 +1119,6 @@ QMark; Y                              ; Yes                              ; T    
 Radical; N                            ; No                               ; F                                ; False
 Radical; Y                            ; Yes                              ; T                                ; True
 
-# STerm (STerm)
-
-STerm; N                              ; No                               ; F                                ; False
-STerm; Y                              ; Yes                              ; T                                ; True
-
 # Script (sc)
 
 sc ; Adlm                             ; Adlam
@@ -1284,6 +1282,11 @@ SB ; SP                               ; Sp
 SB ; ST                               ; STerm
 SB ; UP                               ; Upper
 SB ; XX                               ; Other
+
+# Sentence_Terminal (STerm)
+
+STerm; N                              ; No                               ; F                                ; False
+STerm; Y                              ; Yes                              ; T                                ; True
 
 # Simple_Case_Folding (scf)
 
