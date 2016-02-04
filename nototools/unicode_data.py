@@ -180,7 +180,7 @@ def script_extensions(char):
     try:
         return _script_extensions_data[char]
     except KeyError:
-        return frozenset(script(char))
+        return frozenset([script(char)])
 
 
 def block(char):
