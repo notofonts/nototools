@@ -246,33 +246,27 @@ def _strip_comments(definition_lines):
   return out_lines
 
 
-_ESCAPES = {
-    ' ': '\\x20',
-    '#': '\\x23',
-    ',': '\\x2c',
-    '-': '\\x2d',
-    '\\': '\\x5c',
-    }
+_ESCAPES = [
+    # Must do backslash substitutions first.
+    # (also note raw strings cannot end in a backslash).
+    ('\\\\', r'\x5c'),
+    (r'\ ', r'\x20'),
+    (r'\#', r'\x23'),
+    (r'\,', r'\x2c'),
+    (r'\-', r'\x2d'),
+    ]
 
 def _canonicalize_escapes(definition_lines):
   """Replace each escape of a reserved character with a unicode escape."""
   out_lines = []
   for line in definition_lines:
-    pos = 0
-    while True:
-      x = line.find('\\', pos)
-      if x < 0 or x == len(line) - 1:
-        break
-      replacement = _ESCAPES.get(line[x+1], None)
-      if not replacement:
-        pos = x + 1
-        continue
-      line = line[:x] + replacement + line[x+2:]
-      pos += len(replacement)
+    if '\\' in line:
+      for old, new in _ESCAPES:
+        line = line.replace(old, new)
     out_lines.append(line)
   return out_lines
 
-_UNICODE_ESCAPE_RE = re.compile(r'\\([Uux])([0-9a-fA-f]{2,6})')
+_UNICODE_ESCAPE_RE = re.compile(r'\\([Uux])([0-9a-fA-F]{2,6})')
 def _unescape(arg):
   # we only allow 6 hex digits after \U, 8 is too many, legacy cruft.
   def sub(esc_match):
