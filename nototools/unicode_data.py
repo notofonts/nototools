@@ -55,6 +55,8 @@ _lower_to_upper_case = {}
 # emoji data
 _presentation_default_emoji = None
 _presentation_default_text = None
+_emoji_modifier_base = None
+_emoji = None
 _emoji_variants = None
 
 # non-emoji variant data
@@ -549,28 +551,45 @@ def _load_bidi_mirroring_txt():
 
 
 def _load_emoji_data():
-  """Parse emoji-data.txt and initialize two sets of characters:
-  - those with a default emoji presentation
-  - those with a default text presentation"""
+    """Parse the new draft format of emoji-data.txt"""
+    global _presentation_default_emoji, _presentation_default_text
+    global _emoji, _emoji_modifier_base
 
-  global _presentation_default_emoji
-  if _presentation_default_emoji:
-    return
+    if _presentation_default_emoji:
+      return
 
-  presentation_default_text = set()
-  presentation_default_emoji = set()
-  line_re = re.compile(r'([0-9A-F]{4,6})\s*;\s*(emoji|text)\s*;')
-  with open_unicode_data_file('emoji-data.txt') as f:
-    for line in f:
-      m = line_re.match(line)
-      if m:
-        cp = int(m.group(1), 16)
-        if m.group(2) == 'emoji':
-          presentation_default_emoji.add(cp)
-        else:
-          presentation_default_text.add(cp)
-  _presentation_default_emoji = frozenset(presentation_default_emoji)
-  _presentation_default_text = frozenset(presentation_default_text)
+    emoji_sets = {
+        'Emoji': set(),
+        'Emoji_Presentation': set(),
+        'Emoji_Modifier': set(),
+        'Emoji_Modifier_Base': set()
+        }
+
+    set_names = '|'.join(sorted(emoji_sets.keys()))
+    line_re = re.compile(
+        r'([0-9A-F]{4,6})(?:\.\.([0-9A-F]{4,6}))?\s*;\s*'
+        r'(%s)\s*#.*$' % set_names)
+    with open_unicode_data_file('emoji-data.txt') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line[0] == '#':
+                continue
+            m = line_re.match(line)
+            if not m:
+                print 'Did not match "%s"' % line
+                continue
+            start = int(m.group(1), 16)
+            end = start if not m.group(2) else int(m.group(2), 16)
+            emoji_set = emoji_sets.get(m.group(3))
+            emoji_set.update(range(start, end + 1))
+    _presentation_default_emoji = frozenset(
+        emoji_sets['Emoji_Presentation'])
+    _presentation_default_text = frozenset(
+        emoji_sets['Emoji'] - emoji_sets['Emoji_Presentation'])
+    _emoji_modifier_base = frozenset(
+        emoji_sets['Emoji_Modifier_Base'])
+    _emoji = frozenset(
+        emoji_sets['Emoji'])
 
 
 def get_presentation_default_emoji():
@@ -581,6 +600,21 @@ def get_presentation_default_emoji():
 def get_presentation_default_text():
     _load_emoji_data()
     return _presentation_default_text
+
+
+def get_emoji():
+    _load_emoji_data()
+    return _emoji
+
+
+def is_emoji(cp):
+    _load_emoji_data()
+    return cp in _emoji
+
+
+def is_emoji_modifier_base(cp):
+    _load_emoji_data()
+    return cp in _emoji_modifier_base
 
 
 def _load_unicode_emoji_variants():
