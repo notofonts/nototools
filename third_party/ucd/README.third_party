@@ -13,5 +13,5 @@ Local Modifications:
 2. Updates to ScriptExtensions.txt and Indic properties have been
    pulled from https://github.com/roozbehp/unicode-data/
 
-3. emoji-data is from:
-   http://unicode.org/Public/emoji/1.0/emoji-data.txt
+3. emoji-data is from (snapshot taken 2016-02-12)
+   http://www.unicode.org/repos/draft/trunk/Public/emoji/3.0/emoji-data.txt
