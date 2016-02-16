@@ -556,7 +556,7 @@ def _load_emoji_data():
     global _emoji, _emoji_modifier_base
 
     if _presentation_default_emoji:
-      return
+        return
 
     emoji_sets = {
         'Emoji': set(),
