@@ -228,3 +228,78 @@ def svn_get_version(repo):
 def svn_update(repo):
   with temp_chdir(repo):
     subprocess.check_call(['svn', 'up'], stderr=subprocess.STDOUT)
+
+
+def parse_int_ranges(range_string, is_hex=True, sep=None):
+  """Returns a set of ints from a string of numbers or ranges separated by sep.
+  A range is two values separated by hyphen with no intervening separator;
+  ranges are inclusive."""
+  result = set()
+  count = 0
+  base = 16 if is_hex else 10
+  if '\n' in range_string:
+    # strip comments and turn into single line
+    def strip_comment(line):
+      x = line.find('#')
+      if x >= 0:
+        line = line[:x]
+      return line.strip()
+    range_string = ' '.join(
+        filter(
+            None,
+            (strip_comment(line) for line in range_string.splitlines())))
+  value_list = range_string.split(sep)
+  for val in value_list:
+    if '-' in val: # assume range
+      val_list = val.split('-')
+      if len(val_list) != 2:
+        raise ValueError('could not parse range from \'%s\'' % val)
+      lo = int(val_list[0], base)
+      hi = int(val_list[1], base)
+      if lo >= hi:
+        raise ValueError('val range must have high > low (%s in "%s")' % (
+            val, range_string))
+      result.update(range(lo, hi + 1))
+      count += hi - lo + 1
+    else:
+      result.add(int(val, base))
+      count += 1
+  if len(result) != count:
+    raise ValueError(
+        'duplicate values in %s, expected count is %d but result is %s' % (
+            range_string, count, write_int_ranges(result)))
+  return result
+
+
+def write_int_ranges(int_values, in_hex=True, sep=' '):
+  """From a set or list of ints, generate a string representation that can be
+  parsed by parse_int_ranges to return the original values (not
+  order_preserving)."""
+
+  if not int_values:
+    return ''
+
+  num_list = []
+
+  if type(int_values) is not list:
+    int_values = [v for v in int_values]
+  int_values.sort()
+  start = prev = int_values[0]
+  single_fmt = '%04x' if in_hex else '%d'
+  pair_fmt = single_fmt + '-' + single_fmt
+
+  def emit():
+    if prev == start:
+      num_list.append(single_fmt % prev)
+    else:
+      num_list.append(pair_fmt % (start, prev))
+
+  for v in int_values[1:]:
+    if v == prev + 1:
+      prev += 1
+      continue
+    else:
+      emit()
+    start = prev = v
+  emit()
+  return sep.join(num_list)
