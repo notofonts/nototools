@@ -373,10 +373,8 @@ class TestVerticalMetrics(FontTest):
         self.font_files, self.fonts = self.loaded_fonts
 
     def test_ymin_ymax(self):
-        """Tests yMin and yMax to be equal to Roboto v1 values.
+        """Tests yMin and yMax to be equal to expected values."""
 
-        Android requires this, and web fonts expect this.
-        """
         for font in self.fonts:
             head_table = font['head']
             self.assertEqual(head_table.yMin, self.expected_head_yMin)
@@ -384,6 +382,7 @@ class TestVerticalMetrics(FontTest):
 
     def test_glyphs_ymin_ymax(self):
         """Tests yMin and yMax of all glyphs to not go outside the range."""
+
         for font_file, font in zip(self.font_files, self.fonts):
             glyf_table = font['glyf']
             for glyph_name in glyf_table.glyphOrder:
@@ -401,8 +400,8 @@ class TestVerticalMetrics(FontTest):
                          glyph_name, font_file, y_min, y_max)))
 
     def test_hhea_table_metrics(self):
-        """Tests ascent, descent, and lineGap to be equal to Roboto v1 values.
-        """
+        """Tests ascent, descent, and lineGap to be equal to expected values."""
+
         for font in self.fonts:
             hhea_table = font['hhea']
             self.assertEqual(hhea_table.descent, self.expected_hhea_descent)
@@ -410,7 +409,8 @@ class TestVerticalMetrics(FontTest):
             self.assertEqual(hhea_table.lineGap, self.expected_hhea_lineGap)
 
     def test_os2_metrics(self):
-        """Tests OS/2 vertical metrics to be equal to the old values."""
+        """Tests OS/2 vertical metrics to be equal to expected values."""
+
         for font in self.fonts:
             os2_table = font['OS/2']
             self.assertEqual(os2_table.sTypoDescender,
