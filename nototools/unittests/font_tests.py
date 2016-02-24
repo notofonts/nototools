@@ -343,10 +343,63 @@ class TestFeatures(FontTest):
     """Tests typographic features."""
 
     def setUp(self):
-        self.fontfiles, _ = self.loaded_fonts
+        self.fontfiles, self.fonts = self.loaded_fonts
+
+    def test_num_features(self):
+        """Tests that lnum/onum/pnum/tnum features behave appropriately."""
+
+        def run_test(glyph_order, glyph_set, fontfile, tags,
+                     proportional=False, oldstyle=False):
+
+            num = glyph_order[layout.get_glyphs('1', fontfile)[0]]
+            styled = glyph_order[layout.get_glyphs(
+                '1', fontfile, '--features=' + ','.join(tags))[0]]
+
+            if not (proportional or oldstyle):
+                self.assertEqual(num, styled)
+
+            else:
+                num, styled = glyph_set[num], glyph_set[styled]
+                if proportional:
+                    self.assertNotEqual(num.width, styled.width)
+                if oldstyle:
+                    self.assertNotEqual(num._glyph.yMax, styled._glyph.yMax)
+
+        for fontfile, font in zip(self.fontfiles, self.fonts):
+            go = font.getGlyphOrder()
+            gs = font.getGlyphSet()
+
+            # test individual tags
+            run_test(go, gs, fontfile, ['lnum'])
+            run_test(go, gs, fontfile, ['tnum'])
+            run_test(go, gs, fontfile, ['pnum'],
+                     proportional=True)
+            run_test(go, gs, fontfile, ['onum'],
+                     oldstyle=True)
+
+            # test standard combinations
+            run_test(go, gs, fontfile, ['lnum', 'tnum'])
+            run_test(go, gs, fontfile, ['lnum', 'pnum'],
+                     proportional=True)
+            run_test(go, gs, fontfile, ['onum', 'tnum'],
+                     oldstyle=True)
+            run_test(go, gs, fontfile, ['onum', 'pnum'],
+                     oldstyle=True, proportional=True)
+
+            # test that defaults take precedence
+            run_test(go, gs, fontfile, ['lnum', 'onum'])
+            run_test(go, gs, fontfile, ['pnum', 'tnum'])
+            run_test(go, gs, fontfile, ['lnum', 'onum', 'tnum'])
+            run_test(go, gs, fontfile, ['lnum', 'onum', 'pnum'],
+                     proportional=True)
+            run_test(go, gs, fontfile, ['lnum', 'pnum', 'tnum'])
+            run_test(go, gs, fontfile, ['onum', 'pnum', 'tnum'],
+                     oldstyle=True)
+            run_test(go, gs, fontfile, ['lnum', 'onum', 'pnum', 'tnum'])
 
     def test_smcp_coverage(self):
         """Tests that smcp is supported for our required set."""
+
         with open('res/smcp_requirements.txt') as smcp_reqs_file:
             smcp_reqs_list = []
             for line in smcp_reqs_file.readlines():
@@ -373,10 +426,8 @@ class TestVerticalMetrics(FontTest):
         self.font_files, self.fonts = self.loaded_fonts
 
     def test_ymin_ymax(self):
-        """Tests yMin and yMax to be equal to Roboto v1 values.
+        """Tests yMin and yMax to be equal to expected values."""
 
-        Android requires this, and web fonts expect this.
-        """
         for font in self.fonts:
             head_table = font['head']
             self.assertEqual(head_table.yMin, self.expected_head_yMin)
@@ -384,6 +435,7 @@ class TestVerticalMetrics(FontTest):
 
     def test_glyphs_ymin_ymax(self):
         """Tests yMin and yMax of all glyphs to not go outside the range."""
+
         for font_file, font in zip(self.font_files, self.fonts):
             glyf_table = font['glyf']
             for glyph_name in glyf_table.glyphOrder:
@@ -401,8 +453,8 @@ class TestVerticalMetrics(FontTest):
                          glyph_name, font_file, y_min, y_max)))
 
     def test_hhea_table_metrics(self):
-        """Tests ascent, descent, and lineGap to be equal to Roboto v1 values.
-        """
+        """Tests ascent, descent, and lineGap to be equal to expected values."""
+
         for font in self.fonts:
             hhea_table = font['hhea']
             self.assertEqual(hhea_table.descent, self.expected_hhea_descent)
@@ -410,7 +462,8 @@ class TestVerticalMetrics(FontTest):
             self.assertEqual(hhea_table.lineGap, self.expected_hhea_lineGap)
 
     def test_os2_metrics(self):
-        """Tests OS/2 vertical metrics to be equal to the old values."""
+        """Tests OS/2 vertical metrics to be equal to expected values."""
+
         for font in self.fonts:
             os2_table = font['OS/2']
             self.assertEqual(os2_table.sTypoDescender,
