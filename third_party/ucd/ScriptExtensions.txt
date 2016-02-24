@@ -1,6 +1,7 @@
 # ScriptExtensions-9.0.0.txt
-# Date: 2016-01-01, 21:24:00 GMT [RP]
+# Date: 2016-02-23, 22:24:00 GMT [RP]
 # © 2015 Unicode®, Inc.
+# Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Unicode Character Database
@@ -153,10 +154,9 @@ A9CF          ; Bugi Java # Lm       JAVANESE PANGRANGKEP
 # Script_Extensions=Cprt Linb
 
 10100..10102  ; Cprt Linb # Po   [3] AEGEAN WORD SEPARATOR LINE..AEGEAN CHECK MARK
-10107..10133  ; Cprt Linb # No  [45] AEGEAN NUMBER ONE..AEGEAN NUMBER NINETY THOUSAND
 10137..1013F  ; Cprt Linb # So   [9] AEGEAN WEIGHT BASE UNIT..AEGEAN MEASURE THIRD SUBUNIT
 
-# Total code points: 57
+# Total code points: 12
 
 # ================================================
 
@@ -222,6 +222,14 @@ A66F          ; Cyrl Glag # Mn       COMBINING CYRILLIC VZMET
 # Script_Extensions=Deva Taml
 
 A8F3          ; Deva Taml # Lo       DEVANAGARI SIGN CANDRABINDU VIRAMA
+
+# Total code points: 1
+
+# ================================================
+
+# Script_Extensions=Geor Latn
+
+10FB          ; Geor Latn # Po       GEORGIAN PARAGRAPH SEPARATOR
 
 # Total code points: 1
 
@@ -302,6 +310,14 @@ FF9E..FF9F    ; Hira Kana # Lm   [2] HALFWIDTH KATAKANA VOICED SOUND MARK..HALFW
 1040..1049    ; Cakm Mymr Tale # Nd  [10] MYANMAR DIGIT ZERO..MYANMAR DIGIT NINE
 
 # Total code points: 10
+
+# ================================================
+
+# Script_Extensions=Cprt Lina Linb
+
+10107..10133  ; Cprt Lina Linb # No  [45] AEGEAN NUMBER ONE..AEGEAN NUMBER NINETY THOUSAND
+
+# Total code points: 45
 
 # ================================================
 
@@ -424,12 +440,19 @@ FF64..FF65    ; Bopo Hang Hani Hira Kana Yiii # Po   [2] HALFWIDTH IDEOGRAPHIC C
 
 # Script_Extensions=Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh
 
-A830..A835    ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # No   [6] NORTH INDIC FRACTION ONE QUARTER..NORTH INDIC FRACTION THREE SIXTEENTHS
 A836..A837    ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # So   [2] NORTH INDIC QUARTER MARK..NORTH INDIC PLACEHOLDER MARK
 A838          ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # Sc       NORTH INDIC RUPEE MARK
 A839          ; Deva Gujr Guru Kthi Mahj Modi Sind Takr Tirh # So       NORTH INDIC QUANTITY MARK
 
-# Total code points: 10
+# Total code points: 4
+
+# ================================================
+
+# Script_Extensions=Deva Gujr Guru Knda Kthi Mahj Modi Sind Takr Tirh
+
+A830..A835    ; Deva Gujr Guru Knda Kthi Mahj Modi Sind Takr Tirh # No   [6] NORTH INDIC FRACTION ONE QUARTER..NORTH INDIC FRACTION THREE SIXTEENTHS
+
+# Total code points: 6
 
 # ================================================
 
