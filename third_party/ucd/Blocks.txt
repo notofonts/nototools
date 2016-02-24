@@ -1,6 +1,6 @@
 # Blocks-9.0.0.txt
-# Date: 2015-11-21, 17:33:00 GMT [KW]
-# © 1991-2015 Unicode®, Inc.
+# Date: 2016-02-05, 23:48:00 GMT [KW]
+# © 2016 Unicode®, Inc.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Unicode Character Database
@@ -245,6 +245,7 @@ FFF0..FFFF; Specials
 11280..112AF; Multani
 112B0..112FF; Khudawadi
 11300..1137F; Grantha
+11400..1147F; Newa
 11480..114DF; Tirhuta
 11580..115FF; Siddham
 11600..1165F; Modi
@@ -280,6 +281,7 @@ FFF0..FFFF; Specials
 1D800..1DAAF; Sutton SignWriting
 1E000..1E02F; Glagolitic Supplement
 1E800..1E8DF; Mende Kikakui
+1E900..1E95F; Adlam
 1EE00..1EEFF; Arabic Mathematical Alphabetic Symbols
 1F000..1F02F; Mahjong Tiles
 1F030..1F09F; Domino Tiles

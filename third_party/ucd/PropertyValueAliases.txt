@@ -1,5 +1,5 @@
 # PropertyValueAliases-9.0.0.txt
-# Date: 2016-01-05, 21:07:41 GMT
+# Date: 2016-02-09, 18:49:19 GMT
 # © 2016 Unicode®, Inc.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
@@ -139,6 +139,7 @@ bpt; o                                ; Open
 
 # Block (blk)
 
+blk; Adlam                            ; Adlam
 blk; Aegean_Numbers                   ; Aegean_Numbers
 blk; Ahom                             ; Ahom
 blk; Alchemical                       ; Alchemical_Symbols
@@ -325,6 +326,7 @@ blk; Myanmar_Ext_B                    ; Myanmar_Extended_B
 blk; Nabataean                        ; Nabataean
 blk; NB                               ; No_Block
 blk; New_Tai_Lue                      ; New_Tai_Lue
+blk; Newa                             ; Newa
 blk; NKo                              ; NKo
 blk; Number_Forms                     ; Number_Forms
 blk; OCR                              ; Optical_Character_Recognition
@@ -660,7 +662,10 @@ Gr_Base; Y                            ; Yes                              ; T    
 
 GCB; CN                               ; Control
 GCB; CR                               ; CR
+GCB; EB                               ; E_Base
+GCB; EM                               ; E_Modifier
 GCB; EX                               ; Extend
+GCB; GAZ                              ; Glue_After_Zwj
 GCB; L                                ; L
 GCB; LF                               ; LF
 GCB; LV                               ; LV
@@ -671,6 +676,7 @@ GCB; SM                               ; SpacingMark
 GCB; T                                ; T
 GCB; V                                ; V
 GCB; XX                               ; Other
+GCB; ZWJ                              ; ZWJ
 
 # Grapheme_Extend (Gr_Ext)
 
@@ -961,6 +967,8 @@ lb ; CL                               ; Close_Punctuation
 lb ; CM                               ; Combining_Mark
 lb ; CP                               ; Close_Parenthesis
 lb ; CR                               ; Carriage_Return
+lb ; EB                               ; E_Base
+lb ; EM                               ; E_Modifier
 lb ; EX                               ; Exclamation
 lb ; GL                               ; Glue
 lb ; H2                               ; H2
@@ -989,6 +997,7 @@ lb ; SY                               ; Break_Symbols
 lb ; WJ                               ; Word_Joiner
 lb ; XX                               ; Unknown
 lb ; ZW                               ; ZWSpace
+lb ; ZWJ                              ; ZWJ
 
 # Logical_Order_Exception (LOE)
 
@@ -1108,6 +1117,11 @@ Pat_Syn; Y                            ; Yes                              ; T    
 
 Pat_WS; N                             ; No                               ; F                                ; False
 Pat_WS; Y                             ; Yes                              ; T                                ; True
+
+# Prepended_Concatenation_Mark (PCM)
+
+PCM; N                                ; No                               ; F                                ; False
+PCM; Y                                ; Yes                              ; T                                ; True
 
 # Quotation_Mark (QMark)
 
@@ -1350,9 +1364,12 @@ WSpace; Y                             ; Yes                              ; T    
 
 WB ; CR                               ; CR
 WB ; DQ                               ; Double_Quote
+WB ; EB                               ; E_Base
+WB ; EM                               ; E_Modifier
 WB ; EX                               ; ExtendNumLet
 WB ; Extend                           ; Extend
 WB ; FO                               ; Format
+WB ; GAZ                              ; Glue_After_Zwj
 WB ; HL                               ; Hebrew_Letter
 WB ; KA                               ; Katakana
 WB ; LE                               ; ALetter
@@ -1365,6 +1382,7 @@ WB ; NU                               ; Numeric
 WB ; RI                               ; Regional_Indicator
 WB ; SQ                               ; Single_Quote
 WB ; XX                               ; Other
+WB ; ZWJ                              ; ZWJ
 
 # XID_Continue (XIDC)
 
