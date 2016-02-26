@@ -47,6 +47,8 @@ _block_data = {}
 _age_data = {}
 _bidi_mirroring_glyph_data = {}
 _core_properties_data = {}
+_indic_positional_data = {}
+_indic_syllabic_data = {}
 _defined_characters = set()
 _script_code_to_long_name = {}
 _folded_script_name_to_code = {}
@@ -84,6 +86,7 @@ def load_data():
         _load_derived_age_txt()
         _load_derived_core_properties_txt()
         _load_bidi_mirroring_txt()
+        _load_indic_data()
         _data_is_loaded = True
 
 
@@ -245,6 +248,28 @@ def bidi_mirroring_glyph(char):
         return _bidi_mirroring_glyph_data[char]
     except KeyError:
         return None
+
+
+def indic_positional_category(char):
+    """Returns the Indic positional category of a character."""
+    load_data()
+    if type(char) in [str, unicode]:
+        char = ord(char)
+    try:
+        return _indic_positional_data[char]
+    except KeyError:
+        return "NA"
+
+
+def indic_syllabic_category(char):
+    """Returns the Indic syllabic category of a character."""
+    load_data()
+    if type(char) in [str, unicode]:
+        char = ord(char)
+    try:
+        return _bidi_syllabic_data[char]
+    except KeyError:
+        return "Other"
 
 
 _DEFINED_CHARACTERS_CACHE = {}
@@ -548,6 +573,21 @@ def _load_bidi_mirroring_txt():
         char = int(char, 16)
         bmg = int(bmg, 16)
         _bidi_mirroring_glyph_data[char] = bmg
+
+
+def _load_indic_data():
+    """Load Indic properties from Indic(Positional|Syllabic)Category.txt."""
+    with open_unicode_data_file("IndicPositionalCategory.txt") as inpc_txt:
+        positional_ranges = _parse_code_ranges(inpc_txt.read())
+    for first, last, char_position in positional_ranges:
+        for char_code in xrange(first, last+1):
+            _indic_positional_data[char_code] = char_position
+
+    with open_unicode_data_file("IndicSyllabicCategory.txt") as insc_txt:
+        syllabic_ranges = _parse_code_ranges(insc_txt.read())
+    for first, last, char_syllabic_category in syllabic_ranges:
+        for char_code in xrange(first, last+1):
+            _indic_syllabic_data[char_code] = char_syllabic_category
 
 
 def _load_emoji_data():
