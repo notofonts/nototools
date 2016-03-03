@@ -18,9 +18,11 @@
    noto_font_cmaps."""
 
 import argparse
+import collections
 
 from nototools import cmap_data
 from nototools import lint_config
+from nototools import tool_utils
 from nototools import unicode_data
 
 
@@ -72,10 +74,51 @@ def compare_cmap_data_files(base_file, target_file, scripts, ranges,
   return compare, base_cmap_data, target_cmap_data
 
 
+def _print_detailed(cps, inverted_target=None):
+  last_block = None
+  for cp in sorted(cps):
+    block = unicode_data.block(cp)
+    if block != last_block:
+      print '    %s' % block
+      last_block = block
+    script = unicode_data.script(cp)
+    extensions = unicode_data.script_extensions(cp) - set([script])
+    if extensions:
+      extensions = ' (%s)' % ','.join(sorted(extensions))
+    else:
+      extensions = ''
+    if not inverted_target:
+      extra = ''
+    elif cp not in inverted_target:
+      extra = ' !missing'
+    else:
+      scripts = sorted(inverted_target[cp])
+      if len(scripts) > 3:
+        script_text = ', '.join(scripts[:3]) + '... ' + scripts[-1]
+      else:
+        script_text = ', '.join(scripts)
+      extra = ' (in %s)' % script_text
+    print '    %6s %4s %2s %3s %s%s%s' % (
+        '%04x' % cp,
+        script,
+        unicode_data.category(cp),
+        unicode_data.age(cp),
+        unicode_data.name(cp, ''),
+        extensions,
+        extra)
+
+
 def report_compare(compare_result, detailed=True):
   compare, base_cmap_data, target_cmap_data = compare_result
   base_map = cmap_data.create_map_from_table(base_cmap_data.table)
   target_map = cmap_data.create_map_from_table(target_cmap_data.table)
+
+  inverted_target = collections.defaultdict(set)
+  for script, row in target_map.iteritems():
+    cps = tool_utils.parse_int_ranges(row.ranges)
+    for cp in cps:
+      inverted_target[cp].add(script)
+
 
   base_title = title_from_metadata(base_cmap_data.meta)
   target_title = title_from_metadata(target_cmap_data.meta)
@@ -91,16 +134,12 @@ def report_compare(compare_result, detailed=True):
         print '  added (%d): %s' % (
             len(added), lint_config.write_int_ranges(added))
         if detailed:
-          for cp in sorted(added):
-            print '    %6s %s' % (
-                '%04x' % cp, unicode_data.name(cp, ''))
+          _print_detailed(added)
       if removed:
         print '  removed (%d): %s' % (
             len(removed), lint_config.write_int_ranges(removed))
         if detailed:
-          for cp in sorted(removed):
-            print '    %6s %s' % (
-                '%04x' % cp, unicode_data.name(cp, ''))
+          _print_detailed(removed, inverted_target)
 
 
 def main():
