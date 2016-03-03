@@ -44,6 +44,8 @@ _bidi_mirroring_characters = set()
 _script_data = {}
 _script_extensions_data = {}
 _block_data = {}
+_block_range = {}
+_block_names = []
 _age_data = {}
 _bidi_mirroring_glyph_data = {}
 _core_properties_data = {}
@@ -195,6 +197,25 @@ def block(char):
         return "No_Block"
 
 
+def block_range(block):
+    """Returns a range (first, last) of the named block."""
+    load_data()
+    return _block_range[block]
+
+
+def block_chars(block):
+    """Returns a frozenset of the cps in the named block."""
+    load_data()
+    first, last = _block_range[block]
+    return frozenset(xrange(first, last + 1))
+
+
+def block_names():
+    """Returns the names of the blocks in block order."""
+    load_data()
+    return _block_names[:]
+
+
 def age(char):
     """Returns the age property of a character as a string.
 
@@ -245,6 +266,20 @@ def bidi_mirroring_glyph(char):
         return _bidi_mirroring_glyph_data[char]
     except KeyError:
         return None
+
+
+def create_script_to_chars():
+  """Returns a mapping from script to defined characters, based on script and
+  extensions, for all scripts."""
+  load_data()
+  result = collections.defaultdict(set)
+  for cp in _defined_characters:
+    if cp in _script_data:
+      result[_script_data[cp]].add(cp)
+    if cp in _script_extensions_data:
+      for script in _script_extensions_data[cp]:
+        result[script].add(cp)
+  return result
 
 
 _DEFINED_CHARACTERS_CACHE = {}
@@ -497,7 +532,9 @@ def _load_blocks_txt():
         block_ranges = _parse_code_ranges(blocks_txt.read())
 
     for first, last, block_name in block_ranges:
-        for character_code in xrange(first, last+1):
+        _block_names.append(block_name)
+        _block_range[block_name] = (first, last)
+        for character_code in xrange(first, last + 1):
             _block_data[character_code] = block_name
 
 
