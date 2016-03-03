@@ -1844,7 +1844,7 @@ def get_lint_spec(spec_file, extra_specs):
   If spec_file is None, only use extra_specs."""
 
   spec = None
-  if spec_file is not 'None':
+  if spec_file != 'None':
     spec = lint_config.parse_spec_file(spec_file)
   return lint_config.parse_spec(extra_specs, spec)
 

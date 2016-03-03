@@ -237,7 +237,7 @@ def parse_int_ranges(range_string, is_hex=True, sep=None):
   result = set()
   count = 0
   base = 16 if is_hex else 10
-  if '\n' in range_string:
+  if '\n' in range_string or '#' in range_string:
     # strip comments and turn into single line
     def strip_comment(line):
       x = line.find('#')
