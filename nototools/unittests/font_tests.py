@@ -316,6 +316,18 @@ class TestCharacterCoverage(FontTest):
             for char in self.exclude:
                 self.assertNotIn(char, charset)
 
+    def test_format_4_cmap_preset(self):
+        """Test that fonts contain a MS Unicode BMP encoded cmap, as recommended
+        by the spec: https://www.microsoft.com/typography/otspec/cmap.htm
+        """
+
+        for font in self.fonts:
+            found = False
+            for cmap in font['cmap'].tables:
+                if (cmap.format, cmap.platformID, cmap.platEncID) == (4, 3, 1):
+                    found = True
+            self.assertTrue(found)
+
 
 class TestLigatures(FontTest):
     """Tests formation or lack of formation of ligatures."""
