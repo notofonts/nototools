@@ -68,7 +68,7 @@ def compare_cmap_data_files(base_file, target_file, scripts, ranges,
                             no_additions, no_removals):
   base_cmap_data = cmap_data.read_cmap_data_file(base_file)
   target_cmap_data = cmap_data.read_cmap_data_file(target_file)
-  compare = compare_cmap_data(
+  compare  = compare_cmap_data(
       base_cmap_data, target_cmap_data, scripts, ranges,
       except_scripts, except_ranges, no_additions, no_removals)
   return compare, base_cmap_data, target_cmap_data
