@@ -86,7 +86,6 @@ def font_cmap_data(paths):
   if not paths:
     paths = noto_fonts.NOTO_FONT_PATHS
   fonts = filter(use_in_web, noto_fonts.get_noto_fonts(paths=paths))
-  print '\n'.join(f.filepath for f in sorted(fonts, key=lambda x: x.filepath))
   families = noto_fonts.get_families(fonts)
 
   ScriptData = collections.namedtuple('ScriptData', 'family_name,script,cpset')

@@ -221,6 +221,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
       else 'Google' if script == 'Zsye' and variant == 'color'
       else 'Khmertype' if script in ['Khmr', 'Cham', 'Laoo']
       else 'Monotype')
+
   return NotoFont(
       filepath, family, style, script, variant, width, weight, slope, fmt,
       manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, is_cjk,
