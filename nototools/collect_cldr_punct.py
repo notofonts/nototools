@@ -36,8 +36,7 @@ CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
 def _add_text(chars, text):
   skip = False
-  for i in range(len(text)):
-    cp = text[i]
+  for i, cp in enumerate(text):
     if cp == '{':
       skip = True
       continue
@@ -140,7 +139,7 @@ def _write_script_to_punct(script_to_punct):
   for script in sorted(script_to_punct):
     chars = script_to_punct[script]
     int_chars = [ord(cp) for cp in chars]
-    print "  # %s" % ('|'.join(sorted(chars)))
+    print '  # %s' % ('|'.join(sorted(chars)))
     print "  '%s': '%s'," % (script, tool_utils.write_int_ranges(int_chars))
   print '}'
 
