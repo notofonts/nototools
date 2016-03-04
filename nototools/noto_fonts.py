@@ -176,8 +176,13 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
       style = 'Emoji'
       variant = 'color'
 
+  is_mono = mono == 'Mono'
+
   if not script:
-    script = 'LGC'
+    if is_mono:
+      script = 'MONO'
+    else:
+      script = 'LGC'
   elif script == 'Urdu':
     # Use 'Aran' for languages written in the Nastaliq Arabic style, like Urdu.
     # The font naming uses 'Urdu' which is not a script, but a language.
@@ -198,8 +203,6 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   if not weight:
     weight = 'Regular'
 
-  is_mono = mono == 'Mono'
-
   is_UI = ui == 'UI'
   is_display = display == 'Display'
   if is_cjk:
@@ -218,7 +221,6 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
       else 'Google' if script == 'Zsye' and variant == 'color'
       else 'Khmertype' if script in ['Khmr', 'Cham', 'Laoo']
       else 'Monotype')
-
   return NotoFont(
       filepath, family, style, script, variant, width, weight, slope, fmt,
       manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, is_cjk,
