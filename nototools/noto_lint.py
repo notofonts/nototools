@@ -347,16 +347,17 @@ def printable_font_revision(font, accuracy=2):
 def printable_font_versions(font):
     version = font_version(font)
     match = re.match(r"Version (\d{1,5})\.(\d{1,5})", version)
-    major_version = match.group(1)
-    minor_version = match.group(2)
-    accuracy = len(minor_version)
-
-    font_revision = printable_font_revision(font, accuracy)
-    if font_revision == major_version+"."+minor_version:
-        return version
+    if match:
+        major_version = match.group(1)
+        minor_version = match.group(2)
+        accuracy = len(minor_version)
+        font_revision = printable_font_revision(font, accuracy)
+        if font_revision == major_version+"."+minor_version:
+            return version
     else:
-        return "%s (font revision in 'head' table: %s)" % (
-            version, font_revision)
+        font_revision = printable_font_revision(font, 3)
+    return "%s (head fontRevision: %s)" % (
+        version, font_revision)
 
 
 HARD_CODED_FONT_INFO = {
