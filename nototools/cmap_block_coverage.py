@@ -261,7 +261,7 @@ def block_coverage(
 
   if summary:
     _summarize_blocks(
-        start, limit, defined_cps, cp_to_scripts, all_scripts, only_scripts)
+        start, limit, defined_cps, cp_to_scripts, all_scripts)
   else:
     _list_blocks(
         start, limit, defined_cps, cp_to_scripts, all_scripts, only_scripts,
