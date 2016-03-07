@@ -72,17 +72,20 @@ def report_set_differences(name_to_cpset, out=sys.stderr):
     break
 
 
-def font_cmap_data():
+def font_cmap_data(paths):
   """Return CmapData for (almost) all the noto font families."""
-  metadata = cmap_data.create_metadata('noto_font_cmaps')
+  args = [('paths', paths)] if paths else None
+  metadata = cmap_data.create_metadata('noto_font_cmaps', args)
 
   def use_in_web(font):
     return (not font.subset and
-            not font.is_UI and
             not font.fmt == 'ttc' and
             not font.script in {'CJK', 'HST'} and
             not font.family in {'Arimo', 'Cousine', 'Tinos'})
-  fonts = filter(use_in_web, noto_fonts.get_noto_fonts())
+
+  if not paths:
+    paths = noto_fonts.NOTO_FONT_PATHS
+  fonts = filter(use_in_web, noto_fonts.get_noto_fonts(paths=paths))
   families = noto_fonts.get_families(fonts)
 
   ScriptData = collections.namedtuple('ScriptData', 'family_name,script,cpset')
@@ -123,8 +126,25 @@ def font_cmap_data():
 
 
 def main():
-  cmapdata = font_cmap_data()
-  cmap_data.write_cmap_data_file(cmapdata, 'font_cmaps.xml', pretty=True)
+  DEFAULT_OUTFILE = 'font_cmaps_temp.xml'
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '-o', '--outfile', help='output file to write ("%s" if no name provided)'
+      % DEFAULT_OUTFILE, metavar='name', nargs='?', default=None,
+      const=DEFAULT_OUTFILE)
+  parser.add_argument(
+      '-p', '--paths', help='list of directory paths to search for noto fonts '
+      '(default is standard noto phase2 paths)', metavar='path',
+      nargs='*', default=None)
+  args = parser.parse_args()
+
+  cmapdata = font_cmap_data(args.paths)
+  if args.outfile:
+    cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
+  else:
+    print cmap_data.write_cmap_data(cmapdata, pretty=True)
+
 
 if __name__ == "__main__":
   main()
