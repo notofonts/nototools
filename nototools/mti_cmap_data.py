@@ -67,24 +67,31 @@ def get_script_to_cmap(csvdata):
   return { script: cmap for script, cmap in zip(header, data) }
 
 
-def cmap_data_from_csv(csvdata, infile=None):
+def cmap_data_from_csv(
+    csvdata, scripts=None, exclude_scripts=None, infile=None):
   args = [('infile', infile)] if infile else None
   metadata = cmap_data.create_metadata('mti_cmap_data', args)
-  tabledata = cmap_data.create_table_from_map(
-      get_script_to_cmap(csvdata))
+  script_to_cmap = get_script_to_cmap(csvdata)
+  if scripts or exclude_scripts:
+    script_list = script_to_cmap.keys()
+    for script in script_list:
+      if scripts and script not in scripts:
+        del script_to_cmap[script]
+      elif exclude_scripts and script in exclude_scripts:
+        del script_to_cmap[script]
+  tabledata = cmap_data.create_table_from_map(script_to_cmap)
   return cmap_data.CmapData(metadata, tabledata)
 
 
-def cmap_data_from_csv_file(csvfile):
+def cmap_data_from_csv_file(
+    csvfile, scripts=None, exclude_scripts=None):
   with open(csvfile, 'r') as f:
     csvdata = f.read()
-  return cmap_data_from_csv(csvdata, csvfile)
+  return cmap_data_from_csv(csvdata, scripts, exclude_scripts, csvfile)
 
 
-def csv_to_xml(csv_file, xml_file, scripts):
-  cmapdata = cmap_data_from_csv_file(csv_file)
-  if scripts:
-    print >> sys.stderr, 'not filtering by scripts when converting csv to xml'
+def csv_to_xml(csv_file, xml_file, scripts, exclude_scripts):
+  cmapdata = cmap_data_from_csv_file(csv_file, scripts, exclude_scripts)
   if xml_file:
     print >> sys.stderr, 'writing %s' % xml_file
     cmap_data.write_cmap_data_file(cmapdata, xml_file, pretty=True)
@@ -99,22 +106,34 @@ def _script_to_name(script):
     return script
 
 
-def csv_from_cmap_data(data, scripts):
+def csv_from_cmap_data(data, scripts, exclude_scripts):
   script_to_rowdata = cmap_data.create_map_from_table(data.table)
   cols = []
   max_lines = 0
+  num_cells = 0
   for script in sorted(
       script_to_rowdata, key=lambda s: _script_to_name(s).lower()):
     if scripts and script not in scripts:
       continue
+    if script in exclude_scripts:
+      continue
+
     col = [
         '"%s"' % _script_to_name(script)
     ]
     rd = script_to_rowdata[script]
+    cps = tool_utils.parse_int_ranges(rd.ranges)
+    num_cells += len(cps)
     col.extend('U+%04X' % cp for cp in sorted(
         tool_utils.parse_int_ranges(rd.ranges)))
     cols.append(col)
     max_lines = max(max_lines, len(col))
+
+  num_cols = len(cols)
+  num_cells += num_cols  # headers are not empty
+  all_cells = num_cols * max_lines
+  fmt = 'Columns: %d\nRows: %d\nNon-empty cells: %d\nCells: %d'
+  print >> sys.stderr, fmt % (num_cols, max_lines, num_cells, all_cells)
   cmap_lines = []
   cmap_lines.append(','.join(col[0] for col in cols))
   for i in range(1, max_lines):
@@ -122,14 +141,27 @@ def csv_from_cmap_data(data, scripts):
   return '\n'.join(cmap_lines)
 
 
-def xml_to_csv(xml_file, csv_file, scripts):
+def xml_to_csv(xml_file, csv_file, scripts, exclude_scripts):
   data = cmap_data.read_cmap_data_file(xml_file)
-  csv_data = csv_from_cmap_data(data, scripts)
+  csv_data = csv_from_cmap_data(data, scripts, exclude_scripts)
   if csv_file:
     with open(csv_file, 'w') as f:
       f.write(csv_data)
   else:
     print csv_data
+
+
+def _check_scripts(scripts):
+  """Return True if all scripts are known (pseudo) codes."""
+  have_unknown = False
+  if scripts:
+    all_scripts = unicode_data.all_scripts()
+    all_scripts = all_scripts | set(['LGC', 'CJK', 'MONO', 'SYM2', 'MUSIC'])
+    for s in scripts:
+      if s not in all_scripts:
+        print >> sys.stderr, 'unknown script:', s
+        have_unknown = True
+  return not have_unknown
 
 
 def main():
@@ -146,27 +178,26 @@ def main():
   parser.add_argument(
       '-s', '--scripts', help='limit to these scripts',
       metavar='script', nargs='*')
+  parser.add_argument(
+      '-xs', '--exclude_scripts', help='omit these scripts',
+      metavar='script', nargs='*')
 
   args = parser.parse_args()
 
-  if args.scripts:
-    all_scripts = unicode_data.all_scripts()
-    all_scripts = all_scripts | set(['LGC', 'CJK', 'MONO', 'SYM2', 'MUSIC'])
-    have_unknown = False
-    for s in args.scripts:
-      if s not in all_scripts:
-        print 'unknown script:', s
-        have_unknown = True
-    if have_unknown:
-      return
+  if not _check_scripts(args.scripts):
+    print >> sys.stderr, 'some scripts failed'
+    return
+  if not _check_scripts(args.exclude_scripts):
+    print >> sys.stderr, 'some exclude scripts failed'
+    return
 
   if args.outfile == '-default-':
     args.outfile = path.splitext(path.basename(args.infile))[0]
     args.outfile += '.xml' if args.operation == 'read' else '.csv'
   if args.operation == 'read':
-    csv_to_xml(args.infile, args.outfile, args.scripts)
+    csv_to_xml(args.infile, args.outfile, args.scripts, args.exclude_scripts)
   else:
-    xml_to_csv(args.infile, args.outfile, args.scripts)
+    xml_to_csv(args.infile, args.outfile, args.scripts, args.exclude_scripts)
 
 
 if __name__ == "__main__":
