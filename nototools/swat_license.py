@@ -134,7 +134,7 @@ def get_bumped_version(ttfont, is_hinted):
   m = re.match(r'Version (\d{1,5})\.(\d{1,5})(.*)', version)
   if not m:
     print '! Could not match version string (%s)' % version
-    return False, None, None
+    return None, None
 
   major_version = m.group(1)
   minor_version = m.group(2)
