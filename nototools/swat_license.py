@@ -126,6 +126,53 @@ def _noto_relative_path(filepath):
   return filepath[x:]
 
 
+def get_bumped_version(ttfont, is_hinted):
+  """Return bumped values for the header and name tables."""
+
+  names = font_data.get_name_records(ttfont)
+  version = names[_VERSION_ID]
+  m = re.match(r'Version (\d{1,5})\.(\d{1,5})(.*)', version)
+  if not m:
+    print '! Could not match version string (%s)' % version
+    return None, None
+
+  major_version = m.group(1)
+  minor_version = m.group(2)
+  version_remainder = m.group(3)
+  accuracy = len(minor_version)
+  print_revision = font_data.printable_font_revision(ttfont, accuracy)
+  # sanity check
+  expected_revision = major_version + '.' + minor_version
+  if expected_revision != print_revision:
+    raise ValueError('! Expected revision \'%s\' but got revision \'%s\'' % (
+        expected_revision, print_revision))
+
+  # bump the minor version keeping significant digits:
+  new_minor_version = str(int(minor_version) + 1).zfill(accuracy)
+  new_revision = major_version + '.' + new_minor_version
+  print 'Update revision from  \'%s\' to \'%s\'' % (
+      expected_revision, new_revision)
+  # double check we are going to properly round-trip this value
+  float_revision = float(new_revision)
+  fixed_revision = misc.fixedTools.floatToFixed(float_revision, 16)
+  rt_float_rev = misc.fixedTools.fixedToFloat(fixed_revision, 16)
+  rt_float_rev_int = int(rt_float_rev)
+  rt_float_rev_frac = int(round((rt_float_rev - rt_float_rev_int) *
+                                10 ** accuracy))
+  rt_new_revision = (str(rt_float_rev_int) + '.' +
+                     str(rt_float_rev_frac).zfill(accuracy))
+  if new_revision != rt_new_revision:
+    raise ValueError(
+        '! Could not update new revision, expected \'%s\' but got \'%s\'' % (
+        new_revision, rt_new_revision))
+
+  new_version_string = 'Version ' + new_revision
+  if not is_hinted:
+    new_version_string += ' uh'
+
+  return float_revision, new_version_string
+
+
 def _swat_font(noto_font, dst_root, dry_run):
   filepath = noto_font.filepath
   basename = path.basename(filepath)
@@ -150,46 +197,12 @@ def _swat_font(noto_font, dst_root, dry_run):
 
   dst_file = path.join(dst_root, rel_filepath)
 
-  version = names[_VERSION_ID]
-  m = re.match(r'Version (\d{1,5})\.(\d{1,5})(.*)', version)
-  if not m:
-    print '! Could not match version string (%s)' % version
+  try:
+    new_revision, new_version_string = get_bumped_version(
+        ttfont, noto_font.is_hinted)
+  except ValueError as e:
+    print e
     return
-
-  major_version = m.group(1)
-  minor_version = m.group(2)
-  version_remainder = m.group(3)
-  accuracy = len(minor_version)
-  print_revision = font_data.printable_font_revision(ttfont, accuracy)
-  # sanity check
-  expected_revision = major_version + '.' + minor_version
-  if expected_revision != print_revision:
-    print '! Expected revision \'%s\' but got revision \'%s\'' % (
-        expected_revision, print_revision)
-    return
-
-  # bump the minor version keeping significant digits:
-  new_minor_version = str(int(minor_version) + 1).zfill(accuracy)
-  new_revision = major_version + '.' + new_minor_version
-  print 'Update revision from  \'%s\' to \'%s\'' % (
-      expected_revision, new_revision)
-  # double check we are going to properly round-trip this value
-  float_revision = float(new_revision)
-  fixed_revision = misc.fixedTools.floatToFixed(float_revision, 16)
-  rt_float_rev = misc.fixedTools.fixedToFloat(fixed_revision, 16)
-  rt_float_rev_int = int(rt_float_rev)
-  rt_float_rev_frac = int(round((rt_float_rev - rt_float_rev_int) *
-                                10 ** accuracy))
-  rt_new_revision = (str(rt_float_rev_int) + '.' +
-                     str(rt_float_rev_frac).zfill(accuracy))
-  if new_revision != rt_new_revision:
-    print '! Could not update new revision, expected \'%s\' but got \'%s\'' % (
-        new_revision, rt_new_revision)
-    return
-
-  new_version_string = 'Version ' + new_revision
-  if not noto_font.is_hinted:
-    new_version_string += ' uh'
 
   print '%s: %s' % ('Would write' if dry_run else 'Writing', dst_file)
 
