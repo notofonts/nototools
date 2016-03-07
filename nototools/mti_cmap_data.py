@@ -21,8 +21,8 @@ from os import path
 import sys
 
 from nototools import cmap_data
+from nototools import tool_utils
 from nototools import unicode_data
-
 
 def get_script_for_name(script_name):
   if script_name in ['LGC']:
@@ -81,24 +81,92 @@ def cmap_data_from_csv_file(csvfile):
   return cmap_data_from_csv(csvdata, csvfile)
 
 
+def csv_to_xml(csv_file, xml_file, scripts):
+  cmapdata = cmap_data_from_csv_file(csv_file)
+  if scripts:
+    print >> sys.stderr, 'not filtering by scripts when converting csv to xml'
+  if xml_file:
+    print >> sys.stderr, 'writing %s' % xml_file
+    cmap_data.write_cmap_data_file(cmapdata, xml_file, pretty=True)
+  else:
+    print cmap_data.write_cmap_data(cmapdata, pretty=True)
+
+
+def _script_to_name(script):
+  try:
+    return unicode_data.human_readable_script_name(script)
+  except KeyError:
+    return script
+
+
+def csv_from_cmap_data(data, scripts):
+  script_to_rowdata = cmap_data.create_map_from_table(data.table)
+  cols = []
+  max_lines = 0
+  for script in sorted(
+      script_to_rowdata, key=lambda s: _script_to_name(s).lower()):
+    if scripts and script not in scripts:
+      continue
+    col = [
+        '"%s"' % _script_to_name(script)
+    ]
+    rd = script_to_rowdata[script]
+    col.extend('U+%04X' % cp for cp in sorted(
+        tool_utils.parse_int_ranges(rd.ranges)))
+    cols.append(col)
+    max_lines = max(max_lines, len(col))
+  cmap_lines = []
+  cmap_lines.append(','.join(col[0] for col in cols))
+  for i in range(1, max_lines):
+    cmap_lines.append(','.join(col[i] if i < len(col) else '' for col in cols))
+  return '\n'.join(cmap_lines)
+
+
+def xml_to_csv(xml_file, csv_file, scripts):
+  data = cmap_data.read_cmap_data_file(xml_file)
+  csv_data = csv_from_cmap_data(data, scripts)
+  if csv_file:
+    with open(csv_file, 'w') as f:
+      f.write(csv_data)
+  else:
+    print csv_data
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--infile', help='input file name', metavar='fname')
+      '-i', '--infile', help='input file name', metavar='fname')
   parser.add_argument(
-      '--outfile', help='write to output file, otherwise to stdout, '
+      '-o', '--outfile', help='write to output file, otherwise to stdout, '
       'provide file name or will default to one based on infile',
       metavar='fname', nargs='?', const='-default-')
+  parser.add_argument(
+      '-op', '--operation', help='read csv, or write csv', metavar='op',
+      choices=['read', 'write'], default='read')
+  parser.add_argument(
+      '-s', '--scripts', help='limit to these scripts',
+      metavar='script', nargs='*')
+
   args = parser.parse_args()
 
-  cmapdata = cmap_data_from_csv_file(args.infile)
-  if args.outfile:
-    if args.outfile == '-default-':
-      args.outfile = path.splitext(path.basename(args.infile))[0] + '.xml'
-    print >> sys.stderr, 'writing %s' % args.outfile
-    cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
+  if args.scripts:
+    all_scripts = unicode_data.all_scripts()
+    all_scripts = all_scripts | set(['LGC', 'CJK', 'MONO', 'SYM2', 'MUSIC'])
+    have_unknown = False
+    for s in args.scripts:
+      if s not in all_scripts:
+        print 'unknown script:', s
+        have_unknown = True
+    if have_unknown:
+      return
+
+  if args.outfile == '-default-':
+    args.outfile = path.splitext(path.basename(args.infile))[0]
+    args.outfile += '.xml' if args.operation == 'read' else '.csv'
+  if args.operation == 'read':
+    csv_to_xml(args.infile, args.outfile, args.scripts)
   else:
-    print cmap_data.write_cmap_data(cmapdata, pretty=True)
+    xml_to_csv(args.infile, args.outfile, args.scripts)
 
 
 if __name__ == "__main__":
