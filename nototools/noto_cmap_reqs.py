@@ -14,7 +14,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Extract what lint expects for cmap from our data."""
+"""Build phase 3 cmap requirements data.
+
+This starts with default assignments based on unicode property
+script and script_extensions data, then applies a sequences of
+operations to generate an allocation of cmaps to 'scripts' i.e.
+font families.  The operations include assigning/removing common
+characters in blocks, or entire blocks, to/from scripts,
+assigning additional punctuation (based on reading the Unicode
+8 standard and various L2 docs), and so on.
+
+This uses pseudo script codes to represent the font families,
+but this needs to be changed to some better representation.
+for now, these are:
+
+CJK: for all CJK scripts
+EXCL: for excluded blocks (PUA, surrogates)
+MONO: for blocks going into a monospace font
+MUSIC: for blocks going into a music font
+SYM2: for blocks going into a 'symbols 2' font with fewer masters
+Zmth: for blocks going into a 'math' font
+ZSym: for blocks going into the main symbols font (6 masters)
+ZSye: for blocks going into the color emoji font
+"""
 
 import argparse
 import collections
@@ -32,294 +54,6 @@ from nototools import unicode_data
 _MERGED_SCRIPTS_BY_TARGET = {
     'CJK': 'Bopo Hang Hani Hans Hant Hira Jpan Kana Kore'.split(),
     'LGC': 'Latn Grek Cyrl'.split(),
-}
-
-# If a block has characters with script 'common' or 'inherited', the
-# script should be present and assign a default script (font) for it.
-# If there are no such characters, no script is defined.
-#
-# Additional (non-unicode) script values are:
-# CJK: for all CJK scripts
-# EXCL: for excluded blocks (PUA, surrogates)
-# MONO: for blocks going into a monospace font
-# MUSIC: for blocks going into a music font
-# SYM2: for blocks going into a 'symbols 2' font with fewer masters
-# Zmth: for blocks going into a 'math' font
-# ZSym: for blocks going into the main symbols font (6 masters)
-# ZSye: for blocks going into the color emoji font
-
-_block_to_script = {
-    'Basic Latin' : 'Latn',
-    'Latin-1 Supplement': 'Latn',
-    'Latin Extended-A': 'Latn',
-    'Latin Extended-B': 'Latn',
-    'IPA Extensions': 'Latn',
-    'Spacing Modifier Letters': 'Latn',
-    'Combining Diacritical Marks': 'Latn',
-    'Greek and Coptic': 'Grek',
-    'Cyrillic': 'Cyrl',
-    'Cyrillic Supplement': 'Cyrl',
-    'Armenian': 'Armn',
-    'Hebrew': None,
-    'Arabic': 'Arab',
-    'Syriac': None,
-    'Arabic Supplement': None,
-    'Thaana': None,
-    'NKo': None,
-    'Samaritan': None,
-    'Mandaic': None,
-    'Arabic Extended-A': 'Arab',
-    'Devanagari': 'Deva',
-    'Bengali': None,
-    'Gurmukhi': None,
-    'Gujarati': None,
-    'Oriya': None,
-    'Tamil': None,
-    'Telugu': None,
-    'Kannada': None,
-    'Malayalam': None,
-    'Sinhala': None,
-    'Thai': 'Thai',
-    'Lao': None,
-    'Tibetan': 'Tibt',
-    'Myanmar': None,
-    'Georgian': 'Geor',
-    'Hangul Jamo': None,
-    'Ethiopic': None,
-    'Ethiopic Supplement': None,
-    'Cherokee': None,
-    'Unified Canadian Aboriginal Syllabics': None,
-    'Ogham': None,
-    'Runic': 'Runr',
-    'Tagalog': None,
-    'Hanunoo': 'Hano',
-    'Buhid': None,
-    'Tagbanwa': None,
-    'Khmer': None,
-    'Mongolian': 'Mong',
-    'Unified Canadian Aboriginal Syllabics Extended': None,
-    'Limbu': None,
-    'Tai Le': None,
-    'New Tai Lue': None,
-    'Khmer Symbols': None,
-    'Buginese': None,
-    'Tai Tham': None,
-    'Combining Diacritical Marks Extended': 'Latn',
-    'Balinese': None,
-    'Sundanese': None,
-    'Batak': None,
-    'Lepcha': None,
-    'Ol Chiki': None,
-    'Cyrillic Extended-C': None,
-    'Sundanese Supplement': None,
-    'Vedic Extensions': 'Deva',
-    'Phonetic Extensions': None,
-    'Phonetic Extensions Supplement': None,
-    'Combining Diacritical Marks Supplement': 'Latn',
-    'Latin Extended Additional': None,
-    'Greek Extended': None,
-    'General Punctuation': 'Latn',
-    'Superscripts and Subscripts': 'Latn',  # numeric super/subs
-    'Currency Symbols': 'Zsym',
-    'Combining Diacritical Marks for Symbols': 'Zsym',  # also SYM2?
-    'Letterlike Symbols': 'Zsym',
-    'Number Forms': 'Zsym',  # fractions, turned digits
-    'Arrows': 'Zsym',
-    'Mathematical Operators': 'Zmth',
-    'Miscellaneous Technical': 'Zsym',
-    'Control Pictures': 'SYM2',
-    'Optical Character Recognition': 'SYM2',
-    'Enclosed Alphanumerics': 'Zsym',
-    'Box Drawing': 'MONO',
-    'Block Elements': 'MONO',
-    'Geometric Shapes': 'Zsym',
-    'Miscellaneous Symbols': 'Zsym',
-    'Dingbats': 'Zsym',
-    'Miscellaneous Mathematical Symbols-A': 'Zmth',
-    'Supplemental Arrows-A': 'Zsym',
-    'Braille Patterns': 'SYM2',
-    'Supplemental Arrows-B': 'Zsym',
-    'Miscellaneous Mathematical Symbols-B': 'Zmth',
-    'Supplemental Mathematical Operators': 'Zmth',
-    'Miscellaneous Symbols and Arrows': 'Zsym',
-    'Glagolitic': None,
-    'Latin Extended-C': None,
-    'Coptic': None,
-    'Georgian Supplement': None,
-    'Tifinagh': None,
-    'Ethiopic Extended': None,
-    'Cyrillic Extended-A': None,
-    'Supplemental Punctuation': 'Zsym',  # might break out further
-    'CJK Radicals Supplement': None,
-    'Kangxi Radicals': None,
-    'Ideographic Description Characters': 'CJK',
-    'CJK Symbols and Punctuation': 'CJK',
-    'Hiragana': None,
-    'Katakana': None,
-    'Bopomofo': None,
-    'Hangul Compatibility Jamo': None,
-    'Kanbun': 'CJK',
-    'Bopomofo Extended': None,
-    'CJK Strokes': 'CJK',
-    'Katakana Phonetic Extensions': None,
-    'Enclosed CJK Letters and Months': 'CJK',
-    'CJK Compatibility': 'CJK',
-    'CJK Unified Ideographs Extension A': None,
-    'Yijing Hexagram Symbols': 'SYM2',
-    'CJK Unified Ideographs': None,
-    'Yi Syllables': None,
-    'Yi Radicals': None,
-    'Lisu': None,
-    'Vai': None,
-    'Cyrillic Extended-B': None,
-    'Bamum': None,
-    'Modifier Tone Letters': 'Zsym',
-    'Latin Extended-D': 'Latn',
-    'Syloti Nagri': None,
-    'Common Indic Number Forms': 'Deva',
-    'Phags-pa': None,
-    'Saurashtra': None,
-    'Devanagari Extended': None,
-    'Kayah Li': 'Kali',
-    'Rejang': None,
-    'Hangul Jamo Extended-A': None,
-    'Javanese': 'Java',  # TODO: check
-    'Myanmar Extended-B': None,
-    'Cham': None,
-    'Myanmar Extended-A': None,
-    'Tai Viet': None,
-    'Meetei Mayek Extensions': None,
-    'Ethiopic Extended-A': None,
-    'Latin Extended-E': 'Latn',
-    'Cherokee Supplement': None,
-    'Meetei Mayek': None,
-    'Hangul Syllables': None,
-    'Hangul Jamo Extended-B': None,
-    'High Surrogates': 'EXCL',
-    'High Private Use Surrogates': 'EXCL',
-    'Low Surrogates': 'EXCL',
-    'Private Use Area': 'EXCL',
-    'CJK Compatibility Ideographs': None,
-    'Alphabetic Presentation Forms': None,
-    'Arabic Presentation Forms-A': 'Arab',
-    'Variation Selectors': 'EXCL',
-    'Vertical Forms': 'CJK',
-    'Combining Half Marks': 'Latn',
-    'CJK Compatibility Forms': 'CJK',
-    'Small Form Variants': 'CJK',
-    'Arabic Presentation Forms-B': None,  # This includes BOM at feff, ignore
-    'Halfwidth and Fullwidth Forms': 'CJK',
-    'Specials': 'Latn',  # interlinear annotations, replacement...
-    'Linear B Syllabary': None,
-    'Linear B Ideograms': None,
-    'Aegean Numbers': 'Linb',
-    'Ancient Greek Numbers': 'SYM2',  # no defaults in this block
-    'Ancient Symbols': 'SYM2',
-    'Phaistos Disc': 'SYM2',
-    'Lycian': None,
-    'Carian': None,
-    'Coptic Epact Numbers': 'SYM2',
-    'Old Italic': None,
-    'Gothic': None,
-    'Old Permic': None,
-    'Ugaritic': None,
-    'Old Persian': None,
-    'Deseret': None,
-    'Shavian': None,
-    'Osmanya': None,
-    'Osage': None,
-    'Elbasan': None,
-    'Caucasian Albanian': None,
-    'Linear A': None,
-    'Cypriot Syllabary': None,
-    'Imperial Aramaic': None,
-    'Palmyrene': None,
-    'Nabataean': None,
-    'Hatran': None,
-    'Phoenician': None,
-    'Lydian': None,
-    'Meroitic Hieroglyphs': None,
-    'Meroitic Cursive': None,
-    'Kharoshthi': None,
-    'Old South Arabian': None,
-    'Old North Arabian': None,
-    'Manichaean': None,
-    'Avestan': None,
-    'Inscriptional Parthian': None,
-    'Inscriptional Pahlavi': None,
-    'Psalter Pahlavi': None,
-    'Old Turkic': None,
-    'Old Hungarian': None,
-    'Rumi Numeral Symbols': None,
-    'Brahmi': None,
-    'Kaithi': None,
-    'Sora Sompeng': None,
-    'Chakma': None,
-    'Mahajani': None,
-    'Sharada': None,
-    'Sinhala Archaic Numbers': None,
-    'Khojki': None,
-    'Multani': None,
-    'Khudawadi': None,
-    'Grantha': None,
-    'Tirhuta': None,
-    'Siddham': None,
-    'Modi': None,
-    'Mongolian Supplement': None,
-    'Takri': None,
-    'Ahom': None,
-    'Warang Citi': None,
-    'Pau Cin Hau': None,
-    'Bhaiksuki': None,
-    'Marchen': None,
-    'Cuneiform': None,
-    'Cuneiform Numbers and Punctuation': None,
-    'Early Dynastic Cuneiform': None,
-    'Egyptian Hieroglyphs': None,
-    'Anatolian Hieroglyphs': None,
-    'Bamum Supplement': None,
-    'Mro': None,
-    'Bassa Vah': None,
-    'Pahawh Hmong': None,
-    'Miao': None,
-    'Ideographic Symbols and Punctuation': None,
-    'Tangut': None,
-    'Tangut Components': None,
-    'Kana Supplement': None,
-    'Duployan': None,
-    'Shorthand Format Controls': 'Dupl',
-    'Byzantine Musical Symbols': 'MUSIC',
-    'Musical Symbols': 'MUSIC',
-    'Ancient Greek Musical Notation': 'MUSIC',
-    'Tai Xuan Jing Symbols': 'SYM2',
-    'Counting Rod Numerals': 'SYM2',
-    'Mathematical Alphanumeric Symbols': 'Zmth',
-    'Sutton SignWriting': None,
-    'Glagolitic Supplement': None,
-    'Mende Kikakui': None,
-    'Arabic Mathematical Alphabetic Symbols': 'Zmth',  # need to reassign
-    'Mahjong Tiles': 'SYM2',
-    'Domino Tiles': 'SYM2',
-    'Playing Cards': 'SYM2',
-    'Enclosed Alphanumeric Supplement': 'Zsym',
-    'Enclosed Ideographic Supplement': 'CJK',
-    'Miscellaneous Symbols and Pictographs': 'SYM2',
-    'Emoticons': 'Zsye',  # emoji
-    'Ornamental Dingbats': 'Zsym',
-    'Transport and Map Symbols': 'Zsye',
-    'Alchemical Symbols': 'Zsym',
-    'Geometric Shapes Extended': 'Zsym',
-    'Supplemental Arrows-C': 'Zsym',
-    'Supplemental Symbols and Pictographs': 'Zsye',
-    'CJK Unified Ideographs Extension B': None,
-    'CJK Unified Ideographs Extension C': None,
-    'CJK Unified Ideographs Extension D': None,
-    'CJK Unified Ideographs Extension E': None,
-    'CJK Compatibility Ideographs Supplement': None,
-    'Tags': 'SYM2',
-    'Variation Selectors Supplement': 'EXCL',
-    'Supplementary Private Use Area-A': 'EXCL',
-    'Supplementary Private Use Area-B': 'EXCL',
 }
 
 def _invert_script_to_chars(script_to_chars):
@@ -2565,6 +2299,10 @@ _SCRIPT_REQUIRED = [
    """),
 ]
 
+# This is a utility function that parses the _script_required data
+# and spits it out again in the above format.  When editing the
+# above data, just type in the hex values, then run this to regenerate
+# the source in sorted order with block labels and codepoint names.
 def _regen_script_required():
   """Rerun after editing script required to check/reformat."""
   script_to_comment_and_data = {
@@ -2722,23 +2460,6 @@ def _assign_mono(cmap_ops):
   cmap_ops.add_all(lgc_chars, 'MONO')
 
 
-# note: not currently used, script to punct does not support 'CURRENCY'
-def _reassign_currency_to_lgc(script_to_chars):
-  """Reassign current CLDR currencies in currency block from Zsym to LGC."""
-  start, finish = unicode_data.block_range('Currency Symbols')
-  currencies = set(range(start, finish + 1))
-  currencies &= collect_cldr_punct.script_to_punct()['CURRENCY']
-  symbols = script_to_chars['Zsym']
-  lgc = script_to_chars['LGC']
-  for cp in currencies:
-    if cp not in symbols:
-      print >> sys.stderr, 'ERROR currency %04X (%s) not in Zsym' % (
-          cp, unicode_data.name(cp))
-    else:
-      symbols.remove(cp)
-    lgc.add(cp)
-
-
 def _remove_unwanted(cmap_ops):
   excluded_controls = tool_utils.parse_int_ranges("""
       0000-001f  # C0 controls
@@ -2754,127 +2475,6 @@ def _assign_basic(cmap_ops):
   basic_chars = frozenset([0x0, 0x0D, 0x20, 0xA0])
   cmap_ops.phase('assign basic')
   cmap_ops.add_all_to_all(basic_chars, cmap_ops.all_scripts())
-
-
-def _propose_block_data():
-  """Generate the block data list above."""
-  info = []
-  for block in unicode_data.block_names():
-    start, finish = unicode_data.block_range(block)
-    script_counts = collections.defaultdict(int)
-    must_assign = False
-    for cp in range(start, finish + 1):
-      script = unicode_data.script(cp)
-      if script != 'Zzzz':
-        script_counts[script] += 1
-      if script == 'Zyyy' or script == 'Zinh':
-        must_assign_cp = True
-        for s in unicode_data.script_extensions(cp):
-          if s != 'Zyyy' and s != 'Zinh':
-            must_assign_cp = False
-            break
-        if script == 'Zinh':
-          if must_assign_cp:
-            print 'must assign Zinh %04x %s' % (
-                cp, unicode_data.name(cp, 'unnamed'))
-          else:
-            print 'ok          Zinh %04x %s (%s)' % (
-                cp, unicode_data.name(cp, 'unnamed'),
-                ', '.join(unicode_data.script_extensions(cp)))
-        must_assign |= must_assign_cp
-
-    max_script = None
-    max_script_count = 0
-    for script, count in script_counts.iteritems():
-      if count > max_script_count:
-        max_script = script
-        max_script_count = count
-    try:
-      assigned_script = _block_to_script[block]
-    except KeyError:
-      print 'no info for block \'%s\'' % block
-      assigned_script = None
-    if must_assign and not assigned_script:
-      assigned_script = max_script
-    info.append((start, finish, block, max_script, assigned_script))
-  print '_BLOCK_DATA = [\n  %s\n]' % '\n  '.join(
-      '%-40s  # %s %04X-%04X' % (
-          '(\'%s\', %s)' % (t[2], 'None' if not t[4] else "'%s'" % t[4]),
-          t[3], t[0], t[1])
-      for t in sorted(info, key=lambda t: t[0])
-      if t[4])
-
-
-
-def _compute_block_fallback(debug=False):
-  """Examine all characters only script inherited or common, and assign to new
-  scripts based on block range data.  Return a dict from new script to chars."""
-
-  script_chars = collections.defaultdict(set)
-  script_blocks = collections.defaultdict(list)
-  block_names = unicode_data.block_names()
-  inherited_set = _unicode_required('Zinh')
-  common_set = _unicode_required('Zyyy')
-  all_scripts = unicode_data.all_scripts()
-  extra_scripts = set()
-  unknown_scripts = set()
-
-  zinh_and_zyyy = frozenset(['Zinh', 'Zyyy'])
-
-  def ignore_multiscript(cps):
-    """Return the cps that have only Zinh and/or Zyyy in script
-    and script_extension."""
-    result_cps = set()
-    for cp in cps:
-      script = unicode_data.script(cp)
-      extensions = unicode_data.script_extensions(cp)
-      all_scripts = set([script]) | extensions
-      if all_scripts <= zinh_and_zyyy:
-        result_cps.add(cp)
-    return result_cps
-
-  def _block_info(block_name):
-    return '%13s %s' % (
-        '%04x-%04x' % unicode_data.block_range(block_name), block_name)
-
-  for block_name in sorted(block_names, key=lambda n: _block_ranges(n)[0]):
-    block_cps = unicode_data.block_chars(block_name)
-    block_inherited = ignore_multiscript(block_cps & inherited_set)
-    block_common = ignore_multiscript(block_cps & common_set)
-    block_either = block_inherited | block_common
-    block_info = _block_info(block_name)
-    if block_name not in _block_to_script:
-      print '%s missing' % block_info
-    if not block_either:
-      continue
-    if block_name not in _block_to_script:
-      print '%s has no data but %d chars' % (block_info, len(block_either))
-    else:
-      assigned_script = _block_to_script[block_name]
-      if assigned_script not in all_scripts:
-        unknown_scripts.add(assigned_script)
-
-      if debug:
-        print '%s, %d chars to script "%s"' % (
-            block_info, len(block_either), assigned_script)
-      script_blocks[assigned_script].append(block_name)
-      script_chars[assigned_script].update(block_either)
-
-      # for cp in sorted(block_either):
-      #   print '  %6s %s' % ('%04x' % cp, unicode_data.name(cp, '<unknown>'))
-
-  if debug:
-    for script in sorted(script_blocks):
-      print '%s:' % script
-      for block in script_blocks[script]:
-        print _block_info(block)
-        for cp in sorted(script_chars[script] & unicode_data.block_chars(block)):
-          print '%13s   %04X %s %s' % (
-              '', cp, sorted(set([unicode_data.script(cp)])
-                             | unicode_data.script_extensions(cp)),
-              unicode_data.name(cp, '<unknown>'))
-
-  return script_chars
 
 
 def build_script_to_chars(log_level):
