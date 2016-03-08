@@ -566,8 +566,9 @@ def _remove_empty(cmap_ops):
 
 
 def _reassign_emoji(cmap_ops):
-  """Reassign all emoji to emoji-color. Then assign all emoji with default text
-  presentation, plus select others, to SYM2."""
+  """Reassign all emoji to emoji-color. Then assign all emoji with default
+  text presentation, plus those with variation selectors, plus select
+  others, to SYM2."""
 
   cmap_ops.phase('reassign emoji')
   char_to_scripts = cmap_ops.create_char_to_scripts()
@@ -575,6 +576,8 @@ def _reassign_emoji(cmap_ops):
   color_only_emoji = set(unicode_data.get_presentation_default_emoji())
   color_only_emoji.remove(0x1f004)  # mahjong tile red dragon
   color_only_emoji.remove(0x1f0cf)  # playing card black joker
+  # remove emoji with a variation selector that allows a text presentation
+  color_only_emoji -= unicode_data.get_unicode_emoji_variants()
 
   all_emoji = unicode_data.get_emoji()
   cmap_ops.create_script('Zsye')
