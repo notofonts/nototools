@@ -2436,21 +2436,6 @@ def _assign_legacy_phase2(cmap_ops):
     compare_cmap_data._print_detailed(not_in_new)
   """
 
-def _excludes(cmap_ops):
-  """Exclude some characters based on script."""
-  exclude_chars = {
-      'CJK': """
-      332c         # Jungshik says excluded on purpose
-      fa70-fad9    # Jungshik says Ken regards DPRK compatibility chars as
-                   # outside of scope, like most of plane 2.
-      1b000-1b001  # Ken says these are controversial.
-      """,
-  }
-  cmap_ops.phase('excludes')
-  for script in sorted(script_to_exclude_range):
-    exclude = tool_utils.parse_int_ranges(script_to_exclude_range[script])
-    cmap_ops.remove_all(exclude, script)
-
 
 def _assign_mono(cmap_ops):
   """Monospace should be similar to LGC, with the addition of box drawing
@@ -2461,20 +2446,35 @@ def _assign_mono(cmap_ops):
 
 
 def _remove_unwanted(cmap_ops):
-  excluded_controls = tool_utils.parse_int_ranges("""
+  """Remove characters we know we don't want in any font."""
+  # Chars we never want.
+  unwanted_chars = tool_utils.parse_int_ranges("""
       0000-001f  # C0 controls
       007F       # DEL
       0080-009f  # C1 controls
       FEFF       # BOM""")
+  # Chars we don't want, but perhaps a bit more provisionally than the
+  # above.
+  excluded_chars = tool_utils.parse_int_ranges("""
+      332c         # Jungshik says excluded on purpose
+      fa70-fad9    # Jungshik says Ken regards DPRK compatibility chars as
+                   # outside of scope, like most of plane 2.
+      1b000-1b001  # Ken says these are controversial.""")
   cmap_ops.phase('remove unwanted')
-  cmap_ops.remove_all_from_all(excluded_controls, cmap_ops.all_scripts())
+  cmap_ops.remove_all_from_all(unwanted_chars, cmap_ops.all_scripts())
+  cmap_ops.add_all(unwanted_chars, 'EXCL')
+
+  cmap_ops.phase('remove excluded')
+  cmap_ops.remove_all_from_all(excluded_chars, cmap_ops.all_scripts())
+  cmap_ops.add_all(excluded_chars, 'EXCL')
 
 
 def _assign_basic(cmap_ops):
   """Add NUL, CR, Space, NBS to all scripts."""
   basic_chars = frozenset([0x0, 0x0D, 0x20, 0xA0])
   cmap_ops.phase('assign basic')
-  cmap_ops.add_all_to_all(basic_chars, cmap_ops.all_scripts())
+  scripts_to_add = set(cmap_ops.all_scripts()) - set(['EXCL'])
+  cmap_ops.add_all_to_all(basic_chars, scripts_to_add)
 
 
 def build_script_to_chars(log_level):
