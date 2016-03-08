@@ -47,7 +47,6 @@ from nototools import cmap_data
 from nototools import compare_cmap_data
 from nototools import collect_cldr_punct
 from nototools import noto_data
-from nototools import opentype_data
 from nototools import tool_utils
 from nototools import unicode_data
 
@@ -66,11 +65,14 @@ def _invert_script_to_chars(script_to_chars):
 
 
 class CmapOps(object):
-  def __init__(self, script_to_chars={}, log_events=False, log_details=False):
-    self._script_to_chars = {
-        script: set(script_to_chars[script])
-        for script in script_to_chars
-    }
+  def __init__(self, script_to_chars=None, log_events=False, log_details=False):
+    if script_to_chars == None:
+      self._script_to_chars = {}
+    else:
+      self._script_to_chars = {
+          script: set(script_to_chars[script])
+          for script in script_to_chars
+      }
     self._log_events = log_events
     self._log_details = log_details
     self._suppressed_blocks = {
@@ -145,9 +147,6 @@ class CmapOps(object):
   def _verify_script_empty(self, script):
     if len(self._script_to_chars[script]):
       self._error('script %s is not empty, cannot delete' % script)
-
-  def _op(self, op_name):
-    return self._phase + '/' + op_name
 
   def _cp_info(self, cp):
     return '%04X (%s)' % (cp, unicode_data.name(cp, '<unnamed>'))
@@ -301,7 +300,7 @@ def _build_block_to_primary_script():
     if num == 0:
       max_script = 'EXCL'  # exclude
     elif float(max_script_count) / num < 0.8:
-      info = sorted(script_counts.iteritems(), key = lambda t: (-t[1], t[0]))
+      info = sorted(script_counts.iteritems(), key=lambda t: (-t[1], t[0]))
       block_info = '%s %s' % (block, ', '.join('%s/%d' % t for t in info))
       if block in assigned_primaries:
         max_script = assigned_primaries[block]
@@ -548,7 +547,7 @@ def _reassign_by_block(cmap_ops):
         from_list = char_to_scripts[cp]
       else:
         from_list = from_scripts
-      for from_script in char_to_scripts[cp]:
+      for from_script in from_list:
         if from_script == to_script:
           continue
         if not all_scripts and (from_script not in from_scripts):
@@ -571,7 +570,6 @@ def _reassign_emoji(cmap_ops):
   others, to SYM2."""
 
   cmap_ops.phase('reassign emoji')
-  char_to_scripts = cmap_ops.create_char_to_scripts()
 
   color_only_emoji = set(unicode_data.get_presentation_default_emoji())
   color_only_emoji.remove(0x1f004)  # mahjong tile red dragon
@@ -1142,8 +1140,8 @@ _SCRIPT_REQUIRED = [
   ('Geor',
    # Comment
    """
-   From core specification (references unspecified additionl latin punct), also see
-   example news article: http://www.civil.ge/geo/article.php?id=29970
+   From core specification (references unspecified additionl latin punct), also
+   see example news article: http://www.civil.ge/geo/article.php?id=29970
    """,
    # Data
    """
