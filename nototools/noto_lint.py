@@ -371,15 +371,15 @@ def _build_cmap_dict(filename):
 _phase_2_map = None
 _phase_3_map = None
 def _get_cmap_data_for_phase(phase):
-  global _phase_2_map, _phase_3_map
-  if phase < 3:
-    if not _phase_2_map:
-      _phase_2_map = _build_cmap_dict('noto_cmap_phase2.xml')
-    return _phase_2_map
-  else:
-    if not _phase_3_map:
-      _phase_3_map = _build_cmap_dict('noto_cmap_phase3.xml')
-    return _phase_3_map
+    global _phase_2_map, _phase_3_map
+    if phase < 3:
+        if not _phase_2_map:
+            _phase_2_map = _build_cmap_dict('noto_cmap_phase2.xml')
+        return _phase_2_map
+    else:
+        if not _phase_3_map:
+            _phase_3_map = _build_cmap_dict('noto_cmap_phase3.xml')
+        return _phase_3_map
 
 
 HARD_CODED_FONT_INFO = {
