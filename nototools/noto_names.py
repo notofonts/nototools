@@ -423,7 +423,7 @@ def name_table_data(noto_font, family_to_name_info):
     print >> sys.stderr, 'no family name info for "%s"' % family_key
     return None
 
-  if not info.limit_original and subfamily_parts not in [
+  if not info.use_preferred and subfamily_parts not in [
       ['Regular'],
       ['Bold'],
       ['Italic'],
@@ -431,6 +431,7 @@ def name_table_data(noto_font, family_to_name_info):
     print >> sys.stderr, (
         'Error in family name info: %s requires preferred names, but info '
         'says none are required.' % path.basename(noto_font.filepath))
+    print >> sys.stderr, subfamily_parts
     return None
 
   ofn, osfn = _original_names(
