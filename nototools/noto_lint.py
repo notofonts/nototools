@@ -42,8 +42,8 @@ from fontTools.misc import bezierTools
 from fontTools.pens import basePen
 
 from nototools import cldr_data
+from nototools import cmap_data
 from nototools import font_data
-from nototools import lint_cmap_reqs
 from nototools import lint_config
 from nototools import notoconfig
 from nototools import noto_data
@@ -51,6 +51,7 @@ from nototools import noto_fonts
 from nototools import noto_names
 from nototools import opentype_data
 from nototools import render
+from nototools import tool_utils
 from nototools import unicode_data
 
 # from wikipedia windows 1252 page.  As of windows 98.
@@ -358,6 +359,27 @@ def printable_font_versions(font):
         font_revision = printable_font_revision(font, 3)
     return "%s (head fontRevision: %s)" % (
         version, font_revision)
+
+
+def _build_cmap_dict(filename):
+    data = cmap_data.read_cmap_data_file(filename)
+    script_to_rowdata = cmap_data.create_map_from_table(data.table)
+    return {script: frozenset(tool_utils.parse_int_ranges(rd.ranges))
+            for script, rd in script_to_rowdata.iteritems()}
+
+
+_phase_2_map = None
+_phase_3_map = None
+def _get_cmap_data_for_phase(phase):
+  global _phase_2_map, _phase_3_map
+  if phase < 3:
+    if not _phase_2_map:
+      _phase_2_map = _build_cmap_dict('noto_cmap_phase2.xml')
+    return _phase_2_map
+  else:
+    if not _phase_3_map:
+      _phase_3_map = _build_cmap_dict('noto_cmap_phase3.xml')
+    return _phase_3_map
 
 
 HARD_CODED_FONT_INFO = {
@@ -676,11 +698,27 @@ def check_font(font_props, filename_error,
                  "[0, 65535]: '%s'." % version_string)
 
 
+    def _get_required_chars(noto_font, noto_phase, test_key):
+      script_to_chars = _get_cmap_data_for_phase(noto_phase)
+      # do we need to map font names/families to scripts differently based
+      # on the phase?
+      try:
+        return script_to_chars[noto_font.script]
+      except KeyError:
+        warn(test_key, "Chars",
+             "no char data for script %s in %s" % (
+                 noto_font.script, noto_font.filepath))
+        return None
+
+
     def _check_needed_chars(cmap, char_filter):
         # TODO(roozbeh): check the glyph requirements for controls specified at
         # https://www.microsoft.com/typography/otspec/recom.htm
 
-        needed_chars = lint_cmap_reqs.get_required_chars(noto_font, noto_phase)
+        needed_chars = _get_required_chars(
+            noto_font, noto_phase, 'cmap/script_required')
+        if needed_chars == None:
+             return
 
         # TODO: also check character coverage against Unicode blocks for
         # characters of script Common or Inherited
@@ -773,8 +811,8 @@ def check_font(font_props, filename_error,
             _check_needed_chars(cmap, tests.get_filter('cmap/script_required'))
 
         if tests.check('cmap/private_use'):
-            needed_chars = lint_cmap_reqs.get_required_chars(
-                noto_font, noto_phase)
+            needed_chars = _get_required_chars(
+                noto_font, noto_phase, 'cmap/private_use')
             pua_filter = tests.get_filter('cmap/private_use')
             if pua_filter:
                 pua_filter = pua_filter[1].accept
