@@ -148,7 +148,7 @@ class TestMetaInfo(FontTest):
             self.assertEqual(usable_part_of_version,
                              'Version ' + self.expected_version)
 
-            revision = font_data.printable_font_revision(font, accuracy=5)
+            revision = font_data.printable_font_revision(font, accuracy=3)
             self.assertEqual(revision, self.expected_version)
 
 
@@ -412,22 +412,22 @@ class TestFeatures(FontTest):
     def test_smcp_coverage(self):
         """Tests that smcp is supported for our required set."""
 
-        with open('res/smcp_requirements.txt') as smcp_reqs_file:
+        with open(self.smcp_reqs_path) as smcp_reqs_file:
             smcp_reqs_list = []
             for line in smcp_reqs_file.readlines():
-                line = line[:line.index(' #')]
-                smcp_reqs_list.append(unichr(int(line, 16)))
+                input_cp, output_name = line[:line.index(' #')].split()
+                smcp_reqs_list.append((unichr(int(input_cp, 16)), output_name))
 
-        for fontfile in self.fontfiles:
+        for fontfile, font in zip(self.fontfiles, self.fonts):
+            glyph_order = font.getGlyphOrder()
             chars_with_no_smcp = []
-            for char in smcp_reqs_list:
-                normal = layout.get_glyphs(char, fontfile)
+            for char, expected_name in smcp_reqs_list:
                 smcp = layout.get_glyphs(char, fontfile, '--features=smcp')
-                if normal == smcp:
+                if glyph_order[smcp[0]] != expected_name:
                     chars_with_no_smcp.append(char)
             self.assertEqual(
                 chars_with_no_smcp, [],
-                ("smcp feature is not applied to '%s'" %
+                ("smcp feature is not applied correctly to '%s'" %
                     u''.join(chars_with_no_smcp).encode('UTF-8')))
 
 
