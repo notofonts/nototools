@@ -2463,6 +2463,7 @@ def _remove_unwanted(cmap_ops):
       007F       # DEL
       0080-009f  # C1 controls
       FEFF       # BOM""")
+
   # Chars we don't want, but perhaps a bit more provisionally than the
   # above.
   excluded_chars = tool_utils.parse_int_ranges("""
@@ -2477,6 +2478,20 @@ def _remove_unwanted(cmap_ops):
   cmap_ops.phase('remove excluded')
   cmap_ops.remove_all_from_all(excluded_chars, cmap_ops.all_scripts())
   cmap_ops.add_all(excluded_chars, 'EXCL')
+
+
+def _assign_wanted(cmap_ops):
+  """After we remove the characters we 'never want', add exceptions back in
+  to particular fonts."""
+  wanted_chars = {
+      'LGC': 'feff', # BOM
+      'SYM2': '0000-001f 007f 0080-009f', # show as question mark char
+      'Zsye': 'fe4e5-fe4ee fe82d fe82e-fe837', # legacy PUA for android
+  }
+  cmap_ops.phase('assign wanted')
+  for script in sorted(wanted_chars.keys()):
+    chars = tool_utils.parse_int_ranges(wanted_chars[script])
+    cmap_ops.add_all(chars, script)
 
 
 def _assign_basic(cmap_ops):
@@ -2517,7 +2532,8 @@ def build_script_to_chars(log_level):
   _assign_script_required(cmap_ops)
   _assign_legacy_phase2(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
-  _remove_unwanted(cmap_ops)  # comes before assign_basic
+  _remove_unwanted(cmap_ops)  # comes before assign_basic, assign_wanted
+  _assign_wanted(cmap_ops)
   _assign_basic(cmap_ops)
   cmap_ops.finish()  # so we can clean up log
 
