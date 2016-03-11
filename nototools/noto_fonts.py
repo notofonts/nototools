@@ -312,8 +312,9 @@ def get_noto_fonts(paths=NOTO_FONT_PATHS):
       filepath = path.join(font_dir, filename)
       font = get_noto_font(filepath)
       if not font:
-        raise ValueError('bad font filename in %s: \'%s\'.' %
-                         (font_dir, filename))
+        print >> sys.stderr, 'bad font filename in %s: \'%s\'.' % (
+            (font_dir, filename))
+        continue
 
       all_fonts.append(font)
 
