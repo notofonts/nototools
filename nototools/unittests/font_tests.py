@@ -148,7 +148,7 @@ class TestMetaInfo(FontTest):
             self.assertEqual(usable_part_of_version,
                              'Version ' + self.expected_version)
 
-            revision = font_data.printable_font_revision(font, accuracy=5)
+            revision = font_data.printable_font_revision(font, accuracy=3)
             self.assertEqual(revision, self.expected_version)
 
 
