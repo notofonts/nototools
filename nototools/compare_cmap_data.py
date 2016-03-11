@@ -33,6 +33,23 @@ def title_from_metadata(metadata):
   return ' '.join(items)
 
 
+def compare_cmaps(
+    base_cps, target_cps, only_cps, except_cps, no_additions, no_removals):
+  """Returns a tuple of added, removed."""
+  if only_cps:
+    base_cps &= only_cps
+    target_cps &= only_cps
+  if except_cps:
+    base_cps -= except_cps
+    target_cps -= except_cps
+  if base_cps != target_cps:
+    added = None if no_additions else target_cps - base_cps
+    removed = None if no_removals else base_cps - target_cps
+  else:
+    added, removed = None, None
+  return added, removed
+
+
 def compare_cmap_data(base_cmap_data, target_cmap_data, scripts, cps,
                       except_scripts, except_cps, no_additions, no_removals):
   result = {}
@@ -48,18 +65,8 @@ def compare_cmap_data(base_cmap_data, target_cmap_data, scripts, cps,
       name = base_map[script].name
       base_cps = lint_config.parse_int_ranges(base_map[script].ranges)
       target_cps = lint_config.parse_int_ranges(target_map[script].ranges)
-      if cps:
-        base_cps &= cps
-        target_cps &= cps
-      if except_cps:
-        base_cps -= except_cps
-        target_cps -= except_cps
-      if base_cps != target_cps:
-        added = None if no_additions else target_cps - base_cps
-        removed = None if no_removals else base_cps - target_cps
-      else:
-        added, removed = None, None
-      result[script] = (added, removed)
+      result[script] = compare_cmaps(
+          base_cps, target_cps, cps, except_cps, no_additions, no_removals)
   return result
 
 
@@ -76,12 +83,34 @@ def compare_cmap_data_files(base_file, target_file, scripts, ranges,
 
 def _print_detailed(cps, inverted_target=None):
   last_block = None
+  undefined_start = -1
+  undefined_end = -1
+  def show_undefined(start, end):
+    if start >= 0:
+      if end > start:
+        print '      %04x-%04x Zzzz <%d undefined>' % (
+            start, end, end - start - 1)
+      else:
+        print '      %04x Zzzz <1 undefined>' % start
+
   for cp in sorted(cps):
     block = unicode_data.block(cp)
-    if block != last_block:
-      print '    %s' % block
-      last_block = block
+    if block != last_block or (undefined_end > -1 and cp > undefined_end + 1):
+      show_undefined(undefined_start, undefined_end)
+      undefined_start, undefined_end = -1, -1
+      if block != last_block:
+        print '    %s' % block
+        last_block = block
     script = unicode_data.script(cp)
+    if script == 'Zzzz':
+      if undefined_start >= 0:
+        undefined_end = cp
+      else:
+        undefined_start, undefined_end = cp, cp
+      continue
+
+    show_undefined(undefined_start, undefined_end)
+    undefined_start, undefined_end = -1, -1
     extensions = unicode_data.script_extensions(cp) - set([script])
     if extensions:
       extensions = ' (%s)' % ','.join(sorted(extensions))
@@ -106,6 +135,27 @@ def _print_detailed(cps, inverted_target=None):
         unicode_data.name(cp, ''),
         extensions,
         extra)
+  show_undefined(undefined_start, undefined_end)
+
+
+def report_cmap_compare(
+    label, added, removed, inverted_target=None, detailed=True,
+    report_same=False):
+  if report_same:
+    print label
+  if added or removed:
+    if not report_same:
+      print label
+    if added:
+      print '  added (%d): %s' % (
+          len(added), lint_config.write_int_ranges(added))
+      if detailed:
+        _print_detailed(added)
+    if removed:
+      print '  removed (%d): %s' % (
+          len(removed), lint_config.write_int_ranges(removed))
+      if detailed:
+        _print_detailed(removed, inverted_target)
 
 
 def report_compare(compare_result, detailed=True):
@@ -119,7 +169,6 @@ def report_compare(compare_result, detailed=True):
     for cp in cps:
       inverted_target[cp].add(script)
 
-
   base_title = title_from_metadata(base_cmap_data.meta)
   target_title = title_from_metadata(target_cmap_data.meta)
 
@@ -127,19 +176,8 @@ def report_compare(compare_result, detailed=True):
   print 'target: %s' % target_title
   for script in sorted(compare):
     added, removed = compare[script]
-    if added or removed:
-      name = base_map[script].name
-      print '%s # %s' % (script, name)
-      if added:
-        print '  added (%d): %s' % (
-            len(added), lint_config.write_int_ranges(added))
-        if detailed:
-          _print_detailed(added)
-      if removed:
-        print '  removed (%d): %s' % (
-            len(removed), lint_config.write_int_ranges(removed))
-        if detailed:
-          _print_detailed(removed, inverted_target)
+    label = '%s # %s' % (script, base_map[script].name)
+    report_cmap_compare(label, added, removed, inverted_target, detailed)
 
 
 def main():
