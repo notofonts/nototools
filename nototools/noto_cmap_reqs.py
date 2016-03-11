@@ -468,7 +468,7 @@ def _reassign_common_by_block(cmap_ops):
     'Geometric Shapes Extended': 'SYM2',
     'Supplemental Arrows-C': 'SYM2',
     'Supplemental Symbols and Pictographs': 'SYM2',
-    'Tags': 'SYM2',
+    'Tags': 'EXCL',
   }
 
   cmap_ops.phase('reassign common by block')
@@ -510,7 +510,7 @@ def _reassign_common_by_block(cmap_ops):
 
 def _reassign_by_block(cmap_ops):
   """Reassign all chars in select blocks to designated scripts."""
-  # block, from, to.  from is '*' for all scripts.
+  # block, from, to.  from '*' means from all scripts.
   block_assignments = [
       ('Number Forms', 'LGC', 'Zsym'),
       ('Halfwidth and Fullwidth Forms', 'LGC', 'CJK'),
@@ -523,6 +523,15 @@ def _reassign_by_block(cmap_ops):
       ('Ancient Greek Musical Notation', '*', 'MUSIC'),
       ('Counting Rod Numerals', 'CJK', 'SYM2'),
       ('Arabic Mathematical Alphabetic Symbols', '*', 'Zmth'),
+      ('High Surrogates', '*', 'EXCL'),
+      ('High Private Use Surrogates', '*', 'EXCL'),
+      ('Low Surrogates', '*', 'EXCL'),
+      ('Private Use Area', '*', 'EXCL'),
+      ('Variation Selectors', '*', 'EXCL'),
+      ('Tags', '*', 'EXCL'),
+      ('Variation Selectors Supplement', '*', 'EXCL'),
+      ('Supplementary Private Use Area-A', '*', 'EXCL'),
+      ('Supplementary Private Use Area-B', '*', 'EXCL'),
   ]
   block_assignments = sorted(
       block_assignments, key=lambda k: unicode_data.block_range(k[0])[0])
@@ -539,7 +548,7 @@ def _reassign_by_block(cmap_ops):
     for cp in range(start, finish + 1):
       if not unicode_data.is_defined(cp):
         continue
-      if cp not in char_to_scripts:
+      if cp not in char_to_scripts and to_script != 'EXCL':
         print >> sys.stderr, 'reassign missing %04X %s' % (
             cp, unicode_data.name(cp, '<unnamed>'))
         continue
