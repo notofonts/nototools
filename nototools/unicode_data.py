@@ -239,6 +239,11 @@ def is_default_ignorable(char):
     return char in _core_properties_data["Default_Ignorable_Code_Point"]
 
 
+def default_ignorables():
+    load_data()
+    return frozenset(_core_properties_data["Default_Ignorable_Code_Point"])
+
+
 def is_defined(char):
     """Returns true if the character is defined in the Unicode Standard."""
     load_data()
