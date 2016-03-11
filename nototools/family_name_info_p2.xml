@@ -1,123 +1,119 @@
 <?xml version='1.0' encoding='utf8'?>
-<family_name_data date="2016-01-22">
-  <info family="Arimo" />
-  <info family="Cousine" />
-  <info family="Noto" use_preferred="t" use_wws="t" />
-  <info family="Noto Color Emoji" />
-  <info family="Noto Emoji" />
-  <info family="Noto Kufi Arabic" />
-  <info family="Noto Naskh Arabic" use_preferred="t" use_wws="t" />
-  <info family="Noto Nastaliq Urdu" />
-  <info family="Noto Sans" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Armenian" />
-  <info family="Noto Sans Avestan" />
-  <info family="Noto Sans Balinese" />
-  <info family="Noto Sans Bamum" />
-  <info family="Noto Sans Batak" />
-  <info family="Noto Sans Bengali" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Brahmi" />
-  <info family="Noto Sans Buginese" />
-  <info family="Noto Sans Buhid" />
-  <info family="Noto Sans CJK JP" limit_original="t" />
-  <info family="Noto Sans CJK KR" limit_original="t" />
-  <info family="Noto Sans CJK SC" limit_original="t" />
-  <info family="Noto Sans CJK TC" limit_original="t" />
-  <info family="Noto Sans Canadian Aboriginal" />
-  <info family="Noto Sans Carian" />
-  <info family="Noto Sans Cham" />
-  <info family="Noto Sans Cherokee" />
-  <info family="Noto Sans Coptic" />
-  <info family="Noto Sans Cuneiform" />
-  <info family="Noto Sans Cypriot" />
-  <info family="Noto Sans Deseret" />
-  <info family="Noto Sans Devanagari" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Egyptian Hieroglyphs" />
-  <info family="Noto Sans Ethiopic" />
-  <info family="Noto Sans Georgian" />
-  <info family="Noto Sans Glagolitic" />
-  <info family="Noto Sans Gothic" />
-  <info family="Noto Sans Gujarati" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Gurmukhi" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Hanunoo" />
-  <info family="Noto Sans Hebrew" />
-  <info family="Noto Sans Imperial Aramaic" />
-  <info family="Noto Sans Inscriptional Pahlavi" />
-  <info family="Noto Sans Inscriptional Parthian" />
-  <info family="Noto Sans JP" limit_original="t" />
-  <info family="Noto Sans Javanese" />
-  <info family="Noto Sans KR" limit_original="t" />
-  <info family="Noto Sans Kaithi" />
-  <info family="Noto Sans Kannada" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Kayah Li" />
-  <info family="Noto Sans Kharoshthi" />
-  <info family="Noto Sans Khmer" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Lao" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Lepcha" />
-  <info family="Noto Sans Limbu" />
-  <info family="Noto Sans Linear B" />
-  <info family="Noto Sans Lisu" />
-  <info family="Noto Sans Lycian" />
-  <info family="Noto Sans Lydian" />
-  <info family="Noto Sans Malayalam" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Mandaic" />
-  <info family="Noto Sans Meetei Mayek" />
-  <info family="Noto Sans Mongolian" />
-  <info family="Noto Sans Mono CJK JP" limit_original="t" />
-  <info family="Noto Sans Mono CJK KR" limit_original="t" />
-  <info family="Noto Sans Mono CJK SC" limit_original="t" />
-  <info family="Noto Sans Mono CJK TC" limit_original="t" />
-  <info family="Noto Sans Myanmar" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans N'Ko" />
-  <info family="Noto Sans New Tai Lue" />
-  <info family="Noto Sans Ogham" />
-  <info family="Noto Sans Ol Chiki" />
-  <info family="Noto Sans Old Italic" />
-  <info family="Noto Sans Old Persian" />
-  <info family="Noto Sans Old South Arabian" />
-  <info family="Noto Sans Old Turkic" />
-  <info family="Noto Sans Oriya" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Osmanya" />
-  <info family="Noto Sans Phags-Pa" />
-  <info family="Noto Sans Phoenician" />
-  <info family="Noto Sans Rejang" />
-  <info family="Noto Sans Runic" />
-  <info family="Noto Sans SC" limit_original="t" />
-  <info family="Noto Sans Samaritan" />
-  <info family="Noto Sans Saurashtra" />
-  <info family="Noto Sans Shavian" />
-  <info family="Noto Sans Sinhala" />
-  <info family="Noto Sans Sundanese" />
-  <info family="Noto Sans Syloti Nagri" />
-  <info family="Noto Sans Symbols" />
-  <info family="Noto Sans Syriac Eastern" />
-  <info family="Noto Sans Syriac Estrangela" />
-  <info family="Noto Sans Syriac Western" />
-  <info family="Noto Sans TC" limit_original="t" />
-  <info family="Noto Sans Tagalog" />
-  <info family="Noto Sans Tagbanwa" />
-  <info family="Noto Sans Tai Le" />
-  <info family="Noto Sans Tai Tham" />
-  <info family="Noto Sans Tai Viet" />
-  <info family="Noto Sans Tamil" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Telugu" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Thaana" />
-  <info family="Noto Sans Thai" use_preferred="t" use_wws="t" />
-  <info family="Noto Sans Tibetan" />
-  <info family="Noto Sans Tifinagh" />
-  <info family="Noto Sans Ugaritic" />
-  <info family="Noto Sans Vai" />
-  <info family="Noto Sans Yi" />
-  <info family="Noto Serif" />
-  <info family="Noto Serif Armenian" />
-  <info family="Noto Serif Bengali" />
-  <info family="Noto Serif Georgian" />
-  <info family="Noto Serif Gujarati" />
-  <info family="Noto Serif Kannada" />
-  <info family="Noto Serif Khmer" />
-  <info family="Noto Serif Lao" />
-  <info family="Noto Serif Malayalam" />
-  <info family="Noto Serif Tamil" />
-  <info family="Noto Serif Telugu" />
-  <info family="Noto Serif Thai" />
-  <info family="Tinos" />
+<family_name_data date="2016-03-11">
+  <info family="arimo-lgc" omit_regular="t" />
+  <info family="cousine-lgc" omit_regular="t" />
+  <info family="emoji-zsye" omit_regular="t" />
+  <info family="emoji-zsye-color" omit_regular="t" />
+  <info family="kufi-arab" omit_regular="t" />
+  <info family="mono-mono" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="naskh-arab" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="nastaliq-aran" omit_regular="t" />
+  <info family="sans-armi" omit_regular="t" />
+  <info family="sans-armn" omit_regular="t" />
+  <info family="sans-avst" omit_regular="t" />
+  <info family="sans-bali" omit_regular="t" />
+  <info family="sans-bamu" omit_regular="t" />
+  <info family="sans-batk" omit_regular="t" />
+  <info family="sans-beng" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-brah" omit_regular="t" />
+  <info family="sans-bugi" omit_regular="t" />
+  <info family="sans-buhd" omit_regular="t" />
+  <info family="sans-cans" omit_regular="t" />
+  <info family="sans-cari" omit_regular="t" />
+  <info family="sans-cham" omit_regular="t" />
+  <info family="sans-cher" omit_regular="t" />
+  <info family="sans-cjk-jp" limit_original="t" />
+  <info family="sans-cjk-kr" limit_original="t" />
+  <info family="sans-cjk-sc" limit_original="t" />
+  <info family="sans-cjk-tc" limit_original="t" />
+  <info family="sans-copt" omit_regular="t" />
+  <info family="sans-cprt" omit_regular="t" />
+  <info family="sans-deva" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-dsrt" omit_regular="t" />
+  <info family="sans-egyp" omit_regular="t" />
+  <info family="sans-ethi" omit_regular="t" />
+  <info family="sans-geor" omit_regular="t" />
+  <info family="sans-glag" omit_regular="t" />
+  <info family="sans-goth" omit_regular="t" />
+  <info family="sans-gujr" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-guru" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-hano" omit_regular="t" />
+  <info family="sans-hans" limit_original="t" />
+  <info family="sans-hant" limit_original="t" />
+  <info family="sans-hebr" omit_regular="t" />
+  <info family="sans-ital" omit_regular="t" />
+  <info family="sans-java" omit_regular="t" />
+  <info family="sans-jpan" limit_original="t" />
+  <info family="sans-kali" omit_regular="t" />
+  <info family="sans-khar" omit_regular="t" />
+  <info family="sans-khmr" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-knda" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-kore" limit_original="t" />
+  <info family="sans-kthi" omit_regular="t" />
+  <info family="sans-lana" omit_regular="t" />
+  <info family="sans-laoo" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-lepc" omit_regular="t" />
+  <info family="sans-lgc" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-limb" omit_regular="t" />
+  <info family="sans-linb" omit_regular="t" />
+  <info family="sans-lisu" omit_regular="t" />
+  <info family="sans-lyci" omit_regular="t" />
+  <info family="sans-lydi" omit_regular="t" />
+  <info family="sans-mand" omit_regular="t" />
+  <info family="sans-mlym" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-mong" omit_regular="t" />
+  <info family="sans-mtei" omit_regular="t" />
+  <info family="sans-mymr" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-nkoo" omit_regular="t" />
+  <info family="sans-ogam" omit_regular="t" />
+  <info family="sans-olck" omit_regular="t" />
+  <info family="sans-orkh" omit_regular="t" />
+  <info family="sans-orya" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-osma" omit_regular="t" />
+  <info family="sans-phag" omit_regular="t" />
+  <info family="sans-phli" omit_regular="t" />
+  <info family="sans-phnx" omit_regular="t" />
+  <info family="sans-prti" omit_regular="t" />
+  <info family="sans-rjng" omit_regular="t" />
+  <info family="sans-runr" omit_regular="t" />
+  <info family="sans-samr" omit_regular="t" />
+  <info family="sans-sarb" omit_regular="t" />
+  <info family="sans-saur" omit_regular="t" />
+  <info family="sans-shaw" omit_regular="t" />
+  <info family="sans-sinh" omit_regular="t" />
+  <info family="sans-sund" omit_regular="t" />
+  <info family="sans-sylo" omit_regular="t" />
+  <info family="sans-syrc-eastern" omit_regular="t" />
+  <info family="sans-syrc-estrangela" omit_regular="t" />
+  <info family="sans-syrc-western" omit_regular="t" />
+  <info family="sans-tagb" omit_regular="t" />
+  <info family="sans-tale" omit_regular="t" />
+  <info family="sans-talu" omit_regular="t" />
+  <info family="sans-taml" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-tavt" omit_regular="t" />
+  <info family="sans-telu" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-tfng" omit_regular="t" />
+  <info family="sans-tglg" omit_regular="t" />
+  <info family="sans-thaa" omit_regular="t" />
+  <info family="sans-thai" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-tibt" omit_regular="t" />
+  <info family="sans-ugar" omit_regular="t" />
+  <info family="sans-vaii" omit_regular="t" />
+  <info family="sans-xpeo" omit_regular="t" />
+  <info family="sans-xsux" omit_regular="t" />
+  <info family="sans-yiii" omit_regular="t" />
+  <info family="sans-zsym" omit_regular="t" />
+  <info family="serif-armn" omit_regular="t" />
+  <info family="serif-beng" omit_regular="t" />
+  <info family="serif-geor" omit_regular="t" />
+  <info family="serif-gujr" omit_regular="t" />
+  <info family="serif-khmr" omit_regular="t" />
+  <info family="serif-knda" omit_regular="t" />
+  <info family="serif-laoo" omit_regular="t" />
+  <info family="serif-lgc" omit_regular="t" />
+  <info family="serif-mlym" omit_regular="t" />
+  <info family="serif-taml" omit_regular="t" />
+  <info family="serif-telu" omit_regular="t" />
+  <info family="serif-thai" omit_regular="t" />
+  <info family="tinos-lgc" omit_regular="t" />
 </family_name_data>

@@ -94,9 +94,11 @@ PHASE_3_FAMILY_NAME_INFO_FILE = 'family_name_info_p3.xml'
 # Regular Bold BoldItalic Italic, so generate the preferred names.
 # if use_wws is true, there are subfamilies that don't fit into wws,
 # so generate the wws names.
+# if omit_regular is true, postscript names exclude the subfamily
+# when it is 'Regular' (Noto phase 2 non-CJK behavior).
 FamilyNameInfo = collections.namedtuple(
     'FamilyNameInfo',
-    'limit_original, use_preferred, use_wws')
+    'limit_original, use_preferred, use_wws, omit_regular')
 
 # Represents expected name table data for a font.
 # Fields expected to be empty are None.  Fields that are expected
@@ -114,6 +116,7 @@ _SCRIPT_KEY_TO_FONT_NAME = {
     'HST': 'Historic',
     'LGC': None,
     'Zsye': None,
+    'MONO': None,
 }
 
 
@@ -287,22 +290,22 @@ def _copyright_re(noto_font):
     return GOOGLE_COPYRIGHT_RE
 
 
-def _full_name(preferred_family, preferred_subfamily, keep_regular):
+def _full_name(preferred_family, preferred_subfamily, omit_regular):
   wws_family, wws_subfamily = _wws_parts(preferred_family, preferred_subfamily)
   result = wws_family[:]
   for n in wws_subfamily:
-    if n not in result and (keep_regular or n != 'Regular'):
+    if n not in result and (not omit_regular or n != 'Regular'):
       result.append(n)
   return ' '.join(result)
 
 
-def _postscript_name(preferred_family, preferred_subfamily, keep_regular):
+def _postscript_name(preferred_family, preferred_subfamily, omit_regular):
   wws_family, wws_subfamily = _wws_parts(preferred_family, preferred_subfamily)
   # fix for names with punctuation
   punct_re = re.compile("[\s'-]")
   result = ''.join(punct_re.sub('', p) for p in wws_family)
   tail = [n for n in wws_subfamily if
-          n not in wws_family and (keep_regular or n != 'Regular')]
+          n not in wws_family and (not omit_regular or n != 'Regular')]
   if tail:
     result += '-' + ''.join(tail)
 
@@ -415,14 +418,14 @@ def _license_url(noto_font):
 
 def name_table_data(noto_font, family_to_name_info):
   """Returns a NameTableData for this font given the family_to_name_info."""
-  family_parts, subfamily_parts = _preferred_parts(noto_font)
-  family_key = ' '.join(family_parts)
+  family_id = noto_fonts.noto_font_to_family_id(noto_font)
   try:
-    info = family_to_name_info[family_key]
+    info = family_to_name_info[family_id]
   except KeyError:
-    print >> sys.stderr, 'no family name info for "%s"' % family_key
+    print >> sys.stderr, 'no family name info for "%s"' % family_id
     return None
 
+  family_parts, subfamily_parts = _preferred_parts(noto_font)
   if not info.use_preferred and subfamily_parts not in [
       ['Regular'],
       ['Bold'],
@@ -456,10 +459,10 @@ def name_table_data(noto_font, family_to_name_info):
       original_family=ofn,
       original_subfamily=osfn,
       unique_id='-',
-      full_name=_full_name(family_parts, subfamily_parts, noto_font.is_cjk),
+      full_name=_full_name(family_parts, subfamily_parts, info.omit_regular),
       version_re=_version_re(noto_font),
       postscript_name=_postscript_name(
-          family_parts, subfamily_parts, noto_font.is_cjk),
+          family_parts, subfamily_parts, info.omit_regular),
       trademark=_trademark(noto_font),
       manufacturer=_manufacturer(noto_font),
       designer=_designer(noto_font),
@@ -474,10 +477,10 @@ def name_table_data(noto_font, family_to_name_info):
       wws_subfamily=wsfn)
 
 
-def _create_family_to_subfamilies(noto_fonts):
+def _create_family_to_subfamilies(notofonts):
   """Return a map from preferred family name to set of preferred subfamilies."""
   family_to_subfamilies = collections.defaultdict(set)
-  for noto_font in noto_fonts:
+  for noto_font in notofonts:
     family, subfamily = _names(*_preferred_parts(noto_font))
     family_to_subfamilies[family].add(subfamily)
   return family_to_subfamilies
@@ -489,22 +492,31 @@ _NON_ORIGINAL_WEIGHT_PARTS = frozenset(
 _ORIGINAL_PARTS = frozenset(['Bold', 'Regular', 'Italic'])
 _WWS_PARTS = frozenset(['Condensed', 'Italic'] + list(noto_fonts.WEIGHTS))
 
-def create_family_to_name_info(noto_fonts):
+def create_family_to_name_info(notofonts, phase):
   family_to_parts = collections.defaultdict(set)
-  for noto_font in noto_fonts:
+  cjk_families = set()
+  for noto_font in notofonts:
+    family_id = noto_fonts.noto_font_to_family_id(noto_font)
     family_parts, subfamily_parts = _preferred_parts(noto_font)
-    family_key = ' '.join(family_parts)
-    family_to_parts[family_key].update(subfamily_parts)
+    family_to_parts[family_id].update(subfamily_parts)
+    if noto_font.is_cjk:
+      cjk_families.add(family_id)
   result = {}
-  for key, part_set in family_to_parts.iteritems():
+  for family_id, part_set in family_to_parts.iteritems():
     # Even through CJK mono fonts are in their own families and have only
     # bold and regular weights, they behave like they have more weights like
     # the rest of CJK.
-    limit_original = 'CJK' in key or bool(part_set & _NON_ORIGINAL_WEIGHT_PARTS)
+    family_is_cjk = family_id in cjk_families
+    limit_original = family_is_cjk or bool(
+        part_set & _NON_ORIGINAL_WEIGHT_PARTS)
     # If we limit original, then we automatically use_preferred.
     use_preferred = limit_original or bool(part_set - _ORIGINAL_PARTS)
     use_wws = bool(part_set - _WWS_PARTS)
-    result[key] = FamilyNameInfo(limit_original, use_preferred, use_wws)
+    # In phase 3, we keep 'Regular' in the postscript name always, prior to that
+    # we only do so for CJK.
+    omit_regular = phase == 2 and not family_is_cjk
+    result[family_id] = FamilyNameInfo(
+        limit_original, use_preferred, use_wws, omit_regular)
   return result
 
 
@@ -538,7 +550,8 @@ def _read_info_element(info_node):
   return FamilyNameInfo(
       bval('limit_original'),
       bval('limit_original') or bval('use_preferred'),
-      bval('use_wws'))
+      bval('use_wws'),
+      bval('omit_regular'))
 
 
 def _read_tree(root):
@@ -586,12 +599,12 @@ def read_family_name_info(text):
   return _read_tree(ET.fromstring(text))
 
 
-def _create_family_to_faces(noto_fonts, name_fn):
-  """Noto_fonts is a collection of NotoFonts.  Return a map from
+def _create_family_to_faces(notofonts, name_fn):
+  """Notofonts is a collection of NotoFonts.  Return a map from
   preferred family to a list of preferred subfamily."""
 
   family_to_faces = collections.defaultdict(set)
-  for noto_font in noto_fonts:
+  for noto_font in notofonts:
     if noto_font.fmt == 'ttc':
       continue
     family, subfamily = name_fn(noto_font)
@@ -617,8 +630,8 @@ def _dump_name_data(name_data):
       print '  %20s: <none>' % attr
 
 
-def _dump_family_names(noto_fonts, family_to_name_info):
-  for font in sorted(noto_fonts, key=lambda f: f.filepath):
+def _dump_family_names(notofonts, family_to_name_info):
+  for font in sorted(notofonts, key=lambda f: f.filepath):
     name_data = name_table_data(font, family_to_name_info)
     print font.filepath
     _dump_name_data(name_data)
@@ -630,10 +643,10 @@ def _dump(fonts, info_file):
   _dump_family_names(fonts, family_to_name_info)
 
 
-def _write(fonts, info_file):
+def _write(fonts, info_file, phase):
   """Build family name info from font_paths and write to info_file.
   Write to stdout if info_file is None."""
-  family_to_name_info =  create_family_to_name_info(fonts)
+  family_to_name_info =  create_family_to_name_info(fonts, phase)
   if info_file:
     write_family_name_info_file(family_to_name_info, info_file, pretty=True)
   else:
@@ -725,7 +738,7 @@ def main():
   if not args.info_file:
     if args.phase:
       args.info_file = _PHASE_TO_FILENAME[args.phase]
-      print 'using info file: "%s"' % args.info_file
+      print 'using name info file: "%s"' % args.info_file
 
   if args.cmd == 'dump':
     if not args.info_file:
@@ -736,7 +749,10 @@ def main():
       return
     _dump(fonts, args.info_file)
   elif args.cmd == 'write':
-    _write(fonts, args.info_file)
+    if not args.phase:
+      print 'Must specify phase when generating info.'
+      return
+    _write(fonts, args.info_file, args.phase)
   elif args.cmd == 'test':
     _test(fonts)
   elif args.cmd == 'info':
