@@ -65,7 +65,8 @@ def _invert_script_to_chars(script_to_chars):
 
 
 class CmapOps(object):
-  def __init__(self, script_to_chars=None, log_events=False, log_details=False):
+  def __init__(self, script_to_chars=None, log_events=False, log_details=False,
+               undefined_exceptions = None):
     if script_to_chars == None:
       self._script_to_chars = {}
     else:
@@ -99,6 +100,7 @@ class CmapOps(object):
     }
     self._suppress_cp_report = False
     self._block = None
+    self._undefined_exceptions = undefined_exceptions or set()
 
   def _report(self, text):
     if self._log_events:
@@ -152,7 +154,7 @@ class CmapOps(object):
     return '%04X (%s)' % (cp, unicode_data.name(cp, '<unnamed>'))
 
   def _script_ok_add(self, cp, script):
-    if unicode_data.is_defined(cp):
+    if unicode_data.is_defined(cp) or cp in self._undefined_exceptions:
       self._script_cp_ok_add(cp, script)
 
   def _script_cp_ok_add(self, cp, script):
@@ -2023,7 +2025,7 @@ _SCRIPT_REQUIRED = [
   ('Syrc',
    # Comment
    """
-   From core specification.  In it, the eference to 'arabic harakat' used with
+   From core specification.  In it, the reference to 'arabic harakat' used with
    Garshuni is based on the Harakat section of the wikipedia page on Arabic
    diacritics.
    """,
@@ -2484,7 +2486,7 @@ def _assign_wanted(cmap_ops):
   """After we remove the characters we 'never want', add exceptions back in
   to particular fonts."""
   wanted_chars = {
-      'LGC': 'feff', # BOM
+      'LGC': '20bf feff', # Bitcoin (not in Unicode 9 data yet), BOM
       'SYM2': '0000-001f 007f 0080-009f', # show as question mark char
       'Zsye': 'fe4e5-fe4ee fe82d fe82e-fe837', # legacy PUA for android
   }
@@ -2512,8 +2514,12 @@ def build_script_to_chars(log_level):
 
   script_to_chars = unicode_data.create_script_to_chars()
 
+  # Bitcoin is not in our unicode 9 data yet, allow it to be set anyway.
+  temp_defined = set([0x20bf])
+
   cmap_ops = CmapOps(
-      script_to_chars, log_events=log_events, log_details=log_details)
+      script_to_chars, log_events=log_events, log_details=log_details,
+      undefined_exceptions=temp_defined)
 
   _unassign_inherited_and_common_with_extensions(cmap_ops)
   _reassign_inherited(cmap_ops)
