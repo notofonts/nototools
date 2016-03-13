@@ -126,19 +126,24 @@ def _noto_relative_path(filepath):
   return filepath[x:]
 
 
-def get_bumped_version(ttfont, is_hinted):
+def get_bumped_version(ttfont, is_hinted=None):
   """Return bumped values for the header and name tables."""
 
   names = font_data.get_name_records(ttfont)
   version = names[_VERSION_ID]
-  m = re.match(r'Version (\d{1,5})\.(\d{1,5})(.*)', version)
+  m = re.match(r'Version (\d{1,5})\.(\d{1,5})( uh)?(;.*)?', version)
   if not m:
     print '! Could not match version string (%s)' % version
     return None, None
 
   major_version = m.group(1)
   minor_version = m.group(2)
-  version_remainder = m.group(3)
+  print 'old version: "%s"' % version
+  if is_hinted == None:
+    is_hinted = not bool(m.group(3))
+    print 'computed hinted = %s' % is_hinted
+
+  version_remainder = m.group(4)
   accuracy = len(minor_version)
   print_revision = font_data.printable_font_revision(ttfont, accuracy)
   # sanity check
@@ -169,6 +174,8 @@ def get_bumped_version(ttfont, is_hinted):
   new_version_string = 'Version ' + new_revision
   if not is_hinted:
     new_version_string += ' uh'
+  if version_remainder:
+    new_version_string += version_remainder
 
   return float_revision, new_version_string
 
