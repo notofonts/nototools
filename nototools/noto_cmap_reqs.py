@@ -2488,7 +2488,7 @@ def _assign_wanted(cmap_ops):
   wanted_chars = {
       'LGC': '20bf feff', # Bitcoin (not in Unicode 9 data yet), BOM
       'SYM2': '0000-001f 007f 0080-009f', # show as question mark char
-      'Zsye': 'fe4e5-fe4ee fe82d fe82e-fe837', # legacy PUA for android
+      'Zsye': 'fe4e5-fe4ee fe82c fe82e-fe837', # legacy PUA for android
   }
   cmap_ops.phase('assign wanted')
   for script in sorted(wanted_chars.keys()):
