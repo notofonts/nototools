@@ -2451,10 +2451,14 @@ def _assign_legacy_phase2(cmap_ops):
 
 def _assign_mono(cmap_ops):
   """Monospace should be similar to LGC, with the addition of box drawing
-  and block elements."""
+  and block elements.  It should also include all CP437 codepoints."""
   cmap_ops.phase('assign mono')
   lgc_chars = cmap_ops.script_chars('LGC')
   cmap_ops.add_all(lgc_chars, 'MONO')
+  cp437_cps = unicode_data.codeset('cp437')
+  cmap_ops.phase('assign cp437 to mono')
+  assert cp437_cps != None
+  cmap_ops.add_all(cp437_cps, 'MONO')
 
 
 def _remove_unwanted(cmap_ops):

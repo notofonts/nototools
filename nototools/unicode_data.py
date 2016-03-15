@@ -833,6 +833,30 @@ def proposed_emoji_cps():
   return _proposed_emoji_data_cps
 
 
+def read_codeset(text):
+  line_re = re.compile(r'^0x([0-9a-fA-F]{2,6})\s+0x([0-9a-fA-F]{4,6})\s+.*')
+  codeset = set()
+  for line in text.splitlines():
+    m = line_re.match(line)
+    if m:
+      cp = int(m.group(2), 16)
+      codeset.add(cp)
+  return codeset
+
+
+def codeset(cpname):
+  """Return a set of the unicode codepoints in the code page named cpname, or
+  None."""
+  filename = ('%s.txt' % cpname).upper()
+  filepath = path.join(
+      path.dirname(__file__), os.pardir, 'third_party', 'unicode',
+      filename)
+  if not path.isfile(filepath):
+    return None
+  with open(filepath, 'r') as f:
+    return read_codeset(f.read())
+
+
 if __name__ == '__main__':
   for cp in sorted(variant_data_cps()):
     print '%04x: %s' % (
