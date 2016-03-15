@@ -197,6 +197,12 @@ class FontCondition(object):
       return lhs in rhs
     def test_like(lhs, rhs):
       return rhs.search(lhs) != None
+    def test_is_not(lhs, rhs):
+      return lhs != rhs
+    def test_not_in(lhs, rhs):
+      return lhs not in rhs
+    def test_not_like(lhs, rhs):
+      return rhs.search(lhs) == None
 
     return {
       '<': test_lt,
@@ -207,7 +213,10 @@ class FontCondition(object):
       '>': test_gt,
       'is': test_is,
       'in': test_in,
-      'like': test_like
+      'like': test_like,
+      'is not': test_is_not,
+      'not in': test_not_in,
+      'not like': test_not_like,
       }
 
   fn_map = _init_fn_map()
@@ -250,7 +259,7 @@ class FontCondition(object):
       value = re.compile(value)
     self.__dict__[condition_name] = (fn, value)
 
-  line_re = re.compile(r'([^ \t]+)\s+([^ \t]+)(.*)')
+  line_re = re.compile(r'([^ \t]+)\s+(is not|not like|not in|[^ \t]+)(.*)')
   def modify_line(self, line):
     line = line.strip()
     m = self.line_re.match(line)
