@@ -1,7 +1,5 @@
 # we've not checked this before
 disable head/os2/unicoderange
-# this check turns out to be not useful, we only need it in color emoji
-disable cmap/variants
 
 # assume most variant support is based on cmap 14
 disable complex/gsub/variants
@@ -9,6 +7,12 @@ disable complex/gsub/variants
 vendor Monotype
 disable extrema
 
+# most variant tests are not useful.
+# but we do need variant zero in sans/serif LGC
+script is not LGC
+disable cmap/variants
+
+script *
 filename like Avestan
 disable gpos/missing
 
