@@ -231,12 +231,19 @@ def age(char):
         return None
 
 
+# Uniscribe treats these ignorables (Hangul fillers) as spacing.
+UNISCRIBE_USED_IGNORABLES = frozenset([0x115f, 0x1160, 0x3164, 0xffa0])
+
 def is_default_ignorable(char):
     """Returns true if the character has the Default_Ignorable property."""
     load_data()
     if type(char) in [str, unicode]:
         char = ord(char)
     return char in _core_properties_data["Default_Ignorable_Code_Point"]
+
+def default_ignorables():
+    load_data()
+    return frozenset(_core_properties_data["Default_Ignorable_Code_Point"])
 
 
 def is_defined(char):
