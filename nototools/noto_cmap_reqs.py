@@ -1470,14 +1470,45 @@ _SCRIPT_REQUIRED = [
    02EA  # MODIFIER LETTER YIN DEPARTING TONE MARK
    02EB  # MODIFIER LETTER YANG DEPARTING TONE MARK
    # Letterlike Symbols
+   2100  # ACCOUNT OF
+   2101  # ADDRESSED TO THE SUBJECT
+   2103  # DEGREE CELSIUS
    2105  # CARE OF
+   2106  # CADA UNA
+   2109  # DEGREE FAHRENHEIT
    2113  # SCRIPT SMALL L
    2116  # NUMERO SIGN
    2117  # SOUND RECORDING COPYRIGHT
+   211E  # PRESCRIPTION TAKE
    2120  # SERVICE MARK
    2121  # TELEPHONE SIGN
    2122  # TRADE MARK SIGN
+   2127  # INVERTED OHM SIGN
+   2129  # TURNED GREEK SMALL LETTER IOTA
+   212E  # ESTIMATED SYMBOL
+   2139  # INFORMATION SOURCE
    213B  # FACSIMILE SIGN
+   214B  # TURNED AMPERSAND
+   214D  # AKTIESELSKAB
+   # Number Forms
+   2150  # VULGAR FRACTION ONE SEVENTH
+   2151  # VULGAR FRACTION ONE NINTH
+   2152  # VULGAR FRACTION ONE TENTH
+   2153  # VULGAR FRACTION ONE THIRD
+   2154  # VULGAR FRACTION TWO THIRDS
+   2155  # VULGAR FRACTION ONE FIFTH
+   2156  # VULGAR FRACTION TWO FIFTHS
+   2157  # VULGAR FRACTION THREE FIFTHS
+   2158  # VULGAR FRACTION FOUR FIFTHS
+   2159  # VULGAR FRACTION ONE SIXTH
+   215A  # VULGAR FRACTION FIVE SIXTHS
+   215B  # VULGAR FRACTION ONE EIGHTH
+   215C  # VULGAR FRACTION THREE EIGHTHS
+   215D  # VULGAR FRACTION FIVE EIGHTHS
+   215E  # VULGAR FRACTION SEVEN EIGHTHS
+   215F  # FRACTION NUMERATOR ONE
+   2184  # LATIN SMALL LETTER REVERSED C
+   2189  # VULGAR FRACTION ZERO THIRDS
    # Arrows
    2190  # LEFTWARDS ARROW
    2191  # UPWARDS ARROW
@@ -1618,6 +1649,24 @@ _SCRIPT_REQUIRED = [
    2E31  # WORD SEPARATOR MIDDLE DOT
    """),
 
+  # MUSIC - MUSIC
+  ('MUSIC',
+   # Comment
+   """
+   Characters not in standard music blocks.
+   """,
+   # Data
+   """
+   # Miscellaneous Symbols
+   2669  # QUARTER NOTE
+   266A  # EIGHTH NOTE
+   266B  # BEAMED EIGHTH NOTES
+   266C  # BEAMED SIXTEENTH NOTES
+   266D  # MUSIC FLAT SIGN
+   266E  # MUSIC NATURAL SIGN
+   266F  # MUSIC SHARP SIGN
+   """),
+
   # Mahj - Mahajani
   ('Mahj',
    # Comment
@@ -1736,7 +1785,7 @@ _SCRIPT_REQUIRED = [
 
   # Newa - Newa
 
-  # Nkoo - N'Ko
+  # Nkoo - N'Ko (N'Ko)
   ('Nkoo',
    # Comment
    """
@@ -2334,9 +2383,12 @@ def _regen_script_required():
       script_name = '(%s)' % ','.join(_MERGED_SCRIPTS_BY_TARGET[script])
     else:
       script_name = cldr_data.get_english_script_name(script)
-      unicode_script_name = unicode_data.human_readable_script_name(script)
-      if script_name.lower() != unicode_script_name.lower():
-        script_name += ' (%s)' % unicode_script_name
+      try:
+        unicode_script_name = unicode_data.human_readable_script_name(script)
+        if script_name.lower() != unicode_script_name.lower():
+          script_name += ' (%s)' % unicode_script_name
+      except KeyError:
+        pass
       script_name = script_name.replace(unichr(0x2019), "'")
     print '  # %s - %s' % (script, script_name)
     if script in script_to_comment_and_data:
