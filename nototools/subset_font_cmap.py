@@ -46,29 +46,29 @@ _VERSION_ID = 5  # name table version string ID
 
 
 def subset_font_cmap(
-    srcname, dstname, exclude=None, include=None, bump_version=True):
+  srcname, dstname, exclude=None, include=None, bump_version=True):
 
-    opt = _DEFAULT_OPTIONS
+  opt = _DEFAULT_OPTIONS
 
-    font = subset.load_font(srcname, opt)
-    target_charset = set(font_data.get_cmap(font).keys())
+  font = subset.load_font(srcname, opt)
+  target_charset = set(font_data.get_cmap(font).keys())
 
-    if include is not None:
-      target_charset &= include
-    if exclude is not None:
-      target_charset -= exclude
+  if include is not None:
+    target_charset &= include
+  if exclude is not None:
+    target_charset -= exclude
 
-    subsetter = subset.Subsetter(options=opt)
-    subsetter.populate(unicodes=target_charset)
-    subsetter.subset(font)
+  subsetter = subset.Subsetter(options=opt)
+  subsetter.populate(unicodes=target_charset)
+  subsetter.subset(font)
 
-    if bump_version:
-      # assume version string has 'uh' if unhinted, else hinted.
-      revision, version_string = swat_license.get_bumped_version(font)
-      font['head'].fontRevision = revision
-      font_data.set_name_record(font, _VERSION_ID, version_string)
+  if bump_version:
+    # assume version string has 'uh' if unhinted, else hinted.
+    revision, version_string = swat_license.get_bumped_version(font)
+    font['head'].fontRevision = revision
+    font_data.set_name_record(font, _VERSION_ID, version_string)
 
-    subset.save_font(font, dstname, opt)
+  subset.save_font(font, dstname, opt)
 
 
 def subset_fonts_cmap(
