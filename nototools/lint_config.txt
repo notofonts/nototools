@@ -1,5 +1,7 @@
 # we've not checked this before
 disable head/os2/unicoderange
+# this check turns out to be not useful, we only need it in color emoji
+disable cmap/variants
 
 # assume most variant support is based on cmap 14
 disable complex/gsub/variants
