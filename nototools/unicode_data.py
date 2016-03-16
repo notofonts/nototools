@@ -833,6 +833,11 @@ def proposed_emoji_cps():
   return _proposed_emoji_data_cps
 
 
+def is_proposed_emoji(cp):
+  _load_proposed_emoji_data()
+  return cp in _proposed_emoji_data_cps
+
+
 def read_codeset(text):
   line_re = re.compile(r'^0x([0-9a-fA-F]{2,6})\s+0x([0-9a-fA-F]{4,6})\s+.*')
   codeset = set()

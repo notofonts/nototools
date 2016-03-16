@@ -424,7 +424,7 @@ def _reassign_common_by_block(cmap_ops):
     'General Punctuation': 'LGC',
     'Currency Symbols': 'LGC',
     'Combining Diacritical Marks for Symbols': 'Zsym',
-    'Letterlike Symbols': 'Zsym',
+    'Letterlike Symbols': 'LGC',
     'Number Forms': 'Zsym',
     'Arrows': 'Zsym',
     'Mathematical Operators': 'Zmth',
@@ -443,10 +443,10 @@ def _reassign_common_by_block(cmap_ops):
     'Miscellaneous Mathematical Symbols-B': 'Zmth',
     'Supplemental Mathematical Operators': 'Zmth',
     'Miscellaneous Symbols and Arrows': 'SYM2',
-    'Supplemental Punctuation': 'Zsym',
+    'Supplemental Punctuation': 'LGC',
     'Ideographic Description Characters': 'CJK',
     'Yijing Hexagram Symbols': 'SYM2',
-    'Modifier Tone Letters': 'Zsym',
+    'Modifier Tone Letters': 'LGC',
     'Vertical Forms': 'CJK',
     'CJK Compatibility Forms': 'CJK',
     'Small Form Variants': 'CJK',
@@ -1486,7 +1486,6 @@ _SCRIPT_REQUIRED = [
    2127  # INVERTED OHM SIGN
    2129  # TURNED GREEK SMALL LETTER IOTA
    212E  # ESTIMATED SYMBOL
-   2139  # INFORMATION SOURCE
    213B  # FACSIMILE SIGN
    214B  # TURNED AMPERSAND
    214D  # AKTIESELSKAB
@@ -1509,33 +1508,6 @@ _SCRIPT_REQUIRED = [
    215F  # FRACTION NUMERATOR ONE
    2184  # LATIN SMALL LETTER REVERSED C
    2189  # VULGAR FRACTION ZERO THIRDS
-   # Arrows
-   2190  # LEFTWARDS ARROW
-   2191  # UPWARDS ARROW
-   2192  # RIGHTWARDS ARROW
-   2193  # DOWNWARDS ARROW
-   2194  # LEFT RIGHT ARROW
-   2195  # UP DOWN ARROW
-   # Geometric Shapes
-   25A0  # BLACK SQUARE
-   25A1  # WHITE SQUARE
-   25CA  # LOZENGE
-   25CB  # WHITE CIRCLE
-   25CC  # DOTTED CIRCLE
-   25CF  # BLACK CIRCLE
-   25D8  # INVERSE BULLET
-   25D9  # INVERSE WHITE CIRCLE
-   25E6  # WHITE BULLET
-   # Modifier Tone Letters
-   A717  # MODIFIER LETTER DOT VERTICAL BAR
-   A718  # MODIFIER LETTER DOT SLASH
-   A719  # MODIFIER LETTER DOT HORIZONTAL BAR
-   A71A  # MODIFIER LETTER LOWER RIGHT CORNER ANGLE
-   A71B  # MODIFIER LETTER RAISED UP ARROW
-   A71C  # MODIFIER LETTER RAISED DOWN ARROW
-   A71D  # MODIFIER LETTER RAISED EXCLAMATION MARK
-   A71E  # MODIFIER LETTER RAISED INVERTED EXCLAMATION MARK
-   A71F  # MODIFIER LETTER LOW INVERTED EXCLAMATION MARK
    # Specials
    FFFC  # OBJECT REPLACEMENT CHARACTER
    FFFD  # REPLACEMENT CHARACTER
@@ -2501,6 +2473,18 @@ def _assign_legacy_phase2(cmap_ops):
   """
 
 
+def _unassign_lgc_from_symbols(cmap_ops):
+  """Characters in LGC don't need to be in Symbols or Sym2."""
+  cmap_ops.log('unassign lgc from symbols')
+  lgc_set = frozenset(cmap_ops.script_chars('LGC'))
+  sym_set = frozenset(cmap_ops.script_chars('Zsym'))
+  sym2_set = frozenset(cmap_ops.script_chars('SYM2'))
+  sym_set_to_remove = sym_set & lgc_set
+  sym2_set_to_remove = sym2_set & lgc_set
+  cmap_ops.remove_all(sym_set_to_remove, 'Zsym')
+  cmap_ops.remove_all(sym2_set_to_remove, 'SYM2')
+
+
 def _assign_mono(cmap_ops):
   """Monospace should be similar to LGC, with the addition of box drawing
   and block elements.  It should also include all CP437 codepoints."""
@@ -2594,6 +2578,7 @@ def build_script_to_chars(log_level):
   _assign_extra_indic(cmap_ops)
   _assign_script_required(cmap_ops)
   _assign_legacy_phase2(cmap_ops)
+  _unassign_lgc_from_symbols(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
   _remove_unwanted(cmap_ops)  # comes before assign_basic, assign_wanted
   _assign_wanted(cmap_ops)
