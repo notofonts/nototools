@@ -58,7 +58,7 @@ def _build_text(name_map, initial_text=''):
     if line == 'dump':
       print 'dump: \'%s\'' % text
       for cp in text:
-        print '%06x %s' % (ord(cp), unicode_data.name(cp))
+        print '%06x %s' % (ord(cp), unicode_data.name(ord(cp)))
       continue
     if line == 'clear':
       text = ''
