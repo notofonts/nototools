@@ -31,7 +31,11 @@ import collections
 import os
 from os import path
 import re
-import unicodedata  # Python's internal library
+import sys
+try:
+  import unicodedata2 as unicodedata  # Unicode 8 compliant native lib
+except ImportError:
+  import unicodedata  # Python's internal library
 
 
 _data_is_loaded = False
@@ -96,7 +100,7 @@ def name(char, *args):
     """Returns the name of a character.
 
     Raises a ValueError exception if the character is undefined, unless an
-    extra argument is given, in which cast it will return that argument.
+    extra argument is given, in which case it will return that argument.
     """
     if type(char) is int:
         char = unichr(char)
