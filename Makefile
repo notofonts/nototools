@@ -24,10 +24,10 @@ SUBSETTOOL=./nototools/subset.py
 TODAY=$(shell date "+%Y-%m-%d")
 
 TARBALLDIR=packages
-ZIPDIR=packages
+ZIPDIR=packages-zip
 ANDROIDDIR=packages/android
-HINTEDFONTDIR=./fonts/individual/hinted
-UNHINTEDFONTDIR=./fonts/individual/unhinted
+HINTEDFONTDIR=../noto-fonts/hinted
+UNHINTEDFONTDIR=../noto-fonts/unhinted
 
 UNHINTEDFONTS=$(shell find $(UNHINTEDFONTDIR) -name "*.ttf")
 ANDROIDFONTS=$(UNHINTEDFONTS:$(UNHINTEDFONTDIR)/%=$(ANDROIDDIR)/%)
