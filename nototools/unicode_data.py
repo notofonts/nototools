@@ -282,6 +282,10 @@ def bidi_mirroring_glyph(char):
         return None
 
 
+def mirrored_chars():
+    return frozenset(_bidi_mirroring_glyph_data.keys())
+
+
 def indic_positional_category(char):
     """Returns the Indic positional category of a character."""
     load_data()

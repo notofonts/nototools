@@ -47,6 +47,7 @@ from nototools import cmap_data
 from nototools import compare_cmap_data
 from nototools import collect_cldr_punct
 from nototools import noto_data
+from nototools import opentype_data
 from nototools import tool_utils
 from nototools import unicode_data
 
@@ -180,7 +181,7 @@ class CmapOps(object):
     self._report('\n# phase: ' + phase_name)
 
   def log(self, log_msg):
-    self._report('\n# log: ' + log_msg)
+    self._report('# log: ' + log_msg)
 
   def ensure_script(self, script):
     if script in self._script_to_chars:
@@ -2398,6 +2399,13 @@ def _assign_script_required(cmap_ops):
     cmap_ops.add_all(extra, script)
 
 
+def _assign_script_special_chars(cmap_ops):
+  """Assign special characters listed in opentype_data."""
+  cmap_ops.phase('assign special chars')
+  for script, chars in opentype_data.SPECIAL_CHARACTERS_NEEDED.iteritems():
+    cmap_ops.add_all(frozenset(chars), script)
+
+
 def _assign_legacy_phase2(cmap_ops):
   """Assign legacy chars in some scripts, excluding some blocks."""
   legacy_data = cmap_data.read_cmap_data_file('noto_cmap_phase2.xml')
@@ -2472,10 +2480,27 @@ def _assign_legacy_phase2(cmap_ops):
     compare_cmap_data._print_detailed(not_in_new)
   """
 
+def _assign_bidi_mirroring(cmap_ops):
+  """Ensure that if a bidi mirroring char is in a font, its mirrored char
+  is too."""
+  cmap_ops.phase('bidi mirroring')
+  script_to_chars = cmap_ops.create_script_to_chars()
+  mirrored = unicode_data.mirrored_chars()
+  for script, cps in sorted(script_to_chars.iteritems()):
+    mirrored_in_script = cps & mirrored
+    if not mirrored_in_script:
+      continue
+    sibs = set(unicode_data.bidi_mirroring_glyph(cp)
+               for cp in mirrored_in_script)
+    missing_sibs = sibs - mirrored_in_script
+    if missing_sibs:
+      cmap_ops.log('adding %d missing bidi chars' % len(missing_sibs))
+      cmap_ops.add_all(missing_sibs, script)
+
 
 def _unassign_lgc_from_symbols(cmap_ops):
   """Characters in LGC don't need to be in Symbols or Sym2."""
-  cmap_ops.log('unassign lgc from symbols')
+  cmap_ops.phase('unassign lgc from symbols')
   lgc_set = frozenset(cmap_ops.script_chars('LGC'))
   sym_set = frozenset(cmap_ops.script_chars('Zsym'))
   sym2_set = frozenset(cmap_ops.script_chars('SYM2'))
@@ -2577,7 +2602,9 @@ def build_script_to_chars(log_level):
   _assign_hyphens_for_autohyphenation(cmap_ops)
   _assign_extra_indic(cmap_ops)
   _assign_script_required(cmap_ops)
+  _assign_script_special_chars(cmap_ops)
   _assign_legacy_phase2(cmap_ops)
+  _assign_bidi_mirroring(cmap_ops)
   _unassign_lgc_from_symbols(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
   _remove_unwanted(cmap_ops)  # comes before assign_basic, assign_wanted
