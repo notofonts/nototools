@@ -448,6 +448,7 @@ class TestVerticalMetrics(FontTest):
     def test_glyphs_ymin_ymax(self):
         """Tests yMin and yMax of all glyphs to not go outside the range."""
 
+        out_of_bounds = []
         for font_file, font in zip(self.font_files, self.fonts):
             glyf_table = font['glyf']
             for glyph_name in glyf_table.glyphOrder:
@@ -457,12 +458,15 @@ class TestVerticalMetrics(FontTest):
                 except AttributeError:
                     continue
 
-                self.assertTrue(
-                    self.expected_head_yMin <= y_min and
-                    y_max <= self.expected_head_yMax,
-                    ('The vertical metrics for glyph %s in %s exceed the '
-                     'acceptable range: yMin=%d, yMax=%d' % (
-                         glyph_name, font_file, y_min, y_max)))
+                if (y_min < self.expected_head_yMin or
+                    y_max > self.expected_head_yMax):
+                    out_of_bounds.append((font_file, glyph_name, y_min, y_max))
+
+        self.assertFalse(
+            out_of_bounds, 'Vertical metrics exceed the acceptable range '
+            'yMin=%d, yMax=%d:%s' % (
+                self.expected_head_yMin, self.expected_head_yMax,
+                ''.join('\n%s %s yMin=%d yMax=%d' % g for g in out_of_bounds)))
 
     def test_hhea_table_metrics(self):
         """Tests ascent, descent, and lineGap to be equal to expected values."""
