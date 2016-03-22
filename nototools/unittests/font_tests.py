@@ -409,26 +409,41 @@ class TestFeatures(FontTest):
                      oldstyle=True)
             run_test(go, gs, fontfile, ['lnum', 'onum', 'pnum', 'tnum'])
 
-    def test_smcp_coverage(self):
-        """Tests that smcp is supported for our required set."""
+    def run_sub_coverage_test(self, feature, reqs_path):
+        """Tests that a substitution feature is supported for a required set."""
 
-        with open(self.smcp_reqs_path) as smcp_reqs_file:
-            smcp_reqs_list = []
-            for line in smcp_reqs_file.readlines():
+        with open(reqs_path) as reqs_file:
+            reqs_list = []
+            for line in reqs_file.readlines():
                 input_cp, output_name = line[:line.index(' #')].split()
-                smcp_reqs_list.append((unichr(int(input_cp, 16)), output_name))
+                reqs_list.append((unichr(int(input_cp, 16)), output_name))
 
         for fontfile, font in zip(self.fontfiles, self.fonts):
             glyph_order = font.getGlyphOrder()
-            chars_with_no_smcp = []
-            for char, expected_name in smcp_reqs_list:
-                smcp = layout.get_glyphs(char, fontfile, '--features=smcp')
-                if glyph_order[smcp[0]] != expected_name:
-                    chars_with_no_smcp.append(char)
+            chars_with_no_sub = []
+            for char, expected_name in reqs_list:
+                sub = layout.get_glyphs(char, fontfile, '--features=%s' % feature)
+                if glyph_order[sub[0]] != expected_name:
+                    chars_with_no_sub.append(char)
             self.assertEqual(
-                chars_with_no_smcp, [],
-                ("smcp feature is not applied correctly to '%s'" %
-                    u''.join(chars_with_no_smcp).encode('UTF-8')))
+                chars_with_no_sub, [],
+                ("%s feature is not applied correctly to '%s'" %
+                    (feature, u''.join(chars_with_no_sub).encode('UTF-8'))))
+
+    def test_smcp_coverage(self):
+        """Tests that smcp is supported for a required set."""
+
+        self.run_sub_coverage_test('smcp', self.smcp_reqs_path)
+
+    def test_c2sc_coverage(self):
+        """Tests that c2sc is supported for a required set."""
+
+        self.run_sub_coverage_test('c2sc', self.c2sc_reqs_path)
+
+    def test_unic_coverage(self):
+        """Tests that unic is supported for a required set."""
+
+        self.run_sub_coverage_test('unic', self.unic_reqs_path)
 
 
 class TestVerticalMetrics(FontTest):
