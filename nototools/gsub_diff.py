@@ -15,7 +15,7 @@
 
 """Provides GsubDiffFinder, which finds differences in GSUB tables.
 
-GposDiffFinder takes in two paths, to plaintext files containing the output of
+GsubDiffFinder takes in two paths, to plaintext files containing the output of
 ttxn. It provides `find_gsub_diffs` which compares the OpenType substitution
 rules in these files, reporting the differences via a returned string.
 """
