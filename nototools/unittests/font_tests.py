@@ -409,26 +409,41 @@ class TestFeatures(FontTest):
                      oldstyle=True)
             run_test(go, gs, fontfile, ['lnum', 'onum', 'pnum', 'tnum'])
 
-    def test_smcp_coverage(self):
-        """Tests that smcp is supported for our required set."""
+    def run_sub_coverage_test(self, feature, reqs_path):
+        """Tests that a substitution feature is supported for a required set."""
 
-        with open(self.smcp_reqs_path) as smcp_reqs_file:
-            smcp_reqs_list = []
-            for line in smcp_reqs_file.readlines():
+        with open(reqs_path) as reqs_file:
+            reqs_list = []
+            for line in reqs_file.readlines():
                 input_cp, output_name = line[:line.index(' #')].split()
-                smcp_reqs_list.append((unichr(int(input_cp, 16)), output_name))
+                reqs_list.append((unichr(int(input_cp, 16)), output_name))
 
         for fontfile, font in zip(self.fontfiles, self.fonts):
             glyph_order = font.getGlyphOrder()
-            chars_with_no_smcp = []
-            for char, expected_name in smcp_reqs_list:
-                smcp = layout.get_glyphs(char, fontfile, '--features=smcp')
-                if glyph_order[smcp[0]] != expected_name:
-                    chars_with_no_smcp.append(char)
+            chars_with_no_sub = []
+            for char, expected_name in reqs_list:
+                sub = layout.get_glyphs(char, fontfile, '--features=%s' % feature)
+                if glyph_order[sub[0]] != expected_name:
+                    chars_with_no_sub.append(char)
             self.assertEqual(
-                chars_with_no_smcp, [],
-                ("smcp feature is not applied correctly to '%s'" %
-                    u''.join(chars_with_no_smcp).encode('UTF-8')))
+                chars_with_no_sub, [],
+                ("%s feature is not applied correctly to '%s'" %
+                    (feature, u''.join(chars_with_no_sub).encode('UTF-8'))))
+
+    def test_smcp_coverage(self):
+        """Tests that smcp is supported for a required set."""
+
+        self.run_sub_coverage_test('smcp', self.smcp_reqs_path)
+
+    def test_c2sc_coverage(self):
+        """Tests that c2sc is supported for a required set."""
+
+        self.run_sub_coverage_test('c2sc', self.c2sc_reqs_path)
+
+    def test_unic_coverage(self):
+        """Tests that unic is supported for a required set."""
+
+        self.run_sub_coverage_test('unic', self.unic_reqs_path)
 
 
 class TestVerticalMetrics(FontTest):
@@ -448,6 +463,7 @@ class TestVerticalMetrics(FontTest):
     def test_glyphs_ymin_ymax(self):
         """Tests yMin and yMax of all glyphs to not go outside the range."""
 
+        out_of_bounds = []
         for font_file, font in zip(self.font_files, self.fonts):
             glyf_table = font['glyf']
             for glyph_name in glyf_table.glyphOrder:
@@ -457,12 +473,15 @@ class TestVerticalMetrics(FontTest):
                 except AttributeError:
                     continue
 
-                self.assertTrue(
-                    self.expected_head_yMin <= y_min and
-                    y_max <= self.expected_head_yMax,
-                    ('The vertical metrics for glyph %s in %s exceed the '
-                     'acceptable range: yMin=%d, yMax=%d' % (
-                         glyph_name, font_file, y_min, y_max)))
+                if (y_min < self.expected_head_yMin or
+                    y_max > self.expected_head_yMax):
+                    out_of_bounds.append((font_file, glyph_name, y_min, y_max))
+
+        self.assertFalse(
+            out_of_bounds, 'Vertical metrics exceed the acceptable range '
+            'yMin=%d, yMax=%d:%s' % (
+                self.expected_head_yMin, self.expected_head_yMax,
+                ''.join('\n%s %s yMin=%d yMax=%d' % g for g in out_of_bounds)))
 
     def test_hhea_table_metrics(self):
         """Tests ascent, descent, and lineGap to be equal to expected values."""
