@@ -15,7 +15,7 @@
 
 """Provides the command-line utility `fontdiff`.
 
-Leverages GposDiffFinder or ShapeDiffFinder, depending on what's given via the
+Leverages various DiffFinder classes, depending on what's given via the
 `diff_type` argument. Can compare multiple font pairs via the `match` argument.
 For shaping comparisons, all results are sorted together and the largest
 differences from all pairs are shown first. For GPOS the pairs are still
@@ -27,7 +27,7 @@ import argparse
 import glob
 import os
 
-from nototools import gpos_diff, shape_diff
+from nototools import gpos_diff, gsub_diff, shape_diff
 
 
 def _shape(path_a, path_b, stats, diff_type, render_path):
@@ -113,6 +113,21 @@ def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
     print
 
 
+def _gsub(path_a, path_b, out_lines, print_font=False):
+    """Do a GSUB table comparison and print results.
+
+    path_a and b refer to plaintext files containing ttxn output. print_font
+    is a boolean flag designating whether to print path_a (useful if _gsub is
+    being called multiple times in succession).
+    """
+
+    if print_font:
+        print '-- %s --' % os.path.basename(path_a)
+    diff_finder = gsub_diff.GsubDiffFinder(path_a, path_b, out_lines)
+    print diff_finder.find_gsub_diffs()
+    print
+
+
 def _run_multiple(func, filematch, dir_a, dir_b, *args):
     """Run a comparison function (probably _shape or _gpos) multiple times.
 
@@ -132,7 +147,7 @@ def main():
     parser.add_argument('path_a', metavar='PATH_A')
     parser.add_argument('path_b', metavar='PATH_B')
     parser.add_argument('-t', '--diff-type', default='area',
-                        choices=('area', 'rendered', 'gpos'),
+                        choices=('area', 'rendered', 'gpos', 'gsub'),
                         help='type of comparison to run (defaults to "area"), '
                         'if "gpos" is provided the input paths should point to '
                         'ttxn output')
@@ -167,6 +182,13 @@ def main():
                           args.gpos_bound, args.out_lines, True)
         else:
             _gpos(args.path_a, args.path_b, args.gpos_bound, args.out_lines)
+
+    elif args.diff_type == 'gsub':
+        if args.match:
+            _run_multiple(_gsub, args.match, args.path_a, args.path_b,
+                          args.out_lines, True)
+        else:
+            _gsub(args.path_a, args.path_b, args.out_lines)
 
     else:
         assert 0, 'Got unhandled diff type "%s"' % args.diff_type
