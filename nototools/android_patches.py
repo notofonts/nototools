@@ -32,49 +32,55 @@ from fontTools.ttLib.tables import otTables
 SRC_DIR = tool_utils.resolve_path('[tools]/packages/android')
 DST_DIR = tool_utils.resolve_path('[tools]/packages/android-patched')
 
-def _patch_hyphen_armenian_ethiopic():
-  """Add hyphen-minus glyphs to Armenian and Ethiopic fonts.
+def _patch_hyphen():
+  """Add hyphen-minus glyphs to fonts that need it.
 
-  This is to enable Armenian and Amharic langauges to be hyphenated
-  properly, since Minikin's itemizer currently shows tofus if a an
-  automatically hyphenated word is displated in a font that has neither
-  HYPHEN nor HYPHEN-MINUS.
+  This is to enable languages to be hyphenated properly,
+  since Minikin's itemizer currently shows tofus if an
+  automatically hyphenated word is displated in a font
+  that has neither HYPHEN nor HYPHEN-MINUS.
 
-  In practice only U+002D HYPHEN-MINUS is added, since Noto LGC fonts
+  The list of font names comes from LANG_TO_SCRIPT in
+  tools/font/fontchain_lint.py.
+
+  (In practice only U+002D HYPHEN-MINUS is added, since Noto LGC fonts
   don't have U+2010 HYPHEN.)
 
   Bug: 21570828"""
 
-  FONTS = [
-      'NotoSansArmenian-Regular.ttf',
-      'NotoSansArmenian-Bold.ttf',
-      'NotoSerifArmenian-Regular.ttf',
-      'NotoSerifArmenian-Bold.ttf',
-      'NotoSansEthiopic-Regular.ttf',
-      'NotoSansEthiopic-Bold.ttf',
-  ]
+  # Names of fonts for which Android requires a hyphen.
+  # This list omits Japanese and Korean.
+  script_names = [
+      'Armenian', 'Ethiopic', 'Bengali', 'Gujarati', 'Devanagari',
+      'Kannada', 'Malayalam', 'Oriya', 'Gurmukhi', 'Tamil', 'Telugu']
 
   HYPHENS = {0x002D, 0x2010}
 
-  for font_name in FONTS:
-    lgc_font_name = (
-        font_name.replace('Armenian', '')
-        .replace('Ethiopic', ''))
+  for sn in script_names:
+    globexp = path.join(SRC_DIR, 'Noto*%s-*.ttf' % sn)
+    fonts = glob.glob(globexp)
+    if not fonts:
+      raise ValueError('could not match ' + globexp)
+    fonts = [path.basename(f) for f in fonts]
+    for font_name in fonts:
+      lgc_font_name = font_name.replace(sn, '')
 
-    font_file = path.join(SRC_DIR, font_name)
-    lgc_font_file = path.join(SRC_DIR, lgc_font_name)
+      font_file = path.join(SRC_DIR, font_name)
+      lgc_font_file = path.join(SRC_DIR, lgc_font_name)
 
-    chars_to_add = (
-        (HYPHENS - coverage.character_set(font_file))
-        & coverage.character_set(lgc_font_file))
+      chars_to_add = (
+          (HYPHENS - coverage.character_set(font_file))
+          & coverage.character_set(lgc_font_file))
 
-    if chars_to_add:
-      print 'patch hyphens', font_name
-      merger.merge_chars_from_bank(
-          path.join(SRC_DIR, font_name),
-          path.join(SRC_DIR, lgc_font_name),
-          path.join(DST_DIR, font_name),
-          chars_to_add)
+      if chars_to_add:
+        print 'patch hyphens', font_name
+        merger.merge_chars_from_bank(
+            path.join(SRC_DIR, font_name),
+            path.join(SRC_DIR, lgc_font_name),
+            path.join(DST_DIR, font_name),
+            chars_to_add)
+      else:
+        print 'already have hyphens', font_name
 
 
 def _remove_cjk_emoji():
@@ -266,7 +272,7 @@ def _subset_symbols():
 
 def main():
   tool_utils.ensure_dir_exists(DST_DIR)
-  _patch_hyphen_armenian_ethiopic()
+  _patch_hyphen()
   # TODO: first unpack from ttc, then rebuild
   # _remove_cjk_emoji()
   _subset_symbols()
