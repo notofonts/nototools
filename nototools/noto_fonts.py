@@ -150,6 +150,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   process the path."""
 
   filedir, filename = os.path.split(filepath)
+  if not filedir:
+    filedir = os.getcwd()
   match = match_filename(filename, family_name)
   if match:
     (family, style, mono, script, variant, ui, display, width, weight,

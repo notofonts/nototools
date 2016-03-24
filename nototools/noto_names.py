@@ -584,7 +584,9 @@ def family_to_name_info_for_phase(phase):
   """Phase is an int, either 2 or 3."""
   result = _PHASE_TO_NAME_INFO_CACHE.get(phase, None)
   if not result and phase in _PHASE_TO_FILENAME:
-    result = read_family_name_info_file(_PHASE_TO_FILENAME[phase])
+    tooldir = tool_utils.resolve_path('[tools]/nototools')
+    result = read_family_name_info_file(
+        path.join(tooldir, _PHASE_TO_FILENAME[phase]))
     _PHASE_TO_NAME_INFO_CACHE[phase] = result
   return result
 
