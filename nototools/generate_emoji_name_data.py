@@ -22,7 +22,7 @@ import glob
 import os
 from os import path
 from nototools import unicode_data
-
+from nototools import tool_utils
 
 REGIONAL_INDICATOR_A = 0x1f1e6
 REGIONAL_INDICATOR_Z = 0x1f1ff
@@ -82,6 +82,7 @@ def generate_names(srcdir, outfile, force):
     print '%s is not a directory' % srcdir
     return
 
+  parent = tool_utils.ensure_dir_exists(path.dirname(outfile))
   if path.exists(outfile):
     if not force:
       print '%s already exists' % outfile
@@ -89,10 +90,6 @@ def generate_names(srcdir, outfile, force):
     if not path.isfile(outfile):
       print '%s is not a file' % outfile
       return
-  else:
-    parent = path.dirname(outfile)
-    if parent and not os.path.exists(parent):
-      os.makedirs(parent)
 
   output = {}
   skipped = []
@@ -115,10 +112,11 @@ def generate_names(srcdir, outfile, force):
     output[tuple(cps)] = (fname, sequence, name)
 
   with open(outfile, 'w') as f:
-    f.write('[\n')
-    for k in sorted(output):
-      f.write('  {"image":"%s", "sequence":"%s", "name":"%s"},\n' % output[k])
-    f.write(']\n')
+    f.write('[\n  ')
+    lines = ['{"image":"%s", "sequence":"%s", "name":"%s"}' % output[k]
+             for k in sorted(output)]
+    f.write(',\n  '.join(lines))
+    f.write('\n]\n')
   print 'wrote %s' % outfile
 
   if skipped:
@@ -130,14 +128,17 @@ def generate_names(srcdir, outfile, force):
 
 
 def main():
+  DEFAULT_OUTFILE = 'emoji/data.json'
   parser = argparse.ArgumentParser()
-  parser.add_argument('-s', '--srcdir', help='directory containing images',
-                      metavar='dir', required = True)
-  parser.add_argument('-o', '--outfile', help='name of output file (default '
-                      '"emoji_names.json"',
-                      metavar='fname', default='emoji_names.json')
-  parser.add_argument('-f', '--force', help='overwrite output file if it '
-                      'exists', default=False, action='store_true')
+  parser.add_argument(
+      '-s', '--srcdir', help='directory containing images',
+      metavar='dir', required = True)
+  parser.add_argument(
+      '-o', '--outfile', help='name of output file (default %s)' %
+      DEFAULT_OUTFILE, metavar='fname', default=DEFAULT_OUTFILE)
+  parser.add_argument(
+      '-f', '--force', help='overwrite output file if it exists',
+      default=False, action='store_true')
   args = parser.parse_args()
   generate_names(args.srcdir, args.outfile, args.force)
 
