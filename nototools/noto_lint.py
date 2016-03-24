@@ -364,7 +364,7 @@ def printable_font_versions(font):
 def _build_cmap_dict(filename):
     tooldir = tool_utils.resolve_path('[tools]/nototools')
     data = cmap_data.read_cmap_data_file(
-        path.join(tooldir, filepath))
+        path.join(tooldir, filename))
     script_to_rowdata = cmap_data.create_map_from_table(data.table)
     return {script: frozenset(tool_utils.parse_int_ranges(rd.ranges))
             for script, rd in script_to_rowdata.iteritems()}
