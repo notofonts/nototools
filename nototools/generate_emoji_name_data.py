@@ -44,7 +44,8 @@ def keep_sequence(cps):
       unicode_data.category(cp)[0] not in ['L', 'P', 'S'] or
       is_regional_indicator(cp) or
       is_ascii_digit(cp) or
-      cp == ord('#')):
+      cp == ord('#') or
+      cp == ord('*')):
     return False
   return True
 
