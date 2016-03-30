@@ -65,8 +65,16 @@ def compare_cmap_data(base_cmap_data, target_cmap_data, scripts, cps,
       name = base_map[script].name
       base_cps = lint_config.parse_int_ranges(base_map[script].ranges)
       target_cps = lint_config.parse_int_ranges(target_map[script].ranges)
-      result[script] = compare_cmaps(
+      added, removed = compare_cmaps(
           base_cps, target_cps, cps, except_cps, no_additions, no_removals)
+      base_xcps, target_xcps = (set(), set())
+      if int(getattr(base_map[script], 'xcount', -1)) != -1:
+        base_xcps = lint_config.parse_int_ranges(base_map[script].xranges)
+      if int(getattr(target_map[script], 'xcount', -1)) != -1:
+        target_xcps = lint_config.parse_int_ranges(target_map[script].xranges)
+      xadded, xremoved = compare_cmaps(
+          base_xcps, target_xcps, cps, except_cps, no_additions, no_removals)
+      result[script] = added, removed, xadded, xremoved
   return result
 
 
@@ -139,23 +147,35 @@ def _print_detailed(cps, inverted_target=None):
 
 
 def report_cmap_compare(
-    label, added, removed, inverted_target=None, detailed=True,
-    report_same=False):
+    label, added, removed, xadded, xremoved, inverted_target=None,
+    detailed=True, report_same=False):
+  def report_cps(label, cps, inverted=None):
+    if not cps:
+      return
+    print '  %s (%d): %s' % (
+        label, len(cps), lint_config.write_int_ranges(cps))
+    if detailed:
+      _print_detailed(cps, inverted)
+
   if report_same:
     print label
-  if added or removed:
+  if added or removed or xadded or xremoved:
     if not report_same:
       print label
-    if added:
-      print '  added (%d): %s' % (
-          len(added), lint_config.write_int_ranges(added))
-      if detailed:
-        _print_detailed(added)
-    if removed:
-      print '  removed (%d): %s' % (
-          len(removed), lint_config.write_int_ranges(removed))
-      if detailed:
-        _print_detailed(removed, inverted_target)
+    removed_to_fallback = removed & xadded
+    if removed_to_fallback:
+      removed -= removed_to_fallback
+      xadded -= removed_to_fallback
+    added_from_fallback = added & xremoved
+    if added_from_fallback:
+      added -= added_from_fallback
+      xremoved -= added_from_fallback
+    report_cps('added', added)
+    report_cps('added, no longer fallback', added_from_fallback)
+    report_cps('removed', removed, inverted_target)
+    report_cps('removed, now in fallback', removed_to_fallback, inverted_target)
+    report_cps('added to fallback', xadded, inverted_target)
+    report_cps('removed from fallback', xremoved)
 
 
 def report_compare(compare_result, detailed=True):
@@ -175,9 +195,10 @@ def report_compare(compare_result, detailed=True):
   print 'base: %s' % base_title
   print 'target: %s' % target_title
   for script in sorted(compare):
-    added, removed = compare[script]
+    added, removed, xadded, xremoved = compare[script]
     label = '%s # %s' % (script, base_map[script].name)
-    report_cmap_compare(label, added, removed, inverted_target, detailed)
+    report_cmap_compare(
+        label, added, removed, xadded, xremoved, inverted_target, detailed)
 
 
 def main():

@@ -2615,10 +2615,32 @@ def build_script_to_chars(log_level):
   return cmap_ops.create_script_to_chars()
 
 
+def _merge_fallback_chars(script_to_chars, srcfile):
+  xtra_cmap_data = cmap_data.read_cmap_data_file(srcfile)
+  xtra_rowdata = cmap_data.create_map_from_table(xtra_cmap_data.table)
+  merged_cmap = {}
+  for script in sorted(script_to_chars):
+    cmap = script_to_chars[script]
+    xcmap = None
+    if script in xtra_rowdata:
+      rowdata = xtra_rowdata[script]
+      xcount = int(getattr(rowdata, 'xcount', -1))
+      if xcount != -1:
+        xcmap = tool_utils.parse_int_ranges(rowdata.xranges)
+        cmap -= xcmap
+      else:
+        xcmap = None  # not a tuple, so probably no fallback data
+    else:
+      print >> sys.stderr, 'no script %s found in %s' % (script, srcfile)
+    merged_cmap[script] = (cmap, xcmap)
+  return merged_cmap
+
+
 def _get_cmap_data(script_to_chars):
   metadata = cmap_data.create_metadata('noto_cmap_reqs', [])
   tabledata = cmap_data.create_table_from_map(script_to_chars)
   return cmap_data.CmapData(metadata, tabledata)
+
 
 
 ### debug
@@ -2641,6 +2663,9 @@ def main():
       'omitted)' % DEFAULT_OUTFILE, metavar='file', nargs='?', default=None,
       const=DEFAULT_OUTFILE)
   parser.add_argument(
+      '-m', '--merge', help='merge excluded/fallback data from file',
+      metavar='file')
+  parser.add_argument(
       '-l', '--loglevel', help='log detail 0-2',
       metavar='level', nargs='?', type=int, const=1, default=0)
   parser.add_argument(
@@ -2653,6 +2678,9 @@ def main():
     return
 
   script_to_chars = build_script_to_chars(args.loglevel)
+  if args.merge:
+    script_to_chars = _merge_fallback_chars(script_to_chars, args.merge)
+
   cmapdata = _get_cmap_data(script_to_chars)
   if args.outfile:
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
