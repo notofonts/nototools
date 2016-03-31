@@ -17,26 +17,26 @@
 import collections
 import datetime
 
-from nototools import lint_config
 from nototools import noto_fonts # for script_name_for_report
+from nototools import tool_utils
 
 from xml.etree import ElementTree as ET
 
 """Functions for reading/writing cmap data in xml format.
 
-This data is represented by a CmapData object, which consists of
-MetaData and TableData.  MetaData consists of the date, the program
-name, and args, which is a list of arg, value tuples.  TableData
-consists of a list of headers, and a list of RowData objects with
-fields named after the headers.
+This data is represented by a CmapData object, which consists of MetaData
+and TableData.  MetaData consists of the date, the program name, and args,
+which is a list of arg, value tuples.  TableData consists of a list of
+headers, and a list of RowData objects with fields named after the headers.
 
-Currently the cmap data metadata holds information about how the
-data was generated, and the table the generated data.  There are
-four columns: script code, script name, the number of codepoints, and
-the codepoints represnted as a string of hex values and ranges
-separated by space.  This format is not enforced by all the related
-functions in this file, though it is used by the code that converts
-between a map from script to cpset and a TableData."""
+Currently the cmap data metadata holds information about how the data was
+generated, and the table the generated data.  There are four or six
+columns: script code, script name, the number of codepoints, and the
+codepoints represented as a string of hex values and ranges separated by
+space; when there are six columns these are the count and ranges of
+'fallback codepoints'. This format is not enforced by all the related
+functions in this file, though it is used by the code that converts between
+a map from script to cpset and a TableData."""
 
 MetaData = collections.namedtuple('MetaData', 'date, program, args')
 TableData = collections.namedtuple('TableData', 'header, rows')
@@ -177,24 +177,43 @@ def create_table(header, rows):
 
 def create_table_from_map(script_to_cmap):
   """Create a table from a map from script to cmaps.  Outputs
-  the script code, script name, count of code points, and the
-  codepoint ranges in hex separated by space."""
-  table_header = 'script,name,count,ranges'.split(',')
+  the script code, script name, count of code points, the
+  codepoint ranges in hex separated by space, the count of
+  excluded/fallback code points, and their ranges separated by
+  space.  script_to_cmap can have values either of cmap or of
+  a tuple of cmap, xcmap; in the first case xcmap is assumed
+  None.  xcmaps that are None are marked as having an xcount of -1.
+  This makes it possible to distinguish an empty xcmap from one
+  that doesn't exist."""
+
+  table_header = 'script,name,count,ranges,xcount,xranges'.split(',')
   RowData = collections.namedtuple('RowData', table_header)
 
   table_rows = []
   for script in sorted(script_to_cmap):
     cmap = script_to_cmap.get(script)
+    xcmap = None
+    if type(cmap) == tuple:
+      xcmap = cmap[1]
+      cmap = cmap[0]
     name = noto_fonts.script_name_for_report(script)
     count = len(cmap)
-    cp_ranges = lint_config.write_int_ranges(cmap)
-    table_rows.append(RowData(script, name, str(count), cp_ranges))
+    cp_ranges = tool_utils.write_int_ranges(cmap)
+    if xcmap == None:
+      xcount = -1
+      xcp_ranges = ''
+    else:
+      xcount = len(xcmap)
+      xcp_ranges = tool_utils.write_int_ranges(xcmap)
+    table_rows.append(
+        RowData(script, name, str(count), cp_ranges, str(xcount),
+                xcp_ranges))
   return TableData(table_header, table_rows)
 
 
 def create_map_from_table(table):
   """Create a map from script code to cmap."""
-  assert table.header == 'script,name,count,ranges'.split(',')
+  assert table.header[0:4] == 'script,name,count,ranges'.split(',')
   return {rd.script: rd for rd in table.rows}
 
 

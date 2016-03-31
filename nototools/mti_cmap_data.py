@@ -25,61 +25,79 @@ from nototools import tool_utils
 from nototools import unicode_data
 
 def get_script_for_name(script_name):
-  if script_name in ['LGC']:
-    return script_name
+  starred = False
+  if script_name[-1] == '*':
+    starred = True
+    script_name = script_name[:-1]
+  if script_name in ['LGC', 'MONO', 'MUSIC', 'SYM2']:
+    return script_name, starred
 
   code = unicode_data.script_code(script_name)
   if code == 'Zzzz':
     raise ValueError('cannot identify script for "%s"' % script_name)
-  return code
+  return code, starred
 
 
-def get_script_to_cmap(csvdata):
+def get_script_to_cmaps(csvdata):
   # Roll our own parse, the data is simple... well, mostly.
   # Google sheets inconsistently puts ^Z in first empty cell in a column.
-  # Also, MTI puts asterisks into the data to mark some values, which is just
-  # noise for our purposes.
+  # Asterisks mark codepoints that are 'ok for fallback', an asterisk on
+  # the header means the font has been checked for fallback.  It is
+  # illegal to mark codepoints as ok for fallback if the header is not
+  # so marked, but ok to mark the header as checked with no codepoints
+  # ok for fallback.
+
+  """This returns a map from 'script' to a tuple of cmap, xcmap where
+  xcmap is None if the header has not been checked, and contains the
+  marked codepoints otherwise (and might be empty)."""
+
   header = None
   data = None
+  xdata = None
   for n, r in enumerate(csvdata.splitlines()):
     r = r.strip()
     if not r:
       continue
     rowdata = r.split(',')
     if not header:
-      header = [get_script_for_name(name) for name in rowdata]
+      header, starred = zip(*[get_script_for_name(name) for name in rowdata])
       ncols = len(header)
       data = [set() for _ in range(ncols)]
+      xdata = [(set() if star else None) for star in starred]
       continue
 
     if len(rowdata) != ncols:
       raise ValueError('row %d had %d cols but expected %d:\n"%s"' % (
           n, len(rowdata), ncols, r))
     for i, v in enumerate(rowdata):
-      v = v.strip(' \n\t*')
+      v = v.strip(' \n\t')
       if not v or v == u'\u001a':
         continue
       try:
-        data[i].add(int(v, 16))
+        if v[-1] == '*':
+          xdata[i].add(int(v[:-1], 16))
+        else:
+          data[i].add(int(v, 16))
       except:
-        raise ValueError('could not parse col %d of row %d: "%s" %x' % (
-            i, n, v, ord(v[0])))
-  return { script: cmap for script, cmap in zip(header, data) }
+        raise ValueError('error in col %d of row %d: "%s"' % (
+            i, n, v))
+  return { script: (cmap, xcmap)
+           for script, cmap, xcmap in zip(header, data, xdata) }
 
 
 def cmap_data_from_csv(
     csvdata, scripts=None, exclude_scripts=None, infile=None):
   args = [('infile', infile)] if infile else None
   metadata = cmap_data.create_metadata('mti_cmap_data', args)
-  script_to_cmap = get_script_to_cmap(csvdata)
+  script_to_cmaps = get_script_to_cmaps(csvdata)
   if scripts or exclude_scripts:
     script_list = script_to_cmap.keys()
     for script in script_list:
       if scripts and script not in scripts:
-        del script_to_cmap[script]
+        del script_to_cmaps[script]
       elif exclude_scripts and script in exclude_scripts:
-        del script_to_cmap[script]
-  tabledata = cmap_data.create_table_from_map(script_to_cmap)
+        del script_to_cmaps[script]
+  tabledata = cmap_data.create_table_from_map(script_to_cmaps)
   return cmap_data.CmapData(metadata, tabledata)
 
 
@@ -115,17 +133,25 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
       script_to_rowdata, key=lambda s: _script_to_name(s).lower()):
     if scripts and script not in scripts:
       continue
-    if script in exclude_scripts:
+    if exclude_scripts and script in exclude_scripts:
       continue
 
-    col = [
-        '"%s"' % _script_to_name(script)
-    ]
     rd = script_to_rowdata[script]
+    star = int(getattr(rd, 'xcount', -1)) != -1
+    col = [
+        '"%s%s"' % (_script_to_name(script), '*' if star else '')
+    ]
     cps = tool_utils.parse_int_ranges(rd.ranges)
+    xranges = getattr(rd, 'xranges', None)
+    if xranges != None:
+      xcps = frozenset(tool_utils.parse_int_ranges(xranges))
+      cps |= xcps
+    else:
+      xcps = frozenset()
     num_cells += len(cps)
-    col.extend('U+%04X' % cp for cp in sorted(
-        tool_utils.parse_int_ranges(rd.ranges)))
+    col.extend(
+        'U+%04X%s' % (cp, '*' if cp in xcps else '')
+        for cp in sorted(cps))
     cols.append(col)
     max_lines = max(max_lines, len(col))
 
