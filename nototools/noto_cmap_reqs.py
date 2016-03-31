@@ -2636,8 +2636,7 @@ def _merge_fallback_chars(script_to_chars, srcfile):
   return merged_cmap
 
 
-def _get_cmap_data(script_to_chars):
-  metadata = cmap_data.create_metadata('noto_cmap_reqs', [])
+def _get_cmap_data(script_to_chars, metadata):
   tabledata = cmap_data.create_table_from_map(script_to_chars)
   return cmap_data.CmapData(metadata, tabledata)
 
@@ -2677,10 +2676,13 @@ def main():
     return
 
   script_to_chars = build_script_to_chars(args.loglevel)
+  meta_params = []
   if args.merge:
     script_to_chars = _merge_fallback_chars(script_to_chars, args.merge)
+    meta_params.append(('mergefile', args.merge))
+  metadata = cmap_data.create_metadata('noto_cmap_reqs', meta_params)
 
-  cmapdata = _get_cmap_data(script_to_chars)
+  cmapdata = _get_cmap_data(script_to_chars, metadata)
   if args.outfile:
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
     print 'wrote %s' % args.outfile
