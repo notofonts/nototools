@@ -2642,7 +2642,6 @@ def _get_cmap_data(script_to_chars):
   return cmap_data.CmapData(metadata, tabledata)
 
 
-
 ### debug
 
 def _dump_primaries():
