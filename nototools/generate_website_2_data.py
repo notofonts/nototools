@@ -859,7 +859,16 @@ class WebGen(object):
       family_obj['regions'] = sorted(regions)
     if family.charset:
       family_obj['ranges'] = get_charset_info(family.charset)
-
+    promo = None
+    if family_id == 'emoji-zsye-color':
+      promo = ('Explore all emojis in Noto Color Emoji', './help/emoji')
+    elif family_id in ['sans-jpan', 'sans-kore', 'sans-hans', 'sans-hant']:
+      promo = ('Learn more about Noto Sans CJK', './help/cjk')
+    if promo:
+      promo_obj = collections.OrderedDict()
+      promo_obj['text'] = promo[0]
+      promo_obj['link'] = promo[1]
+      family_obj['promo'] = promo_obj
     fonts_obj = []
     displayed_members = self._sorted_displayed_members(family)
     for font in displayed_members:
