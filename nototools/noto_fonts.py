@@ -32,9 +32,10 @@ from nototools import tool_utils
 from nototools import unicode_data
 
 # The '[xxx]' syntax is used to get the noto-xxx value from notoconfig.
+# for now we exclude alpha, the phase 3 fonts are here but we don't use
+# them yet.
 NOTO_FONT_PATHS = [
-    '[fonts]/hinted', '[fonts]/unhinted', '[fonts]/alpha', '[emoji]/fonts',
-    '[cjk]']
+    '[fonts]/hinted', '[fonts]/unhinted', '[emoji]/fonts', '[cjk]']
 
 
 ODD_SCRIPTS = {
