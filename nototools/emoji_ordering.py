@@ -59,7 +59,7 @@ class EmojiOrdering(object):
     subcategories to lists of emoji sequences. Since they're ordered we have
     a total ordering of all the emoji sequences."""
     self._category_odict = category_odict
-    self._emoji_to_cat_tup = None
+    self._emoji_to_cat_tuple = None
 
   def category_names(self):
     """Returns the names of the categories."""
@@ -81,13 +81,20 @@ class EmojiOrdering(object):
   def emoji_to_category(self, emoji_string):
     """Emoji_string is an emoji sequence, returns a tuple of
     category, subcategory if present, else None."""
+    return self._get_emoji_to_cat_tuple().get(emoji_string, None)
+
+  def emoji_strings(self):
+    return self._get_emoji_to_cat_tuple().keys()
+
+  def _get_emoji_to_cat_tuple(self):
     if not self._emoji_to_cat_tuple:
       self._emoji_to_cat_tuple = _generate_emoji_to_cat_tuple(
         self._category_odict)
-    return self._emoji_to_cat_tuple.get(emoji_string, None)
+    return self._emoji_to_cat_tuple
 
 
-def emoji_ordering_from_file(fname):
+def from_file(fname):
+  """Return an EmojiOrdering from the .csv or emojiOrdering file."""
   _, ext = path.splitext(fname)
   with codecs.open(fname, 'r', 'utf-8') as f:
     text = f.read()
@@ -96,6 +103,7 @@ def emoji_ordering_from_file(fname):
   else:
     odict = _category_odict_from_eo(text)
   return EmojiOrdering(odict)
+
 
 def _category_odict_from_csv(text):
   text_lines = text.splitlines()
@@ -256,7 +264,7 @@ def main():
       '-f', '--file', help='emoji ordering data file',
       metavar='fname', required=True)
   args = parser.parse_args()
-  eo = emoji_ordering_from_file(args.file)
+  eo = from_file(args.file)
   for category in eo.category_names():
     print category
     for subcategory in eo.subcategory_names(category):
