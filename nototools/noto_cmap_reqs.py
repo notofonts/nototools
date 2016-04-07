@@ -699,19 +699,6 @@ def _assign_hyphens_for_autohyphenation(cmap_ops):
   cmap_ops.add_all_to_all(hyphens, hyphen_scripts)
 
 
-
-def _assign_extra_indic(cmap_ops):
-  """Assign extra characters added to Indic fonts by MTI/Jelle."""
-  extra_indic = tool_utils.parse_int_ranges("""
-    0021-0023 0025 0027-002C 002D-002F 0030-0039 003A-003E
-    005b-005f 007B-007e 00AD 00AF 00D7 00F7 02BC 2013-2014
-    20B9 2212
-    """)
-  indic_scripts = 'Beng Deva Gujr Guru Knda Mlym Orya Sinh Taml Telu'.split()
-  cmap_ops.phase('add extra indic')
-  cmap_ops.add_all_to_all(extra_indic, indic_scripts)
-
-
 def _generate_script_extra(script_to_chars):
   """Generate script extra table."""
   for script in sorted(noto_data.P3_EXTRA_CHARACTERS_NEEDED):
@@ -2600,7 +2587,6 @@ def build_script_to_chars(log_level):
   _assign_nastaliq(cmap_ops)
   _assign_complex_script_extra(cmap_ops)
   _assign_hyphens_for_autohyphenation(cmap_ops)
-  _assign_extra_indic(cmap_ops)
   _assign_script_required(cmap_ops)
   _assign_script_special_chars(cmap_ops)
   _assign_legacy_phase2(cmap_ops)
