@@ -78,10 +78,11 @@ def font_cmap_data(paths):
   metadata = cmap_data.create_metadata('noto_font_cmaps', args)
 
   def use_in_web(font):
-    return (not font.subset and
-            not font.fmt == 'ttc' and
-            not font.script in {'CJK', 'HST'} and
-            not font.family in {'Arimo', 'Cousine', 'Tinos'})
+    return (# not font.subset and
+            not font.fmt == 'ttc' # and
+            # not font.script in {'CJK', 'HST'} and
+            # not font.family in {'Arimo', 'Cousine', 'Tinos'}
+            )
 
   if not paths:
     paths = noto_fonts.NOTO_FONT_PATHS
@@ -93,6 +94,7 @@ def font_cmap_data(paths):
   for family in families.values():
     script = family.rep_member.script
     family_name = family.name
+    print family_name, script, family.family_id, family.rep_member.variant, family.rep_member.subset
     cpset = family.charset
     script_to_data[script].append(ScriptData(family_name, script, cpset))
 
@@ -120,6 +122,8 @@ def font_cmap_data(paths):
         differences = {i.family_name: i.cpset for i in data}
         report_set_differences(differences)
     script_to_cmap[script] = selected_cpset
+    family_names = sorted(set(sd.family_name for sd in script_to_data[script]))
+    print '%s (%s)' % (script, ', '.join(fn for fn in family_names))
 
   tabledata = cmap_data.create_table_from_map(script_to_cmap)
   return cmap_data.CmapData(metadata, tabledata)
