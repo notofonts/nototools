@@ -1061,6 +1061,16 @@ _SCRIPT_REQUIRED = [
   # Cprt - Cypriot
 
   # Deva - Devanagari
+  ('Deva',
+   # Comment
+   """
+   Email from Jelle, SHY was encoded as Macron by accident.
+   """,
+   # Data
+   """
+   # Latin-1 Supplement
+   00AD  # SOFT HYPHEN
+   """),
 
   # Dsrt - Deseret
 
@@ -2411,6 +2421,7 @@ def _assign_legacy_phase2(cmap_ops):
   exclude_script_ranges = {
     'Cham': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
     'Copt': '0323 0361 1dcd 25cc',
+    'Deva': '00AF', # Jelle says this was encoded by accident, should be 00AD
     'Kthi': '0030-0039',
     'Khmr': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
     'LGC': '03E2',
