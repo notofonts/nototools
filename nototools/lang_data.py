@@ -32,11 +32,16 @@ import collections
 import os
 from os import path
 import re
+import sys
 
 from nototools import cldr_data
 from nototools import unicode_data
 
-_DEBUG = False
+# controls printing of debug/trace information
+# normally disabled
+def _log(msg):
+  # print >> sys.stderr, '#lang_data: ' + msg
+  pass
 
 def is_excluded_script(script_code):
   return script_code in ['Zinh', 'Zyyy', 'Zzzz']
@@ -74,8 +79,7 @@ def _create_lang_data():
       lang, script = lang_script.split('-')
       known_scripts.add(script)
       if lang == 'und':
-        if _DEBUG:
-          print 'used lang is und for script %s in region %s' % (script, region)
+        _log('used lang is und for script %s in region %s' % (script, region))
         continue
       used_lang_scripts[lang].add(script)
       all_lang_scripts[lang].add(script)
@@ -97,15 +101,14 @@ def _create_lang_data():
       continue
     lang = cldr_data.get_likely_subtags('und-' + script)[0]
     if lang != 'und':
-      if _DEBUG and script not in all_lang_scripts[lang]:
-        print '# adding likely lang %s for script %s' % (lang, script)
+      if script not in all_lang_scripts[lang]:
+        _log('adding likely lang %s for script %s' % (lang, script))
       all_lang_scripts[lang].add(script)
     elif script not in known_scripts:
-      if _DEBUG:
-        print '# adding script with unknown language %s' % script
+      _log('adding script with unknown language %s' % script)
       all_lang_scripts[lang].add(script)
-    elif _DEBUG:
-      print '### script %s with unknown language already seen' % script
+    else:
+      _log('script %s with unknown language already seen' % script)
 
   # Patch: ensure ryu-Jpan exists
   # - Okinawan can be written in either Kana or a combination of Hira
@@ -180,18 +183,18 @@ def _create_script_to_default_lang(lang_script_data):
       if script == 'Latn':
         default_lang = 'en' # cultural bias...
       else:
-        print 'no default lang for script %s' % script
+        _log('no default lang for script %s' % script)
         langs = script_to_used[script]
         if langs:
           default_lang = iter(langs).next()
-          print 'using used lang %s from %s' % (default_lang, langs)
+          _log('using used lang %s from %s' % (default_lang, langs))
         else:
           langs = script_to_unused[script]
           if langs:
             default_lang = iter(langs).next()
-            print 'using unused lang %s from %s' % (default_lang, langs)
+            _log('using unused lang %s from %s' % (default_lang, langs))
           else:
-            print 'defaulting to \'und\''
+            _log('defaulting to \'und\'')
     else:
       used, unused = lang_script_data[default_lang]
       assert script in used or script in unused
@@ -233,7 +236,7 @@ def _create_lang_script_to_names(lang_script_data):
         if lang_script == 'tlh-Piqd':
           en_name = u'Klingon'
         else:
-          print '!No english name for %s' % lang_script
+          _log('No english name for %s' % lang_script)
           continue
       native_name = cldr_data.get_native_language_name(
           lang_script, exclude_script)
