@@ -162,11 +162,11 @@ def report_cmap_compare(
   if added or removed or xadded or xremoved:
     if not report_same:
       print label
-    removed_to_fallback = removed & xadded
+    removed_to_fallback = removed & xadded if removed and xadded else None
     if removed_to_fallback:
       removed -= removed_to_fallback
       xadded -= removed_to_fallback
-    added_from_fallback = added & xremoved
+    added_from_fallback = added & xremoved if added and xremoved else None
     if added_from_fallback:
       added -= added_from_fallback
       xremoved -= added_from_fallback

@@ -699,19 +699,6 @@ def _assign_hyphens_for_autohyphenation(cmap_ops):
   cmap_ops.add_all_to_all(hyphens, hyphen_scripts)
 
 
-
-def _assign_extra_indic(cmap_ops):
-  """Assign extra characters added to Indic fonts by MTI/Jelle."""
-  extra_indic = tool_utils.parse_int_ranges("""
-    0021-0023 0025 0027-002C 002D-002F 0030-0039 003A-003E
-    005b-005f 007B-007e 00AD 00AF 00D7 00F7 02BC 2013-2014
-    20B9 2212
-    """)
-  indic_scripts = 'Beng Deva Gujr Guru Knda Mlym Orya Sinh Taml Telu'.split()
-  cmap_ops.phase('add extra indic')
-  cmap_ops.add_all_to_all(extra_indic, indic_scripts)
-
-
 def _generate_script_extra(script_to_chars):
   """Generate script extra table."""
   for script in sorted(noto_data.P3_EXTRA_CHARACTERS_NEEDED):
@@ -1074,6 +1061,16 @@ _SCRIPT_REQUIRED = [
   # Cprt - Cypriot
 
   # Deva - Devanagari
+  ('Deva',
+   # Comment
+   """
+   Email from Jelle, SHY was encoded as Macron by accident.
+   """,
+   # Data
+   """
+   # Latin-1 Supplement
+   00AD  # SOFT HYPHEN
+   """),
 
   # Dsrt - Deseret
 
@@ -2424,6 +2421,7 @@ def _assign_legacy_phase2(cmap_ops):
   exclude_script_ranges = {
     'Cham': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
     'Copt': '0323 0361 1dcd 25cc',
+    'Deva': '00AF', # Jelle says this was encoded by accident, should be 00AD
     'Kthi': '0030-0039',
     'Khmr': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
     'LGC': '03E2',
@@ -2522,6 +2520,17 @@ def _assign_mono(cmap_ops):
   cmap_ops.add_all(cp437_cps, 'MONO')
 
 
+def _assign_sym2(cmap_ops):
+  """SYM2 should support enclosing keycaps, used to be in B/W Emoji."""
+  cmap_ops.phase('assign sym2')
+  keycap_chars = tool_utils.parse_int_ranges("""
+      0023      # Number Sign
+      002A      # Asterisk
+      0030-0039 # Digits
+      20E3      # Combining Enclosing Keycap""")
+  cmap_ops.add_all(keycap_chars, 'SYM2')
+
+
 def _remove_unwanted(cmap_ops):
   """Remove characters we know we don't want in any font."""
   # Chars we never want.
@@ -2600,13 +2609,13 @@ def build_script_to_chars(log_level):
   _assign_nastaliq(cmap_ops)
   _assign_complex_script_extra(cmap_ops)
   _assign_hyphens_for_autohyphenation(cmap_ops)
-  _assign_extra_indic(cmap_ops)
   _assign_script_required(cmap_ops)
   _assign_script_special_chars(cmap_ops)
   _assign_legacy_phase2(cmap_ops)
   _assign_bidi_mirroring(cmap_ops)
   _unassign_lgc_from_symbols(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
+  _assign_sym2(cmap_ops) # after LGC removed, add back for enclosing keycaps
   _remove_unwanted(cmap_ops)  # comes before assign_basic, assign_wanted
   _assign_wanted(cmap_ops)
   _assign_basic(cmap_ops)
