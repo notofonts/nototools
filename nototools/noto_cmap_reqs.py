@@ -2520,6 +2520,17 @@ def _assign_mono(cmap_ops):
   cmap_ops.add_all(cp437_cps, 'MONO')
 
 
+def _assign_sym2(cmap_ops):
+  """SYM2 should support enclosing keycaps, used to be in B/W Emoji."""
+  cmap_ops.phase('assign sym2')
+  keycap_chars = tool_utils.parse_int_ranges("""
+      0023      # Number Sign
+      002A      # Asterisk
+      0030-0039 # Digits
+      20E3      # Combining Enclosing Keycap""")
+  cmap_ops.add_all(keycap_chars, 'SYM2')
+
+
 def _remove_unwanted(cmap_ops):
   """Remove characters we know we don't want in any font."""
   # Chars we never want.
@@ -2604,6 +2615,7 @@ def build_script_to_chars(log_level):
   _assign_bidi_mirroring(cmap_ops)
   _unassign_lgc_from_symbols(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
+  _assign_sym2(cmap_ops) # after LGC removed, add back for enclosing keycaps
   _remove_unwanted(cmap_ops)  # comes before assign_basic, assign_wanted
   _assign_wanted(cmap_ops)
   _assign_basic(cmap_ops)
