@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf8'?>
-<family_name_data date="2016-03-11">
+<family_name_data date="2016-04-12">
   <info family="arimo-lgc" />
   <info family="cousine-lgc" />
   <info family="emoji-zsye" />
@@ -8,8 +8,9 @@
   <info family="mono-mono" use_preferred="t" use_wws="t" />
   <info family="naskh-arab" use_preferred="t" use_wws="t" />
   <info family="nastaliq-aran" />
+  <info family="sans-arab" limit_original="t" />
   <info family="sans-armi" />
-  <info family="sans-armn" limit_original="t" />
+  <info family="sans-armn" limit_original="t" use_wws="t" />
   <info family="sans-avst" />
   <info family="sans-bali" />
   <info family="sans-bamu" />
@@ -32,7 +33,7 @@
   <info family="sans-dsrt" />
   <info family="sans-egyp" />
   <info family="sans-ethi" />
-  <info family="sans-geor" limit_original="t" />
+  <info family="sans-geor" limit_original="t" use_wws="t" />
   <info family="sans-glag" />
   <info family="sans-goth" />
   <info family="sans-gujr" use_preferred="t" use_wws="t" />
@@ -40,7 +41,7 @@
   <info family="sans-hano" />
   <info family="sans-hans" limit_original="t" />
   <info family="sans-hant" limit_original="t" />
-  <info family="sans-hebr" />
+  <info family="sans-hebr" limit_original="t" use_wws="t" />
   <info family="sans-ital" />
   <info family="sans-java" />
   <info family="sans-jpan" limit_original="t" />
@@ -96,7 +97,7 @@
   <info family="sans-tfng" />
   <info family="sans-tglg" />
   <info family="sans-thaa" />
-  <info family="sans-thai" use_preferred="t" use_wws="t" />
+  <info family="sans-thai" limit_original="t" use_wws="t" />
   <info family="sans-tibt" />
   <info family="sans-ugar" />
   <info family="sans-vaii" />
@@ -104,17 +105,18 @@
   <info family="sans-xsux" />
   <info family="sans-yiii" />
   <info family="sans-zsym" />
-  <info family="serif-armn" limit_original="t" />
+  <info family="serif-armn" limit_original="t" use_wws="t" />
   <info family="serif-beng" />
-  <info family="serif-geor" limit_original="t" />
+  <info family="serif-geor" limit_original="t" use_wws="t" />
   <info family="serif-gujr" />
+  <info family="serif-hebr" limit_original="t" use_wws="t" />
   <info family="serif-khmr" />
   <info family="serif-knda" />
   <info family="serif-laoo" />
-  <info family="serif-lgc" />
+  <info family="serif-lgc" limit_original="t" use_wws="t" />
   <info family="serif-mlym" />
   <info family="serif-taml" />
   <info family="serif-telu" />
-  <info family="serif-thai" />
+  <info family="serif-thai" limit_original="t" />
   <info family="tinos-lgc" />
 </family_name_data>

@@ -139,7 +139,7 @@ _FONT_NAME_REGEX = (
     '(Eastern|Estrangela|Western)?'
     '(UI)?'
     '(Display)?'
-    '(Condensed)?'
+    '((?:Semi|Extra|)Condensed)?'
     '(?:-(|%s)(Italic)?)?' % '|'.join(WEIGHTS.keys()) +
     '\.(ttf|ttc|otf)')
 
