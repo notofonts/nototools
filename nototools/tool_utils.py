@@ -17,6 +17,7 @@
 import contextlib
 import datetime
 import glob
+import logging
 import os
 import os.path as path
 import re
@@ -69,6 +70,31 @@ def resolve_path(somepath):
   return path.realpath(path.abspath(path.expanduser(somepath)))
 
 
+def _name_to_key(keyname):
+  if keyname == 'adobe_data':
+    return 'adobe'
+  if keyname == 'monotype_data':
+    return 'mti',
+  if keyname.startswith('noto_'):
+    return keyname[5:]
+  return keyname
+
+
+def short_path(somepath, basedir=os.getcwd()):
+  """Return a short version of somepath, either relative to one of the noto path
+  shorthands or to the provided base directory (defaults to current).  For
+  logging/debugging output of file paths."""
+  shortest = somepath
+  if basedir and somepath.startswith(basedir):
+    shortest = '.' + somepath[len(basedir):]
+  for k, v in notoconfig.values.items():
+    if somepath.startswith(v):
+      test = ('[%s]' % _name_to_key(k)) + somepath[len(v):]
+      if len(test) < len(shortest):
+        shortest = test
+  return shortest
+
+
 def check_dir_exists(dirpath):
   if not os.path.isdir(dirpath):
     raise ValueError('%s does not exist or is not a directory' % dirpath)
@@ -79,12 +105,15 @@ def check_file_exists(filepath):
     raise ValueError('%s does not exist or is not a file' % filepath)
 
 
-def ensure_dir_exists(path):
+def ensure_dir_exists(path, clean=False):
   path = os.path.realpath(path)
   if not os.path.isdir(path):
     if os.path.exists(path):
       raise ValueError('%s exists and is not a directory' % path)
     print "making '%s'" % path
+    os.makedirs(path)
+  elif clean:
+    shutil.rmtree(path)
     os.makedirs(path)
   return path
 
@@ -303,3 +332,29 @@ def write_int_ranges(int_values, in_hex=True, sep=' '):
     start = prev = v
   emit()
   return sep.join(num_list)
+
+
+def setup_logging(loglevel, quiet_ttx=True):
+  """Set up logging to stream to stdout.
+
+  The loglevel is a logging level name or a level value (int or string).
+
+  ttx/fontTools uses 'info' to report when it is reading/writing tables,
+  but when we want 'info' in our own tools we usually don't want this detail.
+  When quiet_ttx is true, set up logging to treat 'info' logs from
+  fontTools misc.xmlReader and ttLib as though they were at level 19."""
+
+  try:
+    loglevel = int(loglevel)
+  except:
+    loglevel = getattr(logging, loglevel.upper(), loglevel)
+  if not isinstance(loglevel, int):
+    print ('Could not set log level, should be one of debug, info, warning, '
+           'error, critical, or a numeric value')
+    return
+  logging.basicConfig(level=loglevel)
+
+  if quiet_ttx and loglevel == logging.INFO:
+    for logger_name in ['fontTools.misc.xmlReader', 'fontTools.ttLib']:
+      logger = logging.getLogger(logger_name)
+      logger.setLevel(loglevel + 1)
