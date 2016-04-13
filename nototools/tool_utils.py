@@ -353,17 +353,8 @@ def setup_logging(loglevel, quiet_ttx=True):
            'error, critical, or a numeric value')
     return
   logging.basicConfig(level=loglevel)
-  logger = logging.getLogger()
 
-  if quiet_ttx:
-    class QuietFontToolsFilter(object):
-      def __init__(self, val):
-        self._ttx_val = val
-      def filter(self, log_record):
-        if (log_record.name in ['fontTools.misc.xmlReader', 'fontTools.ttLib']
-            and log_record.levelno == 20
-            and self._ttx_val >= 20):
-          return 0
-        return 1
-
-    logger.handlers[0].addFilter(QuietFontToolsFilter(loglevel))
+  if quiet_ttx and loglevel == logging.INFO:
+    for logger_name in ['fontTools.misc.xmlReader', 'fontTools.ttLib']:
+      logger = logging.getLogger(logger_name)
+      logger.setLevel(loglevel + 1)
