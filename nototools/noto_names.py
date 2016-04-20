@@ -22,8 +22,8 @@ fonts.  This information looks at all the subfamilies of a family and
 generates a FamilyNameInfo object representing general information
 about that family.  For instance, families with only regular/bold,
 normal/italic subfamilies can use the original opentype name fields
-and don't require preferred names or wws names.  These routines
-also read/write an xml version of this data.
+and don't require preferred names.  These routines also read/write an xml
+version of this data.
 
 The other set of routines generates name information for a noto font,
 using the family name info.  The family name info is required.  For
@@ -36,7 +36,7 @@ The tool api lets you generate the family info file, and/or use it to
 show how one or more fonts' names would be generated.
 
 This of necessity incorporates noto naming conventions-- it expects
-file namess that follow noto conventions, and generates the corresponding
+file names that follow noto conventions, and generates the corresponding
 name table names.  So it is not useful for non-noto fonts.
 """
 
@@ -92,13 +92,13 @@ PHASE_3_FAMILY_NAME_INFO_FILE = 'family_name_info_p3.xml'
 # remain in the subfamily.
 # if use_preferred is true, there are subfamilies that don't fit into
 # Regular Bold BoldItalic Italic, so generate the preferred names.
-# if use_wws is true, there are subfamilies that don't fit into wws,
-# so generate the wws names.
+# Preferred names are actually WWS names, non-wws fields are promoted
+# to the preferred family and WWS name fields are never populated.
 # if omit_regular is true, postscript names exclude the subfamily
 # when it is 'Regular' (Noto phase 2 non-CJK behavior).
 FamilyNameInfo = collections.namedtuple(
     'FamilyNameInfo',
-    'limit_original, use_preferred, use_wws, omit_regular')
+    'limit_original, use_preferred, omit_regular')
 
 # Represents expected name table data for a font.
 # Fields expected to be empty are None.  Fields that are expected
@@ -235,7 +235,8 @@ def _shift_parts(family_parts, subfamily_parts, stop_fn):
   return result_family_parts, result_subfamily_parts
 
 
-_WWS_RE = re.compile('(?:Condensed|Italic|%s)$' % '|'.join(noto_fonts.WEIGHTS))
+_WWS_RE = re.compile(
+    '(?:(?:Semi)?Condensed|%s|Italic)$' % '|'.join(noto_fonts.WEIGHTS))
 def _is_wws_part(part):
   return _WWS_RE.match(part)
 
@@ -266,13 +267,8 @@ def _names(family_parts, subfamily_parts):
 
 
 def _preferred_names(preferred_family, preferred_subfamily, use_preferred):
+  # Preferred names are actually WWS names
   if use_preferred:
-    return _names(preferred_family, preferred_subfamily)
-  return None, None
-
-
-def _wws_names(preferred_family, preferred_subfamily, use_wws):
-  if use_wws:
     return _names(*_wws_parts(preferred_family, preferred_subfamily))
   return None, None
 
@@ -320,17 +316,24 @@ def _postscript_name(preferred_family, preferred_subfamily, omit_regular):
   return result
 
 
-def _version_re(noto_font):
+def _version_re(noto_font, phase):
   # See comment at top of file about regex values
   if noto_font.manufacturer == 'Adobe':
     sub_len = 3
     hint_ext = ''
-  elif noto_font.manufacturer == 'Google':
-    sub_len = 2
-    hint_ext = '' # no 'uh' suffix for unhinted Color Emoji font
   else:
-    sub_len = 2
-    hint_ext = '' if noto_font.is_hinted else ' uh'
+    if phase < 3:
+      sub_len = 2
+      if noto_font.manufacturer == 'Google':
+        hint_ext = '' # no 'uh' suffix for unhinted Color Emoji font
+      else:
+        hint_ext = '' if noto_font.is_hinted else ' uh'
+    else:
+      sub_len = 3
+      # in phase 3 we 'reverse the polarity' and annotate the version of hinted
+      # hinted fonts with 'h' and leave unhinted (the default) unannotated.
+      hint_ext = ' h' if noto_font.is_hinted else ''
+
   return r'^Version ([0-2])\.(\d{%d})%s(?:;.*)?$' % (sub_len, hint_ext)
 
 
@@ -350,7 +353,7 @@ def _manufacturer(noto_font):
   raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
-def _designer(noto_font):
+def _designer(noto_font, phase):
   if noto_font.manufacturer == 'Adobe':
     return '-'
   if noto_font.manufacturer == 'Monotype':
@@ -358,6 +361,8 @@ def _designer(noto_font):
       if noto_font.style == 'Serif' and noto_font.script in [
           'Beng', 'Gujr', 'Knda', 'Mlym', 'Taml', 'Telu']:
         return 'Indian Type Foundry'
+      if noto_font.script == 'Arab' and phase == 3:
+        return 'Nadine Chahine'
       return 'Monotype Design Team'
     if noto_font.family in ['Arimo', 'Cousine', 'Tinos']:
       return 'Steve Matteson'
@@ -381,23 +386,30 @@ def _designer_url(noto_font):
   raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
-def _description_re(noto_font):
+def _description_re(noto_font, phase):
   # See comment at top of file about regex values
   if noto_font.manufacturer == 'Adobe':
     return '-'
-  if noto_font.manufacturer == 'Monotype':
-    if noto_font.family == 'Noto':
-      return ('^Data %shinted. Designed by Monotype design team.$' %
-              ('' if noto_font.is_hinted else 'un'))
-    # Arimo, Tinos, and Cousine don't currently mention hinting in their
-    # descriptions, but they probably should.
-    # TODO(dougfelt): swat them to fix this.
-    return '-'
   if noto_font.manufacturer == 'Google' and noto_font.variant == 'color':
     return 'Color emoji font using CBDT glyph data.'
-  if noto_font.is_hinted:
-    return '^Data hinted\.(?:\s.*)?$'
-  return '^Data unhinted\.(?:\s.*)?$'
+  if phase < 3:
+    hint_prefix = 'Data %shinted.' % (
+        '' if noto_font.is_hinted else 'un')
+  else:
+    hint_prefix = 'Data hinted.' if noto_font.is_hinted else ''
+
+  designer = ''
+  if noto_font.manufacturer == 'Monotype':
+    if noto_font.family == 'Noto':
+      designer = 'Designed by Monotype design team.'
+      if hint_prefix:
+        hint_prefix += ' '
+    else:
+      # Arimo, Tinos, and Cousine don't currently mention hinting in their
+      # descriptions, but they probably should.
+      # TODO(dougfelt): swat them to fix this.
+      return '-'
+  return '^%s%s$' % (hint_prefix, designer)
 
 
 def _license_text(noto_font):
@@ -416,7 +428,7 @@ def _license_url(noto_font):
   raise ValueError('unknown license type "%s"' % noto_font.license_type)
 
 
-def name_table_data(noto_font, family_to_name_info):
+def name_table_data(noto_font, family_to_name_info, phase):
   """Returns a NameTableData for this font given the family_to_name_info."""
   family_id = noto_fonts.noto_font_to_family_id(noto_font)
   try:
@@ -444,11 +456,6 @@ def name_table_data(noto_font, family_to_name_info):
   # the code should ensure use_preferred is set.
   pfn, psfn = _preferred_names(
       family_parts, subfamily_parts, info.use_preferred)
-  wfn, wsfn = _wws_names(family_parts, subfamily_parts, info.use_wws)
-  if wfn and wfn == pfn:
-    wfn = None
-  if wsfn and wsfn == psfn:
-    wsfn = None
   if pfn and pfn == ofn:
     pfn = None
   if psfn and psfn == osfn:
@@ -460,21 +467,21 @@ def name_table_data(noto_font, family_to_name_info):
       original_subfamily=osfn,
       unique_id='-',
       full_name=_full_name(family_parts, subfamily_parts, info.omit_regular),
-      version_re=_version_re(noto_font),
+      version_re=_version_re(noto_font, phase),
       postscript_name=_postscript_name(
           family_parts, subfamily_parts, info.omit_regular),
       trademark=_trademark(noto_font),
       manufacturer=_manufacturer(noto_font),
-      designer=_designer(noto_font),
-      description_re=_description_re(noto_font),
+      designer=_designer(noto_font, phase),
+      description_re=_description_re(noto_font, phase),
       vendor_url=NOTO_URL,
       designer_url=_designer_url(noto_font),
       license_text=_license_text(noto_font),
       license_url=_license_url(noto_font),
       preferred_family=pfn,
       preferred_subfamily=psfn,
-      wws_family=wfn,
-      wws_subfamily=wsfn)
+      wws_family=None,
+      wws_subfamily=None)
 
 
 def _create_family_to_subfamilies(notofonts):
@@ -490,7 +497,9 @@ _NON_ORIGINAL_WEIGHT_PARTS = frozenset(
     w for w in noto_fonts.WEIGHTS
     if w not in ['Bold', 'Regular'])
 _ORIGINAL_PARTS = frozenset(['Bold', 'Regular', 'Italic'])
-_WWS_PARTS = frozenset(['Condensed', 'Italic'] + list(noto_fonts.WEIGHTS))
+_WWS_PARTS = frozenset(
+    ['SemiCondensed', 'Condensed', 'Italic'] +
+    list(noto_fonts.WEIGHTS))
 
 def create_family_to_name_info(notofonts, phase):
   family_to_parts = collections.defaultdict(set)
@@ -510,13 +519,12 @@ def create_family_to_name_info(notofonts, phase):
     limit_original = family_is_cjk or bool(
         part_set & _NON_ORIGINAL_WEIGHT_PARTS)
     # If we limit original, then we automatically use_preferred.
-    use_preferred = limit_original or bool(part_set - _ORIGINAL_PARTS)
-    use_wws = bool(part_set - _WWS_PARTS)
+    use_preferred = limit_original or bool(part_set - _WWS_PARTS)
     # In phase 3, we keep 'Regular' in the postscript name always, prior to that
     # we only do so for CJK.
     omit_regular = phase == 2 and not family_is_cjk
     result[family_id] = FamilyNameInfo(
-        limit_original, use_preferred, use_wws, omit_regular)
+        limit_original, use_preferred, omit_regular)
   return result
 
 
@@ -549,8 +557,7 @@ def _read_info_element(info_node):
   # limit_original implies use_preferred
   return FamilyNameInfo(
       bval('limit_original'),
-      bval('limit_original') or bval('use_preferred'),
-      bval('use_wws'),
+      bval('limit_original') or bval('use_preferred') or bval('use_wws'),
       bval('omit_regular'))
 
 

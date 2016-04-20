@@ -421,8 +421,8 @@ FontProps = collections.namedtuple(
     'is_cjk, subset')
 
 
-def font_properties_from_name(file_path):
-    noto_font = noto_fonts.get_noto_font(file_path)
+def font_properties_from_name(file_path, phase):
+    noto_font = noto_fonts.get_noto_font(file_path, phase=phase)
     if not noto_font:
         return None
 
@@ -435,8 +435,8 @@ def font_properties_from_name(file_path):
     return FontProps(is_google, vendor, char_version, *noto_font)
 
 
-def get_font_properties_with_fallback(file_path):
-    props = font_properties_from_name(file_path)
+def get_font_properties_with_fallback(file_path, phase):
+    props = font_properties_from_name(file_path, phase)
     if props:
         return props, '' if props.script else 'script'
 
@@ -638,7 +638,8 @@ def check_font(font_props, filename_error,
 
         family_to_name_info = noto_names.family_to_name_info_for_phase(
             noto_phase)
-        name_data = noto_names.name_table_data(noto_font, family_to_name_info)
+        name_data = noto_names.name_table_data(
+            noto_font, family_to_name_info, noto_phase)
         if not name_data:
             warn("name/unable_to_check", "Unable to check",
                  "No name data available for this font.")
@@ -2011,7 +2012,8 @@ def main():
 
     if arguments.dump_font_props:
         for font_file_path in arguments.font_files:
-            font_props, filename_error = get_font_properties_with_fallback(font_file_path)
+            font_props, filename_error = get_font_properties_with_fallback(
+                font_file_path, phase=arguments.phase)
             if filename_error:
                 print '#Error for %s: %s' % (font_file_path, filename_error)
             else:
@@ -2025,7 +2027,8 @@ def main():
               "Hint Status,File Name,Revision,Issue")
 
     for font_file_path in arguments.font_files:
-        font_props, filename_error = get_font_properties_with_fallback(font_file_path)
+        font_props, filename_error = get_font_properties_with_fallback(
+            font_file_path, phase=arguments.phase)
         if not font_props:
             print '## ERROR: cannot parse %s' % font_file_path
         else:

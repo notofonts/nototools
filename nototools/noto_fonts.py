@@ -136,17 +136,21 @@ _FONT_NAME_REGEX = (
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
     '(Mono)?'
     '(.*?)'
-    '(Eastern|Estrangela|Western)?'
+    '(Eastern|Estrangela|Western|New)?'
     '(UI)?'
     '(Display)?'
-    '((?:Semi|Extra|)Condensed)?'
-    '(?:-(|%s)(Italic)?)?' % '|'.join(WEIGHTS.keys()) +
+    '-?'
+    '((?:Semi|Extra|)Cond(?:ensed)?|Narrow)?'
+    '-?' +  # at the moment, allow either naming
+    '(|%s)?' % '|'.join(WEIGHTS.keys()) +
+    '(Italic)?'
     '\.(ttf|ttc|otf)')
 
 
 _EXT_REGEX = re.compile(r'.*\.(?:ttf|ttc|otf)$')
 
-def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
+def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
+                  phase=3):
   """Return a NotoFont if filepath points to a noto font, or None if we can't
   process the path."""
 
@@ -181,6 +185,15 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
   is_mono = mono == 'Mono'
 
+  if width not in [None, '', 'Condensed', 'SemiCondensed']:
+    print >> sys.stderr, 'noto_fonts: Unexpected width "%s"' % width
+    if width in ['SemiCond', 'Narrow']:
+      width = 'SemiCondensed'
+    elif width == 'Cond':
+      width = 'Condensed'
+    else:
+      width = '#'+ width + '#'
+
   if not script:
     if is_mono:
       script = 'MONO'
@@ -214,7 +227,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
     is_hinted = False
   else:
     hint_status = path.basename(filedir)
-    if hint_status not in ['hinted', 'unhinted']:
+    if (hint_status not in ['hinted', 'unhinted']
+        and 'noto-source' not in filedir):
       print >> sys.stderr, (
           'unknown hint status for %s, defaulting to unhinted') % filedir
     is_hinted = hint_status == 'hinted'
@@ -222,7 +236,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   manufacturer = (
       'Adobe' if is_cjk
       else 'Google' if script == 'Zsye' and variant == 'color'
-      else 'Khmertype' if script in ['Khmr', 'Cham', 'Laoo']
+      else 'Khmertype' if phase < 3 and script in ['Khmr', 'Cham', 'Laoo']
       else 'Monotype')
 
   return NotoFont(

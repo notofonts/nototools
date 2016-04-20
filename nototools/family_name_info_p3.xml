@@ -8,7 +8,7 @@
   <info family="mono-mono" use_preferred="t" use_wws="t" />
   <info family="naskh-arab" use_preferred="t" use_wws="t" />
   <info family="nastaliq-aran" />
-  <info family="sans-arab" limit_original="t" />
+  <info family="sans-arab" use_preferred="t"/>
   <info family="sans-armi" />
   <info family="sans-armn" limit_original="t" use_wws="t" />
   <info family="sans-avst" />
