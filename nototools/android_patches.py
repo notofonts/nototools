@@ -16,6 +16,7 @@
 
 """Patches for Android versions of Noto fonts."""
 
+import codecs
 import glob
 from os import path
 
@@ -198,6 +199,31 @@ LETTERLIKE_CHARS_IN_ROBOTO = {
     0x214F, # ⅏ SYMBOL FOR SAMARITAN SOURCE
 }
 
+BELONG_IN_SUBSETTED2 = {
+    0x2600,  # ☀ BLACK SUN WITH RAYS
+    0x2601,  # ☁ CLOUD
+    0x260E,  # ☎ BLACK TELEPHONE
+    0x261D,  # ☝ WHITE UP POINTING INDEX
+    0x263A,  # ☺ WHITE SMILING FACE
+    0x2660,  # ♠ BLACK SPADE SUIT
+    0x2663,  # ♣ BLACK CLUB SUIT
+    0x2665,  # ♥ BLACK HEART SUIT
+    0x2666,  # ♦ BLACK DIAMOND SUIT
+    0x270C,  # ✌ VICTORY HAND
+    0x2744,  # ❄ SNOWFLAKE
+    0x2764,  # ❤ HEAVY BLACK HEART
+}
+
+def _format_set(char_set, name, filename):
+  lines = ['%s = {' % name]
+  for cp in sorted(char_set):
+    name = unicode_data.name(cp)
+    lines.append('    0x%04X,  # %s %s' % (cp, unichr(cp), name))
+  lines.append('}\n')
+  with codecs.open(filename, 'w', 'UTF-8') as f:
+    f.write('\n'.join(lines))
+  print 'wrote', filename
+
 
 def _subset_symbols():
   """Subset Noto Sans Symbols in a curated way.
@@ -251,6 +277,10 @@ def _subset_symbols():
   # mechanism to work properly
   target_coverage.remove(0x20E3)
 
+  # Remove symbol characters for Android that belong in subsetted2 but not
+  # subsetted.
+  target_coverage -= BELONG_IN_SUBSETTED2
+
   for font_file in glob.glob(path.join(SRC_DIR, 'NotoSansSymbols-*.ttf')):
     print 'main subset', font_file
     out_file = path.join(
@@ -263,6 +293,8 @@ def _subset_symbols():
   target_coverage = set(
       unicode_data.get_presentation_default_emoji() &
       unicode_data.get_unicode_emoji_variants())
+  target_coverage |= BELONG_IN_SUBSETTED2
+
   for font_file in glob.glob(path.join(SRC_DIR, 'NotoSansSymbols-*.ttf')):
     print 'secondary subset', font_file
     out_file = path.join(
@@ -271,7 +303,7 @@ def _subset_symbols():
 
 
 def main():
-  tool_utils.ensure_dir_exists(DST_DIR)
+  tool_utils.ensure_dir_exists(DST_DIR, clean=True)
   _patch_hyphen()
   # TODO: first unpack from ttc, then rebuild
   # _remove_cjk_emoji()
