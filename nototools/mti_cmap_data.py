@@ -183,7 +183,7 @@ def _check_scripts(scripts):
   if scripts:
     all_scripts = unicode_data.all_scripts()
     all_scripts = all_scripts | set(
-        ['CJK', 'EXCL', 'LGC', 'MONO', 'MUSIC', 'SYM2'])
+        ['CJK', 'EXCL', 'LGC', 'MONO', 'MUSIC', 'SYM2', 'Zsye'])
     for s in scripts:
       if s not in all_scripts:
         print >> sys.stderr, 'unknown script:', s
