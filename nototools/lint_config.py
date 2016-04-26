@@ -379,6 +379,10 @@ class TestSpec(object):
       weight_class
       fsselection
       unicoderange
+      panose
+        family
+        serif
+        proportion
   bounds -- glyf limits etc
     glyph
       ui_ymax except|only gid
