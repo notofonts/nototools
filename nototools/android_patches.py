@@ -214,6 +214,10 @@ BELONG_IN_SUBSETTED2 = {
     0x2764,  # ❤ HEAVY BLACK HEART
 }
 
+# TV symbols, see issue #557
+TV_SYMBOLS_FOR_SUBSETTED = tool_utils.parse_int_ranges(
+  '1f19b-1f1ac 1f23b')
+
 def _format_set(char_set, name, filename):
   lines = ['%s = {' % name]
   for cp in sorted(char_set):
@@ -266,7 +270,6 @@ def _subset_symbols():
   # Remove characters preferably coming from Roboto
   target_coverage -= LETTERLIKE_CHARS_IN_ROBOTO
   # Remove characters that are supposed to default to emoji
-
   target_coverage -= unicode_data.get_presentation_default_emoji()
 
   # Remove dentistry symbols, as their main use appears to be for CJK:
@@ -280,6 +283,9 @@ def _subset_symbols():
   # Remove symbol characters for Android that belong in subsetted2 but not
   # subsetted.
   target_coverage -= BELONG_IN_SUBSETTED2
+
+  # add TV symbols
+  target_coverage |= TV_SYMBOLS_FOR_SUBSETTED
 
   for font_file in glob.glob(path.join(SRC_DIR, 'NotoSansSymbols-*.ttf')):
     print 'main subset', font_file
