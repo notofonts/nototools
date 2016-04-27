@@ -1,12 +1,13 @@
 <?xml version='1.0' encoding='utf8'?>
-<family_name_data date="2016-03-11">
+<family_name_data date="2016-04-29">
   <info family="arimo-lgc" omit_regular="t" />
   <info family="cousine-lgc" omit_regular="t" />
   <info family="emoji-zsye" omit_regular="t" />
   <info family="emoji-zsye-color" omit_regular="t" />
   <info family="kufi-arab" omit_regular="t" />
-  <info family="mono-mono" omit_regular="t" use_preferred="t" use_wws="t" />
-  <info family="naskh-arab" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="mono-mono" omit_regular="t" />
+  <info family="naskh-arab" omit_regular="t" />
+  <info family="naskh-arab-ui" omit_regular="t" />
   <info family="nastaliq-aran" omit_regular="t" />
   <info family="sans-armi" omit_regular="t" />
   <info family="sans-armn" omit_regular="t" />
@@ -14,7 +15,8 @@
   <info family="sans-bali" omit_regular="t" />
   <info family="sans-bamu" omit_regular="t" />
   <info family="sans-batk" omit_regular="t" />
-  <info family="sans-beng" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-beng" omit_regular="t" />
+  <info family="sans-beng-ui" omit_regular="t" />
   <info family="sans-brah" omit_regular="t" />
   <info family="sans-bugi" omit_regular="t" />
   <info family="sans-buhd" omit_regular="t" />
@@ -22,53 +24,63 @@
   <info family="sans-cari" omit_regular="t" />
   <info family="sans-cham" omit_regular="t" />
   <info family="sans-cher" omit_regular="t" />
-  <info family="sans-cjk-jp" limit_original="t" />
-  <info family="sans-cjk-kr" limit_original="t" />
-  <info family="sans-cjk-sc" limit_original="t" />
-  <info family="sans-cjk-tc" limit_original="t" />
+  <info family="sans-cjk-jp" no_style_linking="t" />
+  <info family="sans-cjk-kr" no_style_linking="t" />
+  <info family="sans-cjk-sc" no_style_linking="t" />
+  <info family="sans-cjk-tc" no_style_linking="t" />
   <info family="sans-copt" omit_regular="t" />
   <info family="sans-cprt" omit_regular="t" />
-  <info family="sans-deva" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-deva" omit_regular="t" />
+  <info family="sans-deva-ui" omit_regular="t" />
   <info family="sans-dsrt" omit_regular="t" />
   <info family="sans-egyp" omit_regular="t" />
   <info family="sans-ethi" omit_regular="t" />
   <info family="sans-geor" omit_regular="t" />
   <info family="sans-glag" omit_regular="t" />
   <info family="sans-goth" omit_regular="t" />
-  <info family="sans-gujr" omit_regular="t" use_preferred="t" use_wws="t" />
-  <info family="sans-guru" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-gujr" omit_regular="t" />
+  <info family="sans-gujr-ui" omit_regular="t" />
+  <info family="sans-guru" omit_regular="t" />
+  <info family="sans-guru-ui" omit_regular="t" />
   <info family="sans-hano" omit_regular="t" />
-  <info family="sans-hans" limit_original="t" />
-  <info family="sans-hant" limit_original="t" />
+  <info family="sans-hans" no_style_linking="t" />
+  <info family="sans-hant" no_style_linking="t" />
   <info family="sans-hebr" omit_regular="t" />
   <info family="sans-ital" omit_regular="t" />
   <info family="sans-java" omit_regular="t" />
-  <info family="sans-jpan" limit_original="t" />
+  <info family="sans-jpan" no_style_linking="t" />
   <info family="sans-kali" omit_regular="t" />
   <info family="sans-khar" omit_regular="t" />
-  <info family="sans-khmr" omit_regular="t" use_preferred="t" use_wws="t" />
-  <info family="sans-knda" omit_regular="t" use_preferred="t" use_wws="t" />
-  <info family="sans-kore" limit_original="t" />
+  <info family="sans-khmr" omit_regular="t" />
+  <info family="sans-khmr-ui" omit_regular="t" />
+  <info family="sans-knda" omit_regular="t" />
+  <info family="sans-knda-ui" omit_regular="t" />
+  <info family="sans-kore" no_style_linking="t" />
   <info family="sans-kthi" omit_regular="t" />
   <info family="sans-lana" omit_regular="t" />
-  <info family="sans-laoo" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-laoo" omit_regular="t" />
+  <info family="sans-laoo-ui" omit_regular="t" />
   <info family="sans-lepc" omit_regular="t" />
-  <info family="sans-lgc" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-lgc" omit_regular="t" />
+  <info family="sans-lgc-ui" omit_regular="t" />
   <info family="sans-limb" omit_regular="t" />
   <info family="sans-linb" omit_regular="t" />
   <info family="sans-lisu" omit_regular="t" />
   <info family="sans-lyci" omit_regular="t" />
   <info family="sans-lydi" omit_regular="t" />
   <info family="sans-mand" omit_regular="t" />
-  <info family="sans-mlym" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-mlym" omit_regular="t" />
+  <info family="sans-mlym-ui" omit_regular="t" />
   <info family="sans-mong" omit_regular="t" />
   <info family="sans-mtei" omit_regular="t" />
-  <info family="sans-mymr" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-mymr" omit_regular="t" />
+  <info family="sans-mymr-ui" omit_regular="t" />
   <info family="sans-nkoo" omit_regular="t" />
   <info family="sans-ogam" omit_regular="t" />
   <info family="sans-olck" omit_regular="t" />
   <info family="sans-orkh" omit_regular="t" />
-  <info family="sans-orya" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-orya" omit_regular="t" />
+  <info family="sans-orya-ui" omit_regular="t" />
   <info family="sans-osma" omit_regular="t" />
   <info family="sans-phag" omit_regular="t" />
   <info family="sans-phli" omit_regular="t" />
@@ -89,13 +101,16 @@
   <info family="sans-tagb" omit_regular="t" />
   <info family="sans-tale" omit_regular="t" />
   <info family="sans-talu" omit_regular="t" />
-  <info family="sans-taml" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-taml" omit_regular="t" />
+  <info family="sans-taml-ui" omit_regular="t" />
   <info family="sans-tavt" omit_regular="t" />
-  <info family="sans-telu" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-telu" omit_regular="t" />
+  <info family="sans-telu-ui" omit_regular="t" />
   <info family="sans-tfng" omit_regular="t" />
   <info family="sans-tglg" omit_regular="t" />
   <info family="sans-thaa" omit_regular="t" />
-  <info family="sans-thai" omit_regular="t" use_preferred="t" use_wws="t" />
+  <info family="sans-thai" omit_regular="t" />
+  <info family="sans-thai-ui" omit_regular="t" />
   <info family="sans-tibt" omit_regular="t" />
   <info family="sans-ugar" omit_regular="t" />
   <info family="sans-vaii" omit_regular="t" />

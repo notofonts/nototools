@@ -140,8 +140,7 @@ _FONT_NAME_REGEX = (
     '(UI)?'
     '(Display)?'
     '-?'
-    '((?:Semi|Extra|)Cond(?:ensed)?|Narrow)?'
-    '-?' +  # at the moment, allow either naming
+    '((?:Semi)?Condensed)?'
     '(|%s)?' % '|'.join(WEIGHTS.keys()) +
     '(Italic)?'
     '\.(ttf|ttc|otf)')
@@ -311,6 +310,22 @@ def noto_font_to_family_id(notofont):
     tags.append(notofont.variant)
   key = '-'.join(tags)
   return key.lower()
+
+
+def noto_font_to_wws_family_id(notofont):
+  """Return an id roughly corresponding to the wws family.  Used to identify
+  naming rules for the corresponding fonts. Compare to noto_font_to_family_id,
+  which corresponds to a preferred family and is used to determine the language
+  support for those fonts.  For example, 'Noto Sans Devanagari UI' and
+  'Noto Sans Devanagari' support the same languages (e.g. have the same cmap)
+  but have different wws family names and different name rules (names for the
+  UI variant use very short abbreviations)."""
+  id = noto_font_to_family_id(notofont)
+  if notofont.is_UI:
+    id += '-ui'
+  if notofont.is_display:
+    id += '-display'
+  return id
 
 
 def get_noto_fonts(paths=NOTO_FONT_PATHS):
