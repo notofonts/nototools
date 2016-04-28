@@ -1063,21 +1063,26 @@ def check_font(font_props, filename_error,
             is_serif = 1 < serif_val < 11
             if serif_val == 1:
               warn("head/os2/panose/serif", "OS/2",
-                   "Panose serif value is no_fit (1) but expected 0, %s" %
+                   "Panose serif value is 1 (no_fit) but expected 0 or %s" %
                    expected_serif_range_str)
             elif serif_val != 0 and expect_serif != is_serif:
               warn("head/os2/panose/serif", "OS/2",
                    "Panose serif value is %s but expected %s" %
                    (serif_val, expected_serif_range_str))
 
+            # TODO(dougfelt): check condensed, semicondensed proportions?
             expect_mono = noto_font.is_mono or noto_font.family == 'Cousine'
             expect_mono_range_str = '9' if expect_mono else '2-4'
             proportion_val = os2_table.panose.bProportion
             is_mono = proportion_val == 9
             if proportion_val <= 1:
+
               warn("head/os2/panose/proportion", "OS/2",
-                   "Panose proportion value is any (0) or no_fit (1) but "
-                   "expected %s" % expect_mono_range_str)
+                   "Panose proportion value is %s (%s) but "
+                   "expected %s" % (
+                       proportion_val,
+                       'no_fit' if proportion_val == 1 else 'any',
+                       expect_mono_range_str))
             elif expect_mono != is_mono:
               warn("head/os2/panose/proportion", "OS/2",
                    "Panose proportion value is %s but expected %s" %
