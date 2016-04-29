@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <cmapdata>
-  <meta date="2016-04-11" program="noto_cmap_reqs">
+  <meta date="2016-04-29" program="noto_cmap_reqs">
     <args>
       <mergefile val="noto_cmap_phase3.xml" />
     </args>
@@ -61,7 +61,7 @@
     <tr>Kthi,Kaithi,108,0000 000d 0020 002b 002d 00a0 00d7 0966-096f 200b-200d 2010 2012-2015 2022 25cc 25fb-25fe 2e31 a830-a839 11080-110c1,-1,</tr>
     <tr>LGC,(LGC),2792,0000 000d 0020-007e 00a0-0377 037a-037f 0384-038a 038c 038e-03a1 03a3-03e1 03f0-052f 1ab0-1abe 1c80-1c88 1d00-1df5 1dfb-1f15 1f18-1f1d 1f20-1f45 1f48-1f4d 1f50-1f57 1f59 1f5b 1f5d 1f5f-1f7d 1f80-1fb4 1fb6-1fc4 1fc6-1fd3 1fd6-1fdb 1fdd-1fef 1ff2-1ff4 1ff6-1ffe 2000-2064 2066-2071 2074-208e 2090-209c 20a0-20bf 20f0 2100-215f 2184 2189 2c60-2c7f 2de0-2e44 a640-a69f a700-a7ae a7b0-a7b7 a7f7-a7ff a92e ab30-ab65 fb00-fb06 fe20-fe2f feff fffc-fffd,-1,</tr>
     <tr>Lana,Tai Tham,135,0000 000d 0020 00a0 1a20-1a5e 1a60-1a7c 1a7f-1a89 1a90-1a99 1aa0-1aad 200b-200d 25cc,-1,</tr>
-    <tr>Laoo,Lao,93,0000 000d 0020-0022 0027-0029 002c-002f 003a-003b 003f 00a0 00ad 0e81-0e82 0e84 0e87-0e88 0e8a 0e8d 0e94-0e97 0e99-0e9f 0ea1-0ea3 0ea5 0ea7 0eaa-0eab 0ead-0eb9 0ebb-0ebd 0ec0-0ec4 0ec6 0ec8-0ecd 0ed0-0ed9 0edc-0edf 200b-200d 2018-2019 201c-201d 2026 25cc,-1,</tr>
+    <tr>Laoo,Lao,94,0000 000d 0020-0022 0027-0029 002c-002f 003a-003b 003f 00a0 00ad 0e81-0e82 0e84 0e87-0e88 0e8a 0e8d 0e94-0e97 0e99-0e9f 0ea1-0ea3 0ea5 0ea7 0eaa-0eab 0ead-0eb9 0ebb-0ebd 0ec0-0ec4 0ec6 0ec8-0ecd 0ed0-0ed9 0edc-0edf 200b-200d 2018-2019 201c-201d 2026 20ad 25cc,-1,</tr>
     <tr>Lepc,Lepcha,95,0000 000d 0020 002c 002e 003f 00a0 00d7 1c00-1c37 1c3b-1c49 1c4d-1c4f 200b-200d 2012-2015 2022 25cc 25fb-25fe,-1,</tr>
     <tr>Limb,Limbu,87,0000 000d 0020 00a0 00d7 0965 1900-191e 1920-192b 1930-193b 1940 1944-194f 200b-200d 2012-2015 2022 25cc 25fb-25fe,-1,</tr>
     <tr>Lina,Linear A,345,0000 000d 0020 00a0 10600-10736 10740-10755 10760-10767,-1,</tr>
