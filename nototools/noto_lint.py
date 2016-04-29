@@ -1051,6 +1051,43 @@ def check_font(font_props, filename_error,
 
             check_ul_unicode_range()
 
+            if os2_table.panose.bFamilyType != 2:
+              warn("head/os2/panose/family", "OS/2",
+                   "Panose family value is %s but expected 2" %
+                   os2_table.panose.bSerifStyle)
+
+            expect_serif = noto_font.style == 'Serif' or noto_font.family in [
+                'Cousine', 'Tinos']
+            expected_serif_range_str = '2-10' if expect_serif else '11-15'
+            serif_val = os2_table.panose.bSerifStyle
+            is_serif = 1 < serif_val < 11
+            if serif_val == 1:
+              warn("head/os2/panose/serif", "OS/2",
+                   "Panose serif value is 1 (no_fit) but expected 0 or %s" %
+                   expected_serif_range_str)
+            elif serif_val != 0 and expect_serif != is_serif:
+              warn("head/os2/panose/serif", "OS/2",
+                   "Panose serif value is %s but expected %s" %
+                   (serif_val, expected_serif_range_str))
+
+            # TODO(dougfelt): check condensed, semicondensed proportions?
+            expect_mono = noto_font.is_mono or noto_font.family == 'Cousine'
+            expect_mono_range_str = '9' if expect_mono else '2-4'
+            proportion_val = os2_table.panose.bProportion
+            is_mono = proportion_val == 9
+            if proportion_val <= 1:
+
+              warn("head/os2/panose/proportion", "OS/2",
+                   "Panose proportion value is %s (%s) but "
+                   "expected %s" % (
+                       proportion_val,
+                       'no_fit' if proportion_val == 1 else 'any',
+                       expect_mono_range_str))
+            elif expect_mono != is_mono:
+              warn("head/os2/panose/proportion", "OS/2",
+                   "Panose proportion value is %s but expected %s" %
+                   (proportion_val, expect_mono_range_str))
+
 
     def check_vertical_limits():
         if 'glyf' not in font:
