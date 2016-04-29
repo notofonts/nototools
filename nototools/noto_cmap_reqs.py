@@ -1531,6 +1531,8 @@ _SCRIPT_REQUIRED = [
    # General Punctuation
    201C  # LEFT DOUBLE QUOTATION MARK
    201D  # RIGHT DOUBLE QUOTATION MARK
+   # Currency Symbols
+   20AD  # KIP SIGN
    """),
 
   # Lepc - Lepcha
