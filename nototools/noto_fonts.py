@@ -136,17 +136,20 @@ _FONT_NAME_REGEX = (
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
     '(Mono)?'
     '(.*?)'
-    '(Eastern|Estrangela|Western)?'
+    '(Eastern|Estrangela|Western|New)?'
     '(UI)?'
     '(Display)?'
-    '((?:Semi|Extra|)Condensed)?'
-    '(?:-(|%s)(Italic)?)?' % '|'.join(WEIGHTS.keys()) +
+    '-?'
+    '((?:Semi)?Condensed)?'
+    '(|%s)?' % '|'.join(WEIGHTS.keys()) +
+    '(Italic)?'
     '\.(ttf|ttc|otf)')
 
 
 _EXT_REGEX = re.compile(r'.*\.(?:ttf|ttc|otf)$')
 
-def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
+def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
+                  phase=3):
   """Return a NotoFont if filepath points to a noto font, or None if we can't
   process the path."""
 
@@ -181,6 +184,15 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
 
   is_mono = mono == 'Mono'
 
+  if width not in [None, '', 'Condensed', 'SemiCondensed']:
+    print >> sys.stderr, 'noto_fonts: Unexpected width "%s"' % width
+    if width in ['SemiCond', 'Narrow']:
+      width = 'SemiCondensed'
+    elif width == 'Cond':
+      width = 'Condensed'
+    else:
+      width = '#'+ width + '#'
+
   if not script:
     if is_mono:
       script = 'MONO'
@@ -214,7 +226,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
     is_hinted = False
   else:
     hint_status = path.basename(filedir)
-    if hint_status not in ['hinted', 'unhinted']:
+    if (hint_status not in ['hinted', 'unhinted']
+        and 'noto-source' not in filedir):
       print >> sys.stderr, (
           'unknown hint status for %s, defaulting to unhinted') % filedir
     is_hinted = hint_status == 'hinted'
@@ -222,7 +235,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto'):
   manufacturer = (
       'Adobe' if is_cjk
       else 'Google' if script == 'Zsye' and variant == 'color'
-      else 'Khmertype' if script in ['Khmr', 'Cham', 'Laoo']
+      else 'Khmertype' if phase < 3 and script in ['Khmr', 'Cham', 'Laoo']
       else 'Monotype')
 
   return NotoFont(
@@ -297,6 +310,22 @@ def noto_font_to_family_id(notofont):
     tags.append(notofont.variant)
   key = '-'.join(tags)
   return key.lower()
+
+
+def noto_font_to_wws_family_id(notofont):
+  """Return an id roughly corresponding to the wws family.  Used to identify
+  naming rules for the corresponding fonts. Compare to noto_font_to_family_id,
+  which corresponds to a preferred family and is used to determine the language
+  support for those fonts.  For example, 'Noto Sans Devanagari UI' and
+  'Noto Sans Devanagari' support the same languages (e.g. have the same cmap)
+  but have different wws family names and different name rules (names for the
+  UI variant use very short abbreviations)."""
+  id = noto_font_to_family_id(notofont)
+  if notofont.is_UI:
+    id += '-ui'
+  if notofont.is_display:
+    id += '-display'
+  return id
 
 
 def get_noto_fonts(paths=NOTO_FONT_PATHS):

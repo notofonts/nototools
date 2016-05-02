@@ -22,21 +22,19 @@ fonts.  This information looks at all the subfamilies of a family and
 generates a FamilyNameInfo object representing general information
 about that family.  For instance, families with only regular/bold,
 normal/italic subfamilies can use the original opentype name fields
-and don't require preferred names or wws names.  These routines
-also read/write an xml version of this data.
+and don't require preferred names.  These routines also read/write an xml
+version of this data.
 
 The other set of routines generates name information for a noto font,
 using the family name info.  The family name info is required.  For
-example, familes whose subfamilies have more weights than regular/bold
-will have limit_original set, and so will not include the weight in the
-original subfamily name, even if a particular font instance (not knowing
-about the structure of the entire family) could.
+example, familes that have no_style_linking set will put Bold and Regular
+in the original family name and not the subfamily.
 
 The tool api lets you generate the family info file, and/or use it to
 show how one or more fonts' names would be generated.
 
 This of necessity incorporates noto naming conventions-- it expects
-file namess that follow noto conventions, and generates the corresponding
+file names that follow noto conventions, and generates the corresponding
 name table names.  So it is not useful for non-noto fonts.
 """
 
@@ -86,23 +84,29 @@ FAMILY_NAME_INFO_FILE='family_name_info.xml'
 PHASE_2_FAMILY_NAME_INFO_FILE = 'family_name_info_p2.xml'
 PHASE_3_FAMILY_NAME_INFO_FILE = 'family_name_info_p3.xml'
 
-# Represents what and how we write family names in the name table.
-# If limit_original is true, weights become part of the family name,
-# otherwise the family only has Bold and Regular weights so they
-# remain in the subfamily.
-# if use_preferred is true, there are subfamilies that don't fit into
+# Represents how we write family names in the name table.
+#
+# If no_style_linking is true, 'Bold' and 'Regular' weights become
+# part of the family name and the subfamily is 'Regular' or 'Italic',
+# otherwise 'Bold' and 'Regular' are not in the family name and
+# go into the subfamily ('Regular' does not if 'Italic' is there).
+# no_style_linking should not be set if there are no extra weights
+# or widths.
+#
+# If use_preferred is true, there are subfamilies that don't fit into
 # Regular Bold BoldItalic Italic, so generate the preferred names.
-# if use_wws is true, there are subfamilies that don't fit into wws,
-# so generate the wws names.
-# if omit_regular is true, postscript names exclude the subfamily
+# Preferred names are actually WWS names, non-wws fields are promoted
+# to the family and WWS name fields are never populated.
+#
+# If omit_regular is true, postscript and full names exclude the subfamily
 # when it is 'Regular' (Noto phase 2 non-CJK behavior).
 FamilyNameInfo = collections.namedtuple(
     'FamilyNameInfo',
-    'limit_original, use_preferred, use_wws, omit_regular')
+    'no_style_linking, use_preferred, omit_regular, family_name_style')
 
 # Represents expected name table data for a font.
 # Fields expected to be empty are None.  Fields that are expected
-# to be present but have any value are '-'.
+# to be present but can have any value are '-'.
 NameTableData = collections.namedtuple(
     'NameTableData',
     'copyright_re, original_family, original_subfamily, unique_id, '
@@ -235,7 +239,8 @@ def _shift_parts(family_parts, subfamily_parts, stop_fn):
   return result_family_parts, result_subfamily_parts
 
 
-_WWS_RE = re.compile('(?:Condensed|Italic|%s)$' % '|'.join(noto_fonts.WEIGHTS))
+_WWS_RE = re.compile(
+    '(?:(?:Semi)?Condensed|%s|Italic)$' % '|'.join(noto_fonts.WEIGHTS))
 def _is_wws_part(part):
   return _WWS_RE.match(part)
 
@@ -254,32 +259,94 @@ def _is_limited_original_part(part):
   return _LIMITED_ORIGINAL_RE.match(part)
 
 
-def _original_parts(family_parts, subfamily_parts, limited=False):
-  """Set limited to true if weight should be in the family and not
+def _original_parts(family_parts, subfamily_parts, no_style_linking=False):
+  """Set no_style_linking to true if weight should be in the family and not
   the subfamily."""
-  stop_fn = _is_limited_original_part if limited else _is_original_part
+  stop_fn = _is_limited_original_part if no_style_linking else _is_original_part
   return _shift_parts(family_parts, subfamily_parts, stop_fn)
 
 
-def _names(family_parts, subfamily_parts):
-  return (' '.join(family_parts), ' '.join(subfamily_parts))
+_SHORT_NAMES = {
+    'Condensed': 'Cond',
+    'SemiCondensed': 'SemCond',
+    'SemiLight': 'SemLt',
+    'Medium': 'Med',
+    'SemiBold': 'SemBd',
+    'ExtraBold': 'ExtBd',
+    'Black': 'Blk',
+    'Display': 'Disp',
+}
+
+_VERY_SHORT_NAMES = {
+    'Condensed': 'Cn',
+    'SemiCondensed': 'SmCn',
+    'Thin': 'Th',
+    'Light': 'Lt',
+    'SemiLight': 'SmLt',
+    'Medium': 'Md',
+    'Bold': 'Bd',
+    'SemiBold': 'SmBd',
+    'ExtraBold': 'XBd',
+    'Black': 'Bk',
+    'Display': 'D',
+}
+
+
+# TODO: consider shortening the script name as well
+
+def _name_style_for_length(parts, limit):
+  """Return a value indicating whether to use normal, short, very short, or
+  extra short names to represent these parts, depending on what is
+  required to ensure the length <= limit."""
+
+  if limit == 0:
+    return 'normal'
+  name = ' '.join(parts)
+  if len(name) <= limit:
+    return 'normal'
+  name = ' '.join(_SHORT_NAMES.get(n, n) for n in parts)
+  if len(name) <= limit:
+    return 'short'
+  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in parts)
+  if len(name) <= limit:
+    return 'very short'
+  name = name.replace(' ', '')
+  if len(name) <= limit:
+    return 'extra short'
+  raise ValueError('cannot fit %s to length %d' % (parts, limit))
+
+
+def _name_with_style(parts, name_style):
+  """Return a name from parts, using the limit key to determine the style."""
+  if name_style == 'normal':
+    return ' '.join(parts)
+  if name_style == 'short':
+    return ' '.join(_SHORT_NAMES.get(n, n) for n in parts)
+  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in parts)
+  if name_style != 'very short':  # 'extra short'
+    name = name.replace(' ', '')
+  return name
+
+
+def _names(family_parts, subfamily_parts, family_name_style='normal'):
+  family = _name_with_style(family_parts, family_name_style)
+  subfamily = ' '.join(subfamily_parts)
+  return family, subfamily
 
 
 def _preferred_names(preferred_family, preferred_subfamily, use_preferred):
+  # Preferred names are actually WWS names
   if use_preferred:
-    return _names(preferred_family, preferred_subfamily)
-  return None, None
-
-
-def _wws_names(preferred_family, preferred_subfamily, use_wws):
-  if use_wws:
     return _names(*_wws_parts(preferred_family, preferred_subfamily))
   return None, None
 
 
-def _original_names(preferred_family, preferred_subfamily, limited):
+def _original_names(
+    preferred_family, preferred_subfamily, no_style_linking,
+    family_name_style):
   return _names(*_original_parts(
-      preferred_family, preferred_subfamily, limited=limited))
+      preferred_family, preferred_subfamily, no_style_linking=no_style_linking),
+                family_name_style=family_name_style)
 
 
 def _copyright_re(noto_font):
@@ -320,17 +387,24 @@ def _postscript_name(preferred_family, preferred_subfamily, omit_regular):
   return result
 
 
-def _version_re(noto_font):
+def _version_re(noto_font, phase):
   # See comment at top of file about regex values
   if noto_font.manufacturer == 'Adobe':
     sub_len = 3
     hint_ext = ''
-  elif noto_font.manufacturer == 'Google':
-    sub_len = 2
-    hint_ext = '' # no 'uh' suffix for unhinted Color Emoji font
   else:
-    sub_len = 2
-    hint_ext = '' if noto_font.is_hinted else ' uh'
+    if phase < 3:
+      sub_len = 2
+      if noto_font.manufacturer == 'Google':
+        hint_ext = '' # no 'uh' suffix for unhinted Color Emoji font
+      else:
+        hint_ext = '' if noto_font.is_hinted else ' uh'
+    else:
+      sub_len = 3
+      # in phase 3 we 'reverse the polarity' and annotate the version of hinted
+      # hinted fonts with 'h' and leave unhinted (the default) unannotated.
+      hint_ext = ' h' if noto_font.is_hinted else ''
+
   return r'^Version ([0-2])\.(\d{%d})%s(?:;.*)?$' % (sub_len, hint_ext)
 
 
@@ -350,7 +424,7 @@ def _manufacturer(noto_font):
   raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
-def _designer(noto_font):
+def _designer(noto_font, phase):
   if noto_font.manufacturer == 'Adobe':
     return '-'
   if noto_font.manufacturer == 'Monotype':
@@ -358,6 +432,8 @@ def _designer(noto_font):
       if noto_font.style == 'Serif' and noto_font.script in [
           'Beng', 'Gujr', 'Knda', 'Mlym', 'Taml', 'Telu']:
         return 'Indian Type Foundry'
+      if noto_font.script == 'Arab' and phase == 3:
+        return 'Nadine Chahine'
       return 'Monotype Design Team'
     if noto_font.family in ['Arimo', 'Cousine', 'Tinos']:
       return 'Steve Matteson'
@@ -381,23 +457,30 @@ def _designer_url(noto_font):
   raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
-def _description_re(noto_font):
+def _description_re(noto_font, phase):
   # See comment at top of file about regex values
   if noto_font.manufacturer == 'Adobe':
     return '-'
-  if noto_font.manufacturer == 'Monotype':
-    if noto_font.family == 'Noto':
-      return ('^Data %shinted. Designed by Monotype design team.$' %
-              ('' if noto_font.is_hinted else 'un'))
-    # Arimo, Tinos, and Cousine don't currently mention hinting in their
-    # descriptions, but they probably should.
-    # TODO(dougfelt): swat them to fix this.
-    return '-'
   if noto_font.manufacturer == 'Google' and noto_font.variant == 'color':
     return 'Color emoji font using CBDT glyph data.'
-  if noto_font.is_hinted:
-    return '^Data hinted\.(?:\s.*)?$'
-  return '^Data unhinted\.(?:\s.*)?$'
+  if phase < 3:
+    hint_prefix = 'Data %shinted.' % (
+        '' if noto_font.is_hinted else 'un')
+  else:
+    hint_prefix = 'Data hinted.' if noto_font.is_hinted else ''
+
+  designer = ''
+  if noto_font.manufacturer == 'Monotype':
+    if noto_font.family == 'Noto':
+      designer = 'Designed by Monotype design team.'
+      if hint_prefix:
+        hint_prefix += ' '
+    else:
+      # Arimo, Tinos, and Cousine don't currently mention hinting in their
+      # descriptions, but they probably should.
+      # TODO(dougfelt): swat them to fix this.
+      return '-'
+  return '^%s%s$' % (hint_prefix, designer)
 
 
 def _license_text(noto_font):
@@ -416,16 +499,16 @@ def _license_url(noto_font):
   raise ValueError('unknown license type "%s"' % noto_font.license_type)
 
 
-def name_table_data(noto_font, family_to_name_info):
+def name_table_data(noto_font, family_to_name_info, phase):
   """Returns a NameTableData for this font given the family_to_name_info."""
-  family_id = noto_fonts.noto_font_to_family_id(noto_font)
+  family_id = noto_fonts.noto_font_to_wws_family_id(noto_font)
   try:
     info = family_to_name_info[family_id]
   except KeyError:
     print >> sys.stderr, 'no family name info for "%s"' % family_id
     return None
 
-  family_parts, subfamily_parts = _preferred_parts(noto_font)
+  family_parts, subfamily_parts = _wws_parts(*_preferred_parts(noto_font))
   if not info.use_preferred and subfamily_parts not in [
       ['Regular'],
       ['Bold'],
@@ -438,17 +521,13 @@ def name_table_data(noto_font, family_to_name_info):
     return None
 
   ofn, osfn = _original_names(
-      family_parts, subfamily_parts, info.limit_original)
+      family_parts, subfamily_parts, info.no_style_linking,
+      info.family_name_style)
   # If we limit the original names (to put weights into the original family)
   # then we need a preferred name to undo this.  When info is read or generated,
   # the code should ensure use_preferred is set.
   pfn, psfn = _preferred_names(
       family_parts, subfamily_parts, info.use_preferred)
-  wfn, wsfn = _wws_names(family_parts, subfamily_parts, info.use_wws)
-  if wfn and wfn == pfn:
-    wfn = None
-  if wsfn and wsfn == psfn:
-    wsfn = None
   if pfn and pfn == ofn:
     pfn = None
   if psfn and psfn == osfn:
@@ -460,28 +539,29 @@ def name_table_data(noto_font, family_to_name_info):
       original_subfamily=osfn,
       unique_id='-',
       full_name=_full_name(family_parts, subfamily_parts, info.omit_regular),
-      version_re=_version_re(noto_font),
+      version_re=_version_re(noto_font, phase),
       postscript_name=_postscript_name(
           family_parts, subfamily_parts, info.omit_regular),
       trademark=_trademark(noto_font),
       manufacturer=_manufacturer(noto_font),
-      designer=_designer(noto_font),
-      description_re=_description_re(noto_font),
+      designer=_designer(noto_font, phase),
+      description_re=_description_re(noto_font, phase),
       vendor_url=NOTO_URL,
       designer_url=_designer_url(noto_font),
       license_text=_license_text(noto_font),
       license_url=_license_url(noto_font),
       preferred_family=pfn,
       preferred_subfamily=psfn,
-      wws_family=wfn,
-      wws_subfamily=wsfn)
+      wws_family=None,
+      wws_subfamily=None)
 
 
 def _create_family_to_subfamilies(notofonts):
-  """Return a map from preferred family name to set of preferred subfamilies."""
+  """Return a map from preferred family name to set of preferred subfamilies.
+  Note these are WWS family/subfamilies now."""
   family_to_subfamilies = collections.defaultdict(set)
   for noto_font in notofonts:
-    family, subfamily = _names(*_preferred_parts(noto_font))
+    family, subfamily = _names(*_wws_parts(*_preferred_parts(noto_font)))
     family_to_subfamilies[family].add(subfamily)
   return family_to_subfamilies
 
@@ -490,15 +570,32 @@ _NON_ORIGINAL_WEIGHT_PARTS = frozenset(
     w for w in noto_fonts.WEIGHTS
     if w not in ['Bold', 'Regular'])
 _ORIGINAL_PARTS = frozenset(['Bold', 'Regular', 'Italic'])
-_WWS_PARTS = frozenset(['Condensed', 'Italic'] + list(noto_fonts.WEIGHTS))
+_WWS_PARTS = frozenset(
+    ['SemiCondensed', 'Condensed', 'Italic'] +
+    list(noto_fonts.WEIGHTS))
+
+
+def _select_name_style(styles):
+  for style in ['extra short', 'very short', 'short']:
+    if style in styles:
+      return style
+  return 'normal'
+
 
 def create_family_to_name_info(notofonts, phase):
   family_to_parts = collections.defaultdict(set)
+  family_to_name_styles = collections.defaultdict(set)
   cjk_families = set()
   for noto_font in notofonts:
-    family_id = noto_fonts.noto_font_to_family_id(noto_font)
-    family_parts, subfamily_parts = _preferred_parts(noto_font)
+    family_id = noto_fonts.noto_font_to_wws_family_id(noto_font)
+    preferred_family, preferred_subfamily = _preferred_parts(noto_font)
+    _, subfamily_parts = _wws_parts(preferred_family, preferred_subfamily)
     family_to_parts[family_id].update(subfamily_parts)
+    # It's been asserted that the family name can't be longer than 32 chars.
+    # Assume this is only true for nameID 1 and not nameID 16 or 17.
+    family_parts, _ = _original_parts(preferred_family, preferred_subfamily)
+    family_name_style = _name_style_for_length(family_parts, 31)
+    family_to_name_styles[family_id].add(family_name_style)
     if noto_font.is_cjk:
       cjk_families.add(family_id)
   result = {}
@@ -507,26 +604,30 @@ def create_family_to_name_info(notofonts, phase):
     # bold and regular weights, they behave like they have more weights like
     # the rest of CJK.
     family_is_cjk = family_id in cjk_families
-    limit_original = family_is_cjk or bool(
-        part_set & _NON_ORIGINAL_WEIGHT_PARTS)
-    # If we limit original, then we automatically use_preferred.
-    use_preferred = limit_original or bool(part_set - _ORIGINAL_PARTS)
-    use_wws = bool(part_set - _WWS_PARTS)
-    # In phase 3, we keep 'Regular' in the postscript name always, prior to that
-    # we only do so for CJK.
+    no_style_linking = phase == 2 and family_is_cjk
+    use_preferred = no_style_linking or bool(part_set - _ORIGINAL_PARTS)
+    # In phase 3, we keep 'Regular' in the postscript/full name always, prior to
+    # that we only do so for CJK.
     omit_regular = phase == 2 and not family_is_cjk
+    name_style = 'normal' if phase == 2 else _select_name_style(
+        family_to_name_styles[family_id])
     result[family_id] = FamilyNameInfo(
-        limit_original, use_preferred, use_wws, omit_regular)
+        no_style_linking, use_preferred, omit_regular, name_style)
   return result
 
 
 def _build_info_element(family, info):
   attrs = {'family': family}
   for attr in FamilyNameInfo._fields:
-    if getattr(info, attr):
+    val = getattr(info, attr)
+    if attr == 'family_name_style':
+      # only write family length style if not 'normal'
+      if val != 'normal':
+        attrs[attr] = val
+    elif val:
       attrs[attr] = 't'
-  # Don't have to write it out since limit_original implies use_preferred
-  if 'limit_original' in attrs and 'use_preferred' in attrs:
+  # Don't have to write it out since no_style_linking implies use_preferred
+  if 'no_style_linking' in attrs and 'use_preferred' in attrs:
     del attrs['use_preferred']
   return ET.Element('info', attrs)
 
@@ -546,12 +647,14 @@ def _build_tree(family_to_name_info, pretty=False):
 def _read_info_element(info_node):
   def bval(attr):
     return bool(info_node.get(attr, False))
-  # limit_original implies use_preferred
+  def nval(attr):
+    return info_node.get(attr, 'normal')
+  # no_style_linking implies use_preferred
   return FamilyNameInfo(
-      bval('limit_original'),
-      bval('limit_original') or bval('use_preferred'),
-      bval('use_wws'),
-      bval('omit_regular'))
+      bval('no_style_linking'),
+      bval('no_style_linking') or bval('use_preferred') or bval('use_wws'),
+      bval('omit_regular'),
+      nval('family_name_style'))
 
 
 def _read_tree(root):
@@ -623,26 +726,37 @@ def _dump_family_to_faces(family_to_faces):
 def _dump_name_data(name_data):
   if not name_data:
     print '  Error: no name data'
-    return
+    return True
+
+  err = False
   for attr in NameTableData._fields:
     value = getattr(name_data, attr)
     if value:
+      if attr == 'original_family' and len(value) > 31:
+        print '## family too long'
+        err = True
       print '  %20s: %s' % (attr, value)
     else:
       print '  %20s: <none>' % attr
+  return err
 
 
-def _dump_family_names(notofonts, family_to_name_info):
+def _dump_family_names(notofonts, family_to_name_info, phase):
+  err_names = []
   for font in sorted(notofonts, key=lambda f: f.filepath):
-    name_data = name_table_data(font, family_to_name_info)
+    name_data = name_table_data(font, family_to_name_info, phase)
     print font.filepath
-    _dump_name_data(name_data)
+    if _dump_name_data(name_data):
+      err_names.append(font.filepath)
+  if err_names:
+    print '%d names too long:\n  %s' % (
+        len(err_names), '\n  '.join(err_names))
 
 
-def _dump(fonts, info_file):
+def _dump(fonts, info_file, phase):
   """Display information about fonts, using name info from info_file."""
   family_to_name_info = read_family_name_info_file(info_file)
-  _dump_family_names(fonts, family_to_name_info)
+  _dump_family_names(fonts, family_to_name_info, phase)
 
 
 def _write(fonts, info_file, phase):
@@ -655,11 +769,11 @@ def _write(fonts, info_file, phase):
     print write_family_name_info(family_to_name_info, pretty=True)
 
 
-def _test(fonts):
+def _test(fonts, phase):
   """Build name info from font_paths and dump the names for them."""
-  family_to_name_info = create_family_to_name_info(fonts)
+  family_to_name_info = create_family_to_name_info(fonts, phase)
   print write_family_name_info(family_to_name_info, pretty=True)
-  _dump_family_names(fonts, family_to_name_info)
+  _dump_family_names(fonts, family_to_name_info, phase)
 
 
 def _info(fonts):
@@ -756,7 +870,7 @@ def main():
       return
     _write(fonts, args.info_file, args.phase)
   elif args.cmd == 'test':
-    _test(fonts)
+    _test(fonts, args.phase)
   elif args.cmd == 'info':
     _info(fonts)
 
