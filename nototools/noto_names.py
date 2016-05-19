@@ -745,11 +745,12 @@ def _dump_family_names(notofonts, family_to_name_info, phase):
   err_names = []
   for font in sorted(notofonts, key=lambda f: f.filepath):
     name_data = name_table_data(font, family_to_name_info, phase)
+    print
     print font.filepath
     if _dump_name_data(name_data):
       err_names.append(font.filepath)
   if err_names:
-    print '%d names too long:\n  %s' % (
+    print '## %d names too long:\n  %s' % (
         len(err_names), '\n  '.join(err_names))
 
 
@@ -784,6 +785,11 @@ def _info(fonts):
         family, '\n  '.join(sorted(family_to_subfamilies[family])))
 
 
+def _read_filename_list(filenames):
+  with open(filenames, 'r') as f:
+    return [n.strip() for n in f if n]
+
+
 def _collect_paths(dirs, files):
   paths = []
   if dirs:
@@ -791,7 +797,11 @@ def _collect_paths(dirs, files):
       d = tool_utils.resolve_path(d)
       paths.extend(n for n in glob.glob(path.join(d, '*')))
   if files:
-    paths.extend(tool_utils.resolve_path(f) for f in files)
+    for fname in files:
+      if fname[0] == '@':
+        paths.extend(_read_filename_list(fname[1:]))
+      else:
+        paths.append(tool_utils.resolve_path(f))
   return paths
 
 
@@ -831,7 +841,8 @@ def main():
       '-d', '--dirs', metavar='dir', help='font directories to examine '
       '(use "[noto]" for noto fonts/cjk/emoji font dirs)', nargs='+')
   parser.add_argument(
-      '-f', '--files', metavar='fname', help='fonts to examine', nargs='+')
+      '-f', '--files', metavar='fname', help='fonts to examine, prefix with'
+      '\'@\' to read list from file', nargs='+')
   parser.add_argument(
       'cmd', metavar='cmd', help='operation to perform (%s)' % ', '.join(CMDS),
       choices=CMDS)
