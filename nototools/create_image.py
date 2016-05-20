@@ -23,8 +23,21 @@ import argparse
 import codecs
 import os
 from os import path
-fonts_conf = path.abspath(path.join (path.dirname(__file__), "fonts.conf"))
+
+# Workaround fontconfig resolving relative paths w.r.t. current directory,
+# when we want it relative to this directory.
+curdir = path.abspath(path.dirname(__file__))
+os.putenv("XDG_CONFIG_HOME", curdir)
+os.putenv("XDG_DATA_HOME", curdir)
+os.putenv("XDG_CACHE_HOME", curdir)
+
+# This is all we'd need if fontconfig resolved paths differently.
+#
+# NOTE: if the noto fonts are not in the directories listed by fonts.conf,
+# you will have to edit fonts.conf for your environment.
+fonts_conf = path.join(curdir, "fonts.conf")
 os.putenv("FONTCONFIG_FILE", fonts_conf)
+
 
 import cairo
 import pango
