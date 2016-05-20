@@ -134,9 +134,9 @@ _FONT_NAME_REGEX = (
     # family should be prepended - this is so Roboto can be used with unittests
     # that use this regex to parse.
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
-    '(Mono)?'
+    '(Mono(?:space)?)?'
     '(.*?)'
-    '(Eastern|Estrangela|Western|New)?'
+    '(Eastern|Estrangela|Western|Slanted|New)?'
     '(UI)?'
     '(Display)?'
     '-?'
@@ -208,6 +208,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
   elif script == 'CJK':
     # leave script as-is
     pass
+  elif script == 'Symbols2':
+    script = 'SYM2'
   else:
     try:
       script = convert_to_four_letter(script)
