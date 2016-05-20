@@ -63,7 +63,7 @@ def _get_stylenames(styles):
   weights = m.group(1)
   widths = m.group(2) or 'R'
   slopes = m.group(3) or 'R'
-  # print '%s: %s, %s, %s' % (styles, weights, widths, slopes)
+
   names = []
   for wd in widths:
     width_name = _WIDTH_NAMES[wd]
@@ -98,7 +98,7 @@ def _for_all_familynames(namefile, fn):
   """Call fn passing the family name and style descriptor for
   all families in namefile. '#' is a comment to eol, blank lines are
   ignored."""
-  styles = 'RB'
+  styles = None
   with open(namefile, 'r') as f:
     for name in f:
       ix = name.find('#')
@@ -112,14 +112,21 @@ def _for_all_familynames(namefile, fn):
       if m:
         styles = m.group(1)
         continue
-      assert name[0] != '-'
+
+      # Catch a common error in which an intended style tag didn't match the
+      # regex.
+      if name[0] == '-':
+        raise ValueError('Looks like a bad style tag: "%s"' % name)
+      if styles == None:
+        raise ValueError('Styles must be set before first familyname.')
+
       fn(name, styles)
 
 
 def check_familynames(namefile):
   passed = [True]
-  def fn(namefile, styles):
-    name_passed = check_familyname(namefile, styles)
+  def fn(name, styles):
+    name_passed = check_familyname(name, styles)
     passed[0] &= name_passed
   _for_all_familynames(namefile, fn)
   return passed[0]
