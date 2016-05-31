@@ -272,6 +272,10 @@ def script_key_to_scripts(script_key):
     return frozenset(['Arab'])
   elif script_key == 'HST':
     raise ValueError('!do not know scripts for HST script key')
+  elif script_key == 'MONO':
+    # TODO: Mono doesn't actually support all of Latn, we need a better way
+    # to deal with pseudo-script codes like this one.
+    return frozenset(['Latn'])
   else:
     return lang_data.script_includes(script_key)
 
@@ -287,6 +291,8 @@ def script_key_to_primary_script(script_key):
     return 'Arab'
   if script_key == 'HST':
     raise ValueError('!do not know scripts for HST script key')
+  if script_key == 'MONO':
+    return 'Latn'
   if script_key not in lang_data.scripts():
     raise ValueError('!not a script key: %s' % script_key)
   return script_key

@@ -33,9 +33,18 @@ def title_from_metadata(metadata):
   return ' '.join(items)
 
 
-def compare_cmaps(
-    base_cps, target_cps, only_cps, except_cps, no_additions, no_removals):
+CompareOptions = collections.namedtuple(
+    'CompareOptions', 'only_cps, except_cps, no_additions, no_removals')
+
+
+_DEFAULT_COMPARE_OPTIONS = CompareOptions(None, None, False, False)
+
+
+def compare_cmaps(base_cps, target_cps, opts=None):
   """Returns a tuple of added, removed."""
+  if opts == None:
+    opts = _DEFAULT_COMPARE_OPTIONS
+  only_cps, except_cps, no_additions, no_removals = opts
   if only_cps:
     base_cps &= only_cps
     target_cps &= only_cps
@@ -50,8 +59,21 @@ def compare_cmaps(
   return added, removed
 
 
-def compare_cmap_data(base_cmap_data, target_cmap_data, scripts, cps,
-                      except_scripts, except_cps, no_additions, no_removals):
+def compare_data(base_data, target_data, opts=None):
+  base_cps = lint_config.parse_int_ranges(base_data.ranges)
+  target_cps = lint_config.parse_int_ranges(target_data.ranges)
+  added, removed = compare_cmaps(base_cps, target_cps, opts)
+  base_xcps, target_xcps = set(), set()
+  if int(getattr(base_data, 'xcount', -1)) != -1:
+    base_xcps = lint_config.parse_int_ranges(base_data.xranges)
+  if int(getattr(target_data, 'xcount', -1)) != -1:
+    target_xcps = lint_config.parse_int_ranges(target_data.xranges)
+  xadded, xremoved = compare_cmaps(base_xcps, target_xcps, opts)
+  return added, removed, xadded, xremoved
+
+
+def compare_cmap_data(
+    base_cmap_data, target_cmap_data, scripts, except_scripts, opts=None):
   result = {}
   base_map = cmap_data.create_map_from_table(base_cmap_data.table)
   target_map = cmap_data.create_map_from_table(target_cmap_data.table)
@@ -62,31 +84,52 @@ def compare_cmap_data(base_cmap_data, target_cmap_data, scripts, cps,
     if scripts and script not in scripts:
       continue
     if script in target_map:
-      name = base_map[script].name
-      base_cps = lint_config.parse_int_ranges(base_map[script].ranges)
-      target_cps = lint_config.parse_int_ranges(target_map[script].ranges)
-      added, removed = compare_cmaps(
-          base_cps, target_cps, cps, except_cps, no_additions, no_removals)
-      base_xcps, target_xcps = (set(), set())
-      if int(getattr(base_map[script], 'xcount', -1)) != -1:
-        base_xcps = lint_config.parse_int_ranges(base_map[script].xranges)
-      if int(getattr(target_map[script], 'xcount', -1)) != -1:
-        target_xcps = lint_config.parse_int_ranges(target_map[script].xranges)
-      xadded, xremoved = compare_cmaps(
-          base_xcps, target_xcps, cps, except_cps, no_additions, no_removals)
-      result[script] = added, removed, xadded, xremoved
+      base_data = base_map[script]
+      target_data = target_map[script]
+      result[script] = compare_data(base_data, target_data, opts)
   return result
 
 
-def compare_cmap_data_files(base_file, target_file, scripts, ranges,
-                            except_scripts, except_ranges,
-                            no_additions, no_removals):
+def compare_cmap_data_files(
+    base_file, target_file, scripts, except_scripts, opts=None):
   base_cmap_data = cmap_data.read_cmap_data_file(base_file)
   target_cmap_data = cmap_data.read_cmap_data_file(target_file)
   compare = compare_cmap_data(
-      base_cmap_data, target_cmap_data, scripts, ranges,
-      except_scripts, except_ranges, no_additions, no_removals)
+      base_cmap_data, target_cmap_data, scripts, except_scripts, opts)
   return compare, base_cmap_data, target_cmap_data
+
+
+def compare_interscript(base_map, base_script, target_script, opts=None):
+  missing_scripts = []
+  if base_script not in base_map:
+    missing_scripts.append(base_script)
+  if target_script not in base_map:
+    missing_scripts.append(target_script)
+  if missing_scripts:
+    print 'Cannot compare %s and %s, %s not in cmap data.' % (
+        base_script, target_script, ', '.join(missing_scripts))
+    return
+  base_data = base_map[base_script]
+  target_data = base_map[target_script]
+  return compare_data(base_data, target_data, opts)
+
+
+def compare_interscript_data(base_cmap_data, scripts, opts=None):
+  result = {}
+  base_map = cmap_data.create_map_from_table(base_cmap_data.table)
+  for i in range(len(scripts) - 1):
+    base_script = scripts[i]
+    for j in range(i + 1, len(scripts)):
+      target_script = scripts[j]
+      result[base_script, target_script] = compare_interscript(
+          base_map, base_script, target_script, opts)
+  return result
+
+
+def compare_interscript_data_file(base_file, scripts, opts=None):
+  base_cmap_data = cmap_data.read_cmap_data_file(base_file)
+  compare = compare_interscript_data(base_cmap_data, scripts, opts)
+  return compare, base_cmap_data
 
 
 def _print_detailed(cps, inverted_target=None):
@@ -201,6 +244,21 @@ def report_compare(compare_result, detailed=True):
         label, added, removed, xadded, xremoved, inverted_target, detailed)
 
 
+def report_interscript_compare(compare_result, detailed=True):
+  compare, base_cmap_data = compare_result
+  base_map = cmap_data.create_map_from_table(base_cmap_data.table)
+  title = title_from_metadata(base_cmap_data.meta)
+  print 'data: %s' % title
+  for t in sorted(compare):
+    added, removed, xadded, xremoved = compare[t]
+    base_script, target_script = t
+    label = 'base: %s (%s), target: %s (%s)' % (
+        base_script, base_map[base_script].name, target_script,
+        base_map[target_script].name)
+    report_cmap_compare(
+        label, added, removed, xadded, xremoved, None, detailed)
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -208,7 +266,7 @@ def main():
       metavar='file', required=True)
   parser.add_argument(
       '-t', '--target', help='target cmap data file',
-      metavar='file', required=True)
+      metavar='file')
   parser.add_argument(
       '-s', '--scripts', help='only these scripts (except ignored)',
       metavar='code', nargs='+')
@@ -227,6 +285,8 @@ def main():
   parser.add_argument(
       '-nr', '--no_removals', help='do not report removals (in base '
       'but not target)', action='store_true')
+  parser.add_argument(
+      '-d', '--detailed', help='report details', action='store_true')
 
   args = parser.parse_args()
   if args.scripts:
@@ -249,10 +309,19 @@ def main():
   else:
     except_scripts = None
 
+  opts = CompareOptions(cps, except_cps, args.no_additions, args.no_removals)
+
+  if not args.target:
+    if not scripts or len(scripts) < 2:
+      print 'Interscript comparison requires two or more scripts.'
+      return
+    result = compare_interscript_data_file(args.base, args.scripts, opts)
+    report_interscript_compare(result, detailed=args.detailed)
+    return
+
   result = compare_cmap_data_files(
-      args.base, args.target, scripts, cps, except_scripts, except_cps,
-      args.no_additions, args.no_removals)
-  report_compare(result)
+      args.base, args.target, scripts, except_scripts, opts)
+  report_compare(result, detailed=args.detailed)
 
 
 if __name__ == "__main__":
