@@ -93,19 +93,22 @@ class EmojiOrdering(object):
     return self._emoji_to_cat_tuple
 
 
-def from_file(fname):
+def from_file(fname, ext=None, sep=None):
   """Return an EmojiOrdering from the .csv or emojiOrdering file."""
-  _, ext = path.splitext(fname)
+  _, fext = path.splitext(fname)
+  if not ext:
+    ext = fext[1:]
   with codecs.open(fname, 'r', 'utf-8') as f:
     text = f.read()
-  if ext == '.csv':
-    odict = _category_odict_from_csv(text)
+  if ext == 'csv':
+    odict = _category_odict_from_csv(text, sep or ',')
   else:
     odict = _category_odict_from_eo(text)
   return EmojiOrdering(odict)
 
 
-def _category_odict_from_csv(text):
+def _category_odict_from_csv(text, sep=','):
+  print 'processing csv file'
   text_lines = text.splitlines()
   result = collections.OrderedDict()
   category_name = None
@@ -114,7 +117,9 @@ def _category_odict_from_csv(text):
     line = line.strip()
     if not line or line[0] == '#':
       continue
-    category, estrs, subcategory = line.split(',')
+    category, subcategory, estrs = line.split(sep)
+    category = category.strip()
+    subcategory = subcategory.strip()
     if category != category_name:
       if category_name:
         result[category_name] = category_data
@@ -128,6 +133,8 @@ def _category_odict_from_csv(text):
 # set to true to log parsing of file
 DEBUG_LOAD_EMOJI = False
 def _category_odict_from_eo(text):
+  print 'processing eo file'
+
   text_lines = text.splitlines()
   line_re = re.compile(r'^([a-z-]+)\s+(.+)$')
   category = None
@@ -263,8 +270,15 @@ def main():
   parser.add_argument(
       '-f', '--file', help='emoji ordering data file',
       metavar='fname', required=True)
+  parser.add_argument(
+      '--ext', help='treat file as having extension ext',
+      metavar='ext')
+  parser.add_argument(
+      '--sep', help='separator for csv file', default=',',
+      metavar='sep')
+
   args = parser.parse_args()
-  eo = from_file(args.file)
+  eo = from_file(args.file, ext=args.ext, sep=args.sep)
   for category in eo.category_names():
     print category
     for subcategory in eo.subcategory_names(category):

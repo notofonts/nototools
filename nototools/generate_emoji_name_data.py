@@ -96,7 +96,8 @@ def _is_keycap_sequence(cps):
 _KEYCAP_NAMES = {cp: unicode_data.name(cp)[6:] for cp in range(0x30, 0x30+10)}
 
 def _keycap_sequence_name(cps):
-    return 'Keycap ' + _KEYCAP_NAMES.get(cps[0], unicode_data.name(cps[0]))
+  name = _KEYCAP_NAMES.get(cps[0], unicode_data.name(cps[0]))
+  return 'Keycap ' + name.title()
 
 
 def _create_extra_sequence_names():
@@ -263,7 +264,8 @@ def _name_data(estr, estr_to_file):
 
 
 def generate_names(
-    srcdir, outfile, groupfile, force=False, pretty_print=False, verbose=False):
+    srcdir, outfile, ordering_file, eext=None, esep=None, force=False,
+    pretty_print=False, verbose=False):
   if not path.isdir(srcdir):
     print >> sys.stderr, '%s is not a directory' % srcdir
     return
@@ -277,7 +279,7 @@ def generate_names(
       print >> sys.stderr, '%s is not a file' % outfile
       return
 
-  eo = emoji_ordering.from_file(groupfile)
+  eo = emoji_ordering.from_file(ordering_file, ext=eext, sep=esep)
 
   estr_to_file = _estr_to_file(srcdir, eo, verbose)
 
@@ -328,6 +330,14 @@ def main():
       help='name of file containing emoji ordering data',
       metavar='fname', required=True)
   parser.add_argument(
+      '-ee', '--emoji_ordering_ext',
+      help='treat emoji ordering file as having extension ext',
+      metavar='ext')
+  parser.add_argument(
+      '-es', '--emoji_ordering_sep',
+      help='separator for emoji ordering csv file',
+      metavar='sep', default=',')
+  parser.add_argument(
       '-f', '--force', help='overwrite output file if it exists',
       action='store_true')
   parser.add_argument(
@@ -338,8 +348,9 @@ def main():
       action='store_true')
   args = parser.parse_args()
   generate_names(
-      args.srcdir, args.outfile, args.emoji_ordering, force=args.force,
-      pretty_print=args.pretty_print, verbose=args.verbose)
+      args.srcdir, args.outfile, args.emoji_ordering,
+      eext=args.emoji_ordering_ext, esep=args.emoji_ordering_sep,
+      force=args.force, pretty_print=args.pretty_print, verbose=args.verbose)
 
 
 if __name__ == "__main__":
