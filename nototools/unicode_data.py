@@ -75,237 +75,243 @@ _variant_data_cps = None
 _proposed_emoji_data = None
 _proposed_emoji_data_cps = None
 
+# emoji sequences
+_emoji_combining_sequences = None
+_emoji_flag_sequences = None
+_emoji_modifier_sequences = None
+_emoji_zwj_sequences = None
+
 def load_data():
-    """Loads the data files needed for the module.
+  """Loads the data files needed for the module.
 
-    Could be used by processes who care about controlling when the data is
-    loaded. Otherwise, data will be loaded the first time it's needed.
-    """
-    global _data_is_loaded
+  Could be used by processes who care about controlling when the data is
+  loaded. Otherwise, data will be loaded the first time it's needed.
+  """
+  global _data_is_loaded
 
-    if not _data_is_loaded:
-        _load_property_value_aliases_txt()
-        _load_unicode_data_txt()
-        _load_scripts_txt()
-        _load_script_extensions_txt()
-        _load_blocks_txt()
-        _load_derived_age_txt()
-        _load_derived_core_properties_txt()
-        _load_bidi_mirroring_txt()
-        _load_indic_data()
-        _data_is_loaded = True
+  if not _data_is_loaded:
+    _load_property_value_aliases_txt()
+    _load_unicode_data_txt()
+    _load_scripts_txt()
+    _load_script_extensions_txt()
+    _load_blocks_txt()
+    _load_derived_age_txt()
+    _load_derived_core_properties_txt()
+    _load_bidi_mirroring_txt()
+    _load_indic_data()
+    _data_is_loaded = True
 
 
 def name(char, *args):
-    """Returns the name of a character.
+  """Returns the name of a character.
 
-    Raises a ValueError exception if the character is undefined, unless an
-    extra argument is given, in which case it will return that argument.
-    """
-    if type(char) is int:
-        char = unichr(char)
-    # First try and get the name from unidata, which is faster and supports
-    # CJK and Hangul automatic names
-    try:
-        return unicodedata.name(char)
-    except ValueError as val_error:
-        load_data()
-        if ord(char) in _character_names_data:
-            return _character_names_data[ord(char)]
-        elif args:
-            return args[0]
-        else:
-            raise val_error
+  Raises a ValueError exception if the character is undefined, unless an
+  extra argument is given, in which case it will return that argument.
+  """
+  if type(char) is int:
+    char = unichr(char)
+  # First try and get the name from unidata, which is faster and supports
+  # CJK and Hangul automatic names
+  try:
+      return unicodedata.name(char)
+  except ValueError as val_error:
+    load_data()
+    if ord(char) in _character_names_data:
+      return _character_names_data[ord(char)]
+    elif args:
+      return args[0]
+    else:
+      raise val_error
 
 
 def _char_to_int(char):
-    """Converts a potential character to its scalar value."""
-    if type(char) in [str, unicode]:
-        return ord(char)
-    else:
-        return char
-
-
-def category(char):
-    """Returns the general category of a character."""
-    load_data()
-    char = _char_to_int(char)
-    try:
-        return _general_category_data[char]
-    except KeyError:
-        return "Cn"  # Unassigned
-
-
-def combining(char):
-    """Returns the canonical combining class of a character."""
-    load_data()
-    char = _char_to_int(char)
-    try:
-        return _combining_class_data[char]
-    except KeyError:
-        return 0
-
-
-def to_upper(char):
-    """Returns the upper case for a lower case character.
-    This is not full upper casing, but simply reflects the 1-1
-    mapping in UnicodeData.txt."""
-    load_data()
-    cp = _char_to_int(char)
-    try:
-        if _general_category_data[cp] == 'Ll':
-            return unichr(_lower_to_upper_case[cp])
-    except KeyError:
-        pass
+  """Converts a potential character to its scalar value."""
+  if type(char) in [str, unicode]:
+    return ord(char)
+  else:
     return char
 
 
+def category(char):
+  """Returns the general category of a character."""
+  load_data()
+  char = _char_to_int(char)
+  try:
+    return _general_category_data[char]
+  except KeyError:
+    return "Cn"  # Unassigned
+
+
+def combining(char):
+  """Returns the canonical combining class of a character."""
+  load_data()
+  char = _char_to_int(char)
+  try:
+    return _combining_class_data[char]
+  except KeyError:
+    return 0
+
+
+def to_upper(char):
+  """Returns the upper case for a lower case character.
+  This is not full upper casing, but simply reflects the 1-1
+  mapping in UnicodeData.txt."""
+  load_data()
+  cp = _char_to_int(char)
+  try:
+    if _general_category_data[cp] == 'Ll':
+      return unichr(_lower_to_upper_case[cp])
+  except KeyError:
+    pass
+  return char
+
+
 def canonical_decomposition(char):
-    """Returns the canonical decomposition of a character as a Unicode string.
-    """
-    load_data()
-    char = _char_to_int(char)
-    try:
-        return _decomposition_data[char]
-    except KeyError:
-        return u""
+  """Returns the canonical decomposition of a character as a Unicode string.
+  """
+  load_data()
+  char = _char_to_int(char)
+  try:
+    return _decomposition_data[char]
+  except KeyError:
+    return u""
 
 
 def script(char):
-    """Returns the script property of a character as a four-letter code."""
-    load_data()
-    char = _char_to_int(char)
-    try:
-        return _script_data[char]
-    except KeyError:
-        return "Zzzz"  # Unknown
+  """Returns the script property of a character as a four-letter code."""
+  load_data()
+  char = _char_to_int(char)
+  try:
+    return _script_data[char]
+  except KeyError:
+    return "Zzzz"  # Unknown
 
 
 def script_extensions(char):
-    """Returns the script extensions property of a character.
+  """Returns the script extensions property of a character.
 
-    The return value is a frozenset of four-letter script codes.
-    """
-    load_data()
-    char = _char_to_int(char)
-    try:
-        return _script_extensions_data[char]
-    except KeyError:
-        return frozenset([script(char)])
+  The return value is a frozenset of four-letter script codes.
+  """
+  load_data()
+  char = _char_to_int(char)
+  try:
+    return _script_extensions_data[char]
+  except KeyError:
+    return frozenset([script(char)])
 
 
 def block(char):
-    """Returns the block property of a character."""
-    load_data()
-    char = _char_to_int(char)
-    try:
-        return _block_data[char]
-    except KeyError:
-        return "No_Block"
+  """Returns the block property of a character."""
+  load_data()
+  char = _char_to_int(char)
+  try:
+    return _block_data[char]
+  except KeyError:
+    return "No_Block"
 
 
 def block_range(block):
-    """Returns a range (first, last) of the named block."""
-    load_data()
-    return _block_range[block]
+  """Returns a range (first, last) of the named block."""
+  load_data()
+  return _block_range[block]
 
 
 def block_chars(block):
-    """Returns a frozenset of the cps in the named block."""
-    load_data()
-    first, last = _block_range[block]
-    return frozenset(xrange(first, last + 1))
+  """Returns a frozenset of the cps in the named block."""
+  load_data()
+  first, last = _block_range[block]
+  return frozenset(xrange(first, last + 1))
 
 
 def block_names():
-    """Returns the names of the blocks in block order."""
-    load_data()
-    return _block_names[:]
+  """Returns the names of the blocks in block order."""
+  load_data()
+  return _block_names[:]
 
 
 def age(char):
-    """Returns the age property of a character as a string.
+  """Returns the age property of a character as a string.
 
-    Returns None if the character is unassigned."""
-    load_data()
-    char = _char_to_int(char)
-    try:
-        return _age_data[char]
-    except KeyError:
-        return None
+  Returns None if the character is unassigned."""
+  load_data()
+  char = _char_to_int(char)
+  try:
+    return _age_data[char]
+  except KeyError:
+    return None
 
 
 # Uniscribe treats these ignorables (Hangul fillers) as spacing.
 UNISCRIBE_USED_IGNORABLES = frozenset([0x115f, 0x1160, 0x3164, 0xffa0])
 
 def is_default_ignorable(char):
-    """Returns true if the character has the Default_Ignorable property."""
-    load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
-    return char in _core_properties_data["Default_Ignorable_Code_Point"]
+  """Returns true if the character has the Default_Ignorable property."""
+  load_data()
+  if type(char) in [str, unicode]:
+    char = ord(char)
+  return char in _core_properties_data["Default_Ignorable_Code_Point"]
 
 def default_ignorables():
-    load_data()
-    return frozenset(_core_properties_data["Default_Ignorable_Code_Point"])
+  load_data()
+  return frozenset(_core_properties_data["Default_Ignorable_Code_Point"])
 
 
 def is_defined(char):
-    """Returns true if the character is defined in the Unicode Standard."""
-    load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
-    return char in _defined_characters
+  """Returns true if the character is defined in the Unicode Standard."""
+  load_data()
+  if type(char) in [str, unicode]:
+    char = ord(char)
+  return char in _defined_characters
 
 
 def is_private_use(char):
-    """Returns true if the characters is a private use character."""
-    return category(char) == "Co"
+  """Returns true if the characters is a private use character."""
+  return category(char) == "Co"
 
 
 def mirrored(char):
-    """Returns 1 if the characters is bidi mirroring, 0 otherwise."""
-    load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
-    return int(char in _bidi_mirroring_characters)
+  """Returns 1 if the characters is bidi mirroring, 0 otherwise."""
+  load_data()
+  if type(char) in [str, unicode]:
+    char = ord(char)
+  return int(char in _bidi_mirroring_characters)
 
 
 def bidi_mirroring_glyph(char):
-    """Returns the bidi mirroring glyph property of a character."""
-    load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
-    try:
-        return _bidi_mirroring_glyph_data[char]
-    except KeyError:
-        return None
+  """Returns the bidi mirroring glyph property of a character."""
+  load_data()
+  if type(char) in [str, unicode]:
+    char = ord(char)
+  try:
+    return _bidi_mirroring_glyph_data[char]
+  except KeyError:
+    return None
 
 
 def mirrored_chars():
-    return frozenset(_bidi_mirroring_glyph_data.keys())
+  return frozenset(_bidi_mirroring_glyph_data.keys())
 
 
 def indic_positional_category(char):
-    """Returns the Indic positional category of a character."""
-    load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
-    try:
-        return _indic_positional_data[char]
-    except KeyError:
-        return "NA"
+  """Returns the Indic positional category of a character."""
+  load_data()
+  if type(char) in [str, unicode]:
+    char = ord(char)
+  try:
+    return _indic_positional_data[char]
+  except KeyError:
+    return "NA"
 
 
 def indic_syllabic_category(char):
-    """Returns the Indic syllabic category of a character."""
-    load_data()
-    if type(char) in [str, unicode]:
-        char = ord(char)
-    try:
-        return _bidi_syllabic_data[char]
-    except KeyError:
-        return "Other"
+  """Returns the Indic syllabic category of a character."""
+  load_data()
+  if type(char) in [str, unicode]:
+    char = ord(char)
+  try:
+    return _bidi_syllabic_data[char]
+  except KeyError:
+    return "Other"
 
 
 def create_script_to_chars():
@@ -325,42 +331,42 @@ def create_script_to_chars():
 _DEFINED_CHARACTERS_CACHE = {}
 
 def defined_characters(version=None, scr=None):
-    """Returns the set of all defined characters in the Unicode Standard."""
-    load_data()
-    # handle common error where version is passed as string, the age test
-    # will always pass
-    if version != None:
-      version = float(version)
-    try:
-        return _DEFINED_CHARACTERS_CACHE[(version, scr)]
-    except KeyError:
-        pass
-    characters = _defined_characters
-    if version is not None:
-        characters = {char for char in characters
-                      if age(char) is not None and float(age(char)) <= version}
-    if scr is not None:
-        characters = {char for char in characters
-                      if script(char) == scr or scr in script_extensions(char)}
-    characters = frozenset(characters)
-    _DEFINED_CHARACTERS_CACHE[(version, scr)] = characters
-    return characters
+  """Returns the set of all defined characters in the Unicode Standard."""
+  load_data()
+  # handle common error where version is passed as string, the age test
+  # will always pass
+  if version != None:
+    version = float(version)
+  try:
+    return _DEFINED_CHARACTERS_CACHE[(version, scr)]
+  except KeyError:
+    pass
+  characters = _defined_characters
+  if version is not None:
+    characters = {char for char in characters
+                  if age(char) is not None and float(age(char)) <= version}
+  if scr is not None:
+    characters = {char for char in characters
+                  if script(char) == scr or scr in script_extensions(char)}
+  characters = frozenset(characters)
+  _DEFINED_CHARACTERS_CACHE[(version, scr)] = characters
+  return characters
 
 
 def _folded_script_name(script_name):
-    """Folds a script name to its bare bones for comparison."""
-    return script_name.translate(None, "'-_ ").lower()
+  """Folds a script name to its bare bones for comparison."""
+  return script_name.translate(None, "'-_ ").lower()
 
 
 def script_code(script_name):
-    """Returns the four-letter ISO 15924 code of a script from its long name.
-    """
-    load_data()
-    folded_script_name = _folded_script_name(script_name)
-    try:
-      return _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE[folded_script_name]
-    except:
-      return _folded_script_name_to_code.get(folded_script_name, 'Zzzz')
+  """Returns the four-letter ISO 15924 code of a script from its long name.
+  """
+  load_data()
+  folded_script_name = _folded_script_name(script_name)
+  try:
+    return _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE[folded_script_name]
+  except:
+    return _folded_script_name_to_code.get(folded_script_name, 'Zzzz')
 
 
 _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
@@ -379,18 +385,18 @@ _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE = {
 }
 
 def human_readable_script_name(code):
-    """Returns a human-readable name for the script code."""
-    try:
-        return _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES[code]
-    except KeyError:
-        load_data()
-        return _script_code_to_long_name[code]
+  """Returns a human-readable name for the script code."""
+  try:
+    return _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES[code]
+  except KeyError:
+    load_data()
+    return _script_code_to_long_name[code]
 
 
 def all_scripts():
-    """Return a frozenset of all four-letter script codes."""
-    load_data()
-    return frozenset(_script_code_to_long_name.keys())
+  """Return a frozenset of all four-letter script codes."""
+  load_data()
+  return frozenset(_script_code_to_long_name.keys())
 
 
 _DATA_DIR_PATH = path.join(path.abspath(path.dirname(__file__)),
@@ -398,319 +404,431 @@ _DATA_DIR_PATH = path.join(path.abspath(path.dirname(__file__)),
 
 
 def open_unicode_data_file(data_file_name):
-    """Opens a Unicode data file.
+  """Opens a Unicode data file.
 
-    Args:
-      data_file_name: A string containing the filename of the data file.
+  Args:
+    data_file_name: A string containing the filename of the data file.
 
-    Returns:
-      A file handle to the data file.
-    """
-    return open(path.join(_DATA_DIR_PATH, data_file_name), "r")
+  Returns:
+    A file handle to the data file.
+  """
+  return open(path.join(_DATA_DIR_PATH, data_file_name), "r")
 
 
 def _parse_code_ranges(input_data):
-    """Reads Unicode code ranges with properties from an input string.
+  """Reads Unicode code ranges with properties from an input string.
 
-    Reads a Unicode data file already imported into a string. The format is
-    the typical Unicode data file format with either one character or a
-    range of characters separated by a semicolon with a property value (and
-    potentially comments after a number sign, that will be ignored).
+  Reads a Unicode data file already imported into a string. The format is
+  the typical Unicode data file format with either one character or a
+  range of characters separated by a semicolon with a property value (and
+  potentially comments after a number sign, that will be ignored).
 
-    Example source data file:
-      http://www.unicode.org/Public/UNIDATA/Scripts.txt
+  Example source data file:
+    http://www.unicode.org/Public/UNIDATA/Scripts.txt
 
-    Example data:
-      0000..001F    ; Common # Cc  [32] <control-0000>..<control-001F>
-      0020          ; Common # Zs       SPACE
+  Example data:
+    0000..001F    ; Common # Cc  [32] <control-0000>..<control-001F>
+    0020          ; Common # Zs       SPACE
 
-    Args:
-      input_data: An input string, containing the data.
+  Args:
+    input_data: An input string, containing the data.
 
-    Returns:
-      A list of tuples corresponding to the input data, with each tuple
-      containing the beginning of the range, the end of the range, and the
-      property value for the range. For example:
-      [(0, 31, 'Common'), (32, 32, 'Common')]
-    """
-    ranges = []
-    line_regex = re.compile(
-        r"^"  # beginning of line
-        r"([0-9A-F]{4,6})"  # first character code
-        r"(?:\.\.([0-9A-F]{4,6}))?"  # optional second character code
-        r"\s*;\s*"
-        r"([^#]+)")  # the data, up until the potential comment
-    for line in input_data.split("\n"):
-        match = line_regex.match(line)
-        if not match:  # Skip lines that don't match the pattern
-            continue
+  Returns:
+    A list of tuples corresponding to the input data, with each tuple
+    containing the beginning of the range, the end of the range, and the
+    property value for the range. For example:
+    [(0, 31, 'Common'), (32, 32, 'Common')]
+  """
+  ranges = []
+  line_regex = re.compile(
+      r"^"
+      r"([0-9A-F]{4,6})"  # first character code
+      r"(?:\.\.([0-9A-F]{4,6}))?"  # optional second character code
+      r"\s*;\s*"
+      r"([^#]+)")  # the data, up until the potential comment
+  for line in input_data.split("\n"):
+    match = line_regex.match(line)
+    if not match:
+      continue
 
-        first, last, data = match.groups()
-        if last is None:
-            last = first
+    first, last, data = match.groups()
+    if last is None:
+      last = first
 
-        first = int(first, 16)
-        last = int(last, 16)
-        data = data.rstrip()
+    first = int(first, 16)
+    last = int(last, 16)
+    data = data.rstrip()
 
-        ranges.append((first, last, data))
+    ranges.append((first, last, data))
 
-    return ranges
+  return ranges
 
 
 def _parse_semicolon_separated_data(input_data):
-    """Reads semicolon-separated Unicode data from an input string.
+  """Reads semicolon-separated Unicode data from an input string.
 
-    Reads a Unicode data file already imported into a string. The format is
-    the Unicode data file format with a list of values separated by
-    semicolons. The number of the values on different lines may be different
-    from another.
+  Reads a Unicode data file already imported into a string. The format is
+  the Unicode data file format with a list of values separated by
+  semicolons. The number of the values on different lines may be different
+  from another.
 
-    Example source data file:
-      http://www.unicode.org/Public/UNIDATA/PropertyValueAliases.txt
+  Example source data file:
+    http://www.unicode.org/Public/UNIDATA/PropertyValueAliases.txt
 
-    Example data:
-      sc;  Cher  ; Cherokee
-      sc;  Copt  ; Coptic   ; Qaac
+  Example data:
+    sc;  Cher  ; Cherokee
+    sc;  Copt  ; Coptic   ; Qaac
 
-    Args:
-      input_data: An input string, containing the data.
+  Args:
+    input_data: An input string, containing the data.
 
-    Returns:
-      A list of lists corresponding to the input data, with each individual
-      list containing the values as strings. For example:
-      [['sc', 'Cher', 'Cherokee'], ['sc', 'Copt', 'Coptic', 'Qaac']]
-    """
-    all_data = []
-    for line in input_data.split('\n'):
-        line = line.split('#', 1)[0].strip()  # remove the comment
-        if not line:
-            continue
+  Returns:
+    A list of lists corresponding to the input data, with each individual
+    list containing the values as strings. For example:
+    [['sc', 'Cher', 'Cherokee'], ['sc', 'Copt', 'Coptic', 'Qaac']]
+  """
+  all_data = []
+  for line in input_data.split('\n'):
+    line = line.split('#', 1)[0].strip()  # remove the comment
+    if not line:
+      continue
 
-        fields = line.split(';')
-        fields = [field.strip() for field in fields]
-        all_data.append(fields)
+    fields = line.split(';')
+    fields = [field.strip() for field in fields]
+    all_data.append(fields)
 
-    return all_data
+  return all_data
 
 
 def _load_unicode_data_txt():
-    """Load character data from UnicodeData.txt."""
-    global _defined_characters
-    global _bidi_mirroring_characters
+  """Load character data from UnicodeData.txt."""
+  global _defined_characters
+  global _bidi_mirroring_characters
 
-    with open_unicode_data_file("UnicodeData.txt") as unicode_data_txt:
-        unicode_data = _parse_semicolon_separated_data(unicode_data_txt.read())
+  with open_unicode_data_file("UnicodeData.txt") as unicode_data_txt:
+    unicode_data = _parse_semicolon_separated_data(unicode_data_txt.read())
 
-    for line in unicode_data:
-        code = int(line[0], 16)
-        char_name = line[1]
-        general_category = line[2]
-        combining_class = int(line[3])
+  for line in unicode_data:
+    code = int(line[0], 16)
+    char_name = line[1]
+    general_category = line[2]
+    combining_class = int(line[3])
 
-        decomposition = line[5]
-        if decomposition.startswith('<'):
-            # We only care about canonical decompositions
-            decomposition = ''
-        decomposition = decomposition.split()
-        decomposition = [unichr(int(char, 16)) for char in decomposition]
-        decomposition = ''.join(decomposition)
+    decomposition = line[5]
+    if decomposition.startswith('<'):
+        # We only care about canonical decompositions
+        decomposition = ''
+    decomposition = decomposition.split()
+    decomposition = [unichr(int(char, 16)) for char in decomposition]
+    decomposition = ''.join(decomposition)
 
-        bidi_mirroring = (line[9] == 'Y')
-        if general_category == 'Ll':
-          upcode = line[12]
-          if upcode:
-            upper_case = int(upcode, 16)
-            _lower_to_upper_case[code] = upper_case
+    bidi_mirroring = (line[9] == 'Y')
+    if general_category == 'Ll':
+      upcode = line[12]
+      if upcode:
+        upper_case = int(upcode, 16)
+        _lower_to_upper_case[code] = upper_case
 
-        if char_name.endswith("First>"):
-            last_range_opener = code
-        elif char_name.endswith("Last>"):
-            # Ignore surrogates
-            if "Surrogate" not in char_name:
-                for char in xrange(last_range_opener, code+1):
-                    _general_category_data[char] = general_category
-                    _combining_class_data[char] = combining_class
-                    if bidi_mirroring:
-                        _bidi_mirroring_characters.add(char)
-                    _defined_characters.add(char)
-        else:
-            _character_names_data[code] = char_name
-            _general_category_data[code] = general_category
-            _combining_class_data[code] = combining_class
-            if bidi_mirroring:
-                _bidi_mirroring_characters.add(code)
-            _decomposition_data[code] = decomposition
-            _defined_characters.add(code)
+    if char_name.endswith("First>"):
+      last_range_opener = code
+    elif char_name.endswith("Last>"):
+      # Ignore surrogates
+      if "Surrogate" not in char_name:
+        for char in xrange(last_range_opener, code+1):
+          _general_category_data[char] = general_category
+          _combining_class_data[char] = combining_class
+          if bidi_mirroring:
+            _bidi_mirroring_characters.add(char)
+          _defined_characters.add(char)
+    else:
+      _character_names_data[code] = char_name
+      _general_category_data[code] = general_category
+      _combining_class_data[code] = combining_class
+      if bidi_mirroring:
+        _bidi_mirroring_characters.add(code)
+      _decomposition_data[code] = decomposition
+      _defined_characters.add(code)
 
-    _defined_characters = frozenset(_defined_characters)
-    _bidi_mirroring_characters = frozenset(_bidi_mirroring_characters)
+  _defined_characters = frozenset(_defined_characters)
+  _bidi_mirroring_characters = frozenset(_bidi_mirroring_characters)
 
 
 def _load_scripts_txt():
-    """Load script property from Scripts.txt."""
-    with open_unicode_data_file("Scripts.txt") as scripts_txt:
-        script_ranges = _parse_code_ranges(scripts_txt.read())
+  """Load script property from Scripts.txt."""
+  with open_unicode_data_file("Scripts.txt") as scripts_txt:
+    script_ranges = _parse_code_ranges(scripts_txt.read())
 
-    for first, last, script_name in script_ranges:
-        folded_script_name = _folded_script_name(script_name)
-        script = _folded_script_name_to_code[folded_script_name]
-        for char_code in xrange(first, last+1):
-            _script_data[char_code] = script
+  for first, last, script_name in script_ranges:
+    folded_script_name = _folded_script_name(script_name)
+    script = _folded_script_name_to_code[folded_script_name]
+    for char_code in xrange(first, last+1):
+      _script_data[char_code] = script
 
 
 def _load_script_extensions_txt():
-    """Load script property from ScriptExtensions.txt."""
-    with open_unicode_data_file("ScriptExtensions.txt") as se_txt:
-        script_extensions_ranges = _parse_code_ranges(se_txt.read())
+  """Load script property from ScriptExtensions.txt."""
+  with open_unicode_data_file("ScriptExtensions.txt") as se_txt:
+    script_extensions_ranges = _parse_code_ranges(se_txt.read())
 
-    for first, last, script_names in script_extensions_ranges:
-        script_set = frozenset(script_names.split(' '))
-        for character_code in xrange(first, last+1):
-            _script_extensions_data[character_code] = script_set
+  for first, last, script_names in script_extensions_ranges:
+    script_set = frozenset(script_names.split(' '))
+    for character_code in xrange(first, last+1):
+      _script_extensions_data[character_code] = script_set
 
 
 def _load_blocks_txt():
-    """Load block name from Blocks.txt."""
-    with open_unicode_data_file("Blocks.txt") as blocks_txt:
-        block_ranges = _parse_code_ranges(blocks_txt.read())
+  """Load block name from Blocks.txt."""
+  with open_unicode_data_file("Blocks.txt") as blocks_txt:
+    block_ranges = _parse_code_ranges(blocks_txt.read())
 
-    for first, last, block_name in block_ranges:
-        _block_names.append(block_name)
-        _block_range[block_name] = (first, last)
-        for character_code in xrange(first, last + 1):
-            _block_data[character_code] = block_name
+  for first, last, block_name in block_ranges:
+    _block_names.append(block_name)
+    _block_range[block_name] = (first, last)
+    for character_code in xrange(first, last + 1):
+      _block_data[character_code] = block_name
 
 
 def _load_derived_age_txt():
-    """Load age property from DerivedAge.txt."""
-    with open_unicode_data_file("DerivedAge.txt") as derived_age_txt:
-        age_ranges = _parse_code_ranges(derived_age_txt.read())
+  """Load age property from DerivedAge.txt."""
+  with open_unicode_data_file("DerivedAge.txt") as derived_age_txt:
+    age_ranges = _parse_code_ranges(derived_age_txt.read())
 
-    for first, last, char_age in age_ranges:
-        for char_code in xrange(first, last+1):
-            _age_data[char_code] = char_age
+  for first, last, char_age in age_ranges:
+    for char_code in xrange(first, last+1):
+      _age_data[char_code] = char_age
 
 
 def _load_derived_core_properties_txt():
-    """Load derived core properties from Blocks.txt."""
-    with open_unicode_data_file("DerivedCoreProperties.txt") as dcp_txt:
-        dcp_ranges = _parse_code_ranges(dcp_txt.read())
+  """Load derived core properties from Blocks.txt."""
+  with open_unicode_data_file("DerivedCoreProperties.txt") as dcp_txt:
+    dcp_ranges = _parse_code_ranges(dcp_txt.read())
 
-    for first, last, property_name in dcp_ranges:
-        for character_code in xrange(first, last+1):
-            try:
-                _core_properties_data[property_name].add(character_code)
-            except KeyError:
-                _core_properties_data[property_name] = {character_code}
+  for first, last, property_name in dcp_ranges:
+    for character_code in xrange(first, last+1):
+      try:
+        _core_properties_data[property_name].add(character_code)
+      except KeyError:
+        _core_properties_data[property_name] = {character_code}
 
 
 def _load_property_value_aliases_txt():
-    """Load property value aliases from PropertyValueAliases.txt."""
-    with open_unicode_data_file("PropertyValueAliases.txt") as pva_txt:
-        aliases = _parse_semicolon_separated_data(pva_txt.read())
+  """Load property value aliases from PropertyValueAliases.txt."""
+  with open_unicode_data_file("PropertyValueAliases.txt") as pva_txt:
+    aliases = _parse_semicolon_separated_data(pva_txt.read())
 
-    for data_item in aliases:
-        if data_item[0] == 'sc': # Script
-            code = data_item[1]
-            long_name = data_item[2]
-            _script_code_to_long_name[code] = long_name.replace('_', ' ')
-            folded_name = _folded_script_name(long_name)
-            _folded_script_name_to_code[folded_name] = code
+  for data_item in aliases:
+    if data_item[0] == 'sc': # Script
+      code = data_item[1]
+      long_name = data_item[2]
+      _script_code_to_long_name[code] = long_name.replace('_', ' ')
+      folded_name = _folded_script_name(long_name)
+      _folded_script_name_to_code[folded_name] = code
 
 
 def _load_bidi_mirroring_txt():
-    """Load bidi mirroring glyphs from BidiMirroring.txt."""
+  """Load bidi mirroring glyphs from BidiMirroring.txt."""
 
-    with open_unicode_data_file("BidiMirroring.txt") as bidi_mirroring_txt:
-        bmg_pairs = _parse_semicolon_separated_data(bidi_mirroring_txt.read())
+  with open_unicode_data_file("BidiMirroring.txt") as bidi_mirroring_txt:
+    bmg_pairs = _parse_semicolon_separated_data(bidi_mirroring_txt.read())
 
-    for char, bmg in bmg_pairs:
-        char = int(char, 16)
-        bmg = int(bmg, 16)
-        _bidi_mirroring_glyph_data[char] = bmg
+  for char, bmg in bmg_pairs:
+    char = int(char, 16)
+    bmg = int(bmg, 16)
+    _bidi_mirroring_glyph_data[char] = bmg
 
 
 def _load_indic_data():
-    """Load Indic properties from Indic(Positional|Syllabic)Category.txt."""
-    with open_unicode_data_file("IndicPositionalCategory.txt") as inpc_txt:
-        positional_ranges = _parse_code_ranges(inpc_txt.read())
-    for first, last, char_position in positional_ranges:
-        for char_code in xrange(first, last+1):
-            _indic_positional_data[char_code] = char_position
+  """Load Indic properties from Indic(Positional|Syllabic)Category.txt."""
+  with open_unicode_data_file("IndicPositionalCategory.txt") as inpc_txt:
+    positional_ranges = _parse_code_ranges(inpc_txt.read())
+  for first, last, char_position in positional_ranges:
+    for char_code in xrange(first, last+1):
+      _indic_positional_data[char_code] = char_position
 
-    with open_unicode_data_file("IndicSyllabicCategory.txt") as insc_txt:
-        syllabic_ranges = _parse_code_ranges(insc_txt.read())
-    for first, last, char_syllabic_category in syllabic_ranges:
-        for char_code in xrange(first, last+1):
-            _indic_syllabic_data[char_code] = char_syllabic_category
+  with open_unicode_data_file("IndicSyllabicCategory.txt") as insc_txt:
+    syllabic_ranges = _parse_code_ranges(insc_txt.read())
+  for first, last, char_syllabic_category in syllabic_ranges:
+    for char_code in xrange(first, last+1):
+      _indic_syllabic_data[char_code] = char_syllabic_category
 
 
 def _load_emoji_data():
-    """Parse the new draft format of emoji-data.txt"""
-    global _presentation_default_emoji, _presentation_default_text
-    global _emoji, _emoji_modifier_base
+  """Parse the new draft format of emoji-data.txt"""
+  global _presentation_default_emoji, _presentation_default_text
+  global _emoji, _emoji_modifier_base
 
-    if _presentation_default_emoji:
-        return
+  if _presentation_default_emoji:
+    return
 
-    emoji_sets = {
-        'Emoji': set(),
-        'Emoji_Presentation': set(),
-        'Emoji_Modifier': set(),
-        'Emoji_Modifier_Base': set()
-        }
+  emoji_sets = {
+      'Emoji': set(),
+      'Emoji_Presentation': set(),
+      'Emoji_Modifier': set(),
+      'Emoji_Modifier_Base': set()
+  }
 
-    set_names = '|'.join(sorted(emoji_sets.keys()))
-    line_re = re.compile(
-        r'([0-9A-F]{4,6})(?:\.\.([0-9A-F]{4,6}))?\s*;\s*'
-        r'(%s)\s*#.*$' % set_names)
-    with open_unicode_data_file('emoji-data.txt') as f:
-        for line in f:
-            line = line.strip()
-            if not line or line[0] == '#':
-                continue
-            m = line_re.match(line)
-            if not m:
-                print 'Did not match "%s"' % line
-                continue
-            start = int(m.group(1), 16)
-            end = start if not m.group(2) else int(m.group(2), 16)
-            emoji_set = emoji_sets.get(m.group(3))
-            emoji_set.update(range(start, end + 1))
-    _presentation_default_emoji = frozenset(
-        emoji_sets['Emoji_Presentation'])
-    _presentation_default_text = frozenset(
-        emoji_sets['Emoji'] - emoji_sets['Emoji_Presentation'])
-    _emoji_modifier_base = frozenset(
-        emoji_sets['Emoji_Modifier_Base'])
-    _emoji = frozenset(
-        emoji_sets['Emoji'])
+  set_names = '|'.join(sorted(emoji_sets.keys()))
+  line_re = re.compile(
+      r'([0-9A-F]{4,6})(?:\.\.([0-9A-F]{4,6}))?\s*;\s*'
+      r'(%s)\s*#.*$' % set_names)
+
+  with open_unicode_data_file('emoji-data.txt') as f:
+    for line in f:
+      line = line.strip()
+      if not line or line[0] == '#':
+          continue
+      m = line_re.match(line)
+      if not m:
+          raise ValueError('Did not match "%s"' % line)
+      start = int(m.group(1), 16)
+      end = start if not m.group(2) else int(m.group(2), 16)
+      emoji_set = emoji_sets.get(m.group(3))
+      emoji_set.update(range(start, end + 1))
+
+  _presentation_default_emoji = frozenset(
+      emoji_sets['Emoji_Presentation'])
+  _presentation_default_text = frozenset(
+      emoji_sets['Emoji'] - emoji_sets['Emoji_Presentation'])
+  _emoji_modifier_base = frozenset(
+      emoji_sets['Emoji_Modifier_Base'])
+  _emoji = frozenset(
+      emoji_sets['Emoji'])
+
+
+def _load_emoji_sequence_data():
+  """Parse emoji-sequences.txt"""
+  global _emoji_combining_sequences, _emoji_flag_sequences
+  global _emoji_modifier_sequences
+  if _emoji_combining_sequences:
+      return
+  emoji_maps = {
+      'Emoji_Combining_Sequence': {},
+      'Emoji_Flag_Sequence': {},
+      'Emoji_Modifier_Sequence': {},
+  }
+  map_names = '|'.join(sorted(emoji_maps.keys()))
+  line_re = re.compile(
+      r'([0-9A-F ]+);\s+(%s)\s+#\s+(\d+\.\d+)\s.*?(?:Flag for (.*))?$' %
+      map_names)
+  with open_unicode_data_file('emoji-sequences.txt') as f:
+    for line in f:
+      line = line.strip()
+      if not line or line[0] == '#':
+        continue
+      m = line_re.match(line)
+      if not m:
+        raise ValueError('Did not match "%s"' % line)
+      seq = tuple(int(s, 16) for s in m.group(1).split())
+      emoji_map = emoji_maps[m.group(2)]
+      is_flag = m.group(2) == 'Emoji_Flag_Sequence'
+      age = float(m.group(3))
+      flag_name = m.group(4)
+      value = (age, flag_name) if is_flag else age
+      emoji_map[seq] = value
+  _emoji_combining_sequences = emoji_maps['Emoji_Combining_Sequence']
+  _emoji_flag_sequences = emoji_maps['Emoji_Flag_Sequence']
+  _emoji_modifier_sequences = emoji_maps['Emoji_Modifier_Sequence']
+
+
+def _load_emoji_zwj_sequence_data():
+  """Parse emoji-zwj-sequences.txt."""
+  global _emoji_zwj_sequences
+  if _emoji_zwj_sequences:
+      return
+  line_re = re.compile(
+      r'([0-9A-F ]+);\s+Emoji_ZWJ_Sequence\s+'
+      r'#\s(\d+.\d+)\s.*?\)\s+(?:([^:]+):|EYE, LEFT SPEECH BUBBLE).*$')
+  data = {}
+  with open_unicode_data_file('emoji-zwj-sequences.txt') as f:
+    for line in f:
+      line = line.strip()
+      if not line or line[0] == '#':
+        continue
+      m = line_re.match(line)
+      if not m:
+        raise ValueError('Did not match "%s"' % line)
+      seq = tuple(int(s, 16) for s in m.group(1).split())
+      age = float(m.group(2))
+      seq_name = m.group(3)
+      # patch in preferred name for this anomalous value
+      if seq_name is None:
+        seq_name = 'I Witness'
+      data[seq] = (age, seq_name)
+  _emoji_zwj_sequences = data
+
+
+def _age_set_select(seq_to_age, age):
+  """Return a set of keys in seq_to_age, optionally limited to
+  those <= the provided age."""
+  if age is None:
+    return seq_to_age.keys()
+  else:
+    age = float(age)
+    return {k for k, v in seq_to_age.iteritems() if v <= age}
+
+
+def _age_map_select(seq_to_age_tup, age):
+  """Return a map from keys to the second item in age_tup, optionally limited
+  to those <= the provided age."""
+  if age is None:
+    return {k: v[1] for k, v in seq_to_age_tup.iteritems()}
+  else:
+    age = float(age)
+    return {k: v[1] for k, v in seq_to_age_tup.iteritems()
+            if v[0] <= age}
+
+
+def get_emoji_combining_sequences(age=None):
+  """Return set of combining sequences, optionally limited to
+  those <= the provided age."""
+  _load_emoji_sequence_data()
+  return _age_set_select(_emoji_combining_sequences, age)
+
+
+def get_emoji_flag_sequences(age=None):
+  """Return map from flag sequence to region name, optionally limited to
+  those <= the provided age."""
+  _load_emoji_sequence_data()
+  return _age_map_select(_emoji_flag_sequences, age)
+
+
+def get_emoji_modifier_sequences(age=None):
+  """Return set of modifier sequences, optionally limited to
+  those <= the provided age."""
+  _load_emoji_sequence_data()
+  return _age_set_select(_emoji_modifier_sequences, age)
+
+
+def get_emoji_zwj_sequences(age=None):
+  """Return a map from emoji_zwj sequences to name, optionally limited
+  to those <= the provided age."""
+  _load_emoji_zwj_sequence_data()
+  return _age_map_select(_emoji_zwj_sequences, age)
 
 
 def get_presentation_default_emoji():
-    _load_emoji_data()
-    return _presentation_default_emoji
+  _load_emoji_data()
+  return _presentation_default_emoji
 
 
 def get_presentation_default_text():
-    _load_emoji_data()
-    return _presentation_default_text
+  _load_emoji_data()
+  return _presentation_default_text
 
 
 def get_emoji():
-    _load_emoji_data()
-    return _emoji
+  _load_emoji_data()
+  return _emoji
 
 
 def is_emoji(cp):
-    _load_emoji_data()
-    return cp in _emoji
+  _load_emoji_data()
+  return cp in _emoji
 
 
 def is_emoji_modifier_base(cp):
-    _load_emoji_data()
-    return cp in _emoji_modifier_base
+  _load_emoji_data()
+  return cp in _emoji_modifier_base
 
 
 def _load_unicode_emoji_variants():
@@ -804,8 +922,8 @@ def variant_data_cps():
 # proposed emoji
 
 def _load_proposed_emoji_data():
-  """Parse proposed-emoji-9.txt to get cps/names of proposed emoji that are not
-  yet approved for Unicode 9."""
+  """Parse proposed-emoji-10.txt to get cps/names of proposed emoji that are not
+  yet approved for Unicode 10."""
 
   global _proposed_emoji_data, _proposed_emoji_data_cps
   if _proposed_emoji_data:
@@ -813,8 +931,8 @@ def _load_proposed_emoji_data():
 
   _proposed_emoji_data = {}
   line_re = re.compile(
-      r'^U\+([a-zA-z0-9]{4,5})\s+[^ \t]+\s+[^ \t]+\s+Q\d\s+(.*)$')
-  with open_unicode_data_file('proposed-emoji-9.txt') as f:
+      r'^U\+([a-zA-z0-9]{4,5})\s.*\s\d{4}Q\d\s+(.*)$')
+  with open_unicode_data_file('proposed-emoji-10.txt') as f:
     for line in f:
       line = line.strip()
       if not line:
@@ -822,14 +940,12 @@ def _load_proposed_emoji_data():
 
       m = line_re.match(line)
       if not m:
-        # print 'did not match "%s"' % line
-        continue
+        raise ValueError('did not match "%s"' % line)
       cp = int(m.group(1), 16)
       name = m.group(2)
       if cp in _proposed_emoji_data:
-        print 'duplicate emoji %x, old name: %s, new name: %s' % (
-            cp, _proposed_emoji_data[cp], name)
-        continue
+        raise ValueError('duplicate emoji %x, old name: %s, new name: %s' % (
+            cp, _proposed_emoji_data[cp], name))
 
       _proposed_emoji_data[cp] = name
   _proposed_emoji_data_cps = frozenset(_proposed_emoji_data.keys())
@@ -874,7 +990,42 @@ def codeset(cpname):
     return read_codeset(f.read())
 
 
+def _dump_emoji_sequences():
+  """Dump sequences, for testing."""
+  print 'combining sequences'
+  for seq in sorted(get_emoji_combining_sequences()):
+      print '+'.join('%04x' % cp for cp in seq)
+  print 'flag sequences'
+  for seq, seq_name in sorted(get_emoji_flag_sequences().items()):
+      print '+'.join('%04x' % cp for cp in seq), seq_name
+  print 'modifier sequences'
+  for seq in sorted(get_emoji_modifier_sequences()):
+      print '+'.join('%04x' % cp for cp in seq), name(seq[0])
+  print 'zwj sequences'
+  for seq, seq_name in sorted(get_emoji_zwj_sequences(age=8.0).items()):
+      print '+'.join('%04x' % cp for cp in seq), seq_name
+
+
+def _dump_emoji_presentation():
+  """Dump presentation info, for testing."""
+
+  text_p = 0
+  emoji_p = 0
+  for cp in sorted(get_emoji()):
+    cp_name = name(cp, '<error>')
+    if cp in get_presentation_default_emoji():
+      presentation = 'emoji'
+      emoji_p += 1
+    elif cp in get_presentation_default_text():
+      presentation = 'text'
+      text_p += 1
+    else:
+      presentation = '<error>'
+    print '%s%04x %5s %s' % (
+        ' ' if cp < 0x10000 else '', cp, presentation, cp_name)
+  print '%d total emoji, %d text presentation, %d emoji presentation' % (
+      len(get_emoji()), text_p, emoji_p)
+
+
 if __name__ == '__main__':
-  for cp in sorted(variant_data_cps()):
-    print '%04x: %s' % (
-        cp, ', '.join('(%x, %x, %x)' % t for t in get_variant_data(cp)))
+    _dump_emoji_presentation()
