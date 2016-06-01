@@ -327,6 +327,10 @@ _DEFINED_CHARACTERS_CACHE = {}
 def defined_characters(version=None, scr=None):
     """Returns the set of all defined characters in the Unicode Standard."""
     load_data()
+    # handle common error where version is passed as string, the age test
+    # will always pass
+    if version != None:
+      version = float(version)
     try:
         return _DEFINED_CHARACTERS_CACHE[(version, scr)]
     except KeyError:
