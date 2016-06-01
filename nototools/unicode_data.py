@@ -751,7 +751,7 @@ def _load_emoji_zwj_sequence_data():
       age = float(m.group(2))
       seq_name = m.group(3)
       # patch in preferred name for this anomalous value
-      if seq_name == None:
+      if seq_name is None:
         seq_name = 'I Witness'
       data[seq] = (age, seq_name)
   _emoji_zwj_sequences = data
@@ -760,7 +760,7 @@ def _load_emoji_zwj_sequence_data():
 def _age_set_select(seq_to_age, age):
   """Return a set of keys in seq_to_age, optionally limited to
   those <= the provided age."""
-  if age == None:
+  if age is None:
     return seq_to_age.keys()
   else:
     age = float(age)
@@ -770,7 +770,7 @@ def _age_set_select(seq_to_age, age):
 def _age_map_select(seq_to_age_tup, age):
   """Return a map from keys to the second item in age_tup, optionally limited
   to those <= the provided age."""
-  if age == None:
+  if age is None:
     return {k: v[1] for k, v in seq_to_age_tup.iteritems()}
   else:
     age = float(age)
@@ -1009,7 +1009,6 @@ def _dump_emoji_sequences():
 def _dump_emoji_presentation():
   """Dump presentation info, for testing."""
 
-  ok = 0
   text_p = 0
   emoji_p = 0
   for cp in sorted(get_emoji()):
@@ -1023,7 +1022,7 @@ def _dump_emoji_presentation():
     else:
       presentation = '<error>'
     print '%s%04x %5s %s' % (
-        ' ' if cp < 10000 else '', cp, presentation, cp_name)
+        ' ' if cp < 0x10000 else '', cp, presentation, cp_name)
   print '%d total emoji, %d text presentation, %d emoji presentation' % (
       len(get_emoji()), text_p, emoji_p)
 
