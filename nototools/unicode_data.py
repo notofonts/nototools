@@ -804,8 +804,8 @@ def variant_data_cps():
 # proposed emoji
 
 def _load_proposed_emoji_data():
-  """Parse proposed-emoji-9.txt to get cps/names of proposed emoji that are not
-  yet approved for Unicode 9."""
+  """Parse proposed-emoji-10.txt to get cps/names of proposed emoji that are not
+  yet approved for Unicode 10."""
 
   global _proposed_emoji_data, _proposed_emoji_data_cps
   if _proposed_emoji_data:
@@ -813,8 +813,8 @@ def _load_proposed_emoji_data():
 
   _proposed_emoji_data = {}
   line_re = re.compile(
-      r'^U\+([a-zA-z0-9]{4,5})\s+[^ \t]+\s+[^ \t]+\s+Q\d\s+(.*)$')
-  with open_unicode_data_file('proposed-emoji-9.txt') as f:
+      r'^U\+([a-zA-z0-9]{4,5})\s.*\s\d{4}Q\d\s+(.*)$')
+  with open_unicode_data_file('proposed-emoji-10.txt') as f:
     for line in f:
       line = line.strip()
       if not line:
