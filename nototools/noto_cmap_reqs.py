@@ -567,6 +567,7 @@ def _reassign_by_block(cmap_ops):
         cmap_ops.remove(cp, from_script)
       cmap_ops.add(cp, to_script)
 
+
 def _remove_empty(cmap_ops):
   """Remove any empty scripts (Braille should be one)."""
   cmap_ops.phase('remove empty')
@@ -574,6 +575,14 @@ def _remove_empty(cmap_ops):
   for script, chars in script_to_chars.iteritems():
     if not chars:
       cmap_ops.delete_script(script)
+
+
+def _reassign_symbols(cmap_ops):
+  """Some symbols belong together but get split up when we assign by block."""
+  tv_symbols = tool_utils.parse_int_ranges('23fb-23fe 2b58')
+  cmap_ops.phase('reassign symbols')
+  cmap_ops.add_all(tv_symbols, 'Zsym')
+  cmap_ops.remove_all(tv_symbols, 'SYM2')
 
 
 def _reassign_emoji(cmap_ops):
@@ -2607,6 +2616,7 @@ def build_script_to_chars(log_level):
   _reassign_common_by_block(cmap_ops)
   _reassign_by_block(cmap_ops)
   _remove_empty(cmap_ops)
+  _reassign_symbols(cmap_ops)
   _reassign_emoji(cmap_ops)
   _assign_nastaliq(cmap_ops)
   _assign_complex_script_extra(cmap_ops)
