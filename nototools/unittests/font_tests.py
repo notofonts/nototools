@@ -330,25 +330,55 @@ class TestCharacterCoverage(FontTest):
 
 
 class TestLigatures(FontTest):
-    """Tests formation or lack of formation of ligatures."""
+    """Tests formation or lack of formation of ligatures.
+
+    Must have the following attributes:
+        active: List of (parameters, (sequence, sequence, ...)) tuples, for
+            which each sequence should form a ligature when shaped with the
+            given parameters. The ligature should not be formed by default if
+            parameters are provided.
+        inactive: Similar list of tuples, for sequences which should form a
+            ligature under inverse circumstances.
+    """
 
     def setUp(self):
         self.fontfiles, _ = self.loaded_fonts
 
-    def test_lack_of_ff_ligature(self):
-        """Tests that the ff ligature is not formed by default."""
-        for fontfile in self.fontfiles:
-            advances = layout.get_advances('ff', fontfile)
-            self.assertEqual(len(advances), 2)
+    def test_active_ligatures(self):
+        """Tests that some ligatures are formed by certain features."""
 
-    def test_st_ligatures(self):
-        """Tests that st ligatures are formed by dlig."""
+        self._run_ligature_test(self.active, True)
+
+    def test_inactive_ligatures(self):
+        """Tests that some ligatures are not formed by certain features."""
+
+        self._run_ligature_test(self.inactive, False)
+
+    def _run_ligature_test(self, sequences_with_params, active):
         for fontfile in self.fontfiles:
-            for combination in [u'st', u'ſt']:
-                normal = layout.get_glyphs(combination, fontfile)
-                ligated = layout.get_glyphs(
-                    combination, fontfile, '--features=dlig')
-                self.assertTrue(len(normal) == 2 and len(ligated) == 1)
+            for params, sequences in sequences_with_params:
+                for sequence in sequences:
+                    output = layout.get_glyphs(sequence, fontfile)
+
+                    if params:
+                        if active:  # should not ligate by default
+                            expected = len(sequence)
+                            err_msg = '%s ligated in %s by default.'
+                        else:  # should ligate by default
+                            expected = 1
+                            err_msg = '%s not ligated in %s by default.'
+                        self.assertEqual(len(output), expected, err_msg % (
+                            sequence, fontfile))
+                        output = layout.get_glyphs(sequence, fontfile, params)
+
+                    if active:  # should ligate with parameters applied
+                        expected = 1
+                        err_msg = '%s not ligated in %s with parameters: %s'
+                    else:  # should not ligate with parameters applied
+                        expected = len(sequences)
+                        err_msg = '%s ligated in %s with parameters: %s'
+                    self.assertEqual(len(output), expected, err_msg % (
+                        sequence, fontfile, params))
 
 
 class TestFeatures(FontTest):
