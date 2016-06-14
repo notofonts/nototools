@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-"""Provides the command-line utility `otfdiff`.
+"""Provides the command-line utility `notodiff`.
 
 Leverages various DiffFinder classes, depending on what's given via the
 `diff_type` argument. Can compare multiple font pairs via the `match` argument.
@@ -36,7 +36,7 @@ def _shape(path_a, path_b, stats, diff_type, render_path):
     path_a and b refer to binary font files (OTF or TTF). stats should be a
     list (possibly empty) of <diff, glyph-name, font-name> tuples, for sorting.
     diff_type and render_path are passed through from the original call to
-    otfdiff.
+    notodiff.
     """
 
     cur_stats = []
@@ -58,7 +58,7 @@ def _dump_shape_stats(stats, whitelist, out_lines, diff_type, multiple_fonts):
 
     Members of stats are passed in with sortable ordering, but are re-ordered
     for printing. whitelist, out_lines, and diff_type are passed through from
-    the original call to otfdiff. multiple_fonts designates whether these stats
+    the original call to notodiff. multiple_fonts designates whether these stats
     have been accumulated from multiple calls or just one; if multiple then the
     font names from each stats member will be printed as well.
     """
