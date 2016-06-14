@@ -52,6 +52,6 @@ setup(name='nototools',
                'nototools/test_vertical_extents.py'],
       entry_points={
           'console_scripts': [
-              'otfdiff = nototools.otfdiff:main',
+              'notodiff = nototools.notodiff:main',
           ]
       })

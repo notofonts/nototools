@@ -40,4 +40,4 @@ The following scripts are provided:
 
 The following tools are provided:
 
-* `otfdiff`
+* `notodiff`
