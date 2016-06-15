@@ -337,8 +337,8 @@ class TestLigatures(FontTest):
             which each sequence should form a ligature when shaped with the
             given parameters. The ligature should not be formed by default if
             parameters are provided.
-        inactive: Similar list of tuples, for sequences which should form a
-            ligature under inverse circumstances.
+        inactive: Similar list of tuples, for parameter-sequence cases which
+            should not ligate where an active case would and vice-versa.
     """
 
     def setUp(self):
