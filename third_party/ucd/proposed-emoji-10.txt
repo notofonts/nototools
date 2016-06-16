@@ -6,7 +6,6 @@ U+1F95F	🥟	🥟 🥟	2016Q1			DUMPLING
 • typically stuffed
 • potsticker, gyōza (餃子), jiaozi (餃子/饺子), pierogi, empanada, …
 U+1F960	🥠	🥠 🥠	2016Q1			FORTUNE COOKIE
-dishware*
 U+1F961	🥡	🥡 🥡	2016Q1			TAKEOUT BOX
 • oyster pail
 U+1F962	🥢	🥢 🥢	2016Q1			CHOPSTICKS

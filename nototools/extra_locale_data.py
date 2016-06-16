@@ -43,6 +43,7 @@ LIKELY_SUBTAGS = {
     'avk': ('avk', 'Latn', '001'),  # Kotava
     'azb': ('azb', 'Arab', 'IR'),  # Southern Azerbaijani
     'bar': ('bar', 'Latn', 'AT'),  # Bavarian
+    'ber': ('ber', 'Arab', 'MA'),  # Berber
     'bej': ('bej', 'Arab', 'SD'),  # Beja
     'bci': ('bci', 'Latn', 'CI'),  # Baoulé
     'bgc': ('bgc', 'Deva', 'IN'),  # Haryanvi
@@ -63,6 +64,7 @@ LIKELY_SUBTAGS = {
     'cjs': ('cjs', 'Cyrl', 'RU'),  # Shor
     'ckt': ('ckt', 'Cyrl', 'RU'),  # Chukchi
     'cop': ('cop', 'Copt', 'EG'),  # Coptic
+    'cpf': ('cpf', 'Latn', 'HT'),  # Creoles, French
     'cps': ('cps', 'Latn', 'PH'),  # Capiznon
     'crh': ('crh', 'Latn', 'UA'),  # Crimean Tatar
     'crs': ('crs', 'Latn', 'SC'),  # Seselwa Creole French
@@ -230,6 +232,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'atj': u'Atikamekw',
     'bap': u'Bantawa',
     'bci': u'Baoulé',
+    'ber': u'Berber',
     'bft': u'Balti',
     'bfy': u'Bagheli',
     'bgc': u'Haryanvi',
@@ -257,6 +260,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'cjs': u'Shor',
     'cjm': u'Eastern Cham',
     'ckt': u'Chukchi',
+    'cpf': u'French-based Creoles',
     'crj': u'Southern East Cree',
     'crk': u'Plains Cree',
     'crl': u'Northern East Cree',
@@ -405,6 +409,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'thq': u'Kochila Tharu',
     'thr': u'Rana Tharu',
     'tkt': u'Kathoriya Tharu',
+    'tli': u'Tlingit',
     'tsf': u'Southwestern Tamang',
     'tsg': u'Tausug',
     'tsj': u'Tshangla',
@@ -440,6 +445,7 @@ ENGLISH_LANGUAGE_NAMES = {
 
 # Supplement mapping of languages to scripts
 LANG_TO_SCRIPTS = {
+    'ber': ['Arab', 'Latn', 'Tfng'],
     'hak': ['Hans', 'Hant', 'Latn'],
     'nan': ['Hans', 'Hant', 'Latn'],
     'yue': ['Hant'],

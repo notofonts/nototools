@@ -239,7 +239,28 @@ def get_likely_subtags(lang_tag):
   tag = lang_tag
   while True:
     try:
-      return _LIKELY_SUBTAGS[tag]
+      result = _LIKELY_SUBTAGS[tag]
+
+      # supply provided parts
+      m = LSRV_RE.match(lang_tag)
+      if not m:
+        if _DEBUG:
+          print 'regex did not match locale \'%s\'' % loc_tag
+        return result
+      lang = m.group(1)
+      script = m.group(2)
+      region = m.group(3)
+      variant = m.group(4)
+      if script or region or variant:
+        temp = list(result)
+        if script:
+          temp[1] = script
+        if region:
+          temp[2] = region
+        if variant:
+          temp.append(variant)
+        result = tuple(temp)
+      return result
     except KeyError:
       ix = tag.rfind('-')
       if ix == -1:

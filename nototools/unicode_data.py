@@ -935,7 +935,7 @@ def _load_proposed_emoji_data():
   with open_unicode_data_file('proposed-emoji-10.txt') as f:
     for line in f:
       line = line.strip()
-      if not line:
+      if not line or line[0] == '#' or line.startswith(u'\u2022'.encode('utf-8')):
         continue
 
       m = line_re.match(line)
