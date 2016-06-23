@@ -16,10 +16,9 @@
 """Provides ShapeDiffFinder, which finds differences in OTF/TTF glyph shapes.
 
 ShapeDiffFinder takes in two paths, to font binaries. It then provides methods
-which compare these fonts, returning a report string and optionally adding to a
-report dictionary. These methods are `find_area_diffs`, which compares glyph
-areas, and `find_rendered_diffs` which compares harfbuzz output using image
-magick.
+which compare these fonts, storing results in a report dictionary. These methods
+are `find_area_diffs`, which compares glyph areas, and `find_rendered_diffs`
+which compares harfbuzz output using image magick.
 
 Neither comparison is ideal. Glyph areas can be the same even if the shapes are
 wildly different. Image comparison is usually either slow (hi-res) or inaccurate
@@ -41,14 +40,20 @@ from nototools import hb_input
 class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
 
-    def __init__(self, file_a, file_b, output_lines=6, ratio_diffs=False):
+    def __init__(self, file_a, file_b, stats, ratio_diffs=False):
         self.paths = file_a, file_b
         self.fonts = [TTFont(f) for f in self.paths]
-        self.out_lines = output_lines
         self.ratio_diffs = ratio_diffs
-        self.report = []
 
-    def find_area_diffs(self, stats=None):
+        stats['compared'] = []
+        stats['untested'] = []
+        stats['unmatched'] = []
+        stats['unicode_mismatch'] = []
+        self.stats = stats
+
+        self.basepath = os.path.basename(file_a)
+
+    def find_area_diffs(self):
         """Report differences in glyph areas."""
 
         self.build_names()
@@ -66,18 +71,12 @@ class ShapeDiffFinder:
             if area_a != area_b:
                 mismatched[name] = (area_a, area_b)
 
-        report = self.report
-        report.append('%d differences in glyph areas' % len(mismatched))
-        mismatched = self._sorted_by(
-            mismatched.items(),
-            self._calc_ratio if self.ratio_diffs else self._calc_diff)
-        for diff, name, (area1, area2) in mismatched[:self.out_lines]:
-            report.append('%s: %s vs %s' % (name, area1, area2))
-            if stats is not None:
-                stats.append((diff, name, area1, area2))
-        report.append('')
+        stats = self.stats['compared']
+        calc = self._calc_ratio if self.ratio_diffs else self._calc_diff
+        for name, areas in mismatched.items():
+            stats.append((calc(areas), name, self.basepath, area[0], area[1]))
 
-    def find_rendered_diffs(self, font_size=256, stats=None, render_path=None):
+    def find_rendered_diffs(self, font_size=256, render_path=None):
         """Find diffs of glyphs as rendered by harfbuzz."""
 
         self.build_names()
@@ -100,7 +99,7 @@ class ShapeDiffFinder:
 
             # ignore unreachable characters
             if not hb_args:
-                self.report.append('not tested (unreachable?): %s' % name)
+                self.stats['untested'].append(name)
                 continue
 
             features, text = hb_args
@@ -158,15 +157,9 @@ class ShapeDiffFinder:
             if int(diff) != 0:
                 mismatched[name] = int(diff)
 
-        report = self.report
-        report.append('%d differences in rendered glyphs' % len(mismatched))
-        mismatched = self._sorted_by(
-            mismatched.items(), self._pass_val)
-        for _, name, diff in mismatched[:self.out_lines]:
-            report.append('%s: %s' % (name, diff))
-            if stats is not None:
-                stats.append((diff, name))
-        report.append('')
+        stats = self.stats['compared']
+        for name, diff in mismatched.items():
+            stats.append((diff, name, self.basepath))
 
     def build_names(self):
         """Build a list of glyph names shared between the fonts."""
@@ -174,13 +167,10 @@ class ShapeDiffFinder:
         if hasattr(self, 'names'):
             return
 
-        report = self.report
+        stats = self.stats['unmatched']
         names_a, names_b = [set(f.getGlyphOrder()) for f in self.fonts]
         if names_a != names_b:
-            report.append("Glyph coverage doesn't match")
-            report.append('  in A but not B: %s' % list(names_a - names_b))
-            report.append('  in B but not A: %s' % list(names_b - names_a))
-            report.append('')
+            stats.append((self.basepath, names_a - names_b, names_b - names_a))
         self.names = names_a & names_b
 
     def build_reverse_cmap(self):
@@ -189,7 +179,7 @@ class ShapeDiffFinder:
         if hasattr(self, 'reverse_cmap'):
             return
 
-        report = self.report
+        stats = self.stats['unicode_mismatch']
         reverse_cmaps = [hb_input.build_reverse_cmap(f) for f in self.fonts]
         mismatched = {}
         for name in self.names:
@@ -197,52 +187,64 @@ class ShapeDiffFinder:
             if unival_a != unival_b:
                 mismatched[name] = (unival_a, unival_b)
         if mismatched:
-            report.append("Glyph unicode values don't match")
-            for name, univals in mismatched.items():
-                univals = [(('0x%04X' % v) if v else str(v)) for v in univals]
-                report.append('  %s: %s in A, %s in B' %
-                              (name, univals[0], univals[1]))
-            report.append('')
+            stats.append((self.basepath, mismatched.items()))
 
         # return cmap with only names used consistently between fonts
         self.reverse_cmap = {n: v for n, v in reverse_cmaps[0].items()
                              if n in self.names and n not in mismatched}
 
-    def dump(self):
-        """Return the results of run diffs."""
-        return '\n'.join(self.report)
-
-    def _sorted_by(self, items, diff_calc):
-        """Return items, sorted by diff_calc with calculated diff included."""
-
-        items = list(items)
-        items.sort(lambda lhs, rhs: self._compare(lhs, rhs, diff_calc))
-        return [(diff_calc(vals), name, vals) for name, vals in items]
-
-    def _compare(self, left, right, diff_calc):
-        """Compare glyph area diffs by magnitude then glyph name.
+    @staticmethod
+    def dump(stats, whitelist, out_lines, include_vals, multiple_fonts):
+        """Return the results of run diffs.
 
         Args:
-            left, right: Tuples each containing a glyph name and then an
-                argument to diff_calc (usually the argument would be a tuple
-                containing two areas for the glyph from different fonts).
-            diff_calc: A function which calculates an area diff for a glyph. For
-                now this either calculates the difference of two areas, or the
-                ratio, or just passes through a pre-computed diff.
-
-        Returns:
-            An integer value for use in a sorting function.
+            stats: List of tuples with diff data which is sorted and printed.
+            whitelist: Names of glyphs to exclude from report.
+            out_lines: Number of diff lines to print.
+            include_vals: Include the values which have been diffed in report.
+            multiple_fonts: Designates whether stats have been accumulated from
+                multiple fonts, if so then font names will be printed as well.
         """
 
-        (lname, lvals), (rname, rvals) = left, right
-        dl = diff_calc(lvals)
-        dr = diff_calc(rvals)
-        return -1 if dl > dr else 1 if dr > dl else cmp(lname, rname)
+        report = []
 
-    def _pass_val(self, val):
-        """Pass through a pre-computed area diff."""
+        compared = sorted(
+            s for s in stats['compared'] if s[1] not in whitelist)
+        compared.reverse()
+        fmt = '%s %s'
+        if include_vals:
+            fmt += ' (%s vs %s)'
+        if multiple_fonts:
+            fmt = '%s ' + fmt
+        report.append('%d differences in glyph shape' % len(compared))
+        for line in compared[:out_lines]:
+            # print <font> <glyph> <vals>; stats are sorted in reverse priority
+            line = tuple(reversed(line[:3])) + tuple(line[3:])
+            # ignore font name if just one pair of fonts was compared
+            if not multiple_fonts:
+                line = line[1:]
+            report.append(fmt % line)
+        report.append('')
 
-        return val
+        for name in sorted(stats['untested']):
+            report.append('not tested (unreachable?): %s' % name)
+        report.append('')
+
+        for font, set_a, set_b in stats['unmatched']:
+            report.append("Glyph coverage doesn't match in %s" % font)
+            report.append('  in A but not B: %s' % sorted(set_a))
+            report.append('  in B but not A: %s' % sorted(set_b))
+        report.append('')
+
+        for font, mismatches in stats['unicode_mismatch']:
+            report.append("Glyph unicode values don't match in %s" % font)
+            for name, univals in sorted(mismatches):
+                univals = [(('0x%04X' % v) if v else str(v)) for v in univals]
+                report.append('  %s: %s in A, %s in B' %
+                              (name, univals[0], univals[1]))
+        report.append('')
+
+        return '\n'.join(report)
 
     def _calc_diff(self, vals):
         """Calculate an area difference."""

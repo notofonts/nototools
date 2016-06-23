@@ -39,58 +39,13 @@ def _shape(path_a, path_b, stats, diff_type, render_path):
     notodiff.
     """
 
-    cur_stats = []
     diff_finder = shape_diff.ShapeDiffFinder(
-        path_a, path_b, output_lines=-1, ratio_diffs=True)
+        path_a, path_b, stats, ratio_diffs=True)
 
     if diff_type == 'area':
-        diff_finder.find_area_diffs(stats=cur_stats)
+        diff_finder.find_area_diffs()
     else:
-        diff_finder.find_rendered_diffs(stats=cur_stats,
-                                        render_path=render_path)
-
-    basename = os.path.basename(path_a)
-    stats.extend(s[0:2] + (basename,) + s[2:] for s in cur_stats)
-
-
-def _dump_shape_stats(stats, whitelist, out_lines, diff_type, multiple_fonts):
-    """Dump stats accumulated from calls to _shape.
-
-    Members of stats are passed in with sortable ordering, but are re-ordered
-    for printing. whitelist, out_lines, and diff_type are passed through from
-    the original call to notodiff. multiple_fonts designates whether these stats
-    have been accumulated from multiple calls or just one; if multiple then the
-    font names from each stats member will be printed as well.
-    """
-
-    if not stats:
-        print 'No differences found.'
-        return
-
-    if whitelist:
-        stats = [s for s in stats if s[1] not in whitelist]
-    stats.sort()
-    stats.reverse()
-
-    stat_format = '%s %s'
-
-    # include individual font names if multiple pairs of fonts were compared
-    if multiple_fonts:
-        stat_format = '%s ' + stat_format
-
-    # include actual area values if areas were compared
-    if diff_type == 'area':
-        stat_format += ' (%s vs %s)'
-
-    for stat in stats[:out_lines]:
-
-        # print <font> <glyph> <vals>; stats are sorted in reverse priority
-        stat = tuple(list(reversed(stat[:3])) + list(stat[3:]))
-
-        # ignore font name if just one pair of fonts was compared
-        if not multiple_fonts:
-            stat = stat[1:]
-        print stat_format % stat
+        diff_finder.find_rendered_diffs(render_path=render_path)
 
 
 def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
@@ -156,7 +111,7 @@ def main():
                         'in PATH_A with respective matches in PATH_B')
     parser.add_argument('-l', '--out-lines', type=int, default=20,
                         help='number of differences to print (default 20)')
-    parser.add_argument('-w', '--whitelist', nargs='+',
+    parser.add_argument('-w', '--whitelist', nargs='+', default=(),
                         help='list of one or more glyph names to ignore')
     parser.add_argument('--render-path', help='if provided and DIFF_TYPE is '
                         '"rendered", saves comparison renderings here')
@@ -166,15 +121,17 @@ def main():
     args = parser.parse_args()
 
     if args.diff_type in ['area', 'rendered']:
-        stats = []
+        stats = {}
         if args.match:
             _run_multiple(_shape, args.match, args.path_a, args.path_b, stats,
                           args.diff_type, args.render_path)
         else:
             _shape(args.path_a, args.path_b, stats, args.diff_type,
                    args.render_path)
-        _dump_shape_stats(stats, args.whitelist, args.out_lines, args.diff_type,
-                          multiple_fonts=bool(args.match))
+        print(shape_diff.ShapeDiffFinder.dump(
+            stats, args.whitelist, args.out_lines,
+            include_vals=(args.diff_type == 'area'),
+            multiple_fonts=bool(args.match)))
 
     elif args.diff_type == 'gpos':
         if args.match:
