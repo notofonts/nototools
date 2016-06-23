@@ -335,10 +335,9 @@ class TestLigatures(FontTest):
     Must have the following attributes:
         active: List of (parameters, (sequence, sequence, ...)) tuples, for
             which each sequence should form a ligature when shaped with the
-            given parameters. The ligature should not be formed by default if
-            parameters are provided.
+            given parameters.
         inactive: Similar list of tuples, for parameter-sequence cases which
-            should not ligate where an active case would and vice-versa.
+            should not ligate.
     """
 
     def setUp(self):
@@ -358,24 +357,15 @@ class TestLigatures(FontTest):
         for fontfile in self.fontfiles:
             for params, sequences in sequences_with_params:
                 for sequence in sequences:
-                    output = layout.get_glyphs(sequence, fontfile)
-
                     if params:
-                        if active:  # should not ligate by default
-                            expected = len(sequence)
-                            err_msg = '%s ligated in %s by default.'
-                        else:  # should ligate by default
-                            expected = 1
-                            err_msg = '%s not ligated in %s by default.'
-                        self.assertEqual(len(output), expected, err_msg % (
-                            sequence, fontfile))
                         output = layout.get_glyphs(sequence, fontfile, params)
-
+                    else:
+                        output = layout.get_glyphs(sequence, fontfile)
                     if active:  # should ligate with parameters applied
                         expected = 1
                         err_msg = '%s not ligated in %s with parameters: %s'
                     else:  # should not ligate with parameters applied
-                        expected = len(sequences)
+                        expected = len(sequence)
                         err_msg = '%s ligated in %s with parameters: %s'
                     self.assertEqual(len(output), expected, err_msg % (
                         sequence, fontfile, params))
