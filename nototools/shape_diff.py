@@ -77,7 +77,7 @@ class ShapeDiffFinder:
             stats.append((calc(areas), name, self.basepath, area[0], area[1]))
 
     def find_rendered_diffs(self, font_size=256, render_path=None):
-        """Find diffs of glyphs as rendered by harfbuzz."""
+        """Find diffs of glyphs as rendered by harfbuzz + image magick."""
 
         self.build_names()
         self.build_reverse_cmap()

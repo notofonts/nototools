@@ -112,7 +112,8 @@ def main():
     parser.add_argument('-l', '--out-lines', type=int, default=20,
                         help='number of differences to print (default 20)')
     parser.add_argument('-w', '--whitelist', nargs='+', default=(),
-                        help='list of one or more glyph names to ignore')
+                        help='list of one or more glyph names to ignore for '
+                        'area or rendered differences')
     parser.add_argument('--render-path', help='if provided and DIFF_TYPE is '
                         '"rendered", saves comparison renderings here')
     parser.add_argument('--gpos-bound', type=int, default=3,
