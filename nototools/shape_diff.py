@@ -154,7 +154,6 @@ class ShapeDiffFinder:
         os.remove(diffs_filename)
 
         mismatched = {}
-        img_size_diffs = []
         for name, diff in diffs:
             if int(diff) != 0:
                 mismatched[name] = int(diff)
@@ -167,12 +166,6 @@ class ShapeDiffFinder:
             report.append('%s: %s' % (name, diff))
             if stats is not None:
                 stats.append((diff, name))
-        report.append('')
-
-        report.append('%d differences in glyph img size' % len(img_size_diffs))
-        img_size_diffs.sort()
-        for name in img_size_diffs[:self.out_lines]:
-            report.append(name)
         report.append('')
 
     def build_names(self):
