@@ -58,7 +58,7 @@ class GposDiffFinder:
 
         unmatched = [(k, v) for k, v in unmatched.iteritems() if v]
         res = ['%d differences in kerning pairs' % len(unmatched)]
-        unmatched.sort(self._compare_keys)
+        unmatched.sort(self._compare_kerning_rules)
         for (sign, left, right), vals in unmatched[:self.out_lines]:
             res.append('%s pos %s %s %s' % (sign, left, right, vals))
         res.append('')
@@ -203,6 +203,15 @@ class GposDiffFinder:
         _, ((x1, y1), (x2, y2)) = right
         right_diff = abs(x1 - x2) + abs(y1 - y2)
         return right_diff - left_diff
+
+    def _compare_kerning_rules(self, left, right):
+        """Compare kerning rules, rules with larger values first."""
+
+        _, vals = left
+        left_val = max(abs(v) for v in vals)
+        _, vals = right
+        right_val = max(abs(v) for v in vals)
+        return right_val - left_val
 
     def _compare_kerning_values(self, left, right):
         """Compare differences between kerning values, larger diffs first."""
