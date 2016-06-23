@@ -249,7 +249,8 @@ class ShapeDiffFinder:
     def _calc_diff(self, vals):
         """Calculate an area difference."""
 
-        return abs(vals[0] - vals[1])
+        a, b = vals
+        return abs(a - b)
 
     def _calc_ratio(self, vals):
         """Calculate an area ratio."""
@@ -257,10 +258,7 @@ class ShapeDiffFinder:
         a, b = vals
         if not (a or b):
             return 0
-        if abs(a) > abs(b):
-            a, b = b, a
-        ratio = (a / b) if (a and b) else 0
-        return (1 - ratio)
+        return 1 - min(a, b) / max(a, b)
 
     def _make_tmp_path(self):
         """Return a temporary path, for use in rendering."""
