@@ -43,6 +43,7 @@ class ShapeDiffFinder:
     def __init__(self, file_a, file_b, stats, ratio_diffs=False):
         self.paths = file_a, file_b
         self.fonts = [TTFont(f) for f in self.paths]
+        self.glyph_sets =[f.getGlyphSet() for f in self.fonts]
         self.ratio_diffs = ratio_diffs
 
         stats['compared'] = []
@@ -58,9 +59,8 @@ class ShapeDiffFinder:
 
         self.build_names()
 
-        glyph_sets =[f.getGlyphSet() for f in self.fonts]
-        glyph_set_a, glyph_set_b = glyph_sets
-        pen_a, pen_b = [GlyphAreaPen(glyph_set) for glyph_set in glyph_sets]
+        glyph_set_a, glyph_set_b = self.glyph_sets
+        pen_a, pen_b = [GlyphAreaPen(s) for s in self.glyph_sets]
 
         mismatched = {}
         for name in self.names:
@@ -93,8 +93,9 @@ class ShapeDiffFinder:
         diffs_filename = self._make_tmp_path()
 
         for name in ordered_names:
-            hb_args, hb_args_b = [input_generator.input_from_name(name)
-                                  for input_generator in hb_input_generators]
+            hb_args, hb_args_b = [
+                genr.input_from_name(name, pad=(gset[name].width == 0))
+                for genr, gset in zip(hb_input_generators, self.glyph_sets)]
             assert hb_args == hb_args_b
 
             # ignore unreachable characters
