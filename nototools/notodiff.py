@@ -97,10 +97,10 @@ def _run_multiple(func, filematch, dir_a, dir_b, *args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Compare fonts or ttxn output '
-                                     'pointed to by PATH_A and PATH_B.')
-    parser.add_argument('path_a', metavar='PATH_A')
-    parser.add_argument('path_b', metavar='PATH_B')
+    parser = argparse.ArgumentParser(
+        description='Compare fonts or ttxn output.')
+    parser.add_argument('--before', required=True)
+    parser.add_argument('--after', required=True)
     parser.add_argument('-t', '--diff-type', default='area',
                         choices=('area', 'rendered', 'gpos', 'gsub'),
                         help='type of comparison to run (defaults to "area"), '
@@ -124,10 +124,10 @@ def main():
     if args.diff_type in ['area', 'rendered']:
         stats = {}
         if args.match:
-            _run_multiple(_shape, args.match, args.path_a, args.path_b, stats,
+            _run_multiple(_shape, args.match, args.before, args.after, stats,
                           args.diff_type, args.render_path)
         else:
-            _shape(args.path_a, args.path_b, stats, args.diff_type,
+            _shape(args.before, args.after, stats, args.diff_type,
                    args.render_path)
         print(shape_diff.ShapeDiffFinder.dump(
             stats, args.whitelist, args.out_lines,
@@ -136,17 +136,17 @@ def main():
 
     elif args.diff_type == 'gpos':
         if args.match:
-            _run_multiple(_gpos, args.match, args.path_a, args.path_b,
+            _run_multiple(_gpos, args.match, args.before, args.after,
                           args.gpos_bound, args.out_lines, True)
         else:
-            _gpos(args.path_a, args.path_b, args.gpos_bound, args.out_lines)
+            _gpos(args.before, args.after, args.gpos_bound, args.out_lines)
 
     elif args.diff_type == 'gsub':
         if args.match:
-            _run_multiple(_gsub, args.match, args.path_a, args.path_b,
+            _run_multiple(_gsub, args.match, args.before, args.after,
                           args.out_lines, True)
         else:
-            _gsub(args.path_a, args.path_b, args.out_lines)
+            _gsub(args.before, args.after, args.out_lines)
 
     else:
         assert 0, 'Got unhandled diff type "%s"' % args.diff_type

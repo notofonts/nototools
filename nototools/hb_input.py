@@ -29,34 +29,33 @@ class HbInputGenerator(object):
         self.font = font
         self.reverse_cmap = reverse_cmap or build_reverse_cmap(self.font)
 
-    def all_inputs(self, warn=False, ignore_non_spacing=True):
+    def all_inputs(self, warn=False):
         """Generate harfbuzz inputs for all glyphs in a given font."""
 
         inputs = []
         glyph_names = self.font.getGlyphOrder()
         glyph_set = self.font.getGlyphSet()
         for name in glyph_names:
-            if glyph_set[name].width == 0 and ignore_non_spacing:
-                continue
-            cur_input = self.input_from_name(name)
+            is_zero_width = glyph_set[name].width == 0
+            cur_input = self.input_from_name(name, pad=is_zero_width)
             if cur_input is not None:
                 inputs.append(cur_input)
             elif warn:
                 print('not tested (unreachable?): %s' % name)
         return inputs
 
-    def input_from_name(self, name, features=None):
+    def input_from_name(self, name, features=(), pad=False):
         """Given glyph name, return input to harbuzz to render this glyph in the
         form of a (features, text) tuple, where `features` is a list of feature
         tags to activate and `text` is an input string.
         """
 
-        if features is None:
-            features = ()
-
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
-            return features, unichr(self.reverse_cmap[name])
+            text = unichr(self.reverse_cmap[name])
+            if pad:
+                text = '  ' + text
+            return features, text
 
         # nope, check the substitution features
         if 'GSUB' not in self.font:

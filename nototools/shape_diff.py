@@ -41,9 +41,13 @@ class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
 
     def __init__(self, file_a, file_b, stats, ratio_diffs=False):
-        self.paths = file_a, file_b
-        self.fonts = [TTFont(f) for f in self.paths]
-        self.ratio_diffs = ratio_diffs
+        self.path_a = file_a
+        self.font_a = TTFont(self.path_a)
+        self.glyph_set_a = self.font_a.getGlyphSet()
+
+        self.path_b = file_b
+        self.font_b = TTFont(self.path_b)
+        self.glyph_set_b = self.font_b.getGlyphSet()
 
         stats['compared'] = []
         stats['untested'] = []
@@ -51,6 +55,7 @@ class ShapeDiffFinder:
         stats['unicode_mismatch'] = []
         self.stats = stats
 
+        self.ratio_diffs = ratio_diffs
         self.basepath = os.path.basename(file_a)
 
     def find_area_diffs(self):
@@ -58,15 +63,14 @@ class ShapeDiffFinder:
 
         self.build_names()
 
-        glyph_sets =[f.getGlyphSet() for f in self.fonts]
-        glyph_set_a, glyph_set_b = glyph_sets
-        pen_a, pen_b = [GlyphAreaPen(glyph_set) for glyph_set in glyph_sets]
+        pen_a = GlyphAreaPen(self.glyph_set_a)
+        pen_b = GlyphAreaPen(self.glyph_set_b)
 
         mismatched = {}
         for name in self.names:
-            glyph_set_a[name].draw(pen_a)
+            self.glyph_set_a[name].draw(pen_a)
             area_a = pen_a.unload()
-            glyph_set_b[name].draw(pen_b)
+            self.glyph_set_b[name].draw(pen_b)
             area_b = pen_b.unload()
             if area_a != area_b:
                 mismatched[name] = (area_a, area_b)
@@ -82,9 +86,10 @@ class ShapeDiffFinder:
         self.build_names()
         self.build_reverse_cmap()
 
-        hb_input_generators = [
-            hb_input.HbInputGenerator(p, self.reverse_cmap) for p in self.paths]
-        path_a, path_b = self.paths
+        hb_input_generator_a = hb_input.HbInputGenerator(
+            self.font_a, self.reverse_cmap)
+        hb_input_generator_b = hb_input.HbInputGenerator(
+            self.font_b, self.reverse_cmap)
         ordered_names = list(self.names)
 
         a_png = self._make_tmp_path()
@@ -93,19 +98,24 @@ class ShapeDiffFinder:
         diffs_filename = self._make_tmp_path()
 
         for name in ordered_names:
-            hb_args, hb_args_b = [input_generator.input_from_name(name)
-                                  for input_generator in hb_input_generators]
-            assert hb_args == hb_args_b
+            hb_args_a = hb_input_generator_a.input_from_name(
+                name, pad=(self.glyph_set_a[name].width == 0))
+            hb_args_b = hb_input_generator_b.input_from_name(
+                name, pad=(self.glyph_set_b[name].width == 0))
 
             # ignore unreachable characters
-            if not hb_args:
+            if not hb_args_a:
+                assert not hb_args_b
                 self.stats['untested'].append(name)
                 continue
 
-            features, text = hb_args
+            features_a, text_a = hb_args_a
+            features_b, text_b = hb_args_b
+            assert features_a == features_b
+            assert text_a.strip() == text_b.strip()
 
             # ignore null character
-            if text == unichr(0):
+            if unichr(0) in text_a:
                 continue
 
             with open(diffs_filename, 'a') as ofile:
@@ -114,11 +124,11 @@ class ShapeDiffFinder:
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % a_png,
-                '--features=%s' % ','.join(features), path_a, text])
+                '--features=%s' % ','.join(features_a), self.path_a, text_a])
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % b_png,
-                '--features=%s' % ','.join(features), path_b, text])
+                '--features=%s' % ','.join(features_b), self.path_b, text_b])
 
             img_info = subprocess.check_output(['identify', a_png]).split()
             assert img_info[0] == a_png and img_info[1] == 'PNG'
@@ -168,7 +178,8 @@ class ShapeDiffFinder:
             return
 
         stats = self.stats['unmatched']
-        names_a, names_b = [set(f.getGlyphOrder()) for f in self.fonts]
+        names_a = set(self.font_a.getGlyphOrder())
+        names_b = set(self.font_b.getGlyphOrder())
         if names_a != names_b:
             stats.append((self.basepath, names_a - names_b, names_b - names_a))
         self.names = names_a & names_b
@@ -180,17 +191,19 @@ class ShapeDiffFinder:
             return
 
         stats = self.stats['unicode_mismatch']
-        reverse_cmaps = [hb_input.build_reverse_cmap(f) for f in self.fonts]
+        reverse_cmap_a = hb_input.build_reverse_cmap(self.font_a)
+        reverse_cmap_b = hb_input.build_reverse_cmap(self.font_b)
         mismatched = {}
         for name in self.names:
-            unival_a, unival_b = [m.get(name) for m in reverse_cmaps]
+            unival_a = reverse_cmap_a.get(name)
+            unival_b = reverse_cmap_b.get(name)
             if unival_a != unival_b:
                 mismatched[name] = (unival_a, unival_b)
         if mismatched:
             stats.append((self.basepath, mismatched.items()))
 
         # return cmap with only names used consistently between fonts
-        self.reverse_cmap = {n: v for n, v in reverse_cmaps[0].items()
+        self.reverse_cmap = {n: v for n, v in reverse_cmap_a.items()
                              if n in self.names and n not in mismatched}
 
     @staticmethod
