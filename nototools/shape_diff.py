@@ -32,7 +32,7 @@ import subprocess
 import tempfile
 
 from fontTools.ttLib import TTFont
-from glyph_area_pen import GlyphAreaPen
+from nototools.glyph_area_pen import GlyphAreaPen
 
 from nototools import hb_input
 
@@ -69,9 +69,9 @@ class ShapeDiffFinder:
         mismatched = {}
         for name in self.names:
             self.glyph_set_a[name].draw(pen_a)
-            area_a = pen_a.unload()
+            area_a = pen_a.pop()
             self.glyph_set_b[name].draw(pen_b)
-            area_b = pen_b.unload()
+            area_b = pen_b.pop()
             if area_a != area_b:
                 mismatched[name] = (area_a, area_b)
 

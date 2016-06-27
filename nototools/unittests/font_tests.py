@@ -26,7 +26,7 @@ from nototools import coverage
 from nototools import font_data
 from nototools import noto_fonts
 from nototools import unicode_data
-from nototools.pens.glyph_area_pen import GlyphAreaPen
+from nototools.glyph_area_pen import GlyphAreaPen
 from nototools.unittests import layout
 
 
@@ -57,7 +57,7 @@ def load_fonts(patterns, expected_count=None, font_class=None):
         all_font_files += glob.glob(pattern)
     all_fonts = [font_class(font) for font in all_font_files]
     if expected_count:
-        assert len(all_font_files) == expected_count
+        assert len(all_font_files) == expected_count, "got %d fonts, expected %d." % (len(all_font_files), expected_count)
     return all_font_files, all_fonts
 
 
@@ -592,9 +592,9 @@ class TestGlyphAreas(unittest.TestCase):
             if name in self.whitelist:
                 continue
             master_a[name].draw(pen_a)
-            area_a = pen_a.unload()
+            area_a = pen_a.pop()
             master_b[name].draw(pen_b)
-            area_b = pen_b.unload()
+            area_b = pen_b.pop()
             if area_a == area_b:
                 if area_a:
                     self.unchanged.add(name)
@@ -623,7 +623,7 @@ class TestGlyphAreas(unittest.TestCase):
         areas = {}
         for name in self.instance_glyphs_to_test:
             standard[name].draw(pen)
-            areas[name] = pen.unload()
+            areas[name] = pen.pop()
 
         for other in glyph_sets[1:]:
             other_pen = GlyphAreaPen(other)
@@ -631,7 +631,7 @@ class TestGlyphAreas(unittest.TestCase):
                 if name in self.whitelist:
                     continue
                 other[name].draw(other_pen)
-                other_area = other_pen.unload()
+                other_area = other_pen.pop()
                 if name in self.unchanged or not area:
                     self.assertEqual(
                         area, other_area,
