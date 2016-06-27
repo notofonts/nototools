@@ -98,21 +98,24 @@ class ShapeDiffFinder:
         diffs_filename = self._make_tmp_path()
 
         for name in ordered_names:
-            hb_args = hb_input_generator_a.input_from_name(
+            hb_args_a = hb_input_generator_a.input_from_name(
                 name, pad=(self.glyph_set_a[name].width == 0))
             hb_args_b = hb_input_generator_b.input_from_name(
                 name, pad=(self.glyph_set_b[name].width == 0))
-            assert hb_args == hb_args_b
 
             # ignore unreachable characters
-            if not hb_args:
+            if not hb_args_a:
+                assert not hb_args_b
                 self.stats['untested'].append(name)
                 continue
 
-            features, text = hb_args
+            features_a, text_a = hb_args_a
+            features_b, text_b = hb_args_b
+            assert features_a == features_b
+            assert text_a.strip() == text_b.strip()
 
             # ignore null character
-            if text == unichr(0):
+            if unichr(0) in text_a:
                 continue
 
             with open(diffs_filename, 'a') as ofile:
@@ -121,11 +124,11 @@ class ShapeDiffFinder:
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % a_png,
-                '--features=%s' % ','.join(features), self.path_a, text])
+                '--features=%s' % ','.join(features_a), self.path_a, text_a])
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % b_png,
-                '--features=%s' % ','.join(features), self.path_b, text])
+                '--features=%s' % ','.join(features_b), self.path_b, text_b])
 
             img_info = subprocess.check_output(['identify', a_png]).split()
             assert img_info[0] == a_png and img_info[1] == 'PNG'
