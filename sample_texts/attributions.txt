@@ -34,6 +34,7 @@ bo-Tibt_udhr.txt: other
 br-Latn_udhr.txt: other
 bs-Cyrl_udhr.txt: UN
 bs-Latn_udhr.txt: UN
+buc-Latn_udhr.txt: other
 bug-Latn_udhr.txt: UN
 bum-Latn_udhr.txt: UN
 ca-Latn_udhr.txt: UN
@@ -117,9 +118,9 @@ kg-Latn_udhr.txt: UN
 kha-Latn_udhr.txt: other
 kjh-Cyrl_udhr.txt: UN
 kk-Cyrl_udhr.txt: UN
+kkh-Lana_udhr.txt: none
 kl-Latn_udhr.txt: UN
 km-Khmr_udhr.txt: other
-kmb-Latn_udhr.txt: UN
 kn-Knda_udhr.txt: other
 ko-Kore_udhr.txt: UN
 koi-Cyrl_udhr.txt: UN
@@ -251,8 +252,6 @@ tzm-Latn_udhr.txt: other
 ug-Arab_udhr.txt: UN
 ug-Latn_udhr.txt: none
 uk-Cyrl_udhr.txt: other
-umb-Latn_udhr.txt: UN
-ur-Arab_udhr.txt: UN
 vai-Vaii_udhr.txt: other
 ve-Latn_udhr.txt: other
 vec-Latn_udhr.txt: none
@@ -270,6 +269,7 @@ yi-Hebr_udhr.txt: other
 yo-Latn_udhr.txt: other
 yua-Latn_udhr.txt: UN
 za-Latn_udhr.txt: UN
+zdj-Latn_udhr.txt: none
 zgh-Tfng_udhr.txt: other
 zh-Hans_udhr.txt: original
 zh-Hant_udhr.txt: none
