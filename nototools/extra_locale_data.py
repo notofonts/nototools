@@ -125,6 +125,7 @@ LIKELY_SUBTAGS = {
     'kca': ('kca', 'Cyrl', 'RU'),  # Khanty
     'kfy': ('kfy', 'Deva', 'IN'),  # Kumaoni
     'kjh': ('kjh', 'Cyrl', 'RU'),  # Khakas
+    'kkh': ('kkh', 'Lana', 'MM'),  # Khün
     'khn': ('khn', 'Deva', 'IN'),  # Khandesi
     'kiu': ('kiu', 'Latn', 'TR'),  # Kirmanjki
     'kpy': ('kpy', 'Cyrl', 'RU'),  # Koryak
@@ -314,6 +315,7 @@ ENGLISH_LANGUAGE_NAMES = {
     'kht': u'Khamti',
     'kjg': u'Khmu',
     'kjh': u'Khakas',
+    'kkh': u'Khün',
     'kpy': u'Koryak',
     'kvr': u'Kerinci',
     'kvx': u'Parkari Koli',
