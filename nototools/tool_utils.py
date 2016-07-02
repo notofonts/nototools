@@ -374,7 +374,7 @@ def collect_paths(dirs, files):
   """Return a collection of all files in any of the listed dirs, and
   the listed files.  Can use noto short paths.  A file name starting
   with '@' is interpreted as the name of a file containing a list
-  of filenames one per line.  The short name '[noto] refers to
+  of filenames one per line.  The short name '[noto]' refers to
   the noto (phase 2) font paths."""
 
   paths = []
