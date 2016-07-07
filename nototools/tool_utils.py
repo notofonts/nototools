@@ -358,3 +358,41 @@ def setup_logging(loglevel, quiet_ttx=True):
     for logger_name in ['fontTools.misc.xmlReader', 'fontTools.ttLib']:
       logger = logging.getLogger(logger_name)
       logger.setLevel(loglevel + 1)
+
+
+def _read_filename_list(filenames):
+  with open(filenames, 'r') as f:
+    return [resolve_path(n.strip()) for n in f if n]
+
+
+# see noto_fonts.NOTO_FONT_PATHS
+NOTO_FONT_PATHS = [
+    '[fonts]/hinted', '[fonts]/unhinted', '[emoji]/fonts', '[cjk]']
+
+
+def collect_paths(dirs, files):
+  """Return a collection of all files in any of the listed dirs, and
+  the listed files.  Can use noto short paths.  A file name starting
+  with '@' is interpreted as the name of a file containing a list
+  of filenames one per line.  The short name '[noto]' refers to
+  the noto (phase 2) font paths."""
+
+  paths = []
+  if dirs:
+    for i in xrange(len(dirs)):
+      # special case '[noto]' to include all noto font dirs
+      if dirs[i] == '[noto]':
+        dirs[i] = None
+        dirs.extend(NOTO_FONT_PATHS)
+        dirs = filter(None, args.dirs)
+        break
+    for d in dirs:
+      d = resolve_path(d)
+      paths.extend(n for n in glob.glob(path.join(d, '*')))
+  if files:
+    for fname in files:
+      if fname[0] == '@':
+        paths.extend(_read_filename_list(fname[1:]))
+      else:
+        paths.append(resolve_path(fname))
+  return paths
