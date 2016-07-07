@@ -133,12 +133,8 @@ def dump_gsub_subtable(lookup_type, subtable):
             print_indented('sub %s by %s;' % (key, subtable.mapping[key]))
 
     elif lookup_type == 2:
-        count = subtable.SequenceCount
-        assert len(subtable.Coverage.glyphs) == len(subtable.Sequence) == count
-        for index in range(count):
-            print_indented('sub %s by %s;' % (
-                subtable.Coverage.glyphs[index],
-                ' '.join(subtable.Sequence[index].Substitute)))
+        for key, value in sorted(subtable.mapping.items()):
+            print_indented('sub %s by %s;' % (key, ' '.join(value)))
 
     elif lookup_type == 3:
         for key in sorted(subtable.alternates.keys()):
