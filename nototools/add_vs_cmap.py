@@ -35,6 +35,7 @@ from fontTools.ttLib.tables import _c_m_a_p
 
 from nototools import font_data
 from nototools import unicode_data
+from nototools import tool_utils
 
 VS_TEXT = 0xFE0E
 VS_EMOJI = 0xFE0F
@@ -56,7 +57,7 @@ def modify_font(font_name, font, presentation, emoji_variants):
 
 
 def modify_fonts(font_names, presentation='emoji', output=None, suffix=None,
-                 dst_dir=None):
+                 dst_dir=None, vs_added=None):
   assert dst_dir
   if output:
     assert len(font_names) == 1
@@ -71,6 +72,8 @@ def modify_fonts(font_names, presentation='emoji', output=None, suffix=None,
     os.makedirs(dst_dir)
 
   emoji_variants = unicode_data.get_unicode_emoji_variants()
+  if vs_added:
+    emoji_variants = emoji_variants | vs_added
 
   for font_name in font_names:
     font = ttLib.TTFont(font_name)
@@ -106,6 +109,10 @@ def main():
       metavar='filename',
       help='output file name, requires only one input file')
   parser.add_argument(
+      '-vs', '--vs_added',
+      help='extra ranges to treat as having the requested presentation',
+      metavar='range', nargs='+')
+  parser.add_argument(
       'files',
       help='files to modify',
       metavar='file',
@@ -117,8 +124,12 @@ def main():
   # Both parse_known_args and inserting '--' between the key and its
   # value fail, though.
   args = parser.parse_args()
+  vs_set = None
+  if args.vs_added:
+    vs_set = tool_utils.parse_int_ranges(' '.join(args.vs_added))
+
   modify_fonts(args.files, presentation=args.presentation, output=args.output,
-               suffix=args.suffix, dst_dir=args.dstdir)
+               suffix=args.suffix, dst_dir=args.dstdir, vs_added=vs_set)
 
 if __name__ == '__main__':
   main()
