@@ -709,8 +709,10 @@ def _load_emoji_sequence_data():
       'Emoji_Modifier_Sequence': {},
   }
   map_names = '|'.join(sorted(emoji_maps.keys()))
+  # there's one line where the unicode version is not preceded by
+  # a space, so make it optional.
   line_re = re.compile(
-      r'([0-9A-F ]+);\s+(%s)\s+#\s+(\d+\.\d+)\s.*?(?:Flag for (.*))?$' %
+      r'([0-9A-F ]+);\s+(%s)\s+;([^#]*)#\s*(\d+\.\d+)\s.*' %
       map_names)
   with open_unicode_data_file('emoji-sequences.txt') as f:
     for line in f:
@@ -723,9 +725,9 @@ def _load_emoji_sequence_data():
       seq = tuple(int(s, 16) for s in m.group(1).split())
       emoji_map = emoji_maps[m.group(2)]
       is_flag = m.group(2) == 'Emoji_Flag_Sequence'
-      age = float(m.group(3))
-      flag_name = m.group(4)
-      value = (age, flag_name) if is_flag else age
+      name = m.group(3).strip()
+      age = float(m.group(4))
+      value = (age, name) if name else age
       emoji_map[seq] = value
   _emoji_combining_sequences = emoji_maps['Emoji_Combining_Sequence']
   _emoji_flag_sequences = emoji_maps['Emoji_Flag_Sequence']
@@ -738,8 +740,7 @@ def _load_emoji_zwj_sequence_data():
   if _emoji_zwj_sequences:
       return
   line_re = re.compile(
-      r'([0-9A-F ]+);\s+Emoji_ZWJ_Sequence\s+'
-      r'#\s(\d+.\d+)\s.*?\)\s+(?:([^:]+):|EYE, LEFT SPEECH BUBBLE).*$')
+      r'([0-9A-F ]+);\s+Emoji_ZWJ_Sequence\s+;([^#]*)#\s(\d+.\d+)\s.*?')
   data = {}
   with open_unicode_data_file('emoji-zwj-sequences.txt') as f:
     for line in f:
@@ -750,23 +751,10 @@ def _load_emoji_zwj_sequence_data():
       if not m:
         raise ValueError('Did not match "%s"' % line)
       seq = tuple(int(s, 16) for s in m.group(1).split())
-      age = float(m.group(2))
-      seq_name = m.group(3)
-      # patch in preferred name for this anomalous value
-      if seq_name is None:
-        seq_name = 'I Witness'
+      seq_name = m.group(2).strip()
+      age = float(m.group(3))
       data[seq] = (age, seq_name)
   _emoji_zwj_sequences = data
-
-
-def _age_set_select(seq_to_age, age):
-  """Return a set of keys in seq_to_age, optionally limited to
-  those <= the provided age."""
-  if age is None:
-    return seq_to_age.keys()
-  else:
-    age = float(age)
-    return {k for k, v in seq_to_age.iteritems() if v <= age}
 
 
 def _age_map_select(seq_to_age_tup, age):
@@ -781,24 +769,24 @@ def _age_map_select(seq_to_age_tup, age):
 
 
 def get_emoji_combining_sequences(age=None):
-  """Return set of combining sequences, optionally limited to
+  """Return map of combining sequences to name, optionally limited to
   those <= the provided age."""
   _load_emoji_sequence_data()
-  return _age_set_select(_emoji_combining_sequences, age)
+  return _age_map_select(_emoji_combining_sequences, age)
 
 
 def get_emoji_flag_sequences(age=None):
-  """Return map from flag sequence to region name, optionally limited to
+  """Return map from flag sequence to name, optionally limited to
   those <= the provided age."""
   _load_emoji_sequence_data()
   return _age_map_select(_emoji_flag_sequences, age)
 
 
 def get_emoji_modifier_sequences(age=None):
-  """Return set of modifier sequences, optionally limited to
+  """Return map of modifier sequences to name, optionally limited to
   those <= the provided age."""
   _load_emoji_sequence_data()
-  return _age_set_select(_emoji_modifier_sequences, age)
+  return _age_map_select(_emoji_modifier_sequences, age)
 
 
 def get_emoji_zwj_sequences(age=None):
@@ -849,6 +837,11 @@ def _load_unicode_emoji_variants():
       m = line_re.match(line)
       if m:
         emoji_variants.add(int(m.group(1), 16))
+
+  # temporarily hard-code in some post-9.0 proposed exceptions used
+  # in gendered emoji sequences
+  emoji_variants.add([0x2640, 0x2642, 0x2695])
+
   _emoji_variants = frozenset(emoji_variants)
 
 
@@ -995,16 +988,16 @@ def codeset(cpname):
 def _dump_emoji_sequences():
   """Dump sequences, for testing."""
   print 'combining sequences'
-  for seq in sorted(get_emoji_combining_sequences()):
-      print '+'.join('%04x' % cp for cp in seq)
+  for seq, seq_name in sorted(get_emoji_combining_sequences().items()):
+      print '+'.join('%04x' % cp for cp in seq), seq_name
   print 'flag sequences'
   for seq, seq_name in sorted(get_emoji_flag_sequences().items()):
       print '+'.join('%04x' % cp for cp in seq), seq_name
   print 'modifier sequences'
-  for seq in sorted(get_emoji_modifier_sequences()):
-      print '+'.join('%04x' % cp for cp in seq), name(seq[0])
+  for seq, seq_name in sorted(get_emoji_modifier_sequences().items()):
+      print '+'.join('%04x' % cp for cp in seq), seq_name
   print 'zwj sequences'
-  for seq, seq_name in sorted(get_emoji_zwj_sequences(age=8.0).items()):
+  for seq, seq_name in sorted(get_emoji_zwj_sequences().items()):
       print '+'.join('%04x' % cp for cp in seq), seq_name
 
 
@@ -1030,4 +1023,5 @@ def _dump_emoji_presentation():
 
 
 if __name__ == '__main__':
-    _dump_emoji_presentation()
+    # _dump_emoji_presentation()
+    _dump_emoji_sequences()
