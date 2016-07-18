@@ -1,17 +1,18 @@
 # emoji-data.txt
-# Date: 2016-05-15, 02:41:03 GMT
+# Date: 2016-07-13, 11:58:12 GMT
 # © 2016 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Emoji Data for UTR #51
-# Version: 3.0
+# Version: 4.0
 #
 # For documentation and usage, see http://www.unicode.org/reports/tr51
 #
 # Warning: the format has changed from Version 1.0
 # Format: 
-# codepoint(s) ; property(=Yes) # version [count] name(s) 
+# codepoint(s) ; property(=Yes) # comments 
+# Sequences are listed in code point order. For a more natural order, see the CLDR collation order for Emoji.
 
 # ================================================
 
@@ -51,6 +52,8 @@
 262A          ; Emoji                # 1.1  [1] (☪)       STAR AND CRESCENT
 262E..262F    ; Emoji                # 1.1  [2] (☮..☯)    PEACE SYMBOL..YIN YANG
 2638..263A    ; Emoji                # 1.1  [3] (☸..☺)    WHEEL OF DHARMA..WHITE SMILING FACE
+2640          ; Emoji                # 1.1  [1] (♀)       FEMALE SIGN
+2642          ; Emoji                # 1.1  [1] (♂)       MALE SIGN
 2648..2653    ; Emoji                # 1.1 [12] (♈..♓)    ARIES..PISCES
 2660          ; Emoji                # 1.1  [1] (♠)       BLACK SPADE SUIT
 2663          ; Emoji                # 1.1  [1] (♣)       BLACK CLUB SUIT
@@ -58,8 +61,7 @@
 2668          ; Emoji                # 1.1  [1] (♨)       HOT SPRINGS
 267B          ; Emoji                # 3.2  [1] (♻)       BLACK UNIVERSAL RECYCLING SYMBOL
 267F          ; Emoji                # 4.1  [1] (♿)       WHEELCHAIR SYMBOL
-2692..2694    ; Emoji                # 4.1  [3] (⚒..⚔)    HAMMER AND PICK..CROSSED SWORDS
-2696..2697    ; Emoji                # 4.1  [2] (⚖..⚗)    SCALES..ALEMBIC
+2692..2697    ; Emoji                # 4.1  [6] (⚒..⚗)    HAMMER AND PICK..ALEMBIC
 2699          ; Emoji                # 4.1  [1] (⚙)       GEAR
 269B..269C    ; Emoji                # 4.1  [2] (⚛..⚜)    ATOM SYMBOL..FLEUR-DE-LIS
 26A0..26A1    ; Emoji                # 4.0  [2] (⚠..⚡)    WARNING SIGN..HIGH VOLTAGE SIGN
@@ -228,7 +230,7 @@
 1F985..1F991  ; Emoji                # 9.0 [13] (🦅..🦑)    EAGLE..SQUID
 1F9C0         ; Emoji                # 8.0  [1] (🧀)       CHEESE WEDGE
 
-# Total elements: 1123
+# Total elements: 1126
 
 # ================================================
 
