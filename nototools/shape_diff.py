@@ -92,10 +92,14 @@ class ShapeDiffFinder:
             self.font_b, self.reverse_cmap)
         ordered_names = list(self.names)
 
-        a_png = self._make_tmp_path()
-        b_png = self._make_tmp_path()
-        cmp_png = self._make_tmp_path()
-        diffs_filename = self._make_tmp_path()
+        a_png_file = tempfile.NamedTemporaryFile()
+        a_png = a_png_file.name
+        b_png_file = tempfile.NamedTemporaryFile()
+        b_png = b_png_file.name
+        cmp_png_file = tempfile.NamedTemporaryFile()
+        cmp_png = cmp_png_file.name
+        diffs_file = tempfile.NamedTemporaryFile()
+        diffs_filename = diffs_file.name
 
         for name in ordered_names:
             hb_args_a = hb_input_generator_a.input_from_name(
@@ -156,11 +160,6 @@ class ShapeDiffFinder:
             lines = ifile.readlines()
         diffs = [(lines[i].strip(), lines[i + 1].strip())
                  for i in range(0, len(lines), 2)]
-
-        os.remove(a_png)
-        os.remove(b_png)
-        os.remove(cmp_png)
-        os.remove(diffs_filename)
 
         mismatched = {}
         for name, diff in diffs:
@@ -272,10 +271,3 @@ class ShapeDiffFinder:
         if not (a or b):
             return 0
         return 1 - min(a, b) / max(a, b)
-
-    def _make_tmp_path(self):
-        """Return a temporary path, for use in rendering."""
-
-        handle, path = tempfile.mkstemp()
-        os.close(handle)
-        return path
