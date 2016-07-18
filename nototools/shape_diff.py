@@ -155,11 +155,11 @@ class ShapeDiffFinder:
                 subprocess.call(
                     ['compare', '-metric', 'AE', a_png, b_png, cmp_png],
                     stderr=ofile)
+                ofile.write('\n')
 
         with open(diffs_filename) as ifile:
-            lines = ifile.readlines()
-        diffs = [(lines[i].strip(), lines[i + 1].strip())
-                 for i in range(0, len(lines), 2)]
+            lines = [l.strip() for l in ifile.readlines() if l.strip()]
+        diffs = [(lines[i], lines[i + 1]) for i in range(0, len(lines), 2)]
 
         mismatched = {}
         for name, diff in diffs:
