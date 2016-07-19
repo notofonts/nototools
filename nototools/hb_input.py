@@ -61,6 +61,8 @@ class HbInputGenerator(object):
         if 'GSUB' not in self.font:
             return
         gsub = self.font['GSUB'].table
+        if gsub.LookupList is None:
+            return
         for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
             for st in lookup.SubTable:
 
