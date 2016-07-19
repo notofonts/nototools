@@ -25,9 +25,9 @@ class HbInputGenerator(object):
     subprocess.call or something similar.
     """
 
-    def __init__(self, font, reverse_cmap=None):
+    def __init__(self, font):
         self.font = font
-        self.reverse_cmap = reverse_cmap or build_reverse_cmap(self.font)
+        self.reverse_cmap = build_reverse_cmap(self.font)
 
     def all_inputs(self, warn=False):
         """Generate harfbuzz inputs for all glyphs in a given font."""

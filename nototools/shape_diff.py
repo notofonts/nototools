@@ -95,14 +95,8 @@ class ShapeDiffFinder:
     def find_rendered_diffs(self, font_size=256, render_path=None):
         """Find diffs of glyphs as rendered by harfbuzz + image magick."""
 
-        self.build_names()
-        self.build_reverse_cmap()
-
-        hb_input_generator_a = hb_input.HbInputGenerator(
-            self.font_a, self.reverse_cmap)
-        hb_input_generator_b = hb_input.HbInputGenerator(
-            self.font_b, self.reverse_cmap)
-        ordered_names = list(self.names)
+        hb_input_generator_a = hb_input.HbInputGenerator(self.font_a)
+        hb_input_generator_b = hb_input.HbInputGenerator(self.font_b)
 
         a_png_file = tempfile.NamedTemporaryFile()
         a_png = a_png_file.name
@@ -113,7 +107,8 @@ class ShapeDiffFinder:
         diffs_file = tempfile.NamedTemporaryFile()
         diffs_filename = diffs_file.name
 
-        for name in ordered_names:
+        self.build_names()
+        for name in self.names:
             class_a = self.gdef_a.get(name, GDEF_UNDEF)
             class_b = self.gdef_b.get(name, GDEF_UNDEF)
             if GDEF_MARK in (class_a, class_b) and class_a != class_b:
@@ -210,12 +205,6 @@ class ShapeDiffFinder:
             stats.append((self.basepath, names_a - names_b, names_b - names_a))
         self.names = names_a & names_b
 
-    def build_reverse_cmap(self):
-        """Build a map from glyph names to unicode values for the fonts."""
-
-        if hasattr(self, 'reverse_cmap'):
-            return
-
         stats = self.stats['unicode_mismatch']
         reverse_cmap_a = hb_input.build_reverse_cmap(self.font_a)
         reverse_cmap_b = hb_input.build_reverse_cmap(self.font_b)
@@ -227,10 +216,7 @@ class ShapeDiffFinder:
                 mismatched[name] = (unival_a, unival_b)
         if mismatched:
             stats.append((self.basepath, mismatched.items()))
-
-        # return cmap with only names used consistently between fonts
-        self.reverse_cmap = {n: v for n, v in reverse_cmap_a.items()
-                             if n in self.names and n not in mismatched}
+            self.names -= set(mismatched.keys())
 
     @staticmethod
     def dump(stats, whitelist, out_lines, include_vals, multiple_fonts):
