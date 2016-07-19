@@ -65,6 +65,7 @@ class ShapeDiffFinder:
         stats['unicode_mismatch'] = []
         stats['gdef_mark_mismatch'] = []
         stats['zero_width_mismatch'] = []
+        stats['input_mismatch'] = []
         self.stats = stats
 
         self.ratio_diffs = ratio_diffs
@@ -128,20 +129,20 @@ class ShapeDiffFinder:
 
             hb_args_a = hb_input_generator_a.input_from_name(name, pad=zwidth_a)
             hb_args_b = hb_input_generator_b.input_from_name(name, pad=zwidth_b)
+            if hb_args_a != hb_args_b:
+                self.stats['input_mismatch'].append((
+                    self.basepath, name, hb_args_a, hb_args_b))
+                continue
 
             # ignore unreachable characters
             if not hb_args_a:
-                assert not hb_args_b
                 self.stats['untested'].append((self.basepath, name))
                 continue
 
-            features_a, text_a = hb_args_a
-            features_b, text_b = hb_args_b
-            assert features_a == features_b
-            assert text_a.strip() == text_b.strip()
+            features, text = hb_args_a
 
             # ignore null character
-            if unichr(0) in text_a:
+            if unichr(0) in text:
                 continue
 
             with open(diffs_filename, 'a') as ofile:
@@ -150,11 +151,11 @@ class ShapeDiffFinder:
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % a_png,
-                '--features=%s' % ','.join(features_a), self.path_a, text_a])
+                '--features=%s' % ','.join(features), self.path_a, text])
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % b_png,
-                '--features=%s' % ','.join(features_b), self.path_b, text_b])
+                '--features=%s' % ','.join(features), self.path_b, text])
 
             img_info = subprocess.check_output(['identify', a_png]).split()
             assert img_info[0] == a_png and img_info[1] == 'PNG'
@@ -271,6 +272,9 @@ class ShapeDiffFinder:
         ShapeDiffFinder._add_simple_report(
             report, stats['zero_width_mismatch'],
             '%s: Zero-width mismatch for %s (%d vs %d)')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['input_mismatch'],
+            '%s: Harfbuzz input mismatch for %s (%s vs %s)')
         ShapeDiffFinder._add_simple_report(
             report, stats['untested'],
             '%s: %s not tested (unreachable?)')
