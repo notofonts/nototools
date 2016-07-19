@@ -251,10 +251,6 @@ class ShapeDiffFinder:
             report.append(fmt % line)
         report.append('')
 
-        for stat in sorted(stats['untested']):
-            report.append('%s: %s not tested (unreachable?)' % stat)
-        report.append('')
-
         for font, set_a, set_b in stats['unmatched']:
             report.append("Glyph coverage doesn't match in %s" % font)
             report.append('  in A but not B: %s' % sorted(set_a))
@@ -269,15 +265,24 @@ class ShapeDiffFinder:
                               (name, univals[0], univals[1]))
         report.append('')
 
-        for stat in sorted(stats['gdef_mark_mismatch']):
-            report.append('%s: Mark class mismatch for %s (%s vs %s)' % stat)
-        report.append('')
-
-        for stat in sorted(stats['zero_width_mismatch']):
-            report.append('%s: Zero-width mismatch for %s (%d vs %d)' % stat)
-        report.append('')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['gdef_mark_mismatch'],
+            '%s: Mark class mismatch for %s (%s vs %s)')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['zero_width_mismatch'],
+            '%s: Zero-width mismatch for %s (%d vs %d)')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['untested'],
+            '%s: %s not tested (unreachable?)')
 
         return '\n'.join(report)
+
+    @staticmethod
+    def _add_simple_report(report, stats, fmt):
+        for stat in sorted(stats):
+            report.append(fmt % stat)
+        if stats:
+            report.append('')
 
     def _calc_diff(self, vals):
         """Calculate an area difference."""
