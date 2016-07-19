@@ -65,6 +65,7 @@ class ShapeDiffFinder:
         stats['unicode_mismatch'] = []
         stats['gdef_mark_mismatch'] = []
         stats['zero_width_mismatch'] = []
+        stats['input_mismatch'] = []
         self.stats = stats
 
         self.ratio_diffs = ratio_diffs
@@ -95,14 +96,8 @@ class ShapeDiffFinder:
     def find_rendered_diffs(self, font_size=256, render_path=None):
         """Find diffs of glyphs as rendered by harfbuzz + image magick."""
 
-        self.build_names()
-        self.build_reverse_cmap()
-
-        hb_input_generator_a = hb_input.HbInputGenerator(
-            self.font_a, self.reverse_cmap)
-        hb_input_generator_b = hb_input.HbInputGenerator(
-            self.font_b, self.reverse_cmap)
-        ordered_names = list(self.names)
+        hb_input_generator_a = hb_input.HbInputGenerator(self.font_a)
+        hb_input_generator_b = hb_input.HbInputGenerator(self.font_b)
 
         a_png_file = tempfile.NamedTemporaryFile()
         a_png = a_png_file.name
@@ -113,7 +108,8 @@ class ShapeDiffFinder:
         diffs_file = tempfile.NamedTemporaryFile()
         diffs_filename = diffs_file.name
 
-        for name in ordered_names:
+        self.build_names()
+        for name in self.names:
             class_a = self.gdef_a.get(name, GDEF_UNDEF)
             class_b = self.gdef_b.get(name, GDEF_UNDEF)
             if GDEF_MARK in (class_a, class_b) and class_a != class_b:
@@ -133,20 +129,20 @@ class ShapeDiffFinder:
 
             hb_args_a = hb_input_generator_a.input_from_name(name, pad=zwidth_a)
             hb_args_b = hb_input_generator_b.input_from_name(name, pad=zwidth_b)
+            if hb_args_a != hb_args_b:
+                self.stats['input_mismatch'].append((
+                    self.basepath, name, hb_args_a, hb_args_b))
+                continue
 
             # ignore unreachable characters
             if not hb_args_a:
-                assert not hb_args_b
                 self.stats['untested'].append((self.basepath, name))
                 continue
 
-            features_a, text_a = hb_args_a
-            features_b, text_b = hb_args_b
-            assert features_a == features_b
-            assert text_a.strip() == text_b.strip()
+            features, text = hb_args_a
 
             # ignore null character
-            if unichr(0) in text_a:
+            if unichr(0) in text:
                 continue
 
             with open(diffs_filename, 'a') as ofile:
@@ -155,11 +151,11 @@ class ShapeDiffFinder:
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % a_png,
-                '--features=%s' % ','.join(features_a), self.path_a, text_a])
+                '--features=%s' % ','.join(features), self.path_a, text])
             subprocess.call([
                 'hb-view', '--font-size=%d' % font_size,
                 '--output-file=%s' % b_png,
-                '--features=%s' % ','.join(features_b), self.path_b, text_b])
+                '--features=%s' % ','.join(features), self.path_b, text])
 
             img_info = subprocess.check_output(['identify', a_png]).split()
             assert img_info[0] == a_png and img_info[1] == 'PNG'
@@ -210,12 +206,6 @@ class ShapeDiffFinder:
             stats.append((self.basepath, names_a - names_b, names_b - names_a))
         self.names = names_a & names_b
 
-    def build_reverse_cmap(self):
-        """Build a map from glyph names to unicode values for the fonts."""
-
-        if hasattr(self, 'reverse_cmap'):
-            return
-
         stats = self.stats['unicode_mismatch']
         reverse_cmap_a = hb_input.build_reverse_cmap(self.font_a)
         reverse_cmap_b = hb_input.build_reverse_cmap(self.font_b)
@@ -227,10 +217,7 @@ class ShapeDiffFinder:
                 mismatched[name] = (unival_a, unival_b)
         if mismatched:
             stats.append((self.basepath, mismatched.items()))
-
-        # return cmap with only names used consistently between fonts
-        self.reverse_cmap = {n: v for n, v in reverse_cmap_a.items()
-                             if n in self.names and n not in mismatched}
+            self.names -= set(mismatched.keys())
 
     @staticmethod
     def dump(stats, whitelist, out_lines, include_vals, multiple_fonts):
@@ -265,10 +252,6 @@ class ShapeDiffFinder:
             report.append(fmt % line)
         report.append('')
 
-        for stat in sorted(stats['untested']):
-            report.append('%s: %s not tested (unreachable?)' % stat)
-        report.append('')
-
         for font, set_a, set_b in stats['unmatched']:
             report.append("Glyph coverage doesn't match in %s" % font)
             report.append('  in A but not B: %s' % sorted(set_a))
@@ -283,15 +266,27 @@ class ShapeDiffFinder:
                               (name, univals[0], univals[1]))
         report.append('')
 
-        for stat in sorted(stats['gdef_mark_mismatch']):
-            report.append('%s: Mark class mismatch for %s (%s vs %s)' % stat)
-        report.append('')
-
-        for stat in sorted(stats['zero_width_mismatch']):
-            report.append('%s: Zero-width mismatch for %s (%d vs %d)' % stat)
-        report.append('')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['gdef_mark_mismatch'],
+            '%s: Mark class mismatch for %s (%s vs %s)')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['zero_width_mismatch'],
+            '%s: Zero-width mismatch for %s (%d vs %d)')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['input_mismatch'],
+            '%s: Harfbuzz input mismatch for %s (%s vs %s)')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['untested'],
+            '%s: %s not tested (unreachable?)')
 
         return '\n'.join(report)
+
+    @staticmethod
+    def _add_simple_report(report, stats, fmt):
+        for stat in sorted(stats):
+            report.append(fmt % stat)
+        if stats:
+            report.append('')
 
     def _calc_diff(self, vals):
         """Calculate an area difference."""
