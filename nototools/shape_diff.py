@@ -36,6 +36,10 @@ from nototools.glyph_area_pen import GlyphAreaPen
 
 from nototools import hb_input
 
+GDEF_UNDEF = 0
+GDEF_MARK = 3
+GDEF_LABELS = ['no class', 'base', 'ligature', 'mark', 'component']
+
 
 class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
@@ -44,15 +48,23 @@ class ShapeDiffFinder:
         self.path_a = file_a
         self.font_a = TTFont(self.path_a)
         self.glyph_set_a = self.font_a.getGlyphSet()
+        self.gdef_a = {}
+        if 'GDEF' in self.font_a:
+            self.gdef_a = self.font_a['GDEF'].table.GlyphClassDef.classDefs
 
         self.path_b = file_b
         self.font_b = TTFont(self.path_b)
         self.glyph_set_b = self.font_b.getGlyphSet()
+        self.gdef_b = {}
+        if 'GDEF' in self.font_b:
+            self.gdef_b = self.font_b['GDEF'].table.GlyphClassDef.classDefs
 
         stats['compared'] = []
         stats['untested'] = []
         stats['unmatched'] = []
         stats['unicode_mismatch'] = []
+        stats['gdef_mark_mismatch'] = []
+        stats['zero_width_mismatch'] = []
         self.stats = stats
 
         self.ratio_diffs = ratio_diffs
@@ -102,15 +114,30 @@ class ShapeDiffFinder:
         diffs_filename = diffs_file.name
 
         for name in ordered_names:
-            hb_args_a = hb_input_generator_a.input_from_name(
-                name, pad=(self.glyph_set_a[name].width == 0))
-            hb_args_b = hb_input_generator_b.input_from_name(
-                name, pad=(self.glyph_set_b[name].width == 0))
+            class_a = self.gdef_a.get(name, GDEF_UNDEF)
+            class_b = self.gdef_b.get(name, GDEF_UNDEF)
+            if GDEF_MARK in (class_a, class_b) and class_a != class_b:
+                self.stats['gdef_mark_mismatch'].append((
+                    self.basepath, name, GDEF_LABELS[class_a],
+                    GDEF_LABELS[class_b]))
+                continue
+
+            width_a = self.glyph_set_a[name].width
+            width_b = self.glyph_set_b[name].width
+            zwidth_a = width_a == 0
+            zwidth_b = width_b == 0
+            if zwidth_a != zwidth_b:
+                self.stats['zero_width_mismatch'].append((
+                    self.basepath, name, width_a, width_b))
+                continue
+
+            hb_args_a = hb_input_generator_a.input_from_name(name, pad=zwidth_a)
+            hb_args_b = hb_input_generator_b.input_from_name(name, pad=zwidth_b)
 
             # ignore unreachable characters
             if not hb_args_a:
                 assert not hb_args_b
-                self.stats['untested'].append(name)
+                self.stats['untested'].append((self.basepath, name))
                 continue
 
             features_a, text_a = hb_args_a
@@ -238,8 +265,8 @@ class ShapeDiffFinder:
             report.append(fmt % line)
         report.append('')
 
-        for name in sorted(stats['untested']):
-            report.append('not tested (unreachable?): %s' % name)
+        for stat in sorted(stats['untested']):
+            report.append('%s: %s not tested (unreachable?)' % stat)
         report.append('')
 
         for font, set_a, set_b in stats['unmatched']:
@@ -254,6 +281,14 @@ class ShapeDiffFinder:
                 univals = [(('0x%04X' % v) if v else str(v)) for v in univals]
                 report.append('  %s: %s in A, %s in B' %
                               (name, univals[0], univals[1]))
+        report.append('')
+
+        for stat in sorted(stats['gdef_mark_mismatch']):
+            report.append('%s: Mark class mismatch for %s (%s vs %s)' % stat)
+        report.append('')
+
+        for stat in sorted(stats['zero_width_mismatch']):
+            report.append('%s: Zero-width mismatch for %s (%d vs %d)' % stat)
         report.append('')
 
         return '\n'.join(report)
