@@ -28,6 +28,7 @@ large errors.
 
 
 import os
+import re
 import subprocess
 import tempfile
 
@@ -164,7 +165,8 @@ class ShapeDiffFinder:
                 '-extent', img_info[2], b_png, b_png])
 
             if render_path:
-                output_png = os.path.join(render_path, name + '.png')
+                glyph_filename = re.sub(r'([A-Z_])', r'\1_', name) + '.png'
+                output_png = os.path.join(render_path, glyph_filename)
                 # see for a discussion of this rendering technique:
                 # https://github.com/googlei18n/nototools/issues/162#issuecomment-175885431
                 subprocess.call([
