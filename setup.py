@@ -35,7 +35,6 @@ setup(name='nototools',
       # $ grep "def main(" nototools/* | cut -d: -f1
       scripts=['nototools/autofix_for_release.py',
                'nototools/add_vs_cmap.py',
-               'nototools/coverage.py',
                'nototools/create_image.py',
                'nototools/decompose_ttc.py',
                'nototools/drop_hints.py',
@@ -53,5 +52,6 @@ setup(name='nototools',
       entry_points={
           'console_scripts': [
               'notodiff = nototools.notodiff:main',
+              'notocoverage = nototools.coverage:main',
           ]
       })
