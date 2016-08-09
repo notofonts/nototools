@@ -92,7 +92,7 @@ class ShapeDiffFinder:
         stats = self.stats['compared']
         calc = self._calc_ratio if self.ratio_diffs else self._calc_diff
         for name, areas in mismatched.items():
-            stats.append((calc(areas), name, self.basepath, area[0], area[1]))
+            stats.append((calc(areas), name, self.basepath, areas[0], areas[1]))
 
     def find_rendered_diffs(self, font_size=256, render_path=None):
         """Find diffs of glyphs as rendered by harfbuzz + image magick."""
