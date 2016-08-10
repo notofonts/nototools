@@ -24,6 +24,12 @@ from nototools import cmap_data
 from nototools import tool_utils
 from nototools import unicode_data
 
+# exceptions for script codes that are not actual script codes, but
+# our own custom keys.
+_SCRIPT_KEY_NAMES = [
+    ('SYM2', 'Symbols2')
+]
+
 def get_script_for_name(script_name):
   starred = False
   if script_name[-1] == '*':
@@ -31,6 +37,10 @@ def get_script_for_name(script_name):
     script_name = script_name[:-1]
   if script_name in ['LGC', 'MONO', 'MUSIC', 'SYM2']:
     return script_name, starred
+
+  for k, name in _SCRIPT_KEY_NAMES:
+    if script_name == name:
+      return k, starred
 
   code = unicode_data.script_code(script_name)
   if code == 'Zzzz':
@@ -118,6 +128,10 @@ def csv_to_xml(csv_file, xml_file, scripts, exclude_scripts):
 
 
 def _script_to_name(script):
+  for k, name in _SCRIPT_KEY_NAMES:
+    if script == k:
+      return name
+
   try:
     return unicode_data.human_readable_script_name(script)
   except KeyError:

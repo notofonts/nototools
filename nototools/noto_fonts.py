@@ -77,9 +77,10 @@ def preferred_script_name(script_key):
 
 
 _script_key_to_report_name = {
-    'Aran': '(Urdu)',
+    'Aran': '(Urdu)',  # phase 2 usage
     'HST': '(Historic)',
-    'LGC': '(LGC)'
+    'LGC': '(LGC)',
+    'SYM2': 'Symbols2'
 }
 def script_name_for_report(script_key):
     return (_script_key_to_report_name.get(script_key, None) or
@@ -140,7 +141,7 @@ _FONT_NAME_REGEX = (
     '(UI)?'
     '(Display)?'
     '-?'
-    '((?:Semi)?Condensed)?'
+    '((?:Semi|Extra)?Condensed)?'
     '(|%s)?' % '|'.join(WEIGHTS.keys()) +
     '(Italic)?'
     '\.(ttf|ttc|otf)')
@@ -184,7 +185,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
 
   is_mono = mono == 'Mono'
 
-  if width not in [None, '', 'Condensed', 'SemiCondensed']:
+  if width not in [None, '', 'Condensed', 'SemiCondensed', 'ExtraCondensed']:
     print >> sys.stderr, 'noto_fonts: Unexpected width "%s"' % width
     if width in ['SemiCond', 'Narrow']:
       width = 'SemiCondensed'

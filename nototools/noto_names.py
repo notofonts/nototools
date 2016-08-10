@@ -121,6 +121,7 @@ _SCRIPT_KEY_TO_FONT_NAME = {
     'LGC': None,
     'Zsye': None,
     'MONO': None,
+    'SYM2': 'Symbols2',
 }
 
 
@@ -240,7 +241,7 @@ def _shift_parts(family_parts, subfamily_parts, stop_fn):
 
 
 _WWS_RE = re.compile(
-    '(?:(?:Semi)?Condensed|%s|Italic)$' % '|'.join(noto_fonts.WEIGHTS))
+    '(?:(?:Semi|Extra)?Condensed|%s|Italic)$' % '|'.join(noto_fonts.WEIGHTS))
 def _is_wws_part(part):
   return _WWS_RE.match(part)
 
@@ -269,7 +270,9 @@ def _original_parts(family_parts, subfamily_parts, no_style_linking=False):
 _SHORT_NAMES = {
     'Condensed': 'Cond',
     'SemiCondensed': 'SemCond',
+    'ExtraCondensed': 'ExtCond',
     'SemiLight': 'SemLt',
+    'ExtraLight': 'ExtLt',
     'Medium': 'Med',
     'SemiBold': 'SemBd',
     'ExtraBold': 'ExtBd',
@@ -280,9 +283,11 @@ _SHORT_NAMES = {
 _VERY_SHORT_NAMES = {
     'Condensed': 'Cn',
     'SemiCondensed': 'SmCn',
+    'ExtraCondensed': 'XCn',
     'Thin': 'Th',
     'Light': 'Lt',
     'SemiLight': 'SmLt',
+    'ExtraLight': 'XLt',
     'Medium': 'Md',
     'Bold': 'Bd',
     'SemiBold': 'SmBd',
@@ -571,7 +576,7 @@ _NON_ORIGINAL_WEIGHT_PARTS = frozenset(
     if w not in ['Bold', 'Regular'])
 _ORIGINAL_PARTS = frozenset(['Bold', 'Regular', 'Italic'])
 _WWS_PARTS = frozenset(
-    ['SemiCondensed', 'Condensed', 'Italic'] +
+    ['SemiCondensed', 'ExtraCondensed', 'Condensed', 'Italic'] +
     list(noto_fonts.WEIGHTS))
 
 
@@ -801,7 +806,7 @@ def _collect_paths(dirs, files):
       if fname[0] == '@':
         paths.extend(_read_filename_list(fname[1:]))
       else:
-        paths.append(tool_utils.resolve_path(f))
+        paths.append(tool_utils.resolve_path(fname))
   return paths
 
 
@@ -874,7 +879,7 @@ def main():
     if not path.exists(args.info_file):
       print '"%s" does not exist.' % args.info_file
       return
-    _dump(fonts, args.info_file)
+    _dump(fonts, args.info_file, args.phase)
   elif args.cmd == 'write':
     if not args.phase:
       print 'Must specify phase when generating info.'
