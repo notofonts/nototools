@@ -840,7 +840,7 @@ def _load_unicode_emoji_variants():
 
   # temporarily hard-code in some post-9.0 proposed exceptions used
   # in gendered emoji sequences
-  emoji_variants.add([0x2640, 0x2642, 0x2695])
+  emoji_variants.union(set([0x2640, 0x2642, 0x2695]))
 
   _emoji_variants = frozenset(emoji_variants)
 
