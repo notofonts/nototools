@@ -701,7 +701,7 @@ def _assign_hyphens_for_autohyphenation(cmap_ops):
   # Cyrl, Grek, Latn rolled into LGC
   # CJK not listed, these don't hyphenate, data is in CLDR for other reasons
   hyphen_scripts = """
-      Arab Armn Beng Copt Deva Ethi Geor Gujr Guru Hebr
+      Arab Aran Armn Beng Copt Deva Ethi Geor Gujr Guru Hebr
       Khmr Knda LGC  Mlym Orya Taml Telu Thai Tibt
   """.split()
   cmap_ops.phase('assign hyphens')
@@ -800,6 +800,8 @@ _SCRIPT_REQUIRED = [
    003A  # COLON
    # Latin-1 Supplement
    00A0  # NO-BREAK SPACE
+   # Combining Diacritical Marks
+   034F  # COMBINING GRAPHEME JOINER
    # General Punctuation
    200E  # LEFT-TO-RIGHT MARK
    200F  # RIGHT-TO-LEFT MARK
