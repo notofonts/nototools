@@ -1844,7 +1844,8 @@ def check_font(font_props, filename_error,
 
     is_indic = font_props.script in {
         "Deva", "Beng", "Guru", "Gujr", "Orya",
-        "Taml", "Telu", "Knda", "Mlym", "Sinh"}
+        "Taml", "Telu", "Knda", "Mlym", "Sinh",
+        "Khmr" }
 
     deemed_ui = (not font_props.is_UI) and font_props.script in noto_data.DEEMED_UI_SCRIPTS_SET
 
