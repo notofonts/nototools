@@ -40,7 +40,7 @@ _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
   <meta charset="utf-8">
   <title>$title</title>
   <style>
-  $styles
+    $styles
   </style>
   <style>
     table { background-color: #eee; font-size: 20pt; text-align: center }
@@ -49,7 +49,7 @@ _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
               border-collapse: separate }
     .code, .age, .name { font-size: 12pt; text-align: left }
     .key { background-color: white; font-size: 12pt; border-collapse: separate;
-           margin-top: 0; border-spacing: 10px 0 }
+           margin-top: 0; border-spacing: 10px 0; text-align: left }
   </style>
 </head>
 <body>
@@ -91,33 +91,52 @@ class CodeList(object):
           'unrecognized file type %s for CodeList.fromfile' % filename)
 
   @staticmethod
+  def fromtext(text, codelist_type):
+    if codelist_type == 'cmap':
+      return CodeList.fromrangetext(text)
+    elif codelist_type == 'codes':
+      return CodeList.frompairtext(text)
+    elif codelist_type == 'list':
+      return CodeList.fromlisttext(text)
+    else:
+      raise Exception('unknown codelist type "%s"' % codelist_type)
+
+  @staticmethod
   def fromset(cpset):
     return UnicodeCodeList(cpset)
 
   @staticmethod
+  def fromrangetext(cpranges):
+    return CodeList.fromset(tool_utils.parse_int_ranges(cpranges))
+
+  @staticmethod
   def fromrangefile(cprange_file):
     with open(cprange_file, 'r') as f:
-      return CodeList.fromset(tool_utils.parse_int_ranges(f.read()))
+      return CodeList.fromrangetext(f.read())
 
   @staticmethod
   def fromlist(cplist):
     return OrderedCodeList(cplist)
 
   @staticmethod
+  def fromlisttext(cplist):
+    return CodeList.fromlist([int(item, 16) for item in cplist.split()])
+
+  @staticmethod
   def fromlistfile(cplist_file):
-    return CodeList.fromlist(
-        [int(line, 16) for line in _cleanlines(cplist_file)])
+    return CodeList.fromlisttext(_cleanlines(cplist_file))
 
   @staticmethod
   def frompairs(cppairs):
     return MappedCodeList(cppairs)
 
   @staticmethod
-  def frompairfile(cppairs_file):
-    # if no pairs, will treat as listfile
+  def frompairtext(cppairs_text):
+    # if no pairs, will treat as listtext.  cppairs must have only one item
+    # or pair per line, however.
     pair_list = None
     single_list = []
-    for line in _cleanlines(cppairs_file):
+    for line in cppairs_text.splitlines():
       parts = [int(s, 16) for s in line.split(';')]
       if pair_list:
         if len(parts) < 2:
@@ -132,6 +151,10 @@ class CodeList(object):
     if pair_list:
       return CodeList.frompairs(pair_list)
     return CodeList.fromlist(single_list)
+
+  @staticmethod
+  def frompairfile(cppairs_file):
+    return CodeList.frompairtext('\n'.join(_cleanlines(cppairs_file)))
 
   def contains(self, cp):
     """Returns True if cp is in the code list."""
@@ -208,15 +231,27 @@ class OrderedCodeList(CodeList):
     return cp if cp in self._codeset else None
 
 
-def _load_codelist(codelistfile, data_dir,  codelist_map):
-  fullpath = path.join(data_dir, codelistfile)
-  if not path.isfile(fullpath):
-    raise Exception('font "%s" codelist file "%s" not found' % (
-      key, codelistfile))
-  codelist = codelist_map.get(fullpath)
-  if codelist == None:
-    codelist = CodeList.fromfile(fullpath)
-    codelist_map[codelistfile] = codelist
+def _load_codelist(codelist_spec, data_dir, codelistfile_map):
+  for codelist_type in ['file', 'cmap', 'codes', 'list', None]:
+    if codelist_type and codelist_spec.startswith(codelist_type + ':'):
+      codelist_spec = codelist_spec[len(codelist_type) + 1:].strip()
+      break
+  if not codelist_type:
+    if codelist_spec.endswith('.txt'):
+      codelist_type = 'file'
+    else:
+      raise Exception(
+          'cannot determine type of codelist spec "%s"' % codelist_spec)
+  if codelist_type != 'file':
+    codelist = CodeList.fromtext(codelist_spec, codelist_type)
+  else:
+    fullpath = path.join(data_dir, codelist_spec)
+    if not path.isfile(fullpath):
+      raise Exception('codelist file "%s" not found' % codelist_spec)
+    codelist = codelistfile_map.get(fullpath)
+    if codelist == None:
+      codelist = CodeList.fromfile(fullpath)
+      codelistfile_map[codelist_spec] = codelist
   return codelist
 
 
@@ -279,26 +314,62 @@ def _load_fonts(data_list, data_dir, codelist_map):
   return [(key, keyinfo[key]) for key in keyorder]
 
 
-def _select_used_fonts(codelist, fonts):
-  result = []
+def _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts):
+  """Return the fonts we want to use to display the codelist, in order.
+  If not None, prefer_fonts is a key or list of keys for fonts to order
+  at the end.  If not None, omit_fonts is key or list of keys to omit
+  even if they would otherwise be used by default, however prefer_fonts
+  takes precedence over omit_fonts if the same key is in both."""
+
+  if prefer_fonts is not None:
+    if isinstance(prefer_fonts, basestring):
+      prefer_fonts = [prefer_fonts]
+    preferred = [None] * len(prefer_fonts)
+  else:
+    prefer_fonts = []
+    preferred = []
+
+  if omit_fonts is not None:
+    if isinstance(omit_fonts, basestring):
+      omit_fonts = [omit_fonts]
+    if prefer_fonts:
+      omit_fonts = [k for k in omit_fonts if k not in prefer_fonts]
+  else:
+    omit_fonts = []
+
+  regular = []
   codes = codelist.codes()
   for f in fonts:
-    for name, _, cl in f[1]:
+    key, keyinfo = f
+    if key in omit_fonts:
+      continue
+    for name, _, cl in keyinfo:
       if any(cl.contains(cp) for cp in codes):
-        result.append(f)
+        is_preferred = False
+        for i, k in enumerate(prefer_fonts):
+          if key == k:
+            preferred[i] = f
+            is_preferred = True
+            break
+        if not is_preferred:
+          regular.append(f)
         break
-  return tuple(result)
+  return tuple(regular + filter(None, preferred))
 
 
 def _load_targets(target_data, fonts, data_dir, codelist_map):
-  """Target data is a list of tuples of target names and codelist files.  All
-  files should be in data_dir.  codelist_map is a cache in case the codelist
-  file has already been read.  Returns a list of tuples of target names and
-  codelists."""
+  """Target data is a list of tuples of target names, codelist files, an
+  optional preferred font key or list of keys, and an optional omitted font
+  key or list of keys. All files should be in data_dir.  Codelist_map is a
+  cache in case the codelist file has already been read.  Returns a list of
+  tuples of target name, codelist, and fontlist."""
   result = []
-  for name, codelist_file in target_data:
-    codelist = _load_codelist(codelist_file, data_dir, codelist_map)
-    used_fonts = _select_used_fonts(codelist, fonts)
+  for target in target_data:
+    if len(target) < 4:
+      target = target + ((None,) * (4 - len(target)))
+    name, codelist_spec, prefer_fonts, omit_fonts = target
+    codelist = _load_codelist(codelist_spec, data_dir, codelist_map)
+    used_fonts = _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts)
     if not used_fonts:
       raise Exception('no fonts used by target %s' % name)
     result.append((name, codelist, used_fonts))
@@ -332,19 +403,29 @@ def _get_driver(data_dir):
       ('wng3', 'WINGDNG3.TTF', 'Wingdings 3', 'wingdng3_codes.txt'),
       ('zdng', 'ZapfDingbats_x.ttf', 'Zapf Dingbats', 'zapfdingbats_codes.txt')
   ]
+  omit_list = 'webd wng1 wng2 wng3 zdng'.split()
   target_data = [
-      ('Webdings', 'webdings_codes.txt'),
-      ('Wingdings 1', 'wingding_codes.txt'),
-      ('Wingdings 2', 'wingdng2_codes.txt'),
-      ('Wingdings 3', 'wingdng3_codes.txt'),
-      ('Zapf Dingbats', 'zapfdingbats_codes.txt')
+      ('speakers', 'list: 1f507 1f508 1f568 1f509 1f569 1f50a 1f56a'),
+      ('chess', 'cmap: 2654-265f'),
+      ('domino +vertical', 'cmap: 1f062-1f093'),
+      ('domino +horizontal', 'cmap: 1f030-1f061'),
+      ('mahjong', 'cmap: 1f000-1f02b'),
+      ('playing card', 'cmap: 1f0a0-1f0ae 1f0b1-1f0bf 1f0c1-1f0cf 1f0d1-1f0f5'),
+      ('spade heart diamond club +suit', 'cmap: 2660-2667'),
+      ('rays lines +three', 'cmap: 269e-269f 1f5e4-1f5e7')
+      # ('Webdings', 'webdings_codes.txt', 'webd', omit_list),
+      # ('Wingdings 1', 'wingding_codes.txt', 'wng1', omit_list),
+      # ('Wingdings 2', 'wingdng2_codes.txt', 'wng2', omit_list),
+      # ('Wingdings 3', 'wingdng3_codes.txt', 'wng3', omit_list),
+      # ('Zapf Dingbats', 'zapfdingbats_codes.txt', 'zdng', omit_list)
   ]
   fonts, targets = _load_fonts_and_targets(font_data, target_data, data_dir)
+  context = 'O%sg'
 
-  return title, fonts, targets
+  return title, fonts, targets, context
 
 
-def generate_text(outfile, title, fonts, targets, data_dir):
+def generate_text(outfile, title, fonts, targets, context, data_dir):
   emoji_only = (
       unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
 
@@ -406,10 +487,10 @@ def replace_nonalpha(key):
   return _nonalpha_re.sub('_', key)
 
 
-def _generate_styles(fonts):
+def _generate_styles(fonts, relpath):
   face_pat = """@font-face {
-    font-family: "%s"; src:url("file://%s")
-  }"""
+      font-family: "%s"; src:url("%s")
+    }"""
 
   facelines = []
   classlines = []
@@ -424,6 +505,10 @@ def _generate_styles(fonts):
       if not font:
         classlines.append('.%s { font-size: 12pt }' % kname)
       else:
+        if relpath is None:
+          font = 'file://' + font
+        else:
+          font = path.join(relpath, path.basename(font))
         facelines.append(face_pat % (kname, font))
         classlines.append(
             '.%s { font-family: "%s", "noto_0" }' % (kname, kname))
@@ -432,7 +517,7 @@ def _generate_styles(fonts):
   lines.extend(facelines)
   lines.append('')
   lines.extend(classlines)
-  return '\n  '.join(lines)
+  return '\n    '.join(lines)
 
 
 def _generate_header(used_fonts):
@@ -443,8 +528,12 @@ def _generate_header(used_fonts):
   return ''.join(header_parts)
 
 
-def _generate_table(index, target, emoji_only):
+def _generate_table(index, target, context, emoji_only):
   name, codelist, used_fonts = target
+
+  def context_string(codelist, cp):
+    cps = unichr(codelist.mapped_code(cp))
+    return (context % cps) if context else cps
 
   lines = ['<h3 id="target_%d">%s</h3>' % (index, name)]
   lines.append('<table>')
@@ -470,7 +559,7 @@ def _generate_table(index, target, emoji_only):
             cell_class = rkey
           cell_class = replace_nonalpha(cell_class)
           if font:
-            cell_text = 'O' + unichr(rcodelist.mapped_code(cp0)) + 'g'
+            cell_text = context_string(rcodelist, cp0)
           else:
             cell_text = ' * '
             cell_class += ' star'
@@ -490,9 +579,11 @@ def _generate_table(index, target, emoji_only):
   return '\n'.join(lines)
 
 
-def generate_html(outfile, title, fonts, targets, data_dir):
+def generate_html(outfile, title, fonts, targets, context, data_dir, relpath):
+  """If not None, relpath is the relative path from the outfile to
+  the datadir, for use when generating font paths."""
   template = string.Template(_HTML_HEADER_TEMPLATE)
-  styles = _generate_styles(fonts)
+  styles = _generate_styles(fonts, relpath)
   print >> outfile, template.substitute(title=title, styles=styles)
 
   print >> outfile, _generate_fontkey(fonts, targets, data_dir)
@@ -500,28 +591,32 @@ def generate_html(outfile, title, fonts, targets, data_dir):
   emoji_only = (
       unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
   for index, target in enumerate(targets):
-    print >> outfile, _generate_table(index, target, emoji_only)
+    print >> outfile, _generate_table(index, target, context, emoji_only)
 
   print >> outfile, _HTML_FOOTER
 
 
-def generate(outfile, fmt, data_dir):
+def generate(outfile, fmt, data_dir, relpath=None):
   if not path.isdir(data_dir):
     raise Exception('data dir "%s" does not exist' % data_dir)
 
-  title, fonts, targets = _get_driver(data_dir)
+  title, fonts, targets, context = _get_driver(data_dir)
 
   if fmt == 'txt':
     generate_text(outfile, title, fonts, targets, data_dir)
   elif fmt == 'html':
-    generate_html(outfile, title, fonts, targets, data_dir)
+    generate_html(outfile, title, fonts, targets, context, data_dir, relpath)
   else:
     raise Exception('unrecognized format "%s"' % fmt)
 
 
 def _call_generate(outfile, fmt, data_dir):
+  data_dir = path.realpath(path.abspath(data_dir))
   if outfile:
+    outfile = path.realpath(path.abspath(outfile))
     base, ext = path.splitext(outfile)
+    if ext:
+      ext = ext[1:]
     if not ext:
       if not fmt:
         fmt = 'txt'
@@ -535,10 +630,18 @@ def _call_generate(outfile, fmt, data_dir):
     elif ext != fmt:
       raise Exception('mismatching format "%s" and output extension "%s"' % (
           fmt, ext))
-    outfile += '.' + ext
-    print 'writing %s' % outfile
+    outfile = base + '.' + ext
+    outdir = path.dirname(outfile)
+    if data_dir == outdir:
+      relpath = ''
+    elif data_dir.startswith(outdir):
+      relpath = data_dir[len(outdir) + 1:]
+    else:
+      relpath = None
+    print 'relpath: "%s"' % relpath
+    print 'writing %s ' % outfile
     with codecs.open(outfile, 'w', 'utf-8') as f:
-      generate(f, fmt, data_dir)
+      generate(f, fmt, data_dir, relpath)
   else:
     if not fmt:
       fmt = 'txt'
