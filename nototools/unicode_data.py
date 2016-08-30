@@ -83,6 +83,10 @@ _emoji_flag_sequences = None
 _emoji_modifier_sequences = None
 _emoji_zwj_sequences = None
 
+# nameslist
+_nameslist_see_also = None
+_nameslist_alt_names = None
+
 def load_data():
   """Loads the data files needed for the module.
 
@@ -1022,6 +1026,74 @@ def _dump_emoji_presentation():
       len(get_emoji()), text_p, emoji_p)
 
 
+def _load_nameslist_data():
+  global _nameslist_see_also, _nameslist_alt_names
+  if _nameslist_see_also != None:
+    return
+
+  _nameslist_see_also = collections.defaultdict(set)
+  _nameslist_alt_names = collections.defaultdict(list)
+  cp = None
+  line_re = re.compile(r'^(?:(?:([0-9A-F]{4,6})\t.*)|(?:^\s+([x=])\s+(.*)))$')
+  see_also_re = re.compile(r'\s*(?:\(.*\s-\s+([0-9A-F]{4,6})\))|([0-9A-F]{4,6})')
+  version_re = re.compile(r'(.*)(?:\s\(\d+\.\d+\))')
+  with open_unicode_data_file('NamesList.txt') as f:
+    for line in f:
+      m = line_re.match(line)
+      if not m:
+        continue
+      if m.group(1):
+        cp = int(m.group(1), 16)
+      else:
+        rel = m.group(2).strip()
+        val = m.group(3).strip()
+        if rel == 'x':
+          # print '%04x see %s' % (cp, val)
+          m = see_also_re.match(val)
+          if not m:
+            raise Exception(
+                'could not match see also val "%s" in line "%s"' % (val, line))
+          ref_cp = int(m.group(1) or m.group(2), 16)
+          # print '  ref %04x' % ref_cp
+          _nameslist_see_also[cp].add(ref_cp)
+        else:
+          # print '%04x name "%s"' % (cp, val)
+          # special case
+          if val.endswith('&iinfin;'):
+            _nameslist_alt_names[cp].append(val)
+            continue
+          for n in re.split('[,;]', val):
+            n = n.strip()
+            if not n:
+              print ('### empty string in val "%s"' % val)
+              continue
+            # special case
+            if n == 'etc.':
+              continue
+            m = version_re.match(n)
+            if m:
+              n = m.group(1).strip()
+            # print '  name "%s"' % n
+            _nameslist_alt_names[cp].append(n)
+
+def alt_names(cp):
+  _load_nameslist_data()
+  return tuple(_nameslist_alt_names.get(cp))
+
+def see_also(cp):
+  _load_nameslist_data()
+  return frozenset(_nameslist_see_also.get(cp))
+
 if __name__ == '__main__':
     # _dump_emoji_presentation()
-    _dump_emoji_sequences()
+    _load_nameslist_data()
+    print 'Alt names'
+    for cp in sorted(_nameslist_alt_names):
+      print '%5s %s\n  %s' % (
+          '%04x' % cp, name(cp), '\n  '.join(alt_names(cp)))
+    print
+    print 'See also'
+    for cp in sorted(_nameslist_see_also):
+      print '%5s %s\n   -> %s' % (
+          '%04x' % cp, name(cp, '???'), '\n   -> '.join(
+            '%04x %s' % (x, name(x, '<?>')) for x in see_also(cp)))
