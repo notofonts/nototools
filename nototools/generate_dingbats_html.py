@@ -539,7 +539,6 @@ def _generate_table(index, target, context, emoji_only):
   lines.append('<table>')
   header = _generate_header(used_fonts)
   linecount = 0
-  # cp0 is the valid unicode, cp1 is the PUA if the font uses PUA encodings
   for cp0 in codelist.codes():
     if linecount % 20 == 0:
       lines.append(header)
