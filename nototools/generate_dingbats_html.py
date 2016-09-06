@@ -34,23 +34,22 @@ from nototools import unicode_data
 
 Currently hardwired for select target and comparison fonts."""
 
-
 _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
 <html lang='en'>
 <head>
   <meta charset="utf-8">
   <title>$title</title>
   <style>
-  $styles
+    $styles
   </style>
   <style>
-    table { background-color: #eee; font-size: 20pt }
+    table { background-color: #eee; font-size: 20pt; text-align: center }
     tr.head { font-weight: bold; font-size: 12pt;
-              border-style: solid; border-width: 1px; border-color: black }
-    .code, .age, .name { font-size: 12pt }
-    .star { text-align: center }
+              border-style: solid; border-width: 1px; border-color: black;
+              border-collapse: separate }
+    .code, .age, .name { font-size: 12pt; text-align: left }
     .key { background-color: white; font-size: 12pt; border-collapse: separate;
-           margin-top: 0; border-spacing: 10px 0 }
+           margin-top: 0; border-spacing: 10px 0; text-align: left }
   </style>
 </head>
 <body>
@@ -63,159 +62,333 @@ _HTML_FOOTER = """
 </html>
 """
 
-
-def _read_codefile(codefile):
-  """Codefile contains lines with one or two codepoints separated by
-  semicolon. the first is the codepoint to use in the text, the second
-  if present is the one to use for unicode info like name and age
-  (otherwise the first is used).  This is to deal with PUA cmaps where
-  there are equivalent unicode codepoints.  Blank lines and text after
-  '#' are discarded.  Returns a list of tuples of the codepoints.
-  Order is preserved, this is the preferred display order."""
-  with open(codefile, 'r') as f:
-    result = []
+def _cleanlines(textfile):
+  """Strip comments and blank lines from textfile, return list of lines."""
+  result = []
+  with open(textfile, 'r') as f:
     for line in f:
       ix = line.find('#')
-      if ix != -1:
+      if ix >= 0:
         line = line[:ix]
       line = line.strip()
-      if not line:
-        continue
-      result.append(tuple(int(s, 16) for s in line.split(';')))
+      if line:
+        result.append(line)
   return result
 
 
-def _load_targets(targets, data_dir):
-  """Each target is a tuple of two to four items.  The first item is the
-  short name or key, the second is the name of the font file in
-  data_dir.  The third item is the name to use for the font, if not
-  present or None the name from the name table will be used. The fourth
-  optional item is the name of the code file in the data_dir, if not
-  present it is the basename of the font file in lower case with the
-  suffix '_codes.txt'.  Exceptions are thrown if there are duplicate
-  keys or the font or codefile are missing or cannot be read.  Returns a
-  list of tuples of key, filepath, codelist."""
+class CodeList(object):
+  """An ordered list of code points (ints).  These might map to other (PUA) code
+  points that the font knows how to display."""
 
-  def _load_target(target):
-    key, fname = target[:2]
-    fontpath = path.join(data_dir, fname)
-    if not path.isfile(fontpath):
-      raise Exception('target "%s" font "%s" not found' % (
-          key, fontpath))
-    if len(target) > 2:
-      name = target[2]
+  @staticmethod
+  def fromfile(filename):
+    if filename.endswith('_codes.txt'):
+      return CodeList.frompairfile(filename)
+    elif filename.endswith('_cmap.txt'):
+      return CodeList.fromrangefile(filename)
     else:
-      name = None
-    if len(target) > 3:
-      codefile = target[3]
+      raise Exception(
+          'unrecognized file type %s for CodeList.fromfile' % filename)
+
+  @staticmethod
+  def fromtext(text, codelist_type):
+    if codelist_type == 'cmap':
+      return CodeList.fromrangetext(text)
+    elif codelist_type == 'codes':
+      return CodeList.frompairtext(text)
+    elif codelist_type == 'list':
+      return CodeList.fromlisttext(text)
     else:
-      codefile = path.splitext(fname)[0].lower() + '_codes.txt'
-    codefile = path.join(data_dir, codefile)
-    if not path.isfile(codefile):
-      raise Exception('target "%s" code file "%s" not found' % (
-          key, codefile))
-    codes = _read_codefile(codefile)
-    if not name:
-      font = ttLib.TTFont(fontpath)
-      names = font_data.get_name_records(font)
-      print 'font:', fontpath
-      print names
-      name = names[16] if 16 in names else names[1] if 1 in names else None
-      if not name:
-        raise Exception('no name found in font "%s"' % fontpath)
-    return key, fontpath, name, codes
+      raise Exception('unknown codelist type "%s"' % codelist_type)
 
-  result = [_load_target(t) for t in targets]
+  @staticmethod
+  def fromset(cpset):
+    return UnicodeCodeList(cpset)
 
-  keys = set()
-  for t in result:
-    key = t[0]
-    if key in keys:
-      raise Exception('two targets with same key: "%s"' % key)
-    keys.add(key)
-  return result
+  @staticmethod
+  def fromrangetext(cpranges):
+    return CodeList.fromset(tool_utils.parse_int_ranges(cpranges))
+
+  @staticmethod
+  def fromrangefile(cprange_file):
+    with open(cprange_file, 'r') as f:
+      return CodeList.fromrangetext(f.read())
+
+  @staticmethod
+  def fromlist(cplist):
+    return OrderedCodeList(cplist)
+
+  @staticmethod
+  def fromlisttext(cplist):
+    return CodeList.fromlist([int(item, 16) for item in cplist.split()])
+
+  @staticmethod
+  def fromlistfile(cplist_file):
+    return CodeList.fromlisttext(_cleanlines(cplist_file))
+
+  @staticmethod
+  def frompairs(cppairs):
+    return MappedCodeList(cppairs)
+
+  @staticmethod
+  def frompairtext(cppairs_text):
+    # if no pairs, will treat as listtext.  cppairs must have only one item
+    # or pair per line, however.
+    pair_list = None
+    single_list = []
+    for line in cppairs_text.splitlines():
+      parts = [int(s, 16) for s in line.split(';')]
+      if pair_list:
+        if len(parts) < 2:
+          parts.append(parts[0])
+        pair_list.append(tuple(parts)[:2])
+      elif len(parts) > 1:
+        pair_list = [(cp, cp) for cp in single_list]
+        pair_list.append(tuple(parts[:2]))
+      else:
+        single_list.append(parts[0])
+
+    if pair_list:
+      return CodeList.frompairs(pair_list)
+    return CodeList.fromlist(single_list)
+
+  @staticmethod
+  def frompairfile(cppairs_file):
+    return CodeList.frompairtext('\n'.join(_cleanlines(cppairs_file)))
+
+  def contains(self, cp):
+    """Returns True if cp is in the code list."""
+    raise NotImplementedError
+
+  def codes(self):
+    """Returns the codes in preferred order."""
+    raise NotImplementedError
+
+  def codeset(self):
+    """Returns the frozenset of codes."""
+    raise NotImplementedError
+
+  def mapped_code(self, cp):
+    """Returns the mapped code for this code point."""
+    raise NotImplementedError
 
 
-def _read_cmapfile(filename):
-  with open(filename, 'r') as f:
-    text = f.read()
-    return tool_utils.parse_int_ranges(text)
+class UnicodeCodeList(CodeList):
+  """A codelist based on unicode code point order with no mapping."""
+  def __init__(self, codeset):
+    super(CodeList, self).__init__()
+    self._codeset = frozenset(codeset)
+
+  def contains(self, cp):
+    return cp in self._codeset
+
+  def codes(self):
+    return sorted(self._codeset)
+
+  def codeset(self):
+    return self._codeset
+
+  def mapped_code(self, cp):
+    return cp if cp in self._codeset else None
 
 
-def _load_references(references, data_dir):
-  """Each reference is a tuple of two to four items.  The first item is
+class MappedCodeList(CodeList):
+  def __init__ (self, codepairs):
+    super(MappedCodeList, self).__init__()
+    # hack, TODO: change the column order in the input files
+    self._codemap = {v : k for k, v in codepairs}
+    self._codes = tuple(p[1] for p in codepairs)
+
+  def contains(self, cp):
+    return cp in self._codemap
+
+  def codes(self):
+    return self._codes
+
+  def codeset(self):
+    return frozenset(self._codes)
+
+  def mapped_code(self, cp):
+    return self._codemap.get(cp)
+
+
+class OrderedCodeList(CodeList):
+  def __init__(self, codes):
+    super(OrderedCodeList, self).__init__()
+    self._codes = tuple(codes)
+    self._codeset = frozenset(codes)
+
+  def contains(self, cp):
+    return cp in self._codeset
+
+  def codes(self):
+    return self._codes
+
+  def codeset(self):
+    return self._codeset
+
+  def mapped_code(self, cp):
+    return cp if cp in self._codeset else None
+
+
+def _load_codelist(codelist_spec, data_dir, codelistfile_map):
+  for codelist_type in ['file', 'cmap', 'codes', 'list', None]:
+    if codelist_type and codelist_spec.startswith(codelist_type + ':'):
+      codelist_spec = codelist_spec[len(codelist_type) + 1:].strip()
+      break
+  if not codelist_type:
+    if codelist_spec.endswith('.txt'):
+      codelist_type = 'file'
+    else:
+      raise Exception(
+          'cannot determine type of codelist spec "%s"' % codelist_spec)
+  if codelist_type != 'file':
+    codelist = CodeList.fromtext(codelist_spec, codelist_type)
+  else:
+    fullpath = path.join(data_dir, codelist_spec)
+    if not path.isfile(fullpath):
+      raise Exception('codelist file "%s" not found' % codelist_spec)
+    codelist = codelistfile_map.get(fullpath)
+    if codelist == None:
+      codelist = CodeList.fromfile(fullpath)
+      codelistfile_map[codelist_spec] = codelist
+  return codelist
+
+
+def _load_fonts(data_list, data_dir, codelist_map):
+  """data_list is a list of tuples of two to four items.  The first item is
   the key, the second is the name of the font file in data_dir.  The
   second can be None, otherwise it must exist.  The third item, if
   present, is the name to use for the font, otherwise it will be read
   from the font, it must be present where there is no font.  The
-  fourth item, if present, is the name of a cmap file, it must be present
-  where there is no font.  The cmap file is one or more lines
-  listing ranges.  When not present the unicode cmap from the font is
-  used.  Returns a list of tuples of key, keyinfo, where keyinfo is
-  a list of tuples of filepath, name, cmap.  Unlike with targets, multiple
-  references can share the same key."""
+  fourth item, if present, is the name of a codelist file, it must be present
+  where there is no font.  If present and None, the the unicode cmap from the
+  font is used.  otherwise the font file name is stripped of its extension and
+  try to find a file from which to create a codelist.
+  Multiple tuples can share the same key, these form one column and the order
+  of the files composing the tuple defines the order in which they are searched
+  for a glyph.
+  Returns a list of tuples of key, keyinfo, where keyinfo is
+  a list of tuples of filepath, name, codelist."""
 
-  def _load_reference(ref):
-    key, fname = ref[:2]
-    if len(ref) > 2:
-      name = ref[2]
-    else:
-      name = None
-    if len(ref) > 3:
-      cmapfile = ref[3]
-    else:
-      cmapfile = None
+  def _load_font(data, codelist_map):
+    if len(data) < 4:
+      data = data + tuple([None] * (4 - len(data)))
+    key, fname, name, codelistfile = data
 
     if not fname:
       if not name:
         raise Exception('must have name if no font provided')
-      if not cmapfile:
-        raise Exception('must have cmap file if no font provided')
+      if not codelistfile:
+        raise Exception('must have codelist file if no font provided')
       fontpath = None
     else:
       fontpath = path.join(data_dir, fname)
       if not path.isfile(fontpath):
-        raise Exception('reference font "%s" not found' % fontpath)
-    if cmapfile:
-      cmapfile = path.join(data_dir, cmapfile)
-      if not path.isfile(cmapfile):
-        raise Exception('reference "%s" cmap file "%s" not found' % (
-          key, cmapfile))
-      cmap = _read_cmapfile(cmapfile)
-    if fname and (not cmapfile or not name):
+        raise Exception('font "%s" not found' % fontpath)
+
+    if codelistfile:
+      codelist = _load_codelist(codelistfile, data_dir, codelist_map)
+
+    if fname and (not codelistfile or not name):
       font = ttLib.TTFont(fontpath)
       if not name:
         names = font_data.get_name_records(font)
         name = names[16] if 16 in names else names[1] if 1 in names else None
         if not name:
           raise Exception('cannot read name from font "%s"' % fontpath)
-      if not cmapfile:
-        cmap = font_data.get_cmap(font)
+      if not codelistfile:
+        codelist = CodeList.fromset(font_data.get_cmap(font))
 
-    return key, fontpath, name, cmap
+    return key, fontpath, name, codelist
 
   # group by key
   keyorder = []
   keyinfo = collections.defaultdict(list)
-  for ref in references:
-    key, fontpath, name, cmap = _load_reference(ref)
+  for data in data_list:
+    key, fontpath, name, codelist = _load_font(data, codelist_map)
     if key not in keyinfo:
       keyorder.append(key)
-    keyinfo[key].append((fontpath, name, cmap))
+    keyinfo[key].append((fontpath, name, codelist))
+
   return [(key, keyinfo[key]) for key in keyorder]
+
+
+def _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts):
+  """Return the fonts we want to use to display the codelist, in order.
+  If not None, prefer_fonts is a key or list of keys for fonts to order
+  at the end.  If not None, omit_fonts is key or list of keys to omit
+  even if they would otherwise be used by default, however prefer_fonts
+  takes precedence over omit_fonts if the same key is in both."""
+
+  if prefer_fonts is not None:
+    if isinstance(prefer_fonts, basestring):
+      prefer_fonts = [prefer_fonts]
+    preferred = [None] * len(prefer_fonts)
+  else:
+    prefer_fonts = []
+    preferred = []
+
+  if omit_fonts is not None:
+    if isinstance(omit_fonts, basestring):
+      omit_fonts = [omit_fonts]
+    if prefer_fonts:
+      omit_fonts = [k for k in omit_fonts if k not in prefer_fonts]
+  else:
+    omit_fonts = []
+
+  regular = []
+  codes = codelist.codes()
+  for f in fonts:
+    key, keyinfo = f
+    if key in omit_fonts:
+      continue
+    for name, _, cl in keyinfo:
+      if any(cl.contains(cp) for cp in codes):
+        is_preferred = False
+        for i, k in enumerate(prefer_fonts):
+          if key == k:
+            preferred[i] = f
+            is_preferred = True
+            break
+        if not is_preferred:
+          regular.append(f)
+        break
+  return tuple(regular + filter(None, preferred))
+
+
+def _load_targets(target_data, fonts, data_dir, codelist_map):
+  """Target data is a list of tuples of target names, codelist files, an
+  optional preferred font key or list of keys, and an optional omitted font
+  key or list of keys. All files should be in data_dir.  Codelist_map is a
+  cache in case the codelist file has already been read.  Returns a list of
+  tuples of target name, codelist, and fontlist."""
+  result = []
+  for target in target_data:
+    if len(target) < 4:
+      target = target + ((None,) * (4 - len(target)))
+    name, codelist_spec, prefer_fonts, omit_fonts = target
+    codelist = _load_codelist(codelist_spec, data_dir, codelist_map)
+    used_fonts = _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts)
+    if not used_fonts:
+      raise Exception('no fonts used by target %s' % name)
+    result.append((name, codelist, used_fonts))
+  return tuple(result)
+
+
+def _load_fonts_and_targets(font_data, target_data, data_dir):
+  # we cache the codelists to avoid building them twice if they're referenced by
+  # both fonts and targets, not a big deal but...
+  codelist_map = {}
+  fonts = _load_fonts(font_data, data_dir, codelist_map)
+  targets = _load_targets(target_data, fonts, data_dir, codelist_map)
+  return fonts, targets
 
 
 def _get_driver(data_dir):
   """Hard code the driver data.  Should parse from a file."""
   title = 'Dingbats Comparison Tables'
-  targets = [
-      ('webd', 'webdings.ttf', 'Webdings'),
-      ('wng1', 'wingding.ttf', 'Wingdings 1'),
-      ('wng2', 'WINGDNG2.TTF', 'Wingdings 2'),
-      ('wng3', 'WINGDNG3.TTF', 'Wingdings 3'),
-      ('zdng', 'ZapfDingbats_x.ttf', 'Zapf Dingbats', 'zapfdingbats_codes.txt')
-  ]
-  references = [
+  font_data = [
       ('color', 'NotoColorEmoji.ttf'),
       ('b/w', 'NotoEmoji-Regular.ttf'),
       ('osym', 'NotoSansSymbols-Regular.ttf', 'Old Symbols'),
@@ -223,67 +396,84 @@ def _get_driver(data_dir):
       ('noto', None, 'Noto Sans Math', 'notosansmath_cmap.txt'),
       ('nsym', 'NotoSansSymbolsNew-Regular.ttf', 'New Symbols'),
       ('sym2', 'NotoSansSymbols2-Regular.ttf', 'Noto Sans Symbols2',
-       'notosanssymbols2_cmap.txt')
+       'notosanssymbols2_cmap.txt'),
+      ('webd', 'webdings.ttf', 'Webdings', 'webdings_codes.txt'),
+      ('wng1', 'wingding.ttf', 'Wingdings 1', 'wingding_codes.txt'),
+      ('wng2', 'WINGDNG2.TTF', 'Wingdings 2', 'wingdng2_codes.txt'),
+      ('wng3', 'WINGDNG3.TTF', 'Wingdings 3', 'wingdng3_codes.txt'),
+      ('zdng', 'ZapfDingbats_x.ttf', 'Zapf Dingbats', 'zapfdingbats_codes.txt')
   ]
-  targets = _load_targets(targets, data_dir)
-  references = _load_references(references, data_dir)
-  return title, targets, references
+  omit_list = 'webd wng1 wng2 wng3 zdng'.split()
+  target_data = [
+      ('speakers', 'list: 1f507 1f508 1f568 1f509 1f569 1f50a 1f56a'),
+      ('chess', 'cmap: 2654-265f'),
+      ('domino +vertical', 'cmap: 1f062-1f093'),
+      ('domino +horizontal', 'cmap: 1f030-1f061'),
+      ('mahjong', 'cmap: 1f000-1f02b'),
+      ('playing card', 'cmap: 1f0a0-1f0ae 1f0b1-1f0bf 1f0c1-1f0cf 1f0d1-1f0f5'),
+      ('spade heart diamond club +suit', 'cmap: 2660-2667'),
+      ('rays lines +three', 'cmap: 269e-269f 1f5e4-1f5e7')
+      # ('Webdings', 'webdings_codes.txt', 'webd', omit_list),
+      # ('Wingdings 1', 'wingding_codes.txt', 'wng1', omit_list),
+      # ('Wingdings 2', 'wingdng2_codes.txt', 'wng2', omit_list),
+      # ('Wingdings 3', 'wingdng3_codes.txt', 'wng3', omit_list),
+      # ('Zapf Dingbats', 'zapfdingbats_codes.txt', 'zdng', omit_list)
+  ]
+  fonts, targets = _load_fonts_and_targets(font_data, target_data, data_dir)
+  context = 'O%sg'
+
+  return title, fonts, targets, context
 
 
-def generate_text(outfile, title, targets, references, data_dir):
+def generate_text(outfile, title, fonts, targets, context, data_dir):
   emoji_only = (
       unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
 
   print >> outfile, title
   print >> outfile
-  print >> outfile, 'Targets:'
-  for key, font, name, _ in targets:
-    rel_font = path.relpath(font, data_dir) if font else '(no font)'
-    print >> outfile, '  %s: %s (%s)' % (key, name, rel_font)
-  print >> outfile
-  print >> outfile, 'References:'
-  for key, keyinfos in references:
+  print >> outfile, 'Fonts:'
+  for key, keyinfos in fonts:
     for font, name, _ in keyinfos:
       rel_font = path.relpath(font, data_dir) if font else '(no font)'
       print >> outfile, '  %s: %s (%s)' % (key, name, rel_font)
   print >> outfile
 
-  for tkey, font, name, codes in targets:
+  for name, codelist, used_fonts in targets:
     print >> outfile
     print >> outfile, name
+    header = ['idx  code']
+    header.extend(f[0] for f in used_fonts)
+    header.append('age name')
+    print >> outfile, ' '.join(header)
     index = 1
-    for codepair in codes:
-      cp0 = codepair[0]
-      cp1 = cp0 if len(codepair) == 1 else codepair[1]
+    for cp in codelist.codes():
       print >> outfile, '%3d' % index,
       index += 1
-      print >> outfile, '%5s' % ('%04x' % cp1),
-      for rkey, keyinfos in references:
-        match = any(cp1 in cmap for _, _, cmap in keyinfos)
+      print >> outfile, '%5s' % ('%04x' % cp),
+      for rkey, keyinfos in used_fonts:
+        match = any(codelist.contains(cp) for _, _, codelist in keyinfos)
         print >> outfile, rkey if match else ('-' * len(rkey)),
-      print >> outfile, tkey,
-      print >> outfile, unicode_data.age(cp1),
-      name = unicode_data.name(cp1)
-      if cp1 in emoji_only:
-        name = '(emoji only) ' + name
+      print >> outfile, unicode_data.age(cp),
+      name = unicode_data.name(cp)
+      if cp in emoji_only:
+        name = '(add) ' + name
       print >> outfile, name
 
 
-def _generate_fontkey(targets, references, data_dir):
+def _generate_fontkey(fonts, targets, data_dir):
   lines = ['<p style="margin-bottom:5px"><b>Targets</b>']
   lines.append('<div style="margin-left:20px"><table class="key">')
   tid = 0
-  for key, font, name, _ in targets:
-    rel_font = path.relpath(font, data_dir) if font else '(no font)'
+  for name, _, _ in targets:
     lines.append(
-        '<tr><th><a href="#target_%s">%s</a><td>%s<td>%s' % (
-            tid, key, name, rel_font))
+        '<tr><th><a href="#target_%s">%s</a>' % (
+            tid, name))
     tid += 1
   lines.append('</table></div>')
 
-  lines.append('<p style="margin-bottom:5px"><b>References</b>')
+  lines.append('<p style="margin-bottom:5px"><b>Fonts</b>')
   lines.append('<div style="margin-left:20px"><table class="key">')
-  for key, keyinfos in references:
+  for key, keyinfos in fonts:
     for font, name, _ in keyinfos:
       rel_font = path.relpath(font, data_dir) if font else '(no font)'
       lines.append('<tr><th>%s<td>%s<td>%s' % (key, name, rel_font))
@@ -297,19 +487,14 @@ def replace_nonalpha(key):
   return _nonalpha_re.sub('_', key)
 
 
-def _generate_styles(targets, references):
+def _generate_styles(fonts, relpath):
   face_pat = """@font-face {
-    font-family: "%s"; src:url("file://%s")
-  }"""
+      font-family: "%s"; src:url("%s")
+    }"""
 
   facelines = []
   classlines = []
-  for key, font, name, _ in targets:
-    facelines.append(face_pat % (key, font))
-    classlines.append(
-        '.%s { font-family: "%s" }' % (replace_nonalpha(key), key))
-
-  for key, keyinfos in references:
+  for key, keyinfos in fonts:
     index = 0
     for font, _, _ in keyinfos:
       if len(keyinfos) > 1:
@@ -320,54 +505,60 @@ def _generate_styles(targets, references):
       if not font:
         classlines.append('.%s { font-size: 12pt }' % kname)
       else:
+        if relpath is None:
+          font = 'file://' + font
+        else:
+          font = path.join(relpath, path.basename(font))
         facelines.append(face_pat % (kname, font))
-        classlines.append('.%s { font-family: "%s" }' % (kname, kname))
+        classlines.append(
+            '.%s { font-family: "%s", "noto_0" }' % (kname, kname))
 
   lines = []
   lines.extend(facelines)
   lines.append('')
   lines.extend(classlines)
-  return '\n  '.join(lines)
+  return '\n    '.join(lines)
 
 
-def _generate_header(target, references):
+def _generate_header(used_fonts):
   header_parts = ['<tr class="head"><th>CP']
-  for r in references:
-    header_parts.append('<th>' + r[0])
-  header_parts.append('<th>' + target[0])
+  for key, _ in used_fonts:
+    header_parts.append('<th>' + key)
   header_parts.append('<th>Age<th>Name')
   return ''.join(header_parts)
 
 
-def _generate_table(index, target, references, emoji_only):
-  key, _, name, codes = target
+def _generate_table(index, target, context, emoji_only):
+  name, codelist, used_fonts = target
+
+  def context_string(codelist, cp):
+    cps = unichr(codelist.mapped_code(cp))
+    return (context % cps) if context else cps
 
   lines = ['<h3 id="target_%d">%s</h3>' % (index, name)]
   lines.append('<table>')
-  header = _generate_header(target, references)
+  header = _generate_header(used_fonts)
   linecount = 0
-  for codepair in codes:
+  for cp0 in codelist.codes():
     if linecount % 20 == 0:
       lines.append(header)
     linecount += 1
 
-    cp0 = codepair[0]
-    cp1 = cp0 if len(codepair) == 1 else codepair[1]
     line = ['<tr>']
-    line.append('<td class="code">U+%04x' % cp1)
-    for rkey, keyinfos in references:
+    line.append('<td class="code">U+%04x' % cp0)
+    for rkey, keyinfos in used_fonts:
       cell_class = None
       cell_text = None
       index = 0
-      for font, _, cmap in keyinfos:
-        if cp1 in cmap:
+      for font, _, rcodelist in keyinfos:
+        if rcodelist.contains(cp0):
           if len(keyinfos) > 1:
             cell_class = '%s_%d' % (rkey, index)
           else:
             cell_class = rkey
           cell_class = replace_nonalpha(cell_class)
           if font:
-            cell_text = unichr(cp1)
+            cell_text = context_string(rcodelist, cp0)
           else:
             cell_text = ' * '
             cell_class += ' star'
@@ -377,49 +568,54 @@ def _generate_table(index, target, references, emoji_only):
         line.append('<td class="%s">%s' % (cell_class, cell_text))
       else:
         line.append('<td>&nbsp;')
-    line.append('<td class="%s">%s' % (replace_nonalpha(key), unichr(cp0)))
-    line.append('<td class="age">%s' % unicode_data.age(cp1))
-    name = unicode_data.name(cp1)
-    if cp1 in emoji_only:
-      name = '(emoji only) ' + name
+    line.append('<td class="age">%s' % unicode_data.age(cp0))
+    name = unicode_data.name(cp0)
+    if cp0 in emoji_only:
+      name = '(add) ' + name
     line.append('<td class="name">%s' % name)
     lines.append(''.join(line))
   lines.append('</table>')
   return '\n'.join(lines)
 
 
-def generate_html(outfile, title, targets, references, data_dir):
+def generate_html(outfile, title, fonts, targets, context, data_dir, relpath):
+  """If not None, relpath is the relative path from the outfile to
+  the datadir, for use when generating font paths."""
   template = string.Template(_HTML_HEADER_TEMPLATE)
-  styles = _generate_styles(targets, references)
+  styles = _generate_styles(fonts, relpath)
   print >> outfile, template.substitute(title=title, styles=styles)
 
-  print >> outfile, _generate_fontkey(targets, references, data_dir)
+  print >> outfile, _generate_fontkey(fonts, targets, data_dir)
 
   emoji_only = (
       unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
   for index, target in enumerate(targets):
-    print >> outfile, _generate_table(index, target, references, emoji_only)
+    print >> outfile, _generate_table(index, target, context, emoji_only)
 
   print >> outfile, _HTML_FOOTER
 
 
-def generate(outfile, fmt, data_dir):
+def generate(outfile, fmt, data_dir, relpath=None):
   if not path.isdir(data_dir):
     raise Exception('data dir "%s" does not exist' % data_dir)
 
-  title, targets, references = _get_driver(data_dir)
+  title, fonts, targets, context = _get_driver(data_dir)
 
   if fmt == 'txt':
-    generate_text(outfile, title, targets, references, data_dir)
+    generate_text(outfile, title, fonts, targets, data_dir)
   elif fmt == 'html':
-    generate_html(outfile, title, targets, references, data_dir)
+    generate_html(outfile, title, fonts, targets, context, data_dir, relpath)
   else:
     raise Exception('unrecognized format "%s"' % fmt)
 
 
 def _call_generate(outfile, fmt, data_dir):
+  data_dir = path.realpath(path.abspath(data_dir))
   if outfile:
+    outfile = path.realpath(path.abspath(outfile))
     base, ext = path.splitext(outfile)
+    if ext:
+      ext = ext[1:]
     if not ext:
       if not fmt:
         fmt = 'txt'
@@ -433,10 +629,18 @@ def _call_generate(outfile, fmt, data_dir):
     elif ext != fmt:
       raise Exception('mismatching format "%s" and output extension "%s"' % (
           fmt, ext))
-    outfile += '.' + ext
-    print 'writing %s' % outfile
+    outfile = base + '.' + ext
+    outdir = path.dirname(outfile)
+    if data_dir == outdir:
+      relpath = ''
+    elif data_dir.startswith(outdir):
+      relpath = data_dir[len(outdir) + 1:]
+    else:
+      relpath = None
+    print 'relpath: "%s"' % relpath
+    print 'writing %s ' % outfile
     with codecs.open(outfile, 'w', 'utf-8') as f:
-      generate(f, fmt, data_dir)
+      generate(f, fmt, data_dir, relpath)
   else:
     if not fmt:
       fmt = 'txt'
@@ -459,7 +663,6 @@ def main():
   args = parser.parse_args()
 
   _call_generate(args.outfile, args.output_type, args.data_dir)
-
 
 if __name__ == '__main__':
   main()
