@@ -68,6 +68,7 @@ _presentation_default_text = None
 _emoji_modifier_base = None
 _emoji = None
 _emoji_variants = None
+_emoji_variants_proposed = None
 
 # non-emoji variant data
 _variant_data = None
@@ -830,7 +831,7 @@ def _load_unicode_emoji_variants():
   that have a defined emoji variant presentation.  All such characters
   also have a text variant presentation so a single set works for both."""
 
-  global _emoji_variants
+  global _emoji_variants, _emoji_variants_proposed
   if _emoji_variants:
     return
 
@@ -848,10 +849,17 @@ def _load_unicode_emoji_variants():
 
   _emoji_variants = frozenset(emoji_variants)
 
+  with open_unicode_data_file('proposed-variants.txt') as f:
+    for line in f:
+      m = line_re.match(line)
+      if m:
+        emoji_variants.add(int(m.group(1), 16))
+  _emoji_variants_proposed = frozenset(emoji_variants)
 
-def get_unicode_emoji_variants():
+
+def get_unicode_emoji_variants(include_proposed=True):
   _load_unicode_emoji_variants()
-  return _emoji_variants
+  return _emoji_variants_proposed if include_proposed else _emoji_variants
 
 
 def _load_variant_data():
