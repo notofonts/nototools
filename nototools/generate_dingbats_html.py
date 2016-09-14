@@ -385,47 +385,111 @@ def _load_fonts_and_targets(font_data, target_data, data_dir):
   return fonts, targets
 
 
-def _get_driver(data_dir):
-  """Hard code the driver data.  Should parse from a file."""
-  title = 'Dingbats Comparison Tables'
-  font_data = [
-      ('color', 'NotoColorEmoji.ttf'),
-      ('b/w', 'NotoEmoji-Regular.ttf'),
-      ('osym', 'NotoSansSymbols-Regular.ttf', 'Old Symbols'),
-      ('noto', 'NotoSans-Regular.ttf', 'Noto LGC'),
-      ('noto', None, 'Noto Sans Math', 'notosansmath_cmap.txt'),
-      ('nsym', 'NotoSansSymbolsNew-Regular.ttf', 'New Symbols'),
-      ('sym2', 'NotoSansSymbols2-Regular.ttf', 'Noto Sans Symbols2',
-       'notosanssymbols2_cmap.txt'),
-      ('webd', 'webdings.ttf', 'Webdings', 'webdings_codes.txt'),
-      ('wng1', 'wingding.ttf', 'Wingdings 1', 'wingding_codes.txt'),
-      ('wng2', 'WINGDNG2.TTF', 'Wingdings 2', 'wingdng2_codes.txt'),
-      ('wng3', 'WINGDNG3.TTF', 'Wingdings 3', 'wingdng3_codes.txt'),
-      ('zdng', 'ZapfDingbats_x.ttf', 'Zapf Dingbats', 'zapfdingbats_codes.txt')
-  ]
-  omit_list = 'webd wng1 wng2 wng3 zdng'.split()
-  target_data = [
-      ('speakers', 'list: 1f507 1f508 1f568 1f509 1f569 1f50a 1f56a'),
-      ('chess', 'cmap: 2654-265f'),
-      ('domino +vertical', 'cmap: 1f062-1f093'),
-      ('domino +horizontal', 'cmap: 1f030-1f061'),
-      ('mahjong', 'cmap: 1f000-1f02b'),
-      ('playing card', 'cmap: 1f0a0-1f0ae 1f0b1-1f0bf 1f0c1-1f0cf 1f0d1-1f0f5'),
-      ('spade heart diamond club +suit', 'cmap: 2660-2667'),
-      ('rays lines +three', 'cmap: 269e-269f 1f5e4-1f5e7')
-      # ('Webdings', 'webdings_codes.txt', 'webd', omit_list),
-      # ('Wingdings 1', 'wingding_codes.txt', 'wng1', omit_list),
-      # ('Wingdings 2', 'wingdng2_codes.txt', 'wng2', omit_list),
-      # ('Wingdings 3', 'wingdng3_codes.txt', 'wng3', omit_list),
-      # ('Zapf Dingbats', 'zapfdingbats_codes.txt', 'zdng', omit_list)
-  ]
-  fonts, targets = _load_fonts_and_targets(font_data, target_data, data_dir)
-  context = 'O%sg'
-
-  return title, fonts, targets, context
+def strip_comments_from_file(filename):
+  with open(filename, 'r') as f:
+    for line in f:
+      ix = line.find('#')
+      if ix >= 0:
+        line = line[:ix]
+      line = line.strip()
+      if not line:
+        continue
+      yield line
 
 
-def generate_text(outfile, title, fonts, targets, context, data_dir):
+def _read_font_data_from_file(filename):
+  font_data = []
+  for line in strip_comments_from_file(filename):
+    info = line.split(';')
+    while len(info) < 4:
+      info.append(None)
+    font_data.append(tuple(info))
+  return font_data
+
+
+def _read_target_data_from_file(filename):
+  """Target data uses # to indicate a comment to end of line.
+  Comments are stripped, then an empty or blank line is ignored.
+
+  Each line defines a tuple of four values: target name,
+  codelist, preferred font ids, and omitted font ids.
+  A line can also start with either of two directives,
+  !define and !default.
+
+  If a line starts with '!define ' we expect a key followed
+  by '=' and then one or more names separated by space. The
+  names are turned into a list, and entered into a dictionary
+  for the key.  Once defined a key cannot be redefined.
+
+  If a line starts with '!default ' we expect a key of either
+  'prefer' or 'omit' optionally followed by '=' and a list of
+  names to prefer or omit; these will become the default
+  values until the next '!default ' directive.  If there is
+  no '=' the value is reset.  An omitted or empty prefer or
+  omit field will get the fallback, to explicitly request None
+  and override the fallback the field should contain 'None'.
+
+  Normally, a line consists of 2-4 fields separated by ';'.
+  The first two are a target name and a codelist spec.  The
+  third is the preferred font ids separated by space,
+  previously !defined keys can be used here instead of this
+  list and the list defined for that key will be used.
+  The fourth is the omitted font ids separated by space, they
+  are treated similarly.  If the preferred or omit field is
+  missing or empty and a default value for it has been set,
+  that value is used."""
+
+  def add_index_list_or_defined(info, index, fallback, defines):
+    """Extend or update info[index], possibly using defines"""
+    if len(info) <= index:
+      info.append(fallback)
+    elif info[index] != None:
+      item = info[index]
+      if item in defines:
+        items = defines[item]
+      elif item == 'None':
+        items = None
+      elif item:
+        items = item.split()
+      else:
+        items = fallback
+      info[index] = items
+
+  prefer_fallback = None
+  omit_fallback = None
+  defines = {}
+  target_data = []
+  for line in strip_comments_from_file(filename):
+    if line.startswith('!define '):
+      name, rest = line[8:].split('=')
+      name = name.strip()
+      if name in defines:
+        raise Exception('name %s already defined in %s' % (name, filename))
+      rest = rest.strip().split()
+      defines[name] = tuple(rest)
+      continue
+    if line.startswith('!default '):
+      values = line[9:].split('=')
+      name = values[0].strip()
+      rest = values[1].strip().split() if len(values) > 1 else None
+      if not rest:
+        rest = None
+      if name == 'prefer':
+        prefer_fallback = rest
+      elif name == 'omit':
+        omit_fallback = rest
+      else:
+        raise Exception('default only understands \'prefer\' or \'omit\'')
+      continue
+    info = line.split(';')
+    add_index_list_or_defined(info, 2, prefer_fallback, defines)  # preferred
+    add_index_list_or_defined(info, 3, omit_fallback, defines)  # omitted
+    target_data.append(tuple(info))
+
+  return target_data
+
+
+def generate_text(outfile, title, fonts, targets, data_dir):
   emoji_only = (
       unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
 
@@ -595,11 +659,14 @@ def generate_html(outfile, title, fonts, targets, context, data_dir, relpath):
   print >> outfile, _HTML_FOOTER
 
 
-def generate(outfile, fmt, data_dir, relpath=None):
+def generate(outfile, fmt, data_dir, title=None, context=None, relpath=None):
   if not path.isdir(data_dir):
     raise Exception('data dir "%s" does not exist' % data_dir)
 
-  title, fonts, targets, context = _get_driver(data_dir)
+  font_data = _read_font_data_from_file(path.join(data_dir, 'font_data.txt'))
+  target_data = _read_target_data_from_file(
+      path.join(data_dir, 'target_data.txt'))
+  fonts, targets = _load_fonts_and_targets(font_data, target_data, data_dir)
 
   if fmt == 'txt':
     generate_text(outfile, title, fonts, targets, data_dir)
@@ -609,7 +676,7 @@ def generate(outfile, fmt, data_dir, relpath=None):
     raise Exception('unrecognized format "%s"' % fmt)
 
 
-def _call_generate(outfile, fmt, data_dir):
+def _call_generate(outfile, fmt, data_dir, title=None, context=None):
   data_dir = path.realpath(path.abspath(data_dir))
   if outfile:
     outfile = path.realpath(path.abspath(outfile))
@@ -640,11 +707,11 @@ def _call_generate(outfile, fmt, data_dir):
     print 'relpath: "%s"' % relpath
     print 'writing %s ' % outfile
     with codecs.open(outfile, 'w', 'utf-8') as f:
-      generate(f, fmt, data_dir, relpath)
+      generate(f, fmt, data_dir, title, context, relpath)
   else:
     if not fmt:
       fmt = 'txt'
-    generate(sys.stdout, fmt, data_dir)
+    generate(sys.stdout, fmt, data_dir, title, context)
 
 
 def main():
@@ -660,9 +727,16 @@ def main():
   parser.add_argument(
       '-d', '--data_dir', help='Path to directory containing fonts '
       'and data', metavar='dir', required=True)
+  parser.add_argument(
+      '--title', help='Title on html page', metavar='title',
+      default='Character and Font Comparison')
+  parser.add_argument(
+      '--context', help='Context pattern for glyphs (e.g. \'O%sg\')',
+      metavar='ctx', nargs='?', const='O%sg')
   args = parser.parse_args()
 
-  _call_generate(args.outfile, args.output_type, args.data_dir)
+  _call_generate(
+      args.outfile, args.output_type, args.data_dir, args.title, args.context)
 
 if __name__ == '__main__':
   main()
