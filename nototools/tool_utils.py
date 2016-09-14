@@ -259,7 +259,8 @@ def svn_update(repo):
     subprocess.check_call(['svn', 'up'], stderr=subprocess.STDOUT)
 
 
-def parse_int_ranges(range_string, is_hex=True, sep=None):
+def parse_int_ranges(
+    range_string, is_hex=True, sep=None, allow_duplicates=False):
   """Returns a set of ints from a string of numbers or ranges separated by sep.
   A range is two values separated by hyphen with no intervening separator;
   ranges are inclusive."""
@@ -293,7 +294,7 @@ def parse_int_ranges(range_string, is_hex=True, sep=None):
     else:
       result.add(int(val, base))
       count += 1
-  if len(result) != count:
+  if not allow_duplicates and len(result) != count:
     raise ValueError(
         'duplicate values in %s, expected count is %d but result is %s' % (
             range_string, count, write_int_ranges(result)))
