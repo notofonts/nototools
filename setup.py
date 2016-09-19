@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 #with open("README.rst", 'r') as readme_file:
 #    readme = readme_file.read()
@@ -17,7 +17,8 @@ setup(name='nototools',
       author_email='noto-font@googlegroups.com',
       url='https://code.google.com/p/noto/',
       # more examples here http://docs.python.org/distutils/examples.html#pure-python-distribution-by-package
-      packages=['nototools'],
+      packages=find_packages() + ['third_party'],
+      include_package_data=True,
       install_requires=[
           'fontTools',
           # On Mac OS X these need to be installed with homebrew
