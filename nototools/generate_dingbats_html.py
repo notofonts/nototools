@@ -459,17 +459,21 @@ def _read_target_data_from_file(filename):
   omit_fallback = None
   defines = {}
   target_data = []
+  kDefineDirective = '!define '
+  kDefaultDirective = '!default '
   for line in strip_comments_from_file(filename):
-    if line.startswith('!define '):
-      name, rest = line[8:].split('=')
+    if line.startswith(kDefineDirective):
+      # !define key=val val...
+      name, rest = line[len(kDefineDirective):].split('=')
       name = name.strip()
       if name in defines:
         raise Exception('name %s already defined in %s' % (name, filename))
       rest = rest.strip().split()
       defines[name] = tuple(rest)
       continue
-    if line.startswith('!default '):
-      values = line[9:].split('=')
+    if line.startswith(kDefaultDirective):
+      # !default prefer|omit=val val...
+      values = line[len(kDefaultDirective):].split('=')
       name = values[0].strip()
       rest = values[1].strip().split() if len(values) > 1 else None
       if not rest:
@@ -482,6 +486,7 @@ def _read_target_data_from_file(filename):
         raise Exception('default only understands \'prefer\' or \'omit\'')
       continue
     info = line.split(';')
+    # name;character spec or filename;prefer_id... or empty;omit_id... or empty
     add_index_list_or_defined(info, 2, prefer_fallback, defines)  # preferred
     add_index_list_or_defined(info, 3, omit_fallback, defines)  # omitted
     target_data.append(tuple(info))
@@ -731,7 +736,7 @@ def main():
       '--title', help='Title on html page', metavar='title',
       default='Character and Font Comparison')
   parser.add_argument(
-      '--context', help='Context pattern for glyphs (e.g. \'O%sg\')',
+      '--context', help='Context pattern for glyphs (e.g. \'O%%sg\')',
       metavar='ctx', nargs='?', const='O%sg')
   args = parser.parse_args()
 
