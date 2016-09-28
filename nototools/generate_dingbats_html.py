@@ -514,7 +514,8 @@ def _read_target_data_from_file(filename):
 
 def generate_text(outfile, title, fonts, targets, data_dir):
   emoji_only = (
-      unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
+      unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants(
+          'proposed_extra'))
 
   print >> outfile, title
   print >> outfile
