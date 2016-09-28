@@ -717,6 +717,17 @@ def _reassign_symbols(cmap_ops):
       """)
   cmap_ops.move_all_to_from(circled_digits, 'Zsym', 'SYM2')
 
+  # hourglass with flowing sand is in a block that got assigned to Zsym by
+  # default.  Looking at it and its neighbors, it seems really odd that these
+  # are with 'technical symbols'
+  emoji_symbols = tool_utils.parse_int_ranges('23f0-23f3')
+  cmap_ops.add_all(emoji_symbols, 'SYM2')
+  cmap_ops.remove_all(emoji_symbols, 'Zsym')
+
+  # neutral face should go with white smiling/frowning face, which are in Zsym
+  cmap_ops.add(0x1f610, 'Zsym')
+  cmap_ops.remove(0x1f610, 'SYM2')
+
 
 def _reassign_emoji(cmap_ops):
   """Reassign all emoji to emoji-color. Then assign all emoji with default
