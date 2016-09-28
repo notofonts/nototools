@@ -107,6 +107,15 @@ def load_data():
     _load_derived_core_properties_txt()
     _load_bidi_mirroring_txt()
     _load_indic_data()
+    _load_emoji_data()
+    _load_emoji_sequence_data()
+    _load_emoji_zwj_sequence_data()
+    _load_unicode_emoji_variants()
+    _load_variant_data()
+    _load_proposed_emoji_data()
+    _load_nameslist_data()
+    _load_namealiases_data()
+
     _data_is_loaded = True
 
 
@@ -129,7 +138,7 @@ def name(char, *args):
     elif args:
       return args[0]
     else:
-      raise val_error
+      raise Exception('no name for "%0x"' % ord(char))
 
 
 def _char_to_int(char):
@@ -1109,6 +1118,7 @@ def _load_namealiases_data():
       _namealiases_alt_names[cp].append((name, name_type))
 
 def alt_names(cp):
+  """Return list of name, nametype tuples for cp, or None."""
   _load_namealiases_data()
   return tuple(_namealiases_alt_names.get(cp))
 
