@@ -39,6 +39,7 @@ try:
 except ImportError:
   import unicodedata  # Python's internal library
 
+from nototools import tool_utils # parse_int_ranges
 
 _data_is_loaded = False
 _property_value_aliases_data = {}
@@ -857,9 +858,25 @@ def _load_unicode_emoji_variants():
   _emoji_variants_proposed = frozenset(emoji_variants)
 
 
-def get_unicode_emoji_variants(include_proposed=True):
+def get_unicode_emoji_variants(include_proposed='proposed'):
+  """Returns the emoji characters that have both emoji and text presentations.
+  If include_proposed is 'proposed', include the ones proposed in 2016/08.  If
+  include_proposed is 'proposed_extra', also include the emoji Noto proposes
+  for text presentation treatment to align related characters.  Else
+  include_proposed should resolve to boolean False."""
   _load_unicode_emoji_variants()
-  return _emoji_variants_proposed if include_proposed else _emoji_variants
+  if not include_proposed:
+    return _emoji_variants
+  elif include_proposed == 'proposed':
+    return _emoji_variants_proposed
+  elif include_proposed == 'proposed_extra':
+    extra = tool_utils.parse_int_ranges(
+        '1f4b9 1f4c8-1f4ca 1f507 1f509-1f50a 1f44c')
+    return _emoji_variants_proposed | extra
+  else:
+    raise Exception(
+        "include_proposed is %s which is not in ['proposed', 'proposed_extra']"
+        % include_proposed)
 
 
 def _load_variant_data():
