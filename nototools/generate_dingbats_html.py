@@ -127,7 +127,18 @@ class CodeList(object):
 
   @staticmethod
   def fromlisttext(cplist):
-    return CodeList.fromlist([int(item, 16) for item in cplist.split()])
+    # we'll support ranges
+    if '-' not in cplist:
+      codes = [int(item, 16) for item in cplist.split()]
+    else:
+      codes = []
+      for item in cplist.split():
+        if '-' in item:
+          start, limit = (int(e, 16) for e in item.split('-'))
+          codes.extend(range(start, limit+1))
+        else:
+          codes.append(int(item, 16))
+    return CodeList.fromlist(codes)
 
   @staticmethod
   def fromlistfile(cplist_file):
