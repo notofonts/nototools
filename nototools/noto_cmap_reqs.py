@@ -231,6 +231,22 @@ class CmapOps(object):
         for script in scripts:
           self._script_cp_ok_remove(cp, script)
 
+  def move_to_from(self, cp, to_script, from_script):
+    self._verify_script_exists(from_script)
+    self._verify_script_exists(to_script)
+    self._script_ok_add(cp, to_script)
+    self._script_ok_remove(cp, from_script)
+
+  def move_all_to_from(self, cps, to_script, from_script):
+    """Combines add and remove."""
+    self._verify_script_exists(from_script)
+    self._verify_script_exists(to_script)
+    sorted_cps = sorted(cps)
+    for cp in sorted_cps:
+      self._script_ok_add(cp, to_script)
+    for cp in sorted_cps:
+      self._script_ok_remove(cp, from_script)
+
   def all_scripts(self):
     return self._script_to_chars.keys()
 
@@ -435,7 +451,7 @@ def _reassign_common_by_block(cmap_ops):
     'Enclosed Alphanumerics': 'Zsym',
     'Box Drawing': 'MONO',
     'Block Elements': 'MONO',
-    'Geometric Shapes': 'Zsym',
+    'Geometric Shapes': 'SYM2', # change
     'Miscellaneous Symbols': 'Zsym',
     'Dingbats': 'SYM2',
     'Miscellaneous Mathematical Symbols-A': 'Zmth',
@@ -579,21 +595,127 @@ def _remove_empty(cmap_ops):
 
 def _reassign_symbols(cmap_ops):
   """Some symbols belong together but get split up when we assign by block."""
-  tv_symbols = tool_utils.parse_int_ranges('23fb-23fe 2b58')
   cmap_ops.phase('reassign symbols')
-  cmap_ops.add_all(tv_symbols, 'Zsym')
-  cmap_ops.remove_all(tv_symbols, 'SYM2')
 
-  # hourglass with flowing sand is in a block that got assigned to Zsym by
-  # default.  Looking at it and its neighbors, it seems really odd that these
-  # are with 'technical symbols'
-  emoji_symbols = tool_utils.parse_int_ranges('23f0-23f3')
-  cmap_ops.add_all(emoji_symbols, 'SYM2')
-  cmap_ops.remove_all(emoji_symbols, 'Zsym')
+  white_arrow_parts = tool_utils.parse_int_ranges(
+      '2b00-2b04 1f8ac-1f8ad')
+  cmap_ops.move_all_to_from(white_arrow_parts, 'Zsym', 'SYM2')
 
-  # neutral face should go with white smiling/frowning face, which are in Zsym
-  cmap_ops.add(0x1f610, 'Zsym')
-  cmap_ops.remove(0x1f610, 'SYM2')
+  tv_symbols = tool_utils.parse_int_ranges('23fb-23fe 2b58')
+  cmap_ops.move_all_to_from(tv_symbols, 'SYM2', 'Zsym')
+
+  # we want a copy in SYM2 for sizes, assume MATH will do its own thing
+  # in context.
+  math_circles = tool_utils.parse_int_ranges('2219 2299 22c5')
+  cmap_ops.add_all(math_circles, 'SYM2')
+
+  # keyboard symbols, user interface symbols, media play symbols
+  misc_tech = tool_utils.parse_int_ranges(
+      '2318 231a-231b 2324-2328 232b 237d 23ce-23cf 23e9-23fa 23fb-23fe')
+  cmap_ops.move_all_to_from(misc_tech, 'SYM2', 'Zsym')
+
+  # Split Miscellaneous Symbols into SYM2 and Zsym by related symbols.
+  # mostly this is based on whether the group of symbols seems to have a use
+  # in running text or is based on some alphabetic character.
+  to_sym2 = tool_utils.parse_int_ranges(
+      """2600-2609 # weather
+      260e-2612 # ballot box
+      2614 # umbrella with rain
+      2615 # hot beverage
+      2616-2617 # shogi pieces
+      261a-261f # pointing hands
+      2620-2623 # caution signs
+      2626-262f 2638 # religious/political
+      2630-2637 # chinese trigrams
+      2668 # hot springs
+      267f # wheelchair symbol
+      2686-2689 # go markers
+      268a-268f # yijing monograms/diagrms
+      269e-269f # closed captioning
+      26a1 # high voltage
+      26aa-26ac # circles
+      26bd-26be # sports
+      26bf # squared key
+      26c0-26c3 # checkers/draughts
+      26c4-26c8 # weather
+      26c9-26ca # more shogi
+      26cb # game symbol
+      """)
+  to_zsym = tool_utils.parse_int_ranges(
+      """260a-260d # alchemical symbols
+      2613 # saltire
+      2618-2619 # shamrock, floral bullet
+      2624-2625 # medical, ankh
+      2639-263b # smiley faces
+      263c-2647 # astrological
+      2648-2653 # western zodiac
+      2654-265f # western chess
+      2660-2667 # card suits
+      2669-266f # music symbols
+      2670-2671 # syriac cross
+      2672-267d # recycling
+      267e # paper
+      2680-2685 # die faces
+      2690-269b # dictionary and map symbols, go with Zsym since dictionary use
+      269c # fleur-de-lis
+      269d # outlined white star, a symbol of morocco
+      26a0 # warning sign (exclamation point inside rounded triangle)
+      26a2-26a9 # gender
+      26ad-26b1 # genealogical
+      26b2 # gender
+      26b3-26bc # astrological
+      26cc-26cd # traffic signs
+      26ce # zodiac
+      26cf-26e1 # traffic signs again
+      26e2 # astronomical
+      26e3 # map symbol
+      26e4-26e7 # pentagrams
+      26e8-26ff # more map symbols
+      """)
+  # sanity check
+  duplicate_cps = to_sym2 & to_zsym
+  if duplicate_cps:
+    raise Exception(
+        '%d cps in both from and to symbols: %s' % (
+            len(duplicate_cps), tool_utils.write_int_ranges(duplicate_cps)))
+
+  missing_cps = set(range(0x2600, 0x2700))
+  missing_cps -= to_zsym
+  missing_cps -= to_sym2
+  if missing_cps:
+    raise Exception(
+        '%d cps from Misc. Symbols in neither from nor to symbols: %s' % (
+            len(missing_cps), tool_utils.write_int_ranges(missing_cps)))
+
+  cmap_ops.move_all_to_from(to_sym2, 'SYM2', 'Zsym')
+  cmap_ops.move_all_to_from(to_zsym, 'Zsym', 'SYM2')
+
+  # neutral face should go with smiley faces, which are in Zsym
+  cmap_ops.move_to_from(0x1f610, 'Zsym', 'SYM2')
+
+  # more math symbols that are geometric and might want dual treatment
+  more_math = tool_utils.parse_int_ranges('2981 29bf 29eb')
+  cmap_ops.add_all(more_math, 'SYM2')
+
+  # let's put white arrows into Sym2
+  white_arrows = tool_utils.parse_int_ranges(
+      """21e6 21e8 21e7 21e9 21f3 2b04 2b00-2b03 1f8ac 1f8ad 21ea-21f0
+      """)
+  cmap_ops.move_all_to_from(white_arrows, 'SYM2', 'Zsym')
+
+  # circled digits should all go into Symbols
+  circled_digits = tool_utils.parse_int_ranges(
+      """24ea # circled digit 0
+      2460-2473 # circled digit 1-9, number 10-20
+      24ff # negative circled digit 0
+      1f10c # dingbat negative circled sans-serif digit 0
+      2776-277f # dingbat negative circled digits 1-9, number 10
+      2780-2789 # dingbat circled sans-serif digits 1-9, number 10
+      278a-2793 # dingbat negative circled sans-serif digits 1-9, number 10
+      24eb-24f4 # negative circled number 11-20
+      1f10b # dingbat circled sans-serif digit 0
+      """)
+  cmap_ops.move_all_to_from(circled_digits, 'Zsym', 'SYM2')
 
 
 def _reassign_emoji(cmap_ops):
@@ -2544,6 +2666,10 @@ def _assign_mono(cmap_ops):
   cmap_ops.phase('assign cp437 to mono')
   assert cp437_cps != None
   cmap_ops.add_all(cp437_cps, 'MONO')
+
+  # add APL to MONO as well?:
+  # apl_chars = tool_utils.parse_int_ranges('2336-237a 2395')
+  # cmap_ops.add_all(apl_chars, 'MONO')
 
 
 def _assign_sym2(cmap_ops):
