@@ -608,7 +608,8 @@ def _reassign_emoji(cmap_ops):
   color_only_emoji.remove(0x1f0cf)  # playing card black joker
   # remove emoji with a variation selector that allows a text presentation
   # include proposed variants from 2016/08/23
-  color_only_emoji -= unicode_data.get_unicode_emoji_variants(True)
+  color_only_emoji -= unicode_data.get_unicode_emoji_variants(
+      'proposed_extra')
 
   all_emoji = unicode_data.get_emoji()
   cmap_ops.create_script('Zsye')
