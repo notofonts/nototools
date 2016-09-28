@@ -86,6 +86,8 @@ class CodeList(object):
       return CodeList.frompairfile(filename)
     elif filename.endswith('_cmap.txt'):
       return CodeList.fromrangefile(filename)
+    elif filename.endswith('.ttf'):
+      return CodeList.fromfontcmap(filename)
     else:
       raise Exception(
           'unrecognized file type %s for CodeList.fromfile' % filename)
@@ -100,6 +102,11 @@ class CodeList(object):
       return CodeList.fromlisttext(text)
     else:
       raise Exception('unknown codelist type "%s"' % codelist_type)
+
+  @staticmethod
+  def fromfontcmap(fontname):
+    font = ttLib.TTFont(fontname)
+    return CodeList.fromset(font_data.get_cmap(font))
 
   @staticmethod
   def fromset(cpset):
