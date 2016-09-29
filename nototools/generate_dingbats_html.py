@@ -513,7 +513,10 @@ def _read_target_data_from_file(filename):
 
 
 def _flagged_name(cp, flag_sets):
-  """Prepend any flags to cp's unicode name, and return."""
+  """Prepend any flags to cp's unicode name, and return.  Flag_sets
+  is a map from flag name to a tuple of cp set and boolean.
+  True means add flag if cp in set, False means add flag if it is
+  not in the set."""
   name = unicode_data.name(cp)
   flags = []
   for k, v in sorted(flag_sets.iteritems()):
