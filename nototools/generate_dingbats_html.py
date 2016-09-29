@@ -86,6 +86,8 @@ class CodeList(object):
       return CodeList.frompairfile(filename)
     elif filename.endswith('_cmap.txt'):
       return CodeList.fromrangefile(filename)
+    elif filename.endswith('.ttf'):
+      return CodeList.fromfontcmap(filename)
     else:
       raise Exception(
           'unrecognized file type %s for CodeList.fromfile' % filename)
@@ -100,6 +102,11 @@ class CodeList(object):
       return CodeList.fromlisttext(text)
     else:
       raise Exception('unknown codelist type "%s"' % codelist_type)
+
+  @staticmethod
+  def fromfontcmap(fontname):
+    font = ttLib.TTFont(fontname)
+    return CodeList.fromset(font_data.get_cmap(font))
 
   @staticmethod
   def fromset(cpset):
@@ -120,7 +127,18 @@ class CodeList(object):
 
   @staticmethod
   def fromlisttext(cplist):
-    return CodeList.fromlist([int(item, 16) for item in cplist.split()])
+    # we'll support ranges
+    if '-' not in cplist:
+      codes = [int(item, 16) for item in cplist.split()]
+    else:
+      codes = []
+      for item in cplist.split():
+        if '-' in item:
+          start, limit = (int(e, 16) for e in item.split('-'))
+          codes.extend(range(start, limit+1))
+        else:
+          codes.append(int(item, 16))
+    return CodeList.fromlist(codes)
 
   @staticmethod
   def fromlistfile(cplist_file):
@@ -494,10 +512,22 @@ def _read_target_data_from_file(filename):
   return target_data
 
 
-def generate_text(outfile, title, fonts, targets, data_dir):
-  emoji_only = (
-      unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
+def _flagged_name(cp, flag_sets):
+  """Prepend any flags to cp's unicode name, and return.  Flag_sets
+  is a map from flag name to a tuple of cp set and boolean.
+  True means add flag if cp in set, False means add flag if it is
+  not in the set."""
+  name = unicode_data.name(cp)
+  flags = []
+  for k, v in sorted(flag_sets.iteritems()):
+    if (cp in v[0]) == v[1]:
+      flags.append(k)
+  if flags:
+    name = '(%s) %s' % (', '.join(flags),  name)
+  return name
 
+
+def generate_text(outfile, title, fonts, targets, flag_sets, data_dir):
   print >> outfile, title
   print >> outfile
   print >> outfile, 'Fonts:'
@@ -523,9 +553,7 @@ def generate_text(outfile, title, fonts, targets, data_dir):
         match = any(codelist.contains(cp) for _, _, codelist in keyinfos)
         print >> outfile, rkey if match else ('-' * len(rkey)),
       print >> outfile, unicode_data.age(cp),
-      name = unicode_data.name(cp)
-      if cp in emoji_only:
-        name = '(add) ' + name
+      name = _flagged_name(cp, flag_sets)
       print >> outfile, name
 
 
@@ -597,7 +625,7 @@ def _generate_header(used_fonts):
   return ''.join(header_parts)
 
 
-def _generate_table(index, target, context, emoji_only):
+def _generate_table(index, target, context, flag_sets):
   name, codelist, used_fonts = target
 
   def context_string(codelist, cp):
@@ -608,26 +636,26 @@ def _generate_table(index, target, context, emoji_only):
   lines.append('<table>')
   header = _generate_header(used_fonts)
   linecount = 0
-  for cp0 in codelist.codes():
+  for cp in codelist.codes():
     if linecount % 20 == 0:
       lines.append(header)
     linecount += 1
 
     line = ['<tr>']
-    line.append('<td class="code">U+%04x' % cp0)
+    line.append('<td class="code">U+%04x' % cp)
     for rkey, keyinfos in used_fonts:
       cell_class = None
       cell_text = None
       index = 0
       for font, _, rcodelist in keyinfos:
-        if rcodelist.contains(cp0):
+        if rcodelist.contains(cp):
           if len(keyinfos) > 1:
             cell_class = '%s_%d' % (rkey, index)
           else:
             cell_class = rkey
           cell_class = replace_nonalpha(cell_class)
           if font:
-            cell_text = context_string(rcodelist, cp0)
+            cell_text = context_string(rcodelist, cp)
           else:
             cell_text = ' * '
             cell_class += ' star'
@@ -637,17 +665,49 @@ def _generate_table(index, target, context, emoji_only):
         line.append('<td class="%s">%s' % (cell_class, cell_text))
       else:
         line.append('<td>&nbsp;')
-    line.append('<td class="age">%s' % unicode_data.age(cp0))
-    name = unicode_data.name(cp0)
-    if cp0 in emoji_only:
-      name = '(add) ' + name
+    line.append('<td class="age">%s' % unicode_data.age(cp))
+    name = _flagged_name(cp, flag_sets)
     line.append('<td class="name">%s' % name)
     lines.append(''.join(line))
   lines.append('</table>')
   return '\n'.join(lines)
 
 
-def generate_html(outfile, title, fonts, targets, context, data_dir, relpath):
+def _create_flag_sets(data_dir):
+  """Returns map from flag name to pairs of cp_set, boolean.
+  These get added to a codepoint name if the the boolean matches
+  the result of 'cp in cp_set'."""
+  # These are hardcoded for now, should be able to specify on
+  # command line... (TODO)
+
+  # I propose supporting some emoji in Noto even if they don't have text
+  # variation sequences proposed, we can remove those for Android if they
+  # disagree.
+  emoji_only = (
+      unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants(
+          'proposed_extra'))
+
+  current_sym2_path = path.join(data_dir, 'NotoSansSymbols2-Regular.ttf')
+  current_sym2 = CodeList.fromfontcmap(current_sym2_path).codeset()
+
+  sym2_path = path.join(data_dir, 'notosanssymbols2_cmap.txt')
+  with open(sym2_path, 'r') as f:
+    sym2_cmap = f.read()
+  expect_sym2 = tool_utils.parse_int_ranges(sym2_cmap)
+
+  add_sym2 = expect_sym2 - current_sym2
+
+  # True means set flag if cp in set, False means set if not in set
+  flag_sets = {
+      'ref only': (expect_sym2, False),
+      'emoji only': (emoji_only, True),
+      'add': (add_sym2, True),
+  }
+  return flag_sets
+
+
+def generate_html(
+    outfile, title, fonts, targets, flag_sets, context, data_dir, relpath):
   """If not None, relpath is the relative path from the outfile to
   the datadir, for use when generating font paths."""
   template = string.Template(_HTML_HEADER_TEMPLATE)
@@ -656,32 +716,35 @@ def generate_html(outfile, title, fonts, targets, context, data_dir, relpath):
 
   print >> outfile, _generate_fontkey(fonts, targets, data_dir)
 
-  emoji_only = (
-      unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants())
   for index, target in enumerate(targets):
-    print >> outfile, _generate_table(index, target, context, emoji_only)
+    print >> outfile, _generate_table(index, target, context, flag_sets)
 
   print >> outfile, _HTML_FOOTER
 
 
-def generate(outfile, fmt, data_dir, title=None, context=None, relpath=None):
+def generate(
+    outfile, fmt, data_dir, font_spec, target_spec, title=None, context=None,
+    relpath=None):
   if not path.isdir(data_dir):
     raise Exception('data dir "%s" does not exist' % data_dir)
 
-  font_data = _read_font_data_from_file(path.join(data_dir, 'font_data.txt'))
+  font_data = _read_font_data_from_file(path.join(data_dir, font_spec))
   target_data = _read_target_data_from_file(
-      path.join(data_dir, 'target_data.txt'))
+      path.join(data_dir, target_spec))
   fonts, targets = _load_fonts_and_targets(font_data, target_data, data_dir)
 
+  flag_sets = _create_flag_sets(data_dir)
   if fmt == 'txt':
-    generate_text(outfile, title, fonts, targets, data_dir)
+    generate_text(outfile, title, fonts, targets, flag_sets, data_dir)
   elif fmt == 'html':
-    generate_html(outfile, title, fonts, targets, context, data_dir, relpath)
+    generate_html(
+        outfile, title, fonts, targets, flag_sets, context, data_dir, relpath)
   else:
     raise Exception('unrecognized format "%s"' % fmt)
 
 
-def _call_generate(outfile, fmt, data_dir, title=None, context=None):
+def _call_generate(
+    outfile, fmt, data_dir, font_spec, target_spec, title=None, context=None):
   data_dir = path.realpath(path.abspath(data_dir))
   if outfile:
     outfile = path.realpath(path.abspath(outfile))
@@ -712,11 +775,12 @@ def _call_generate(outfile, fmt, data_dir, title=None, context=None):
     print 'relpath: "%s"' % relpath
     print 'writing %s ' % outfile
     with codecs.open(outfile, 'w', 'utf-8') as f:
-      generate(f, fmt, data_dir, title, context, relpath)
+      generate(
+          f, fmt, data_dir, font_spec, target_spec, title, context, relpath)
   else:
     if not fmt:
       fmt = 'txt'
-    generate(sys.stdout, fmt, data_dir, title, context)
+    generate(sys.stdout, fmt, data_dir, font_spec, target_spec, title, context)
 
 
 def main():
@@ -733,6 +797,13 @@ def main():
       '-d', '--data_dir', help='Path to directory containing fonts '
       'and data', metavar='dir', required=True)
   parser.add_argument(
+      '--font_spec', help='Name of font spec file relative to data dir '
+      '(default \'font_data.txt\')', metavar='file', default='font_data.txt')
+  parser.add_argument(
+      '--target_spec', help='Name of target spec file relative to data dir '
+      '(default \'target_data.txt\')', metavar='file',
+      default='target_data.txt')
+  parser.add_argument(
       '--title', help='Title on html page', metavar='title',
       default='Character and Font Comparison')
   parser.add_argument(
@@ -741,7 +812,8 @@ def main():
   args = parser.parse_args()
 
   _call_generate(
-      args.outfile, args.output_type, args.data_dir, args.title, args.context)
+      args.outfile, args.output_type, args.data_dir, args.font_spec,
+      args.target_spec, args.title, args.context)
 
 if __name__ == '__main__':
   main()
