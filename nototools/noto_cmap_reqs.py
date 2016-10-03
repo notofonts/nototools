@@ -884,6 +884,22 @@ def _generate_script_extra(script_to_chars):
 # maintained using 'regen_script_required' fn
 _SCRIPT_REQUIRED = [
   # Adlm - Adlm (Adlam)
+  ('Adlm',
+   # Comment
+   """
+   Additional characters recommended by Monotype.
+   """,
+   # Data
+   """
+   # Basic Latin
+   0021  # EXCLAMATION MARK
+   # Arabic
+   061F  # ARABIC QUESTION MARK
+   # General Punctuation
+   204F  # REVERSED SEMICOLON
+   # Supplemental Punctuation
+   2E41  # REVERSED COMMA
+   """),
 
   # Aghb - Caucasian Albanian
   ('Aghb',
@@ -1618,6 +1634,7 @@ _SCRIPT_REQUIRED = [
   ('LGC',
    # Comment
    """
+   FE00 is for variant zero.
    """,
    # Data
    """
@@ -1663,6 +1680,8 @@ _SCRIPT_REQUIRED = [
    215F  # FRACTION NUMERATOR ONE
    2184  # LATIN SMALL LETTER REVERSED C
    2189  # VULGAR FRACTION ZERO THIRDS
+   # Variation Selectors
+   FE00  # VARIATION SELECTOR-1
    # Specials
    FFFC  # OBJECT REPLACEMENT CHARACTER
    FFFD  # REPLACEMENT CHARACTER
@@ -2677,6 +2696,9 @@ def _assign_mono(cmap_ops):
   cmap_ops.phase('assign cp437 to mono')
   assert cp437_cps != None
   cmap_ops.add_all(cp437_cps, 'MONO')
+
+  # for variant zero
+  cmap_ops.add(0xfe00, 'MONO')
 
   # add APL to MONO as well?:
   # apl_chars = tool_utils.parse_int_ranges('2336-237a 2395')
