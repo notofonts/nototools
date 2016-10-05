@@ -561,6 +561,60 @@ class TestHints(FontTest):
                 self.assertEqual(o_height, n_height)
 
 
+class TestGlyphBounds(FontTest):
+    """Tests that certain glyphs do or don't go outside of given bounds.
+
+    Glyphs must be designated with two class attribute lists "should_exceed" and
+    "should_not_exceed", both containing tuples each with the following four
+    elements:
+     - names: a list containing glyph names as strings.
+     - bounds: a list (xmin, ymin, xmax, ymax), values can be None.
+     - multiplier: a value which, when multiplied by a font's weight class
+         value minus 400 (regular), gives a bound adjustment for that font.
+         Adjustment is outward (e.g. left for xMin and right for xMax) when
+         positive and inward when negative.
+     - errmsg: a string to print alongside the standard error message.
+    """
+
+    def setUp(self):
+        self.fontfiles, self.fonts = self.loaded_fonts
+
+    def test_should_not_exceed(self):
+        for names, bounds, multiplier, errmsg in self.should_not_exceed:
+            self._run_test(names, bounds, multiplier, errmsg, False)
+
+    def test_should_exceed(self):
+        for names, bounds, multiplier, errmsg in self.should_exceed:
+            self._run_test(names, bounds, multiplier, errmsg, True)
+
+    def _run_test(self, names, bounds, multiplier, errmsg, should_exceed):
+        errmsg_format = "%%s's %%s %%s %s %%d (%s)" % (
+            'does not exceed' if should_exceed else 'exceeds', errmsg)
+
+        for fontfile, font in zip(self.fontfiles, self.fonts):
+            glyph_set = font.getGlyphSet()
+
+            # offset applied to each bound, allowing for per-weight bounds
+            offset = (font['OS/2'].usWeightClass - 400) * multiplier
+            xmin, ymin, xmax, ymax = bounds
+            for name in names:
+                glyph = glyph_set[name]._glyph
+                for attr, expected in (
+                        ('xMin', xmin), ('yMin', ymin),
+                        ('xMax', xmax), ('yMax', ymax)):
+                    if expected is None:
+                        continue
+                    is_min = attr.endswith('Min')
+                    actual = getattr(glyph, attr)
+
+                    # try to always apply offset away (if positive) or towards
+                    # (if negative) a central value
+                    expected = expected + (-offset if is_min else offset)
+                    exceeds = actual < expected if is_min else actual > expected
+                    self.assertEqual(exceeds, should_exceed, errmsg_format % (
+                        fontfile, name, attr, expected))
+
+
 class TestGlyphAreas(unittest.TestCase):
     """Tests that glyph areas between weights have the right ratios.
 
