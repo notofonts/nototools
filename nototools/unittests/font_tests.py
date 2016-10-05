@@ -570,8 +570,9 @@ class TestGlyphBounds(FontTest):
      - names: a list containing glyph names as strings.
      - bounds: a list (xmin, ymin, xmax, ymax), values can be None.
      - multiplier: a value which, when multiplied by a font's weight class
-         value's difference from 400 (regular), gives a bound adjustment for
-         that font.
+         value minus 400 (regular), gives a bound adjustment for that font.
+         Adjustment is outward (e.g. left for xMin and right for xMax) when
+         positive and inward when negative.
      - errmsg: a string to print alongside the standard error message.
     """
 
