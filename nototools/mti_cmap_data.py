@@ -164,7 +164,7 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
       xcps = frozenset()
     num_cells += len(cps)
     col.extend(
-        'U+%04X%s' % (cp, '*' if cp in xcps else '')
+        '%04X%s' % (cp, '*' if cp in xcps else '')
         for cp in sorted(cps))
     cols.append(col)
     max_lines = max(max_lines, len(col))
