@@ -2729,6 +2729,71 @@ def _assign_sym2(cmap_ops):
   cmap_ops.add_all(keycap_chars, 'SYM2')
 
 
+def _assign_math(cmap_ops):
+  """Add STIX characters (see http://www.stixfonts.org/allGlyphs.html).
+  This does not include PUA characters from that document."""
+
+  STIX_CPS = tool_utils.parse_int_ranges(
+      """
+      0020-007e 00a0-0180 0188 0190 0192 0195 0199-019b 019e 01a0-01a1 01a5
+      01aa-01ab 01ad 01af-01b0 01b5 01ba-01bb 01be 01c0-01c3 01f0 01fa-01ff
+      0221 0234-0237 02b0-02e9 02ec-02ed 0300-033f 0346 034c 0359 035c
+      0360-0362 037e 0384-038a 038c 038e-03a1 03a3-03ce 03d0-03d2 03d5-03d6
+      03d8-03e1 03f0-03f1 03f4-03f6 0401-040c 040e-044f 0451-045c 045e-045f
+      0462-0463 046a-046b 0472-0475 0490-0491 1d00 1d07 1d1c 1d84-1d85 1d8a
+      1d8d-1d8e 1e80-1e85 1ef2-1ef3 2010-2022 2025-2026 2030-203c 203e 2040
+      2043-2044 2047 204e-2052 2057 205f 207f 20a3-20a4 20a7 20ac 20d0-20d2
+      20d6-20d7 20db-20df 20e1 20e4-20f0 2102 2105 2107 210a-2113 2115-211e
+      2122 2124-2129 212b-2138 213c-214b 2153-215e 2190-21ea 21f4-22ff 2302
+      2305-2306 2308-2313 2315-231a 231c-2323 2329-232a 232c-232e 2332 2336
+      233d 233f-2340 2353 2370 237c 2393-2394 239b-23b9 23ce 23d0 23dc-23e7
+      2423 2460-2468 24b6-24ea 2500 2502 2506 2508 250a 250c 2510 2514 2518
+      251c 2524 252c 2534 253c 2550-256c 2571-2572 2584 2588 258c 2590-2593
+      25a1-25ff 2606 2609 260c 260e 2612 2621 2639-2644 2646-2649 2660-2667
+      2669-266b 266d-266f 267e 2680-2689 26a0 26a5 26aa-26ac 26b2 2709 2713
+      2720 272a 2736 273d 2772-2773 2780-2793 279b 27c1-27c9 27cc 27d0-27ef
+      27f1-27ff 2901-2aff 2b13-2b41 2b43-2b4c 2b50-2b54 3030 fb00-fb04
+      1d401-1d454 1d456-1d49c 1d49e-1d49f 1d4a2 1d4a5-1d4a6 1d4a9-1d4ac
+      1d4ae-1d4b9 1d4bb 1d4bd-1d4c3 1d4c5-1d505 1d507-1d50a 1d50d-1d514
+      1d516-1d51c 1d51e-1d539 1d53b-1d53e 1d540-1d544 1d546 1d54a-1d550
+      1d552-1d6a5 1d6a8-1d7c9 1d7ce-1d7ff
+      """)
+
+  """Stix does not include the following that we defaulted to the Math font,
+  assume this is ok:
+    # Miscellaneous Mathematical Symbols-A
+    27C0  # THREE DIMENSIONAL ANGLE
+    27CA  # VERTICAL BAR WITH HORIZONTAL STROKE
+    27CB  # MATHEMATICAL RISING DIAGONAL
+    27CD  # MATHEMATICAL FALLING DIAGONAL
+    27CE  # SQUARED LOGICAL AND
+    27CF  # SQUARED LOGICAL OR
+    # Mathematical Alphanumeric Symbols
+    1D400  # MATHEMATICAL BOLD CAPITAL A
+    1D7CA  # MATHEMATICAL BOLD CAPITAL DIGAMMA
+    1D7CB  # MATHEMATICAL BOLD SMALL DIGAMMA
+    # Arabic Mathematical Alphabetic Symbols
+      - all of these -
+
+  math_not_in_stix = set(cmap_ops.script_chars('Zmth')) - STIX_CPS
+
+  print 'math_not_in_stix (%d cps):' % len(math_not_in_stix)
+  lines = []
+  cps = math_not_in_stix
+  block = None
+  for cp in sorted(cps):
+    cp_block = unicode_data.block(cp)
+    if cp_block != block:
+      block = cp_block
+      lines.append('# ' + block)
+    cp_name = unicode_data.name(cp, '<unnamed>')
+    lines.append('%04X  # %s' % (cp, cp_name))
+  print '\n'.join(lines)
+  """
+
+  cmap_ops.add_all(STIX_CPS, 'Zmth')
+
+
 def _remove_unwanted(cmap_ops):
   """Remove characters we know we don't want in any font."""
   # Chars we never want.
@@ -2815,6 +2880,7 @@ def build_script_to_chars(log_level):
   _unassign_lgc_from_symbols(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
   _assign_sym2(cmap_ops) # after LGC removed, add back for enclosing keycaps
+  _assign_math(cmap_ops)
   _remove_unwanted(cmap_ops)  # comes before assign_basic, assign_wanted
   _assign_wanted(cmap_ops)
   _assign_basic(cmap_ops)
