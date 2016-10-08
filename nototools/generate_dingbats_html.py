@@ -47,7 +47,8 @@ _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
     tr.head { font-weight: bold; font-size: 12pt;
               border-style: solid; border-width: 1px; border-color: black;
               border-collapse: separate }
-    .code, .age, .name { font-size: 12pt; text-align: left }
+    .code, .age { font-size: 12pt; text-align: left }
+    .name { font-size: 10pt; text-align:left }
     .key { background-color: white; font-size: 12pt; border-collapse: separate;
            margin-top: 0; border-spacing: 10px 0; text-align: left }
   </style>
@@ -625,6 +626,17 @@ def _generate_header(used_fonts):
   return ''.join(header_parts)
 
 
+def _break_name(name):
+  """insert <br/> in long names at spaces"""
+  if len(name) > 30:
+    ix = max(20, int(len(name) / 2))
+    while ix >= 0 and name[ix] not in [' ', '-']:
+      ix -= 1
+    if ix > 0:
+      keep_char = name[ix] == '-'
+      name = name[:ix + (1 if keep_char else 0)] + '<br/>' + name[ix+1:]
+  return name
+
 def _generate_table(index, target, context, flag_sets):
   name, codelist, used_fonts = target
 
@@ -667,6 +679,7 @@ def _generate_table(index, target, context, flag_sets):
         line.append('<td>&nbsp;')
     line.append('<td class="age">%s' % unicode_data.age(cp))
     name = _flagged_name(cp, flag_sets)
+    name = _break_name(name)
     line.append('<td class="name">%s' % name)
     lines.append(''.join(line))
   lines.append('</table>')
