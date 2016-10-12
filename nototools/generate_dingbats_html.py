@@ -47,8 +47,8 @@ _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
     tr.head { font-weight: bold; font-size: 12pt;
               border-style: solid; border-width: 1px; border-color: black;
               border-collapse: separate }
-    .code, .age { font-size: 12pt; text-align: left }
-    .name { font-size: 10pt; text-align:left }
+    td:nth-of-type(1), td:nth-last-of-type(2) { font-size: 12pt; text-align:left }
+    td:nth-last-of-type(1) { font-size: 10pt; text-align:left; max-width: 20em }
     .key { background-color: white; font-size: 12pt; border-collapse: separate;
            margin-top: 0; border-spacing: 10px 0; text-align: left }
   </style>
@@ -432,8 +432,11 @@ def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
         result |= codes
     elif op == '&':
       result &= codes
-    else:
+    elif op == '-':
       result -= codes
+    else:
+      raise Exception('unknown op "%s"' % op)
+
   return result
 
 
@@ -447,7 +450,6 @@ def _load_flags(flag_data, data_dir, codelist_map):
   This can fail since the code processing the flag_data does not actually try
   to load the codelists."""
 
-  print 'flag data: %s' % flag_data
   flag_sets = {}
   flag_map = {}
   for flag_info in flag_data:
@@ -700,17 +702,6 @@ def _generate_header(used_fonts):
   return ''.join(header_parts)
 
 
-def _break_name(name):
-  """insert <br/> in long names at spaces"""
-  if len(name) > 30:
-    ix = max(20, int(len(name) / 2))
-    while ix >= 0 and name[ix] not in [' ', '-']:
-      ix -= 1
-    if ix > 0:
-      keep_char = name[ix] == '-'
-      name = name[:ix + (1 if keep_char else 0)] + '<br/>' + name[ix+1:]
-  return name
-
 def _generate_table(index, target, context, flag_sets):
   name, codelist, used_fonts = target
 
@@ -728,7 +719,7 @@ def _generate_table(index, target, context, flag_sets):
     linecount += 1
 
     line = ['<tr>']
-    line.append('<td class="code">U+%04x' % cp)
+    line.append('<td>U+%04x' % cp)
     for rkey, keyinfos in used_fonts:
       cell_class = None
       cell_text = None
@@ -751,10 +742,9 @@ def _generate_table(index, target, context, flag_sets):
         line.append('<td class="%s">%s' % (cell_class, cell_text))
       else:
         line.append('<td>&nbsp;')
-    line.append('<td class="age">%s' % unicode_data.age(cp))
+    line.append('<td>%s' % unicode_data.age(cp))
     name = _flagged_name(cp, flag_sets)
-    name = _break_name(name)
-    line.append('<td class="name">%s' % name)
+    line.append('<td>%s' % name)
     lines.append(''.join(line))
   lines.append('</table>')
   return '\n'.join(lines)
@@ -940,8 +930,6 @@ def _call_generate(
       relpath = data_dir[len(outdir) + 1:]
     else:
       relpath = None
-    print 'relpath: "%s"' % relpath
-    print 'writing %s ' % outfile
     with codecs.open(outfile, 'w', 'utf-8') as f:
       generate(
           f, fmt, data_dir, font_spec, target_spec, flag_spec, title, context,
