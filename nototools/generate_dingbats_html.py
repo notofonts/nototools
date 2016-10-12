@@ -47,7 +47,8 @@ _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
     tr.head { font-weight: bold; font-size: 12pt;
               border-style: solid; border-width: 1px; border-color: black;
               border-collapse: separate }
-    .code, .age, .name { font-size: 12pt; text-align: left }
+    td:nth-of-type(1), td:nth-last-of-type(2) { font-size: 12pt; text-align:left }
+    td:nth-last-of-type(1) { font-size: 10pt; text-align:left; max-width: 20em }
     .key { background-color: white; font-size: 12pt; border-collapse: separate;
            margin-top: 0; border-spacing: 10px 0; text-align: left }
   </style>
@@ -86,7 +87,7 @@ class CodeList(object):
       return CodeList.frompairfile(filename)
     elif filename.endswith('_cmap.txt'):
       return CodeList.fromrangefile(filename)
-    elif filename.endswith('.ttf'):
+    elif filename.endswith('.ttf') or filename.endswith('.otf'):
       return CodeList.fromfontcmap(filename)
     else:
       raise Exception(
@@ -394,13 +395,89 @@ def _load_targets(target_data, fonts, data_dir, codelist_map):
   return tuple(result)
 
 
-def _load_fonts_and_targets(font_data, target_data, data_dir):
+def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
+  """Processes expr_list in order, building a codeset.
+  See _read_flag_data_from_file for information on expr_list.
+  This can modify flag_sets and codelist_map."""
+
+  result = ()
+  for op, exp in expr_list:
+    if exp not in flag_sets:
+      # its a codelist
+      codes = _load_codelist(exp, data_dir, codelist_map).codeset()
+    else:
+      codes_or_spec = flag_sets[exp]
+      if isinstance(codes_or_spec, (set, frozenset)):
+        codes = codes_or_spec
+      else:
+        # replace the spec with the actual codes
+        if codes_or_spec == None:
+          # we only know about '_emoji_'
+          if exp == '_emoji_':
+            codes = (
+                unicode_data.get_emoji() -
+                unicode_data.get_unicode_emoji_variants('proposed_extra'))
+          else:
+            raise Exception('unknown special codeset "%s"' % exp)
+        else:
+          codes = _load_codelist(
+              codes_or_spec, data_dir, codelist_map).codeset()
+        flag_sets[exp] = codes
+    if op == '|':
+      if not result:
+        # it appers that python 'optimizes' by replacing the lhs by rhs if lhs
+        # is an empty set, but this changes the type of lhs to frozenset...
+        result = set(codes)
+      else:
+        result |= codes
+    elif op == '&':
+      result &= codes
+    elif op == '-':
+      result -= codes
+    else:
+      raise Exception('unknown op "%s"' % op)
+
+  return result
+
+
+def _load_flags(flag_data, data_dir, codelist_map):
+  """Flag data is a list of tuples of defined sets or flags and expressions, see
+  _read_flag_data_from_file for more info.
+  This returns a map from set name to a tuple of (cp_set, bool) where True
+  means the flag is set for a cp if it is in the cp_set, and false means the
+  flag is set if the cp is not in the cp_set.
+
+  This can fail since the code processing the flag_data does not actually try
+  to load the codelists."""
+
+  flag_sets = {}
+  flag_map = {}
+  for flag_info in flag_data:
+    t0, t1, t2 = flag_info
+    if t0 == '!define':
+      set_name = t1
+      if set_name == '_emoji_':
+        set_codes = None  # gets created by _create_codeset_from_expr
+      else:
+        set_codes = _load_codelist(t2, data_dir, codelist_map).codeset()
+      flag_sets[set_name] = set_codes
+    else:
+      flag_name = t0
+      flag_in = t1
+      flag_set = _create_codeset_from_expr(
+          t2, flag_sets, data_dir, codelist_map)
+      flag_map[flag_name] = (flag_set, flag_in)
+  return flag_map
+
+
+def _load_fonts_targets_flags(font_data, target_data, flag_data, data_dir):
   # we cache the codelists to avoid building them twice if they're referenced by
   # both fonts and targets, not a big deal but...
   codelist_map = {}
   fonts = _load_fonts(font_data, data_dir, codelist_map)
   targets = _load_targets(target_data, fonts, data_dir, codelist_map)
-  return fonts, targets
+  flags = _load_flags(flag_data, data_dir, codelist_map)
+  return fonts, targets, flags
 
 
 def strip_comments_from_file(filename):
@@ -642,7 +719,7 @@ def _generate_table(index, target, context, flag_sets):
     linecount += 1
 
     line = ['<tr>']
-    line.append('<td class="code">U+%04x' % cp)
+    line.append('<td>U+%04x' % cp)
     for rkey, keyinfos in used_fonts:
       cell_class = None
       cell_text = None
@@ -665,45 +742,123 @@ def _generate_table(index, target, context, flag_sets):
         line.append('<td class="%s">%s' % (cell_class, cell_text))
       else:
         line.append('<td>&nbsp;')
-    line.append('<td class="age">%s' % unicode_data.age(cp))
+    line.append('<td>%s' % unicode_data.age(cp))
     name = _flagged_name(cp, flag_sets)
-    line.append('<td class="name">%s' % name)
+    line.append('<td>%s' % name)
     lines.append(''.join(line))
   lines.append('</table>')
   return '\n'.join(lines)
 
 
-def _create_flag_sets(data_dir):
-  """Returns map from flag name to pairs of cp_set, boolean.
-  These get added to a codepoint name if the the boolean matches
-  the result of 'cp in cp_set'."""
-  # These are hardcoded for now, should be able to specify on
-  # command line... (TODO)
+_expr_re = re.compile(r'(\||&|(?<![0-9a-fA-F])-(?![0-9a-fA-F]))')
 
-  # I propose supporting some emoji in Noto even if they don't have text
-  # variation sequences proposed, we can remove those for Android if they
-  # disagree.
-  emoji_only = (
-      unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants(
-          'proposed_extra'))
+def _scan_expr(expr, def_names, used_names):
+  """Scans the expression, building a list of operation tuples."""
+  result = []
+  op_str = '|'
+  while expr:
+    op = op_str
+    m = _expr_re.search(expr)
+    if not m:
+      exp = expr.strip()
+      expr = None
+      op_str = None
+    else:
+      exp = expr[:m.start()].strip()
+      expr = expr[m.end():]
+      op_str = m.group(1)
+    if not exp:
+      raise Exception('empty expression after op %s' % op)
+    result.append((op, exp))
+    if exp in def_names:
+      used_names.add(exp)
+  return result
 
-  current_sym2_path = path.join(data_dir, 'NotoSansSymbols2-Regular.ttf')
-  current_sym2 = CodeList.fromfontcmap(current_sym2_path).codeset()
 
-  sym2_path = path.join(data_dir, 'notosanssymbols2_cmap.txt')
-  with open(sym2_path, 'r') as f:
-    sym2_cmap = f.read()
-  expect_sym2 = tool_utils.parse_int_ranges(sym2_cmap)
+def _read_flag_data_from_file(filename):
+  """Read flag data file and generate a list of tuples for creating
+  the flag data map.  If filename is None, returns an empty list.
 
-  add_sym2 = expect_sym2 - current_sym2
+  Lines in the file either define a set used by a flag, or define
+  a flag.  Define lines start with '!define ' followed by the name
+  of the set (_0-9A-Za-z), '=', and the definition (a codelist).
 
-  # True means set flag if cp in set, False means set if not in set
-  flag_sets = {
-      'ref only': (expect_sym2, False),
-      'emoji only': (emoji_only, True),
-      'add': (add_sym2, True),
-  }
-  return flag_sets
+  Definition lines have three fields separated by semicolon,
+  the name of the flag, 'in' or 'not in', and the definition
+  which can either be a codelist or an expression formed from
+  names of !defined sets joined with '&' (intersection), '|'
+  (union), or '-' (set difference).  These operations are performed
+  in order left to right, there's no predecence.
+
+  A predefined set is '_emoji_', these are the unicode extended
+  emoji values.
+
+  '#' is a comment to end-of line.  Blank lines are ignored.
+
+  It's an error if there are multiple defined sets
+  with the same name or multiple flags with the same name.
+
+  This returns a list of 3-tuples, one for each set used by a
+  flag, then one for each flag.  Tuple for defined sets are
+    ('!define', set_name, set_spec),
+  there set_spec is None if the set_name is special, like '_emoji_'.
+  Tuples for flags are
+    (flag_name, True/False, [(op,expr)]),
+  where the list of op, expr tuples has the op character
+  ('|' '&', '-') and a define name or a codelist."""
+
+  if not filename:
+    return []
+
+  def_names = set()
+  def_names.add('_emoji_')
+
+  def_re = re.compile(r'!define ([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*(.*)\s*')
+  flag_re = re.compile(r'([^;]+);\s*(in|not in)\s*;\s*(.*)\s*')
+
+  def_info = [('!define', '_emoji_', None)]
+  flag_info = []
+  with open(filename, 'r') as f:
+    for line in f.readlines():
+      ix = line.find('#')
+      if ix > -1:
+        line = line[:ix]
+      line = line.strip()
+      if not line:
+        continue
+      if line.startswith('!'):
+        m = def_re.match(line)
+        if not m:
+          raise Exception('could not match definition line "%s"' % line)
+        def_name = m.group(1)
+        def_codelist = m.group(2)
+        if def_name in def_names:
+          raise Exception('more than one flag definition named "%s"' % def_name)
+        def_names.add(def_name)
+        def_info.append(('!define', def_name, def_codelist))
+      else:
+        m = flag_re.match(line)
+        if not m:
+          raise Exception('could not match set definition line "%s"' % line)
+        flag_name = m.group(1)
+        flag_in_str = m.group(2)
+        if flag_in_str == 'in':
+          flag_in = True
+        elif flag_in_str == 'not in':
+          flag_in = False
+        else:
+          raise Exceeption(
+              'found "%s" but expected \'in\' or \'not in\'' % flag_in_str)
+        flag_expr = m.group(3)
+        flag_info.append([flag_name, flag_in, flag_expr])
+
+  used_names = set()
+  flag_expr_info = []
+  for flag_name, flag_in, flag_expr in flag_info:
+    expr_list = _scan_expr(flag_expr, def_names, used_names)
+    flag_expr_info.append((flag_name, flag_in, expr_list))
+  used_defs = [t for t in def_info if t[1] in used_names]
+  return used_defs + flag_expr_info
 
 
 def generate_html(
@@ -723,17 +878,19 @@ def generate_html(
 
 
 def generate(
-    outfile, fmt, data_dir, font_spec, target_spec, title=None, context=None,
-    relpath=None):
+    outfile, fmt, data_dir, font_spec, target_spec, flag_spec, title=None,
+    context=None, relpath=None):
   if not path.isdir(data_dir):
     raise Exception('data dir "%s" does not exist' % data_dir)
 
   font_data = _read_font_data_from_file(path.join(data_dir, font_spec))
   target_data = _read_target_data_from_file(
       path.join(data_dir, target_spec))
-  fonts, targets = _load_fonts_and_targets(font_data, target_data, data_dir)
+  flag_data = _read_flag_data_from_file(
+      None if not flag_spec else path.join(data_dir, flag_spec))
+  fonts, targets, flag_sets = _load_fonts_targets_flags(
+      font_data, target_data, flag_data, data_dir)
 
-  flag_sets = _create_flag_sets(data_dir)
   if fmt == 'txt':
     generate_text(outfile, title, fonts, targets, flag_sets, data_dir)
   elif fmt == 'html':
@@ -744,7 +901,8 @@ def generate(
 
 
 def _call_generate(
-    outfile, fmt, data_dir, font_spec, target_spec, title=None, context=None):
+    outfile, fmt, data_dir, font_spec, target_spec, flag_spec, title=None,
+    context=None):
   data_dir = path.realpath(path.abspath(data_dir))
   if outfile:
     outfile = path.realpath(path.abspath(outfile))
@@ -772,15 +930,16 @@ def _call_generate(
       relpath = data_dir[len(outdir) + 1:]
     else:
       relpath = None
-    print 'relpath: "%s"' % relpath
-    print 'writing %s ' % outfile
     with codecs.open(outfile, 'w', 'utf-8') as f:
       generate(
-          f, fmt, data_dir, font_spec, target_spec, title, context, relpath)
+          f, fmt, data_dir, font_spec, target_spec, flag_spec, title, context,
+          relpath)
   else:
     if not fmt:
       fmt = 'txt'
-    generate(sys.stdout, fmt, data_dir, font_spec, target_spec, title, context)
+    generate(
+        sys.stdout, fmt, data_dir, font_spec, target_spec, flag_spec, title,
+        context)
 
 
 def main():
@@ -804,6 +963,10 @@ def main():
       '(default \'target_data.txt\')', metavar='file',
       default='target_data.txt')
   parser.add_argument(
+      '--flag_spec', help='Name of flag spec file relative to data dir '
+      '(uses \'flag_data.txt\' with no arg)', metavar='file', nargs='?',
+      const = 'flag_data.txt')
+  parser.add_argument(
       '--title', help='Title on html page', metavar='title',
       default='Character and Font Comparison')
   parser.add_argument(
@@ -813,7 +976,7 @@ def main():
 
   _call_generate(
       args.outfile, args.output_type, args.data_dir, args.font_spec,
-      args.target_spec, args.title, args.context)
+      args.target_spec, args.flag_spec, args.title, args.context)
 
 if __name__ == '__main__':
   main()
