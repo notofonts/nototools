@@ -302,4 +302,6 @@ class ShapeDiffFinder:
         a, b = vals
         if not (a or b):
             return 0
-        return 1 - min(a, b) / max(a, b)
+        if abs(a) > abs(b):
+            a, b = b, a
+        return 1 - a / b
