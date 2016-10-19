@@ -44,10 +44,22 @@ class HbInputGenerator(object):
                 print('not tested (unreachable?): %s' % name)
         return inputs
 
-    def input_from_name(self, name, features=(), pad=False):
-        """Given glyph name, return input to harbuzz to render this glyph in the
-        form of a (features, text) tuple, where `features` is a list of feature
-        tags to activate and `text` is an input string.
+    def input_from_name(self, name, features=(), seen=None, pad=False):
+        """Given glyph name, return input to harbuzz to render this glyph.
+
+        Returns input in the form of a (features, text) tuple, where `features`
+        is a list of feature tags to activate and `text` is an input string.
+
+        Argument `features` will simply be passed through to the output, and is
+        used for recursive calls to the method. `seen` is used by the method to
+        avoid following cycles when recursively looking for possible input.
+        `pad` can be used to add whitespace to text output, for non-spacing
+        glyphs.
+
+        Can return None in two situations: if no possible input is found (no
+        simple unicode mapping or substitution rule exists to generate the
+        glyph), or if the requested glyph already exists in `seen` (in which
+        case this path of generating input should not be followed further).
         """
 
         inputs = []
@@ -68,10 +80,10 @@ class HbInputGenerator(object):
 
         # check the substitution features
         if 'GSUB' not in self.font:
-            return
+            return None
         gsub = self.font['GSUB'].table
         if gsub.LookupList is None:
-            return
+            return None
         for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
             for st in lookup.SubTable:
 
