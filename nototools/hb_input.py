@@ -50,14 +50,23 @@ class HbInputGenerator(object):
         tags to activate and `text` is an input string.
         """
 
+        inputs = []
+
+        # avoid following cyclic paths through features
+        if seen is None:
+            seen = set()
+        if name in seen:
+            return None
+        seen.add(name)
+
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
             text = unichr(self.reverse_cmap[name])
             if pad:
                 text = '  ' + text
-            return features, text
+            inputs.append((features, text))
 
-        # nope, check the substitution features
+        # check the substitution features
         if 'GSUB' not in self.font:
             return
         gsub = self.font['GSUB'].table
@@ -70,8 +79,8 @@ class HbInputGenerator(object):
                 if lookup.LookupType == 1:
                     for glyph, subst in st.mapping.items():
                         if subst == name:
-                            return self._input_with_context(
-                                gsub, glyph, lookup_index, features)
+                            inputs.append(self._input_with_context(
+                                gsub, glyph, lookup_index, features, seen))
 
                 # see if this glyph is a ligature
                 elif lookup.LookupType == 4:
@@ -79,20 +88,29 @@ class HbInputGenerator(object):
                         for ligature in ligatures:
                             if ligature.LigGlyph == name:
                                 glyphs = [prefix] + ligature.Component
-                                return self._sequence_from_glyph_names(
-                                    glyphs, features)
+                                inputs.append(self._sequence_from_glyph_names(
+                                    glyphs, features, seen))
 
+        seen.remove(name)
 
-    def _input_with_context(self, gsub, glyph, lookup_index, features):
+        # since this method sometimes returns None to avoid cycles, the
+        # recursive calls that it makes might have themselves returned None,
+        # but we should avoid returning None here if there are other options
+        inputs = [i for i in inputs if i is not None]
+        return min(inputs) if inputs else None
+
+    def _input_with_context(self, gsub, glyph, lookup_index, features, seen):
         """Given GSUB, input glyph, and lookup index, return input to harfbuzz
         to render the input glyph with the referred-to lookup activated.
         """
+
+        inputs = []
 
         # try to get a feature tag to activate this lookup
         for feature in gsub.FeatureList.FeatureRecord:
             if lookup_index in feature.Feature.LookupListIndex:
                 features += (feature.FeatureTag,)
-                return self.input_from_name(glyph, features)
+                inputs.append(self.input_from_name(glyph, features, seen))
 
         # try for a chaining substitution
         for lookup in gsub.LookupList.Lookup:
@@ -103,27 +121,36 @@ class HbInputGenerator(object):
                     if sub_lookup.LookupListIndex != lookup_index:
                         continue
                     if st.LookAheadCoverage:
-                        glyphs = [glyph, st.LookAheadCoverage[0].glyphs[0]]
+                        glyphs = [glyph, min(st.LookAheadCoverage[0].glyphs)]
                     elif st.BacktrackCoverage:
-                        glyphs = [st.BacktrackCoverage[0].glyphs[0], glyph]
+                        glyphs = [min(st.BacktrackCoverage[0].glyphs), glyph]
                     else:
                         continue
-                    return self._sequence_from_glyph_names(glyphs, features)
+                    inputs.append(self._sequence_from_glyph_names(
+                        glyphs, features, seen))
 
-        raise ValueError('Lookup list index %d not found.' % lookup_index)
+        assert inputs, 'Lookup list index %d not found.' % lookup_index
+        inputs = [i for i in inputs if i is not None]
+        return min(inputs) if inputs else None
 
 
-    def _sequence_from_glyph_names(self, glyphs, features):
+    def _sequence_from_glyph_names(self, glyphs, features, seen):
         """Return a sequence of glyphs from glyph names."""
 
         text = []
         for glyph in glyphs:
-            features, cur_text = self.input_from_name(glyph, features)
+            cur_input = self.input_from_name(glyph, features, seen)
+            if cur_input is None:
+                return None
+            features, cur_text = cur_input
             text.append(cur_text)
         return features, ''.join(text)
 
 
 def build_reverse_cmap(font):
-    """Build a dictionary mapping glyph names to unicode values."""
+    """Build a dictionary mapping glyph names to unicode values.
+    Maps each name to its smallest unicode value.
+    """
 
-    return {n: v for v, n in summary.get_largest_cmap(font).items()}
+    cmap_items = summary.get_largest_cmap(font).items()
+    return {n: v for v, n in reversed(sorted(cmap_items))}
