@@ -413,7 +413,7 @@ def get_families(fonts):
         unhinted_members.append(font)
       if not rep_member:
         if font.weight == 'Regular' and font.slope is None and not (
-            font.is_cjk and font.is_mono):
+            font.is_cjk and font.is_mono) and not font.is_UI:
           # We assume here that there's no difference between a hinted or
           # unhinted rep_member in terms of what we use it for.  The other
           # filters are to ensure the fontTools font name is a good stand-in
