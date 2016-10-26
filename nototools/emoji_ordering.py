@@ -302,9 +302,10 @@ _keep_varsel_estrs = frozenset([
 def _fix_estrs(estrs):
   """Add fitzpatrick colors, and remove emoji variation selectors.
 
-  1) The emoji ordering html page omits the skin color variants, because
-  reasons. Since we want to display them, we have to add them.  However,
-  we don't add them for sequences with multiple people.
+  1) The emoji ordering html page omits the skin color variants. Since
+  we want to display them, we have to add them.  However, we don't add
+  them for sequences with multiple people, since we don't support
+  multiracial groups at the moment.
 
   2) Currently we don't include emoji variation selectors in our sequences
   except after heavy black heart (and we probably don't need them there
