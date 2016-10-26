@@ -64,17 +64,7 @@ def check_families(family_map):
   # ensure the count of fonts in a family is what we expect
   for family_id, family in family_map.iteritems():
     hinted_members = family.hinted_members
-    # 9 for the two Mono variants
-    if hinted_members and not len(hinted_members) in [1, 2, 4, 7, 9]:
-      raise ValueError('Family %s has %d hinted_members (%s)' % (
-          family_id, len(hinted_members), [
-              path.basename(font.filepath) for font in hinted_members]))
-
     unhinted_members = family.unhinted_members
-    if unhinted_members and not len(unhinted_members) in [1, 2, 4]:
-      raise ValueError('Family %s has %d unhinted_members (%s)' % (
-          family_id, len(unhinted_members), [
-              path.basename(font.filepath) for font in unhinted_members]))
 
     if (hinted_members and unhinted_members and len(hinted_members) !=
         len(unhinted_members)):
@@ -704,7 +694,7 @@ class WebGen(object):
 
   def build_family_css(self, key, family):
     fonts = [m for m in (family.hinted_members or family.unhinted_members)
-             if m.variant != 'Mono']
+             if m.variant != 'Mono' and not m.is_UI]
     fonts.sort(key=lambda f: str(css_weight(f.weight)) + '-' +
                ('b' if css_style(f.slope) == 'italic' else 'a'))
 
@@ -826,7 +816,7 @@ class WebGen(object):
 
   def _sorted_displayed_members(self, family):
     members = [m for m in (family.hinted_members or family.unhinted_members)
-               if not (m.is_cjk and m.is_mono)]
+               if not (m.is_UI or (m.is_cjk and m.is_mono))]
     # sort non-italic before italic
     return sorted(members,
                   key=lambda f: str(css_weight(f.weight)) + '-' +
@@ -1032,7 +1022,6 @@ class WebGen(object):
 
     def use_in_web(font):
       return (not font.subset and
-              not font.is_UI and
               not font.fmt == 'ttc' and
               not font.script in {'CJK', 'HST'} and
               not font.family in {'Arimo', 'Cousine', 'Tinos'})

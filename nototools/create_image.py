@@ -31,6 +31,9 @@ os.putenv("XDG_CONFIG_HOME", curdir)
 os.putenv("XDG_DATA_HOME", curdir)
 os.putenv("XDG_CACHE_HOME", curdir)
 
+# Note: ensure /etc/fonts/conf.d/10-scale-bitmap-fonts.conf is
+# in sync with fontconfig to make sure color emoji font scales properly.
+
 # This is all we'd need if fontconfig resolved paths differently.
 #
 # NOTE: if the noto fonts are not in the directories listed by fonts.conf,
