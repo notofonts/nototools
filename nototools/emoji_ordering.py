@@ -22,7 +22,7 @@ standalone emoji.  API is provided to return the categories and subcategories,
 the emoji strings in them, and the category, subcategory tuple for an emoji
 string.
 
-Functions are provided to parse two kinds of source data files.
+Functions are provided to parse three kinds of source data files.
 
 .csv file:
 This has three columns: Category name, emoji-strings separated by space, and
@@ -31,15 +31,26 @@ subcategory name.  The first row, headers, starts with a # and is ignored.
 emojiOrdering.txt file:
 This data is a bit raw, so gets validated during processing.
 For an example see the unicodetools svn repo, i.e.
-http://www.unicode.org/utility/trac/browser/trunk/unicodetools/data/emoji/3.0/source/emojiOrdering.txt"""
+http://www.unicode.org/utility/trac/browser/trunk/unicodetools
+at data/emoji/3.0/source/emojiOrdering.txt
+
+.html file
+This data comes from unicode, e.g.
+http://unicode.org/emoji/charts-beta/emoji-ordering.html
+Note, this html file closes the table tags and the parser relies on this.
+"""
 
 import argparse
 import codecs
 import collections
+from HTMLParser import HTMLParser
 from itertools import chain
+import os
 from os import path
 import re
 import sys
+
+from nototools import unicode_data
 
 def _generate_emoji_to_cat_tuple(category_odict):
     """category_odict is an ordered dict of categories to ordered dict of
@@ -93,7 +104,14 @@ class EmojiOrdering(object):
     return self._emoji_to_cat_tuple
 
 
-def from_file(fname, ext=None, sep=None):
+def _strip_varsels(odict):
+  """Remove fe0f from sequences in odict."""
+  for cat, d in odict.items():
+    for subcat, elist in d.items():
+      d[subcat] = [s.replace(u'\ufe0f', '') for s in elist]
+
+
+def from_file(fname, ext=None, sep=None, strip_varsel=False):
   """Return an EmojiOrdering from the .csv or emojiOrdering file."""
   _, fext = path.splitext(fname)
   if not ext:
@@ -102,8 +120,12 @@ def from_file(fname, ext=None, sep=None):
     text = f.read()
   if ext == 'csv':
     odict = _category_odict_from_csv(text, sep or ',')
+  elif ext == 'html':
+    odict = _category_odict_from_html(text)
   else:
     odict = _category_odict_from_eo(text)
+  if strip_varsel:
+    _strip_varsels(odict)
   return EmojiOrdering(odict)
 
 
@@ -117,7 +139,7 @@ def _category_odict_from_csv(text, sep=','):
     line = line.strip()
     if not line or line[0] == '#':
       continue
-    category, subcategory, estrs = line.split(sep)
+    category, subcategory, count, estrs = line.split(sep)
     category = category.strip()
     subcategory = subcategory.strip()
     if category != category_name:
@@ -125,7 +147,12 @@ def _category_odict_from_csv(text, sep=','):
         result[category_name] = category_data
       category_name = category
       category_data = collections.OrderedDict()
-    category_data[subcategory] = tuple(estrs.split())
+    data = tuple(estrs.split())
+    if len(data) != int(count):
+      print '### expected %d emoji in %s/%s but got %d' % (
+          int(count), category, subcategory, len(data))
+    category_data[subcategory] = data
+
   result[category_name] = category_data
   return result
 
@@ -265,6 +292,179 @@ def _category_odict_from_eo(text):
   return result
 
 
+_keep_varsel_estrs = frozenset([
+    u'\U0001f468\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f468',
+    u'\U0001f469\u200d\u2764\ufe0f\u200d\U0001f48b\u200d\U0001f469',
+    u'\U0001f468\u200d\u2764\ufe0f\u200d\U0001f468',
+    u'\U0001f469\u200d\u2764\ufe0f\u200d\U0001f469'])
+
+
+def _fix_estrs(estrs):
+  """Add fitzpatrick colors, and remove emoji variation selectors.
+
+  1) The emoji ordering html page omits the skin color variants, because
+  reasons. Since we want to display them, we have to add them.  However,
+  we don't add them for sequences with multiple people.
+
+  2) Currently we don't include emoji variation selectors in our sequences
+  except after heavy black heart (and we probably don't need them there
+  either).  The font will work fine without them, but some systems doing
+  fallback might break the sequences apart if the variation selectors are
+  not present in text.  So they should be there in the text, and not there
+  in the font.  Anyway, while we clean this up, we currently strip them
+  except for the four cases where we retain them for legacy reasons.
+  """
+
+  new_estrs = []
+  for estr in estrs:
+    if estr in _keep_varsel_estrs:
+      nestr = estr
+    else:
+      if u'\u2764' in estr:
+        print '# oops', u''.join('\\u%04x' % ord(cp) for cp in estr)
+      nestr = u''.join(cp for cp in estr if cp != u'\ufe0f')
+    new_estrs.append(nestr)
+    num_bases = sum(unicode_data.is_emoji_modifier_base(ord(cp)) for cp in estr)
+    if num_bases != 1:
+      continue
+
+    split_before = len(nestr)
+    for i, cp in enumerate(nestr):
+      if unicode_data.is_emoji_modifier_base(ord(cp)):
+        split_before = i + 1
+        break
+    prefix = nestr[:split_before]
+    suffix = nestr[split_before:]
+    for cp in range(0x1f3fb, 0x1f3ff + 1):
+      new_estrs.append(u''.join([prefix, unichr(cp), suffix]))
+  return new_estrs
+
+
+def _category_odict_from_html(text):
+  """Build by scraping the emoji ordering html page.  This leverages the
+  fact that all tr, td, th tags have closing tags (currently, at least)."""
+
+  class odict_builder(HTMLParser):
+    def __init__(self):
+      HTMLParser.__init__(self)
+      self.in_table = False
+      self.in_category = False
+      self.is_subcat = False
+      self.text = []
+      self.estrs = []
+      self.d = collections.OrderedDict()
+      self.cat = None
+      self.subcat = None
+
+    def handle_starttag(self, tag, attrs):
+      if not self.in_table:
+        if tag == 'table':
+          self.in_table = True
+      elif tag == 'th':
+        self.in_category = True
+        self.is_subcat = True
+        if attrs:
+          for k, v in attrs:
+            if k == 'class' and v == u'bighead':
+              self.is_subcat = False
+              break
+      elif tag == 'img':
+        if attrs:
+          for k, v in attrs:
+            if k == 'alt':
+              self.estrs.append(v)
+      elif tag == 'tr':
+        # currently, all th, tr have closing tags
+        assert not self.estrs
+
+    def handle_endtag(self, tag):
+      if not self.in_table:
+        return
+      if self.estrs and tag == 'tr':
+        self.d[self.cat][self.subcat] = _fix_estrs(self.estrs)
+        self.estrs = []
+      elif tag == 'th':
+        text = ' '.join(self.text)
+        text = text.encode('utf-8')
+        self.text = []
+        if self.is_subcat:
+          self.subcat = text
+        else:
+          self.cat = text
+          self.d[self.cat] = collections.OrderedDict()
+        self.in_category = False
+      elif tag == 'table':
+        self.in_table = False
+        return
+
+    def handle_data(self, data):
+      if self.in_category:
+        data = data.strip()
+        if data:
+          self.text.append(data)
+
+  b = odict_builder()
+  b.feed(text)
+  return b.d
+
+
+def _name_to_str(emoji_name):
+  return u''.join(unichr(int(n, 16)) for n in emoji_name.split('_'))
+
+
+def _str_to_name(emoji_str):
+  return '_'.join('%04x' % ord(cp) for cp in emoji_str)
+
+
+def _compare_with_dir(eo, dirname):
+  # problem here is we omit fe0f in our emoji image names, but the category data
+  # doesn't.
+
+  def name_to_tuple(name):
+    return tuple(int(n, 16) for n in name.split('_'))
+
+  names = set()
+  missing_names = set()
+  prefix = 'emoji_u'
+  prefix_len = len(prefix)
+  emoji_names = set()
+  for f in sorted(os.listdir(dirname)):
+    basename, ext = path.splitext(f)
+    if ext != '.png':
+      continue
+    if not basename.startswith(prefix):
+      print 'skipping %s' % f
+      continue
+    emoji_name = basename[prefix_len:]
+    emoji_names.add(emoji_name)
+
+    if not eo.emoji_to_category(_name_to_str(emoji_name)):
+      missing_names.add(emoji_name)
+
+  if missing_names:
+    print 'missing %d names' % len(missing_names)
+    for name in sorted(missing_names, key=name_to_tuple):
+      print '  %s' % name
+    print
+
+  category_count = 0
+  for category_name in eo.category_names():
+    for subcategory_name in eo.subcategory_names(category_name):
+      category_set = set(
+          _str_to_name(s) for s in
+          eo.emoji_in_category(category_name, subcategory_name))
+      category_count += len(category_set)
+      category_set -= emoji_names
+      if category_set:
+        print '%s/%s is missing %d items:' % (
+            category_name, subcategory_name, len(category_set))
+        for n in sorted(category_set, key=lambda n: name_to_tuple(n)):
+          print '  %s' % n
+
+  print '%4d emoji in category set' % category_count
+  print '%4d emoji in directory %s' % (len(emoji_names), dirname)
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -276,15 +476,29 @@ def main():
   parser.add_argument(
       '--sep', help='separator for csv file', default=',',
       metavar='sep')
+  parser.add_argument(
+      '--cmpdir', help='directory of images to compare against',
+      metavar='dir')
+  parser.add_argument(
+      '--dump', help='dump category lists even if we\'re comparing',
+      action='store_true')
 
   args = parser.parse_args()
-  eo = from_file(args.file, ext=args.ext, sep=args.sep)
-  for category in eo.category_names():
-    print category
-    for subcategory in eo.subcategory_names(category):
-      print ' ', subcategory
-      for estr in eo.emoji_in_category(category, subcategory):
-        print '   ', '_'.join('%04x' % ord(cp) for cp in estr)
+  eo = from_file(
+      args.file, ext=args.ext, sep=args.sep,
+      strip_varsel=args.cmpdir is not None)
+
+  if not args.cmpdir or args.dump:
+    print 'dumping category info'
+    for category in eo.category_names():
+      print category
+      for subcategory in eo.subcategory_names(category):
+        print ' ', subcategory
+        for estr in eo.emoji_in_category(category, subcategory):
+          print '   ', '_'.join('%04x' % ord(cp) for cp in estr)
+
+  if args.cmpdir:
+    _compare_with_dir(eo, args.cmpdir)
 
 
 if __name__ == '__main__':
