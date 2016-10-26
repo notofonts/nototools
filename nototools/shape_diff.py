@@ -169,8 +169,8 @@ class ShapeDiffFinder:
                 # https://github.com/googlei18n/nototools/issues/162#issuecomment-175885431
                 subprocess.call([
                     'convert',
-                    '(', a_png, '-colorspace', 'gray', ')',
                     '(', b_png, '-colorspace', 'gray', ')',
+                    '(', a_png, '-colorspace', 'gray', ')',
                     '(', '-clone', '0-1', '-compose', 'darken', '-composite', ')',
                     '-channel', 'RGB', '-combine', output_png])
 
