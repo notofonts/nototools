@@ -60,13 +60,11 @@ class ShapeDiffFinder:
         if 'GDEF' in self.font_b:
             self.gdef_b = self.font_b['GDEF'].table.GlyphClassDef.classDefs
 
-        stats['compared'] = []
-        stats['untested'] = []
-        stats['unmatched'] = []
-        stats['unicode_mismatch'] = []
-        stats['gdef_mark_mismatch'] = []
-        stats['zero_width_mismatch'] = []
-        stats['input_mismatch'] = []
+        for stat_type in (
+                'compared', 'untested', 'unmatched', 'unicode_mismatch',
+                'gdef_mark_mismatch', 'zero_width_mismatch', 'input_mismatch'):
+            if stat_type not in stats:
+                stats[stat_type] = []
         self.stats = stats
 
         self.ratio_diffs = ratio_diffs
