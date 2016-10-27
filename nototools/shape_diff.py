@@ -17,11 +17,13 @@
 
 ShapeDiffFinder takes in two paths, to font binaries. It then provides methods
 which compare these fonts, storing results in a report dictionary. These methods
-are `find_area_diffs`, which compares glyph areas, and `find_rendered_diffs`
-which compares harfbuzz output using image magick.
+are `find_area_diffs`, which compares glyph areas, `find_rendered_diffs`, which
+compares harfbuzz output using image magick, and `find_shape_diffs`, which takes
+the difference of shapes and calculates the area.
 
-Neither comparison is ideal. Glyph areas can be the same even if the shapes are
-wildly different. Image comparison is usually either slow (hi-res) or inaccurate
+Some caveats: glyph areas can be the same even if the shapes are wildly
+different (though they're useful for shapes which should be identical except
+for some offset). Image comparison is usually either slow (hi-res) or inaccurate
 (lo-res). Still, these are usually useful for raising red flags and catching
 large errors.
 """
@@ -32,9 +34,13 @@ import re
 import subprocess
 import tempfile
 
+import booleanOperations
+from defcon import Glyph
+from fontTools.pens.basePen import BasePen
 from fontTools.ttLib import TTFont
-from nototools.glyph_area_pen import GlyphAreaPen
+from ufoLib.pointPen import PointToSegmentPen
 
+from nototools.glyph_area_pen import GlyphAreaPen
 from nototools import hb_input
 
 GDEF_UNDEF = 0
@@ -193,6 +199,30 @@ class ShapeDiffFinder:
         for name, diff in mismatched.items():
             stats.append((diff, name, self.basepath))
 
+    def find_shape_diffs(self):
+        """Report differences in glyph shapes, using BooleanOperations."""
+
+        self.build_names()
+
+        area_pen = GlyphAreaPen(None)
+        pen = PointToSegmentPen(area_pen)
+        mismatched = {}
+        for name in self.names:
+            glyph_a = Glyph()
+            glyph_b = Glyph()
+            self.glyph_set_a[name].draw(
+                Qu2CuPen(glyph_a.getPen(), self.glyph_set_a))
+            self.glyph_set_b[name].draw(
+                Qu2CuPen(glyph_b.getPen(), self.glyph_set_b))
+            booleanOperations.xor(list(glyph_a), list(glyph_b), pen)
+            area = abs(area_pen.pop())
+            if area:
+                mismatched[name] = (area)
+
+        stats = self.stats['compared']
+        for name, area in mismatched.items():
+            stats.append((area, name, self.basepath))
+
     def build_names(self):
         """Build a list of glyph names shared between the fonts."""
 
@@ -303,3 +333,24 @@ class ShapeDiffFinder:
         if abs(a) > abs(b):
             a, b = b, a
         return 1 - a / b
+
+
+class Qu2CuPen(BasePen):
+    def __init__(self, pen, glyphSet):
+        BasePen.__init__(self, glyphSet)
+        self.pen = pen
+
+    def _moveTo(self, pt):
+        self.pen.moveTo(pt)
+
+    def _lineTo(self, pt):
+        self.pen.lineTo(pt)
+
+    def _curveToOne(self, pt1, pt2, pt3):
+        self.pen.curveTo(pt1, pt2, pt3)
+
+    def _closePath(self):
+        self.pen.closePath()
+
+    def _endPath(self):
+        self.pen.endPath()
