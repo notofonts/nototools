@@ -662,7 +662,8 @@ class WebGen(object):
     hinted_size = 0
     unhinted_size = 0
     if family.hinted_members:
-      hinted_size = self.create_zip(zip_name + '-hinted', family.hinted_members)
+      hinted_size = self.create_zip(
+          zip_name + '-hinted', family.hinted_members)
     if family.unhinted_members:
       unhinted_size = self.create_zip(
           zip_name + '-unhinted', family.unhinted_members)
@@ -732,13 +733,14 @@ class WebGen(object):
     data_obj = collections.OrderedDict()
     families_obj = collections.OrderedDict()
 
-    # Sort families by English name, except 'Noto Sans' and 'Noto Serif'
-    # come first
+    # Sort families by English name, except 'Noto Sans', 'Noto Serif', and
+    # 'Noto Mono' come first, in that order
+    initial_ids = ['sans-lgc', 'serif-lgc', 'mono-mono']
     family_ids = [family_id for family_id
                   in family_id_to_lang_scr_to_sample_key
-                  if family_id != 'sans-lgc' and family_id != 'serif-lgc']
+                  if family_id not in initial_ids]
     family_ids = sorted(family_ids, key=lambda f: families[f].name)
-    sorted_ids = [fid for fid in ['sans-lgc', 'serif-lgc']
+    sorted_ids = [fid for fid in initial_ids
                   if fid in family_id_to_lang_scr_to_sample_key]
     sorted_ids.extend(family_ids)
     for k in sorted_ids:
@@ -1163,14 +1165,16 @@ class WebGen(object):
       return
 
     # build outputs
-    if self.no_zips:
+    # zips are required for data
+    if self.no_zips and self.no_data:
       print 'skipping zip output'
     else:
       family_zip_info = self.build_zips(families)
       universal_zip_info = self.build_universal_zips(families)
 
       # build outputs not used by the json but linked to from the web page
-      self.build_ttc_zips()
+      if not self.no_zips:
+        self.build_ttc_zips()
 
     if self.no_css:
       print 'skipping css output'
