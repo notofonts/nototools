@@ -22,6 +22,7 @@ import string
 import sys
 
 from fontTools import ttLib
+from fontTools.pens.boundsPen import BoundsPen
 
 from os import path
 
@@ -30,9 +31,7 @@ from nototools import font_data
 from nototools import tool_utils
 from nototools import unicode_data
 
-"""Generate html comparison of codepoints in various fonts.
-
-Currently hardwired for select target and comparison fonts."""
+"""Generate html comparison of codepoints in various fonts."""
 
 _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
 <html lang='en'>
@@ -45,18 +44,29 @@ _HTML_HEADER_TEMPLATE = """<!DOCTYPE html>
   <style>
     table { background-color: #eee; font-size: 20pt; text-align: center }
     tr.head { font-weight: bold; font-size: 12pt;
-              border-style: solid; border-width: 1px; border-color: black;
-              border-collapse: separate }
-    td:nth-of-type(1), td:nth-last-of-type(2) { font-size: 12pt; text-align:left }
-    td:nth-last-of-type(1) { font-size: 10pt; text-align:left; max-width: 20em }
+        border-style: solid; border-width: 1px; border-color: black;
+        border-collapse: separate }
+    td:nth-of-type(1), td:nth-last-of-type(3) { font-size: 12pt; text-align:left }
+    $mstyles
+    td:nth-last-of-type(1), td:nth-last-of-type(2) {
+        font-size: 10pt; text-align:left; max-width: 20em }
     .key { background-color: white; font-size: 12pt; border-collapse: separate;
-           margin-top: 0; border-spacing: 10px 0; text-align: left }
+        margin-top: 0; border-spacing: 10px 0; text-align: left }
+    .line { font-size: 20pt; max-width: 700px; word-break: break-all }
+    h3 { -webkit-margin-before: 1.75em; -webkit-margin-after: .25em }
+    .ctx { font-family: $contextfont }
   </style>
 </head>
 <body>
   <h3>$title</h3>
 """
 
+_METRICS_STYLES = (
+    ', '.join('td:nth-last-of-type(%d)' % i for i in range(4, 9)) +
+    ' { font-size: 10pt; text-align:right; font-family: sansserif }')
+
+# hardcoded for now, this assumes 'noto' is one of the defined font names
+_CONTEXT_FONT = 'noto'
 
 _HTML_FOOTER = """
 </body>
@@ -92,6 +102,11 @@ class CodeList(object):
     else:
       raise Exception(
           'unrecognized file type %s for CodeList.fromfile' % filename)
+
+  @staticmethod
+  def fromspec(spec):
+    codelist_type, text = [t.strip() for t in spec.split(':')]
+    return CodeList.fromtext(text, codelist_type)
 
   @staticmethod
   def fromtext(text, codelist_type):
@@ -425,8 +440,8 @@ def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
         flag_sets[exp] = codes
     if op == '|':
       if not result:
-        # it appers that python 'optimizes' by replacing the lhs by rhs if lhs
-        # is an empty set, but this changes the type of lhs to frozenset...
+        # it appers that python 'optimizes' |= by replacing the lhs by rhs if
+        # lhs is an empty set, but this changes the type of lhs to frozenset...
         result = set(codes)
       else:
         result |= codes
@@ -580,7 +595,7 @@ def _read_target_data_from_file(filename):
       else:
         raise Exception('default only understands \'prefer\' or \'omit\'')
       continue
-    info = line.split(';')
+    info = [k.strip() for k in line.split(';')]
     # name;character spec or filename;prefer_id... or empty;omit_id... or empty
     add_index_list_or_defined(info, 2, prefer_fallback, defines)  # preferred
     add_index_list_or_defined(info, 3, omit_fallback, defines)  # omitted
@@ -694,30 +709,96 @@ def _generate_styles(fonts, relpath):
   return '\n    '.join(lines)
 
 
-def _generate_header(used_fonts):
+def _generate_header(used_fonts, metrics):
   header_parts = ['<tr class="head"><th>CP']
   for key, _ in used_fonts:
     header_parts.append('<th>' + key)
+  if metrics != None:
+    header_parts.append('<th>lsb<th>mid<th>rsb<th>wid<th>cy')
   header_parts.append('<th>Age<th>Name')
   return ''.join(header_parts)
 
 
-def _generate_table(index, target, context, flag_sets):
+def _character_string_html(codelist, used_font):
+  C0_controls = frozenset(range(0, 0x20))
+  rkey, rinfo = used_font
+  _, _, f_codelist = rinfo[0]
+  f_codeset = frozenset(f_codelist.codeset() - C0_controls)
+  cps = [cp for cp in codelist.codes() if cp in f_codeset]
+  if not cps:
+    return None
+  line = ['<span class="', rkey, ' line">']
+  line.extend(unichr(cp) for cp in cps)
+  line.append('</span>')
+  return ''.join(line)
+
+
+_FONT_CACHE = {}
+def _get_font(fontname):
+  font = _FONT_CACHE.get(fontname)
+  if not font:
+    font = ttLib.TTFont(fontname)
+    _FONT_CACHE[fontname] = font
+  return font
+
+
+GMetrics = collections.namedtuple('GMetrics', 'lsb, rsb, wid, adv, cy')
+
+
+def _get_cp_metrics(font, cp):
+    # returns metrics for nominal glyph for cp, or None if cp not in font
+    cmap = font_data.get_cmap(font)
+    if cp not in cmap:
+      return None
+    glyphs = font.getGlyphSet()
+    g = glyphs[cmap[cp]]
+    pen = BoundsPen(glyphs)
+    g.draw(pen)
+    if not pen.bounds:
+      return None
+    xmin, ymin, xmax, ymax = pen.bounds
+    return GMetrics(
+        xmin, g.width - xmax, xmax - xmin, g.width, (ymin + ymax) / 2)
+
+
+def _generate_table(tindex, target, context, metrics, flag_sets, cp_to_targets):
   name, codelist, used_fonts = target
+
+  dump_metrics = False
+
+  if dump_metrics:
+    print '$ %s' % name
 
   def context_string(codelist, cp):
     cps = unichr(codelist.mapped_code(cp))
     return (context % cps) if context else cps
 
-  lines = ['<h3 id="target_%d">%s</h3>' % (index, name)]
+  def _target_line(cp, tindex, tinfo):
+    info = []
+    for ix, name in tinfo:
+      if ix == tindex:
+        continue
+      info.append('<a href="#target_%d">%s</a>' % (ix, name))
+    if not info:
+      return '(no group)'
+    return '; '.join(info)
+
+  if metrics != None:
+    # the metrics apply to the rightmost font
+    fontname = target[2][-1][1][0][0]
+    metrics_font = _get_font(fontname)
+
+  lines = ['<h3 id="target_%d">%s</h3>' % (tindex, name)]
+  char_line = _character_string_html(codelist, used_fonts[-1])
+  if char_line:
+    lines.append(char_line)
   lines.append('<table>')
-  header = _generate_header(used_fonts)
+  header = _generate_header(used_fonts, metrics)
   linecount = 0
   for cp in codelist.codes():
     if linecount % 20 == 0:
       lines.append(header)
     linecount += 1
-
     line = ['<tr>']
     line.append('<td>U+%04x' % cp)
     for rkey, keyinfos in used_fonts:
@@ -742,9 +823,34 @@ def _generate_table(index, target, context, flag_sets):
         line.append('<td class="%s">%s' % (cell_class, cell_text))
       else:
         line.append('<td>&nbsp;')
-    line.append('<td>%s' % unicode_data.age(cp))
     name = _flagged_name(cp, flag_sets)
+    if metrics != None:
+      cp_metrics = _get_cp_metrics(metrics_font, cp)
+      if cp_metrics:
+        lsb, rsb, wid, adv, cy = cp_metrics
+        if dump_metrics:
+          print '%04x # %4d, %4d, %4d, %s' % (cp, lsb, adv, cy, name)
+
+        if cp in metrics:
+          nlsb, nadv, ncy = metrics[cp]
+        else:
+          nlsb, nadv, ncv = lsb, adv, cy
+        nrsb = nadv - wid - nlsb
+
+        line.append('<td>%d%s' % (
+            lsb, '&rarr;<b>%d</b>' % nlsb if lsb != nlsb else ''))
+        line.append('<td>%d' % wid)
+        line.append('<td>%d%s' % (
+            rsb, '&rarr;<b>%d</b>' % nrsb if rsb != nrsb else ''))
+        line.append('<td>%d%s' % (
+            adv, '&rarr;<b>%d</b>' % nadv if adv != nadv else ''))
+        line.append('<td>%d%s' % (
+            cy, '&rarr;<b>%d</b>' % ncy if cy != ncy else ''))
+      else:
+        line.append('<td><td><td><td><td>')
+    line.append('<td>%s' % unicode_data.age(cp))
     line.append('<td>%s' % name)
+    line.append('<td>%s' % _target_line(cp, tindex, cp_to_targets.get(cp)))
     lines.append(''.join(line))
   lines.append('</table>')
   return '\n'.join(lines)
@@ -861,25 +967,66 @@ def _read_flag_data_from_file(filename):
   return used_defs + flag_expr_info
 
 
+def _generate_html_lines(outfile, fontkey):
+  ascii_chars = u'#*0123456789 '
+  epact_chars = u''.join(unichr(cp) for cp in range(0x102e1, 0x102fb + 1)) + ' '
+  phaistos_chars = u''.join(unichr(cp) for cp in range(0x101d0, 0x101fc + 1)) + ' '
+  stringlist = [
+     ascii_chars,
+     u''.join(u'%s\u20e3' % c for c in ascii_chars),
+     epact_chars,
+     u''.join(u'%s\U000102e0' % c for c in epact_chars),
+     phaistos_chars,
+     u''.join(u'%s\U000101fd' % c for c in phaistos_chars),
+  ]
+
+  lines = ['<h3>Sequences</h3>']
+  lines.append('<div class="%s line">' % fontkey)
+  for string in stringlist:
+    lines.append(string + '<br/>')
+  lines.append('</div>')
+
+  print >> outfile, '\n'.join(lines)
+
+
 def generate_html(
-    outfile, title, fonts, targets, flag_sets, context, data_dir, relpath):
+    outfile, title, fonts, targets, flag_sets, context, metrics,
+    cp_to_targets, data_dir, relpath):
   """If not None, relpath is the relative path from the outfile to
   the datadir, for use when generating font paths."""
   template = string.Template(_HTML_HEADER_TEMPLATE)
   styles = _generate_styles(fonts, relpath)
-  print >> outfile, template.substitute(title=title, styles=styles)
+  mstyles = _METRICS_STYLES if metrics != None else ''
+  contextfont = _CONTEXT_FONT if context else 'sansserif'
+  print >> outfile, template.substitute(
+      title=title, styles=styles, mstyles=mstyles, contextfont=contextfont)
 
   print >> outfile, _generate_fontkey(fonts, targets, data_dir)
 
+  # hardcode font key for now
+  _generate_html_lines(outfile, 'sym4')
+
   for index, target in enumerate(targets):
-    print >> outfile, _generate_table(index, target, context, flag_sets)
+    print >> outfile, _generate_table(
+        index, target, context, metrics, flag_sets, cp_to_targets)
 
   print >> outfile, _HTML_FOOTER
 
 
+def _build_cp_to_targets(targets):
+  """Return a map from cp to a list of pairs of target group index and
+  name."""
+  cp_to_targets = collections.defaultdict(list)
+  for i, (name, codelist, _) in enumerate(targets):
+    tinfo = (i, name)
+    for cp in codelist.codes():
+      cp_to_targets[cp].append(tinfo)
+  return cp_to_targets
+
+
 def generate(
     outfile, fmt, data_dir, font_spec, target_spec, flag_spec, title=None,
-    context=None, relpath=None):
+    context=None, metrics=False, relpath=None):
   if not path.isdir(data_dir):
     raise Exception('data dir "%s" does not exist' % data_dir)
 
@@ -892,18 +1039,47 @@ def generate(
       font_data, target_data, flag_data, data_dir)
 
   if fmt == 'txt':
-    generate_text(outfile, title, fonts, targets, flag_sets, data_dir)
+    generate_text(outfile, title, fonts, targets, flag_sets, metrics, data_dir)
   elif fmt == 'html':
+    cp_to_targets = _build_cp_to_targets(targets)
     generate_html(
-        outfile, title, fonts, targets, flag_sets, context, data_dir, relpath)
+        outfile, title, fonts, targets, flag_sets, context, metrics,
+        cp_to_targets, data_dir, relpath)
   else:
     raise Exception('unrecognized format "%s"' % fmt)
 
 
+def _parse_metrics_file(filename):
+  """format is 'cp;lsb;adv' with cp in hex."""
+  metrics = {}
+  with open(filename, 'r') as f:
+    for line in f:
+      ix = line.find('#')
+      if ix >= 0:
+        line = line[:ix]
+      line = line.strip()
+      if not line:
+        continue
+      cp, lsb, adv, cy = line.split(';')
+      cp = int(cp, 16)
+      lsb = int(lsb)
+      adv = int(adv)
+      cy = int(cy)
+      if cp in metrics:
+        raise Exception('cp %04x listed twice in %s' % (cp, filename))
+      metrics[cp] = (lsb, adv, cy)
+  return metrics
+
+
 def _call_generate(
     outfile, fmt, data_dir, font_spec, target_spec, flag_spec, title=None,
-    context=None):
+    context=None, metrics=None):
   data_dir = path.realpath(path.abspath(data_dir))
+  if metrics != None:
+    if metrics == '-':
+      metrics = {}
+    else:
+      metrics = _parse_metrics_file(path.join(data_dir, metrics))
   if outfile:
     outfile = path.realpath(path.abspath(outfile))
     base, ext = path.splitext(outfile)
@@ -933,13 +1109,13 @@ def _call_generate(
     with codecs.open(outfile, 'w', 'utf-8') as f:
       generate(
           f, fmt, data_dir, font_spec, target_spec, flag_spec, title, context,
-          relpath)
+          metrics, relpath)
   else:
     if not fmt:
       fmt = 'txt'
     generate(
         sys.stdout, fmt, data_dir, font_spec, target_spec, flag_spec, title,
-        context)
+        context, metrics)
 
 
 def main():
@@ -971,12 +1147,17 @@ def main():
       default='Character and Font Comparison')
   parser.add_argument(
       '--context', help='Context pattern for glyphs (e.g. \'O%%sg\')',
-      metavar='ctx', nargs='?', const='O%sg')
+      metavar='ctx', nargs='?',
+      const='<span class="ctx">O</span>%s<span class="ctx">g</span>')
+  parser.add_argument(
+      '-m', '--metrics', help='Report metrics of target font, optionally '
+      'with preferred metrics file', metavar='file', nargs='?', const='-')
   args = parser.parse_args()
 
   _call_generate(
       args.outfile, args.output_type, args.data_dir, args.font_spec,
-      args.target_spec, args.flag_spec, args.title, args.context)
+      args.target_spec, args.flag_spec, args.title, args.context,
+      args.metrics)
 
 if __name__ == '__main__':
   main()
