@@ -46,6 +46,8 @@ def _shape(path_a, path_b, stats, diff_type, render_path):
         diff_finder.find_area_diffs()
     elif diff_type == 'shape':
         diff_finder.find_shape_diffs()
+    elif diff_type == 'area-shape-product':
+        diff_finder.find_area_shape_diff_products()
     else:
         diff_finder.find_rendered_diffs(render_path=render_path)
 
@@ -104,7 +106,8 @@ def main():
     parser.add_argument('--before', required=True)
     parser.add_argument('--after', required=True)
     parser.add_argument('-t', '--diff-type', default='area',
-                        choices=('shape', 'area', 'rendered', 'gpos', 'gsub'),
+                        choices=('area', 'shape', 'area-shape-product',
+                                 'rendered', 'gpos', 'gsub'),
                         help='type of comparison to run (defaults to "area"), '
                         'if "gpos" is provided the input paths should point to '
                         'ttxn output')
@@ -123,7 +126,7 @@ def main():
                         'anything below is not printed (default 3)')
     args = parser.parse_args()
 
-    if args.diff_type in ('shape', 'area', 'rendered'):
+    if args.diff_type in ('area', 'shape', 'area-shape-product', 'rendered'):
         stats = {}
         if args.match:
             _run_multiple(_shape, args.match, args.before, args.after, stats,
@@ -133,7 +136,7 @@ def main():
                    args.render_path)
         print(shape_diff.ShapeDiffFinder.dump(
             stats, args.whitelist, args.out_lines,
-            include_vals=(args.diff_type == 'area'),
+            include_vals=(args.diff_type in ('area', 'area-shape-product')),
             multiple_fonts=bool(args.match)))
 
     elif args.diff_type == 'gpos':
