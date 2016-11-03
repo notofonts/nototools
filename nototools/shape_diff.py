@@ -113,6 +113,11 @@ class ShapeDiffFinder:
         diffs_file = tempfile.NamedTemporaryFile()
         diffs_filename = diffs_file.name
 
+        if render_path:
+            font_name, _ = os.path.splitext(self.basepath)
+            render_path = os.path.join(render_path, font_name)
+            os.makedirs(render_path)
+
         self.build_names()
         for name in self.names:
             class_a = self.gdef_a.get(name, GDEF_UNDEF)
