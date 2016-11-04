@@ -51,7 +51,7 @@ GDEF_LABELS = ['no class', 'base', 'ligature', 'mark', 'component']
 class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
 
-    def __init__(self, file_a, file_b, stats, ratio_diffs=False):
+    def __init__(self, file_a, file_b, stats, ratio_diffs=False, diff_threshold=0):
         self.path_a = file_a
         self.font_a = TTFont(self.path_a)
         self.glyph_set_a = self.font_a.getGlyphSet()
@@ -74,6 +74,7 @@ class ShapeDiffFinder:
         self.stats = stats
 
         self.ratio_diffs = ratio_diffs
+        self.diff_threshold = diff_threshold
         self.basepath = os.path.basename(file_a)
 
     def find_area_diffs(self):
@@ -164,6 +165,8 @@ class ShapeDiffFinder:
 
             img_info = subprocess.check_output(['identify', a_png]).split()
             assert img_info[0] == a_png and img_info[1] == 'PNG'
+            width, height = (int(x) for x in img_info[2].split('x'))
+            area = width * height
             subprocess.call([
                 'convert', '-gravity', 'center', '-background', 'black',
                 '-extent', img_info[2], b_png, b_png])
@@ -192,8 +195,13 @@ class ShapeDiffFinder:
 
         mismatched = {}
         for name, diff in diffs:
-            if int(diff) != 0:
-                mismatched[name] = int(diff)
+            diff = float(diff) / area if self.ratio_diffs else int(diff)
+            if diff > self.diff_threshold:
+                mismatched[name] = diff
+            else:
+                glyph_filename = re.sub(r'([A-Z_])', r'\1_', name) + '.png'
+                output_png = os.path.join(render_path, glyph_filename)
+                os.remove(output_png)
 
         stats = self.stats['compared']
         for name, diff in mismatched.items():
