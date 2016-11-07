@@ -44,6 +44,8 @@ def _shape(path_a, path_b, stats, diff_type, render_path):
 
     if diff_type == 'area':
         diff_finder.find_area_diffs()
+    elif diff_type == 'shape':
+        diff_finder.find_shape_diffs()
     else:
         diff_finder.find_rendered_diffs(render_path=render_path)
 
@@ -102,7 +104,7 @@ def main():
     parser.add_argument('--before', required=True)
     parser.add_argument('--after', required=True)
     parser.add_argument('-t', '--diff-type', default='area',
-                        choices=('area', 'rendered', 'gpos', 'gsub'),
+                        choices=('shape', 'area', 'rendered', 'gpos', 'gsub'),
                         help='type of comparison to run (defaults to "area"), '
                         'if "gpos" is provided the input paths should point to '
                         'ttxn output')
@@ -121,7 +123,7 @@ def main():
                         'anything below is not printed (default 3)')
     args = parser.parse_args()
 
-    if args.diff_type in ['area', 'rendered']:
+    if args.diff_type in ('shape', 'area', 'rendered'):
         stats = {}
         if args.match:
             _run_multiple(_shape, args.match, args.before, args.after, stats,
