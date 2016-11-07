@@ -148,6 +148,13 @@ def _char_to_int(char):
   else:
     return char
 
+def derived_props():
+  load_data()
+  return frozenset(_core_properties_data.keys())
+
+def chars_with_property(propname):
+  load_data()
+  return frozenset(_core_properties_data[propname])
 
 def category(char):
   """Returns the general category of a character."""
