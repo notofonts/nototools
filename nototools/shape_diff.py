@@ -113,6 +113,11 @@ class ShapeDiffFinder:
         diffs_file = tempfile.NamedTemporaryFile()
         diffs_filename = diffs_file.name
 
+        if render_path:
+            font_name, _ = os.path.splitext(self.basepath)
+            render_path = os.path.join(render_path, font_name)
+            os.makedirs(render_path)
+
         self.build_names()
         for name in self.names:
             class_a = self.gdef_a.get(name, GDEF_UNDEF)
@@ -222,6 +227,21 @@ class ShapeDiffFinder:
         stats = self.stats['compared']
         for name, area in mismatched.items():
             stats.append((area, name, self.basepath))
+
+    def find_area_shape_diff_products(self):
+        """Report product of differences in glyph areas and glyph shapes."""
+
+        self.find_area_diffs()
+        old_compared = self.stats['compared']
+        self.stats['compared'] = []
+        self.find_shape_diffs()
+        new_compared = {n: d for d, n, _ in self.stats['compared']}
+        for i, (diff, name, font, area_a, area_b) in enumerate(old_compared):
+            if font != self.basepath:
+                continue
+            new_diff = diff * new_compared.get(name, 0)
+            old_compared[i] = new_diff, name, font, area_a, area_b
+        self.stats['compared'] = old_compared
 
     def build_names(self):
         """Build a list of glyph names shared between the fonts."""
