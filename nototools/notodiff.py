@@ -133,8 +133,7 @@ def main():
         stats = {}
         if args.match:
             _run_multiple(_shape, args.match, args.before, args.after, stats,
-                          args.diff_type, args.render_path,
-                          args.diff_threshold)
+                          args.diff_type, args.render_path, args.diff_threshold)
         else:
             _shape(args.before, args.after, stats, args.diff_type,
                    args.render_path, args.diff_threshold)

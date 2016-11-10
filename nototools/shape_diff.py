@@ -51,7 +51,8 @@ GDEF_LABELS = ['no class', 'base', 'ligature', 'mark', 'component']
 class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
 
-    def __init__(self, file_a, file_b, stats, ratio_diffs=False, diff_threshold=0):
+    def __init__(
+            self, file_a, file_b, stats, ratio_diffs=False, diff_threshold=0):
         self.path_a = file_a
         self.font_a = TTFont(self.path_a)
         self.glyph_set_a = self.font_a.getGlyphSet()
