@@ -118,7 +118,8 @@ class ShapeDiffFinder:
         if render_path:
             font_name, _ = os.path.splitext(self.basepath)
             render_path = os.path.join(render_path, font_name)
-            os.makedirs(render_path)
+            if not os.path.exists(render_path):
+                os.makedirs(render_path)
 
         self.build_names()
         for name in self.names:
