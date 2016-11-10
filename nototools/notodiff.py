@@ -121,20 +121,15 @@ def main():
                         'area or rendered differences')
     parser.add_argument('--render-path', help='if provided and DIFF_TYPE is '
                         '"rendered", saves comparison renderings here')
-    parser.add_argument('--gpos-bound', type=int, default=3,
-                        help='error bound to allow for gpos differences, '
-                        'anything below is not printed (default 3)')
-    parser.add_argument('--diff_threshold', type=float, default=0,
-                        help='minimal diff to report (default 0)'
-                        'anything below is not printed (default 3)')
+    parser.add_argument('--diff-threshold', type=float, default=0,
+                        help='minimal diff to report (default 0)')
     args = parser.parse_args()
 
     if args.diff_type in ('area', 'shape', 'area-shape-product', 'rendered'):
         stats = {}
         if args.match:
             _run_multiple(_shape, args.match, args.before, args.after, stats,
-                          args.diff_type, args.render_path,
-                          args.diff_threshold)
+                          args.diff_type, args.render_path, args.diff_threshold)
         else:
             _shape(args.before, args.after, stats, args.diff_type,
                    args.render_path, args.diff_threshold)
@@ -146,9 +141,9 @@ def main():
     elif args.diff_type == 'gpos':
         if args.match:
             _run_multiple(_gpos, args.match, args.before, args.after,
-                          args.gpos_bound, args.out_lines, True)
+                          args.diff_threshold, args.out_lines, True)
         else:
-            _gpos(args.before, args.after, args.gpos_bound, args.out_lines)
+            _gpos(args.before, args.after, args.diff_threshold, args.out_lines)
 
     elif args.diff_type == 'gsub':
         if args.match:

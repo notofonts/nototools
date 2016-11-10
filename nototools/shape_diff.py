@@ -51,7 +51,8 @@ GDEF_LABELS = ['no class', 'base', 'ligature', 'mark', 'component']
 class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
 
-    def __init__(self, file_a, file_b, stats, ratio_diffs=False, diff_threshold=0):
+    def __init__(
+            self, file_a, file_b, stats, ratio_diffs=False, diff_threshold=0):
         self.path_a = file_a
         self.font_a = TTFont(self.path_a)
         self.glyph_set_a = self.font_a.getGlyphSet()
@@ -117,7 +118,8 @@ class ShapeDiffFinder:
         if render_path:
             font_name, _ = os.path.splitext(self.basepath)
             render_path = os.path.join(render_path, font_name)
-            os.makedirs(render_path)
+            if not os.path.exists(render_path):
+                os.makedirs(render_path)
 
         self.build_names()
         for name in self.names:
@@ -177,8 +179,7 @@ class ShapeDiffFinder:
                 '-extent', img_info[2], b_png, b_png])
 
             if render_path:
-                glyph_filename = re.sub(r'([A-Z_])', r'\1_', name) + '.png'
-                output_png = os.path.join(render_path, glyph_filename)
+                output_png = self._rendered_png(render_path, name)
                 # see for a discussion of this rendering technique:
                 # https://github.com/googlei18n/nototools/issues/162#issuecomment-175885431
                 subprocess.call([
@@ -204,8 +205,7 @@ class ShapeDiffFinder:
             if diff > self.diff_threshold:
                 mismatched[name] = diff
             else:
-                glyph_filename = re.sub(r'([A-Z_])', r'\1_', name) + '.png'
-                output_png = os.path.join(render_path, glyph_filename)
+                output_png = self._rendered_png(render_path, name)
                 os.remove(output_png)
 
         stats = self.stats['compared']
@@ -361,6 +361,10 @@ class ShapeDiffFinder:
         if abs(a) > abs(b):
             a, b = b, a
         return 1 - a / b
+
+    def _rendered_png(self, render_path, glyph_name):
+        glyph_filename = re.sub(r'([A-Z_])', r'\1_', glyph_name) + '.png'
+        return os.path.join(render_path, glyph_filename)
 
 
 class Qu2CuPen(BasePen):
