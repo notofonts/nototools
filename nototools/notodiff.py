@@ -30,7 +30,7 @@ import os
 from nototools import gpos_diff, gsub_diff, shape_diff
 
 
-def _shape(path_a, path_b, stats, diff_type, render_path):
+def _shape(path_a, path_b, stats, diff_type, render_path, diff_threshold=0):
     """Do a shape comparison (glyph area or rendered) and add results to stats.
 
     path_a and b refer to binary font files (OTF or TTF). stats should be a
@@ -40,7 +40,7 @@ def _shape(path_a, path_b, stats, diff_type, render_path):
     """
 
     diff_finder = shape_diff.ShapeDiffFinder(
-        path_a, path_b, stats, ratio_diffs=True)
+        path_a, path_b, stats, ratio_diffs=True, diff_threshold=diff_threshold)
 
     if diff_type == 'area':
         diff_finder.find_area_diffs()
@@ -124,16 +124,20 @@ def main():
     parser.add_argument('--gpos-bound', type=int, default=3,
                         help='error bound to allow for gpos differences, '
                         'anything below is not printed (default 3)')
+    parser.add_argument('--diff_threshold', type=float, default=0,
+                        help='minimal diff to report (default 0)'
+                        'anything below is not printed (default 3)')
     args = parser.parse_args()
 
     if args.diff_type in ('area', 'shape', 'area-shape-product', 'rendered'):
         stats = {}
         if args.match:
             _run_multiple(_shape, args.match, args.before, args.after, stats,
-                          args.diff_type, args.render_path)
+                          args.diff_type, args.render_path,
+                          args.diff_threshold)
         else:
             _shape(args.before, args.after, stats, args.diff_type,
-                   args.render_path)
+                   args.render_path, args.diff_threshold)
         print(shape_diff.ShapeDiffFinder.dump(
             stats, args.whitelist, args.out_lines,
             include_vals=(args.diff_type in ('area', 'area-shape-product')),
