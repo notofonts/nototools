@@ -97,7 +97,8 @@ def _run_multiple(func, filematch, dir_a, dir_b, *args):
 
     for path_a in glob.glob(os.path.join(dir_a, filematch)):
         path_b = path_a.replace(dir_a, dir_b)
-        func(path_a, path_b, *args)
+        if os.path.exists(path_b):
+            func(path_a, path_b, *args)
 
 
 def main():
