@@ -204,7 +204,7 @@ class ShapeDiffFinder:
             diff = float(diff) / area if self.ratio_diffs else int(diff)
             if diff > self.diff_threshold:
                 mismatched[name] = diff
-            else:
+            elif render_path:
                 output_png = self._rendered_png(render_path, name)
                 os.remove(output_png)
 
