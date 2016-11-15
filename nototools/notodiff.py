@@ -25,9 +25,12 @@ compared separately.
 
 import argparse
 import glob
+import logging
 import os
 
 from nototools import gpos_diff, gsub_diff, shape_diff
+
+logger = logging.getLogger('notodiff')
 
 
 def _shape(path_a, path_b, stats, diff_type, render_path, diff_threshold=0):
@@ -98,6 +101,8 @@ def _run_multiple(func, filematch, dir_a, dir_b, *args):
     for path_a in glob.glob(os.path.join(dir_a, filematch)):
         path_b = path_a.replace(dir_a, dir_b)
         if os.path.exists(path_b):
+            logger.info('Comparing %s and %s' % (
+                os.path.basename(path_a), os.path.basename(path_b)))
             func(path_a, path_b, *args)
 
 
@@ -124,7 +129,10 @@ def main():
                         '"rendered", saves comparison renderings here')
     parser.add_argument('--diff-threshold', type=float, default=0,
                         help='minimal diff to report (default 0)')
+    parser.add_argument('--verbose', default='WARNING')
     args = parser.parse_args()
+
+    logging.basicConfig(level=getattr(logging, args.verbose.upper()))
 
     if args.diff_type in ('area', 'shape', 'area-shape-product', 'rendered'):
         stats = {}
