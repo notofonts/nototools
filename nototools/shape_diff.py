@@ -170,13 +170,20 @@ class ShapeDiffFinder:
                 '--output-file=%s' % b_png,
                 '--features=%s' % ','.join(features), self.path_b, text])
 
-            img_info = subprocess.check_output(['identify', a_png]).split()
-            assert img_info[0] == a_png and img_info[1] == 'PNG'
-            width, height = (int(x) for x in img_info[2].split('x'))
+            img_info_a = subprocess.check_output(['identify', a_png]).split()
+            img_info_b = subprocess.check_output(['identify', b_png]).split()
+            assert img_info_a[0] == a_png and img_info_a[1] == 'PNG'
+            assert img_info_b[0] == b_png and img_info_b[1] == 'PNG'
+            width_a, height_a = (int(x) for x in img_info_a[2].split('x'))
+            width_b, height_b = (int(x) for x in img_info_b[2].split('x'))
+            width, height = max(width_a, width_b), max(height_a, height_b)
             area = width * height
             subprocess.call([
                 'convert', '-gravity', 'center', '-background', 'black',
-                '-extent', img_info[2], b_png, b_png])
+                '-extent', '%dx%d' % (width, height), a_png, a_png])
+            subprocess.call([
+                'convert', '-gravity', 'center', '-background', 'black',
+                '-extent', '%dx%d' % (width, height), b_png, b_png])
 
             if render_path:
                 output_png = self._rendered_png(render_path, name)
