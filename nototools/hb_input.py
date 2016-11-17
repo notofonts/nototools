@@ -48,9 +48,8 @@ class HbInputGenerator(object):
         """Generate harfbuzz inputs for all glyphs in a given font."""
 
         inputs = []
-        glyph_names = self.font.getGlyphOrder()
         glyph_set = self.font.getGlyphSet()
-        for name in glyph_names:
+        for name in self.font.getGlyphOrder():
             is_zero_width = glyph_set[name].width == 0
             cur_input = self.input_from_name(name, pad=is_zero_width)
             if cur_input is not None:
