@@ -127,7 +127,8 @@ class HbInputGenerator(object):
         features, text = min(inputs)
 
         if pad:
-            text = ' ' * (self.widths[name] // self.widths['space'] + 1) + text
+            width, space = self.widths[name], self.widths['space']
+            text = ' ' * (width // space + (1 if width % space else 0)) + text
         return features, text
 
     def _input_with_context(self, gsub, glyph, lookup_index, features, seen):
