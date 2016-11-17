@@ -89,8 +89,6 @@ class HbInputGenerator(object):
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
             text = unichr(self.reverse_cmap[name])
-            if pad:
-                text = '  ' + text
             inputs.append((features, text))
 
         # check the substitution features
