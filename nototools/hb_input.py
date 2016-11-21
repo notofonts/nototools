@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
-from fontTools.ttLib import TTFont
+from __future__ import division, print_function
 
+from fontTools.ttLib import TTFont
 from nototools import summary
 
 
@@ -29,13 +30,26 @@ class HbInputGenerator(object):
         self.font = font
         self.reverse_cmap = build_reverse_cmap(self.font)
 
+        self.widths = {}
+        glyph_set = font.getGlyphSet()
+        for name in glyph_set.keys():
+            glyph = glyph_set[name]
+            if glyph.width:
+                width = glyph.width
+            elif hasattr(glyph._glyph, 'xMax'):
+                width = abs(glyph._glyph.xMax - glyph._glyph.xMin)
+            else:
+                width = 0
+            self.widths[name] = width
+        space_name = font['cmap'].tables[0].cmap[0x0020]
+        self.widths['space'] = self.widths[space_name]
+
     def all_inputs(self, warn=False):
         """Generate harfbuzz inputs for all glyphs in a given font."""
 
         inputs = []
-        glyph_names = self.font.getGlyphOrder()
         glyph_set = self.font.getGlyphSet()
-        for name in glyph_names:
+        for name in self.font.getGlyphOrder():
             is_zero_width = glyph_set[name].width == 0
             cur_input = self.input_from_name(name, pad=is_zero_width)
             if cur_input is not None:
@@ -74,8 +88,6 @@ class HbInputGenerator(object):
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
             text = unichr(self.reverse_cmap[name])
-            if pad:
-                text = '  ' + text
             inputs.append((features, text))
 
         # check the substitution features
@@ -109,7 +121,14 @@ class HbInputGenerator(object):
         # recursive calls that it makes might have themselves returned None,
         # but we should avoid returning None here if there are other options
         inputs = [i for i in inputs if i is not None]
-        return min(inputs) if inputs else None
+        if not inputs:
+            return None
+        features, text = min(inputs)
+
+        if pad:
+            width, space = self.widths[name], self.widths['space']
+            text = ' ' * (width // space + (1 if width % space else 0)) + text
+        return features, text
 
     def _input_with_context(self, gsub, glyph, lookup_index, features, seen):
         """Given GSUB, input glyph, and lookup index, return input to harfbuzz
