@@ -154,23 +154,25 @@ class HbInputGenerator(object):
                     glyphs, features, seen))
 
         # try for a chaining substitution
-        for lookup in gsub.LookupList.Lookup:
-            for st in lookup.SubTable:
-                if lookup.LookupType != 6:
-                    continue
-                for sub_lookup in st.SubstLookupRecord:
-                    if sub_lookup.LookupListIndex != target_index:
+        for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
+            if lookup.LookupType == 6:
+                for st in lookup.SubTable:
+                    input_glyphs = [min(c.glyphs) for c in st.InputCoverage]
+                    if not (any(
+                        subst_lookup.LookupListIndex == target_index
+                        for subst_lookup in st.SubstLookupRecord) and
+                        self._is_sublist(input_glyphs, glyphs)):
                         continue
                     if st.LookAheadCoverage:
-                        glyphs = glyphs + [min(st.LookAheadCoverage[0].glyphs)]
-                    elif st.BacktrackCoverage:
-                        glyphs = [min(st.BacktrackCoverage[0].glyphs)] + glyphs
-                    else:
-                        continue
-                    inputs.append(self._sequence_from_glyph_names(
-                        glyphs, features, seen))
+                        la = [min(c.glyphs) for c in st.LookAheadCoverage]
+                        input_glyphs = input_glyphs + la
+                    if st.BacktrackCoverage:
+                        bt = list(reversed([min(c.glyphs)
+                                            for c in st.BacktrackCoverage]))
+                        input_glyphs = bt + input_glyphs
+                    inputs.append(self._input_with_context(
+                        gsub, input_glyphs, lookup_index, features, seen))
 
-        assert inputs, 'Lookup list index %d not found.' % target_index
         inputs = [i for i in inputs if i is not None]
         return min(inputs) if inputs else None
 
@@ -185,6 +187,12 @@ class HbInputGenerator(object):
             features, cur_text = cur_input
             text.append(cur_text)
         return features, ''.join(text)
+
+    def _is_sublist(self, lst, sub):
+        """Return whether sub is a sub-list of lst."""
+
+        return any(lst[i:i + len(sub)] == sub
+                   for i in range(1 + len(lst) - len(sub)))
 
 
 def build_reverse_cmap(font):
