@@ -153,25 +153,64 @@ class HbInputGenerator(object):
                 inputs.append(self._sequence_from_glyph_names(
                     glyphs, features, seen))
 
-        # try for a chaining substitution
         for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
+            # try contextual substitutions
+            if lookup.LookupType == 5:
+                for st in lookup.SubTable:
+                    prefix = min(st.Coverage.glyphs)
+                    #TODO handle formats 2 and 3
+                    if st.Format == 1:
+                        for ruleset in st.SubRuleSet:
+                            for rule in ruleset.SubRule:
+                                input_glyphs = [prefix] + rule.Input
+                                if not (any(
+                                    subst_lookup.LookupListIndex == target_index
+                                    for subst_lookup in rule.SubstLookupRecord)
+                                    and self._is_sublist(input_glyphs, glyphs)):
+                                    continue
+                                inputs.append(self._input_with_context(
+                                    gsub, input_glyphs, lookup_index,
+                                    features, seen))
+
+            # try chaining substitutions
             if lookup.LookupType == 6:
                 for st in lookup.SubTable:
-                    input_glyphs = [min(c.glyphs) for c in st.InputCoverage]
-                    if not (any(
-                        subst_lookup.LookupListIndex == target_index
-                        for subst_lookup in st.SubstLookupRecord) and
-                        self._is_sublist(input_glyphs, glyphs)):
-                        continue
-                    if st.LookAheadCoverage:
-                        la = [min(c.glyphs) for c in st.LookAheadCoverage]
-                        input_glyphs = input_glyphs + la
-                    if st.BacktrackCoverage:
-                        bt = list(reversed([min(c.glyphs)
-                                            for c in st.BacktrackCoverage]))
-                        input_glyphs = bt + input_glyphs
-                    inputs.append(self._input_with_context(
-                        gsub, input_glyphs, lookup_index, features, seen))
+                    #TODO handle format 2
+                    if st.Format == 1:
+                        prefix = min(st.Coverage.glyphs)
+                        for ruleset in st.ChainSubRuleSet:
+                            for rule in ruleset.ChainSubRule:
+                                input_glyphs = [prefix] + rule.Input
+                                if not (any(
+                                    subst_lookup.LookupListIndex == target_index
+                                    for subst_lookup in rule.SubstLookupRecord)
+                                    and self._is_sublist(input_glyphs, glyphs)):
+                                    continue
+                                if rule.LookAhead:
+                                    input_glyphs = input_glyphs + rule.LookAhead
+                                if rule.Backtrack:
+                                    bt = list(reversed(rule.Backtrack))
+                                    input_glyphs = bt + input_glyphs
+                                inputs.append(self._input_with_context(
+                                    gsub, input_glyphs, lookup_index,
+                                    features, seen))
+
+                    if st.Format == 3:
+                        input_glyphs = [min(c.glyphs) for c in st.InputCoverage]
+                        if not (any(
+                            subst_lookup.LookupListIndex == target_index
+                            for subst_lookup in st.SubstLookupRecord) and
+                            self._is_sublist(input_glyphs, glyphs)):
+                            continue
+                        if st.LookAheadCoverage:
+                            la = [min(c.glyphs) for c in st.LookAheadCoverage]
+                            input_glyphs = input_glyphs + la
+                        if st.BacktrackCoverage:
+                            bt = list(reversed([min(c.glyphs)
+                                                for c in st.BacktrackCoverage]))
+                            input_glyphs = bt + input_glyphs
+                        inputs.append(self._input_with_context(
+                            gsub, input_glyphs, lookup_index, features, seen))
 
         inputs = [i for i in inputs if i is not None]
         return min(inputs) if inputs else None
