@@ -139,7 +139,7 @@ class HbInputGenerator(object):
                                     gsub, glyphs, lookup_index, features, seen))
         return inputs
 
-    def _input_with_context(self, gsub, glyphs, lookup_index, features, seen):
+    def _input_with_context(self, gsub, glyphs, target_index, features, seen):
         """Given GSUB, input glyphs, and target lookup index, return input to
         harfbuzz to render the input glyphs with the target lookup activated.
         """
@@ -148,7 +148,7 @@ class HbInputGenerator(object):
 
         # try to get a feature tag to activate this lookup
         for feature in gsub.FeatureList.FeatureRecord:
-            if lookup_index in feature.Feature.LookupListIndex:
+            if target_index in feature.Feature.LookupListIndex:
                 features += (feature.FeatureTag,)
                 inputs.append(self._sequence_from_glyph_names(
                     glyphs, features, seen))
@@ -159,7 +159,7 @@ class HbInputGenerator(object):
                 if lookup.LookupType != 6:
                     continue
                 for sub_lookup in st.SubstLookupRecord:
-                    if sub_lookup.LookupListIndex != lookup_index:
+                    if sub_lookup.LookupListIndex != target_index:
                         continue
                     if st.LookAheadCoverage:
                         glyphs = glyphs + [min(st.LookAheadCoverage[0].glyphs)]
@@ -170,7 +170,7 @@ class HbInputGenerator(object):
                     inputs.append(self._sequence_from_glyph_names(
                         glyphs, features, seen))
 
-        assert inputs, 'Lookup list index %d not found.' % lookup_index
+        assert inputs, 'Lookup list index %d not found.' % target_index
         inputs = [i for i in inputs if i is not None]
         return min(inputs) if inputs else None
 
