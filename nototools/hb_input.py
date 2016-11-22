@@ -127,7 +127,7 @@ class HbInputGenerator(object):
                     for glyph, subst in st.mapping.items():
                         if subst == name:
                             inputs.append(self._input_with_context(
-                                gsub, glyph, lookup_index, features, seen))
+                                gsub, [glyph], lookup_index, features, seen))
 
                 # see if this glyph is a ligature
                 elif lookup.LookupType == 4:
@@ -135,13 +135,13 @@ class HbInputGenerator(object):
                         for ligature in ligatures:
                             if ligature.LigGlyph == name:
                                 glyphs = [prefix] + list(ligature.Component)
-                                inputs.append(self._sequence_from_glyph_names(
-                                    glyphs, features, seen))
+                                inputs.append(self._input_with_context(
+                                    gsub, glyphs, lookup_index, features, seen))
         return inputs
 
-    def _input_with_context(self, gsub, glyph, lookup_index, features, seen):
-        """Given GSUB, input glyph, and lookup index, return input to harfbuzz
-        to render the input glyph with the referred-to lookup activated.
+    def _input_with_context(self, gsub, glyphs, lookup_index, features, seen):
+        """Given GSUB, input glyphs, and target lookup index, return input to
+        harfbuzz to render the input glyphs with the target lookup activated.
         """
 
         inputs = []
@@ -150,7 +150,8 @@ class HbInputGenerator(object):
         for feature in gsub.FeatureList.FeatureRecord:
             if lookup_index in feature.Feature.LookupListIndex:
                 features += (feature.FeatureTag,)
-                inputs.append(self.input_from_name(glyph, features, seen))
+                inputs.append(self._sequence_from_glyph_names(
+                    glyphs, features, seen))
 
         # try for a chaining substitution
         for lookup in gsub.LookupList.Lookup:
@@ -161,9 +162,9 @@ class HbInputGenerator(object):
                     if sub_lookup.LookupListIndex != lookup_index:
                         continue
                     if st.LookAheadCoverage:
-                        glyphs = [glyph, min(st.LookAheadCoverage[0].glyphs)]
+                        glyphs = glyphs + [min(st.LookAheadCoverage[0].glyphs)]
                     elif st.BacktrackCoverage:
-                        glyphs = [min(st.BacktrackCoverage[0].glyphs), glyph]
+                        glyphs = [min(st.BacktrackCoverage[0].glyphs)] + glyphs
                     else:
                         continue
                     inputs.append(self._sequence_from_glyph_names(
@@ -172,7 +173,6 @@ class HbInputGenerator(object):
         assert inputs, 'Lookup list index %d not found.' % lookup_index
         inputs = [i for i in inputs if i is not None]
         return min(inputs) if inputs else None
-
 
     def _sequence_from_glyph_names(self, glyphs, features, seen):
         """Return a sequence of glyphs from glyph names."""
