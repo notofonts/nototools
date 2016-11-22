@@ -91,11 +91,34 @@ class HbInputGenerator(object):
             inputs.append((features, text))
 
         # check the substitution features
-        if 'GSUB' not in self.font:
+        inputs.extend(self._inputs_from_gsub(name, features, seen))
+        seen.remove(name)
+
+        # since this method sometimes returns None to avoid cycles, the
+        # recursive calls that it makes might have themselves returned None,
+        # but we should avoid returning None here if there are other options
+        inputs = [i for i in inputs if i is not None]
+        if not inputs:
             return None
+        features, text = min(inputs)
+
+        if pad:
+            width, space = self.widths[name], self.widths['space']
+            text = ' ' * (width // space + (1 if width % space else 0)) + text
+        return features, text
+
+    def _inputs_from_gsub(self, name, features, seen):
+        """Check GSUB for possible input yielding glyph with given name.
+        The `features` and `seen` arguments are passed in from the original call
+        to input_from_name().
+        """
+
+        inputs = []
+        if 'GSUB' not in self.font:
+            return inputs
         gsub = self.font['GSUB'].table
         if gsub.LookupList is None:
-            return None
+            return inputs
         for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
             for st in lookup.SubTable:
 
@@ -114,21 +137,7 @@ class HbInputGenerator(object):
                                 glyphs = [prefix] + ligature.Component
                                 inputs.append(self._sequence_from_glyph_names(
                                     glyphs, features, seen))
-
-        seen.remove(name)
-
-        # since this method sometimes returns None to avoid cycles, the
-        # recursive calls that it makes might have themselves returned None,
-        # but we should avoid returning None here if there are other options
-        inputs = [i for i in inputs if i is not None]
-        if not inputs:
-            return None
-        features, text = min(inputs)
-
-        if pad:
-            width, space = self.widths[name], self.widths['space']
-            text = ' ' * (width // space + (1 if width % space else 0)) + text
-        return features, text
+        return inputs
 
     def _input_with_context(self, gsub, glyph, lookup_index, features, seen):
         """Given GSUB, input glyph, and lookup index, return input to harfbuzz
