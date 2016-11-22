@@ -158,11 +158,29 @@ class HbInputGenerator(object):
             if lookup.LookupType == 5:
                 for st in lookup.SubTable:
                     prefix = min(st.Coverage.glyphs)
-                    #TODO handle formats 2 and 3
+                    #TODO handle format 3
                     if st.Format == 1:
                         for ruleset in st.SubRuleSet:
                             for rule in ruleset.SubRule:
                                 input_glyphs = [prefix] + rule.Input
+                                if not (any(
+                                    subst_lookup.LookupListIndex == target_index
+                                    for subst_lookup in rule.SubstLookupRecord)
+                                    and self._is_sublist(input_glyphs, glyphs)):
+                                    continue
+                                inputs.append(self._input_with_context(
+                                    gsub, input_glyphs, lookup_index,
+                                    features, seen))
+
+                    if st.Format == 2:
+                        class_defs = st.ClassDef.classDefs.items()
+                        for ruleset in st.SubClassSet:
+                            if ruleset is None:
+                                continue
+                            for rule in ruleset.SubClassRule:
+                                input_glyphs = [prefix] + [
+                                    min(n for n, c in class_defs if c == cls)
+                                    for cls in rule.Class]
                                 if not (any(
                                     subst_lookup.LookupListIndex == target_index
                                     for subst_lookup in rule.SubstLookupRecord)
