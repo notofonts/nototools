@@ -66,12 +66,14 @@ class definition begin
 a\t1
 b\t2
 c\t3
+d\t1
 class definition end
 class\t1,2,3,1\t1,test-lookup-sub
 lookup end
 
 lookup\ttest-lookup-sub\tligature
 A.sc\ta\tb\tc
+D.sc\td\tb\tc
 lookup end
 '''
 
@@ -225,6 +227,7 @@ class HbInputGeneratorTest(unittest.TestCase):
     def test_contextual_substitution_type2(self):
         g = self._make_generator(CONTEXTUAL_FORMAT2, fea_type='mti')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'abca'))
+        self.assertEqual(g.input_from_name('D.sc'), (('test',), 'dbca'))
 
     def test_chaining_substitution_type1(self):
         g = self._make_generator(CHAINED_FORMAT1, fea_type='mti')

@@ -183,77 +183,79 @@ class HbInputGenerator(object):
         """Return inputs from GSUB type 5.1 (simple context) rules."""
 
         inputs = []
-        prefix = min(st.Coverage.glyphs)
         for ruleset in st.SubRuleSet:
             for rule in ruleset.SubRule:
-                input_glyphs = [prefix] + rule.Input
-                if not (any(subst_lookup.LookupListIndex == target_i
-                            for subst_lookup in rule.SubstLookupRecord) and
-                        self._is_sublist(input_glyphs, glyphs)):
-                    continue
-                inputs.append(self._input_with_context(
-                    gsub, input_glyphs, cur_i, fea, seen))
+                for prefix in st.Coverage.glyphs:
+                    input_glyphs = [prefix] + rule.Input
+                    if not (any(subst_lookup.LookupListIndex == target_i
+                                for subst_lookup in rule.SubstLookupRecord) and
+                            self._is_sublist(input_glyphs, glyphs)):
+                        continue
+                    inputs.append(self._input_with_context(
+                        gsub, input_glyphs, cur_i, fea, seen))
         return inputs
 
     def _input_from_5_2(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
         """Return inputs from GSUB type 5.2 (class-based context) rules."""
 
         inputs = []
-        prefix = min(st.Coverage.glyphs)
+        prefixes = st.Coverage.glyphs
         class_defs = st.ClassDef.classDefs.items()
         for ruleset in st.SubClassSet:
             if ruleset is None:
                 continue
             for rule in ruleset.SubClassRule:
-                input_glyphs = [prefix] + [
-                    min(n for n, c in class_defs if c == cls)
+                classes = [
+                    [n for n, c in class_defs if c == cls]
                     for cls in rule.Class]
-                if not (any(subst_lookup.LookupListIndex == target_i
-                            for subst_lookup in rule.SubstLookupRecord) and
-                        self._is_sublist(input_glyphs, glyphs)):
-                    continue
-                inputs.append(self._input_with_context(
-                    gsub, input_glyphs, cur_i, fea, seen))
+                for input_glyphs in self._permutations([prefixes] + classes):
+                    if not (any(subst_lookup.LookupListIndex == target_i
+                                for subst_lookup in rule.SubstLookupRecord) and
+                            self._is_sublist(input_glyphs, glyphs)):
+                        continue
+                    inputs.append(self._input_with_context(
+                        gsub, input_glyphs, cur_i, fea, seen))
         return inputs
 
     def _input_from_6_1(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
         """Return inputs from GSUB type 6.1 (simple chaining) rules."""
 
         inputs = []
-        prefix = min(st.Coverage.glyphs)
         for ruleset in st.ChainSubRuleSet:
             for rule in ruleset.ChainSubRule:
-                input_glyphs = [prefix] + rule.Input
-                if not (any(subst_lookup.LookupListIndex == target_i
-                            for subst_lookup in rule.SubstLookupRecord) and
-                        self._is_sublist(input_glyphs, glyphs)):
-                    continue
-                if rule.LookAhead:
-                    input_glyphs = input_glyphs + rule.LookAhead
-                if rule.Backtrack:
-                    bt = list(reversed(rule.Backtrack))
-                    input_glyphs = bt + input_glyphs
-                inputs.append(self._input_with_context(
-                    gsub, input_glyphs, cur_i, fea, seen))
+                for prefix in st.Coverage.glyphs:
+                    input_glyphs = [prefix] + rule.Input
+                    if not (any(subst_lookup.LookupListIndex == target_i
+                                for subst_lookup in rule.SubstLookupRecord) and
+                            self._is_sublist(input_glyphs, glyphs)):
+                        continue
+                    if rule.LookAhead:
+                        input_glyphs = input_glyphs + rule.LookAhead
+                    if rule.Backtrack:
+                        bt = list(reversed(rule.Backtrack))
+                        input_glyphs = bt + input_glyphs
+                    inputs.append(self._input_with_context(
+                        gsub, input_glyphs, cur_i, fea, seen))
         return inputs
 
     def _input_from_6_3(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
         """Return inputs from GSUB type 6.3 (coverage-based chaining) rules."""
 
-        input_glyphs = [min(c.glyphs) for c in st.InputCoverage]
-        if not (any(subst_lookup.LookupListIndex == target_i
-                    for subst_lookup in st.SubstLookupRecord) and
-                self._is_sublist(input_glyphs, glyphs)):
-            return []
-        if st.LookAheadCoverage:
-            la = [min(c.glyphs) for c in st.LookAheadCoverage]
-            input_glyphs = input_glyphs + la
-        if st.BacktrackCoverage:
-            bt = list(reversed([min(c.glyphs)
-                                for c in st.BacktrackCoverage]))
-            input_glyphs = bt + input_glyphs
-        return [self._input_with_context(
-            gsub, input_glyphs, cur_i, fea, seen)]
+        input_glyph_lists = [c.glyphs for c in st.InputCoverage]
+        for input_glyphs in self._permutations(input_glyph_lists):
+            if not (any(subst_lookup.LookupListIndex == target_i
+                        for subst_lookup in st.SubstLookupRecord) and
+                    self._is_sublist(input_glyphs, glyphs)):
+                return []
+            if st.LookAheadCoverage:
+                la = [min(c.glyphs) for c in st.LookAheadCoverage]
+                input_glyphs = input_glyphs + la
+            if st.BacktrackCoverage:
+                bt = list(reversed([min(c.glyphs)
+                                    for c in st.BacktrackCoverage]))
+                input_glyphs = bt + input_glyphs
+            return [self._input_with_context(
+                gsub, input_glyphs, cur_i, fea, seen)]
 
     def _sequence_from_glyph_names(self, glyphs, features, seen):
         """Return a sequence of glyphs from glyph names."""
@@ -266,6 +268,18 @@ class HbInputGenerator(object):
             features, cur_text = cur_input
             text.append(cur_text)
         return features, ''.join(text)
+
+    def _permutations(self, lists, cur=None):
+        """Return permutations of items picked one from each input list."""
+
+        if cur is None:
+            cur = []
+        if len(cur) >= len(lists):
+            return [cur]
+        res = []
+        for val in lists[len(cur)]:
+            res.extend(self._permutations(lists, cur + [val]))
+        return res
 
     def _is_sublist(self, lst, sub):
         """Return whether sub is a sub-list of lst."""
