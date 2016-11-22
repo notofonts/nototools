@@ -134,7 +134,7 @@ class HbInputGenerator(object):
                     for prefix, ligatures in st.ligatures.items():
                         for ligature in ligatures:
                             if ligature.LigGlyph == name:
-                                glyphs = [prefix] + ligature.Component
+                                glyphs = [prefix] + list(ligature.Component)
                                 inputs.append(self._sequence_from_glyph_names(
                                     glyphs, features, seen))
         return inputs
