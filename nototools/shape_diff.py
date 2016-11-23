@@ -102,7 +102,7 @@ class ShapeDiffFinder:
         for name, areas in mismatched.items():
             stats.append((calc(areas), name, self.basepath, areas[0], areas[1]))
 
-    def find_rendered_diffs(self, font_size=256, render_path=None):
+    def find_rendered_diffs(self, font_size=128, render_path=None):
         """Find diffs of glyphs as rendered by harfbuzz + image magick."""
 
         hb_input_generator_a = hb_input.HbInputGenerator(self.font_a)
