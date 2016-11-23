@@ -254,5 +254,19 @@ class HbInputGeneratorTest(unittest.TestCase):
         g = self._make_generator(CHAINING_REVERSE_BACKTRACK)
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'bcad'))
 
+    def test_is_sublist(self):
+        g = self._make_generator('')
+        self.assertTrue(g._is_sublist([], []))
+        self.assertTrue(g._is_sublist([1, 2, 3], [2, 3]))
+        self.assertFalse(g._is_sublist([1, 2, 3], [1, 3]))
+
+    def test_permutations(self):
+        g = self._make_generator('')
+        self.assertEqual(g._permutations([[1], [2]]), [[1, 2]])
+        self.assertEqual(g._permutations([[1], [], [2]]), [])
+        self.assertEqual(
+            g._permutations([[1, 2], [3, 4]]),
+            [[1, 3], [1, 4], [2, 3], [2, 4]])
+
 if __name__ == '__main__':
     unittest.main()
