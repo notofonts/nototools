@@ -28,6 +28,7 @@ for some offset). Image comparison is usually either slow (hi-res) or inaccurate
 large errors.
 """
 
+from __future__ import division
 
 import Image
 import os
@@ -180,8 +181,8 @@ class ShapeDiffFinder:
             width, height = max(width_a, width_b), height_a
 
             diff = 0
-            offset_a = (width - width_a) / 2
-            offset_b = (width - width_b) / 2
+            offset_a = (width - width_a) // 2
+            offset_b = (width - width_b) // 2
             for y in range(height):
                 for x in range(width):
                     ax = x - offset_a
@@ -191,7 +192,7 @@ class ShapeDiffFinder:
                         diff += 1
 
             if self.ratio_diffs:
-                diff = float(diff) / (width * height)
+                diff /= (width * height)
 
             if render_path and diff > self.diff_threshold:
                 img_cmp = Image.new('RGB', (width, height))
@@ -222,7 +223,7 @@ class ShapeDiffFinder:
             self, src_data, src_width, dst_data, width, height, channel):
         """Project a single-channel image onto a channel of an RGB image."""
 
-        offset = (width - src_width) / 2
+        offset = (width - src_width) // 2
         for y in range(height):
             for x in range(src_width):
                 src_i = x + y * src_width
