@@ -18,8 +18,8 @@
 ShapeDiffFinder takes in two paths, to font binaries. It then provides methods
 which compare these fonts, storing results in a report dictionary. These methods
 are `find_area_diffs`, which compares glyph areas, `find_rendered_diffs`, which
-compares harfbuzz output using image magick, and `find_shape_diffs`, which takes
-the difference of shapes and calculates the area.
+compares harfbuzz output using PIL, and `find_shape_diffs`, which takes the
+difference of shapes and calculates the area.
 
 Some caveats: glyph areas can be the same even if the shapes are wildly
 different (though they're useful for shapes which should be identical except
@@ -103,7 +103,7 @@ class ShapeDiffFinder:
             stats.append((calc(areas), name, self.basepath, areas[0], areas[1]))
 
     def find_rendered_diffs(self, font_size=128, render_path=None):
-        """Find diffs of glyphs as rendered by harfbuzz + image magick."""
+        """Find diffs of glyphs as rendered by harfbuzz."""
 
         hb_input_generator_a = hb_input.HbInputGenerator(self.font_a)
         hb_input_generator_b = hb_input.HbInputGenerator(self.font_b)
