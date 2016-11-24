@@ -22,6 +22,7 @@ differences from all pairs are shown first. For GPOS the pairs are still
 compared separately.
 """
 
+from __future__ import print_function
 
 import argparse
 import glob
@@ -33,7 +34,9 @@ from nototools import gpos_diff, gsub_diff, shape_diff
 logger = logging.getLogger('notodiff')
 
 
-def _shape(path_a, path_b, stats, diff_type, render_path, diff_threshold=0):
+def _shape(
+        path_a, path_b, stats, diff_type, font_size, render_path,
+        diff_threshold=0):
     """Do a shape comparison (glyph area or rendered) and add results to stats.
 
     path_a and b refer to binary font files (OTF or TTF). stats should be a
@@ -52,7 +55,7 @@ def _shape(path_a, path_b, stats, diff_type, render_path, diff_threshold=0):
     elif diff_type == 'area-shape-product':
         diff_finder.find_area_shape_diff_products()
     else:
-        diff_finder.find_rendered_diffs(render_path=render_path)
+        diff_finder.find_rendered_diffs(font_size, render_path)
 
 
 def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
@@ -64,15 +67,15 @@ def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
     """
 
     if print_font:
-        print '-- %s --' % os.path.basename(path_a)
-        print
+        print('-- %s --' % os.path.basename(path_a))
+        print()
     diff_finder = gpos_diff.GposDiffFinder(path_a, path_b, error_bound,
                                            out_lines)
-    print diff_finder.find_kerning_diffs()
-    print diff_finder.find_mark_class_diffs()
-    print diff_finder.find_positioning_diffs()
-    print diff_finder.find_positioning_diffs(mark_type='mark')
-    print
+    print(diff_finder.find_kerning_diffs())
+    print(diff_finder.find_mark_class_diffs())
+    print(diff_finder.find_positioning_diffs())
+    print(diff_finder.find_positioning_diffs(mark_type='mark'))
+    print()
 
 
 def _gsub(path_a, path_b, out_lines, print_font=False):
@@ -84,9 +87,9 @@ def _gsub(path_a, path_b, out_lines, print_font=False):
     """
 
     if print_font:
-        print '-- %s --' % os.path.basename(path_a)
+        print('-- %s --' % os.path.basename(path_a))
     diff_finder = gsub_diff.GsubDiffFinder(path_a, path_b, out_lines)
-    print diff_finder.find_gsub_diffs()
+    print(diff_finder.find_gsub_diffs())
     print
 
 
@@ -125,6 +128,9 @@ def main():
     parser.add_argument('-w', '--whitelist', nargs='+', default=(),
                         help='list of one or more glyph names to ignore for '
                         'area or rendered differences')
+    parser.add_argument('--font-size', type=int, default=128,
+                        help='if DIFF_TYPE is "rendered", size to render '
+                        'samples at (default 128)')
     parser.add_argument('--render-path', help='if provided and DIFF_TYPE is '
                         '"rendered", saves comparison renderings here')
     parser.add_argument('--diff-threshold', type=float, default=0,
@@ -138,10 +144,11 @@ def main():
         stats = {}
         if args.match:
             _run_multiple(_shape, args.match, args.before, args.after, stats,
-                          args.diff_type, args.render_path, args.diff_threshold)
+                          args.diff_type, args.font_size, args.render_path,
+                          args.diff_threshold)
         else:
             _shape(args.before, args.after, stats, args.diff_type,
-                   args.render_path, args.diff_threshold)
+                   args.font_size, args.render_path, args.diff_threshold)
         print(shape_diff.ShapeDiffFinder.dump(
             stats, args.whitelist, args.out_lines,
             include_vals=(args.diff_type in ('area', 'area-shape-product')),

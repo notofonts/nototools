@@ -257,16 +257,20 @@ class HbInputGeneratorTest(unittest.TestCase):
     def test_is_sublist(self):
         g = self._make_generator('')
         self.assertTrue(g._is_sublist([], []))
+        self.assertFalse(g._is_sublist([], [1]))
         self.assertTrue(g._is_sublist([1, 2, 3], [2, 3]))
         self.assertFalse(g._is_sublist([1, 2, 3], [1, 3]))
 
-    def test_permutations(self):
+    def test_min_permutation(self):
         g = self._make_generator('')
-        self.assertEqual(g._permutations([[1], [2]]), [[1, 2]])
-        self.assertEqual(g._permutations([[1], [], [2]]), [])
-        self.assertEqual(
-            g._permutations([[1, 2], [3, 4]]),
-            [[1, 3], [1, 4], [2, 3], [2, 4]])
+        self.assertEqual(g._min_permutation(
+            [[1, 2], [3, 4], [5, 6]], [2, 3]), [2, 3, 5])
+        self.assertEqual(g._min_permutation(
+            [[1, 2], [3, 4], [5, 6]], [3, 6]), [1, 3, 6])
+        self.assertEqual(g._min_permutation(
+            [[1, 2], [3, 4], [5, 6]], [1, 4, 5]), [1, 4, 5])
+        self.assertEqual(g._min_permutation(
+            [[1], [], [2]], [1]), [])
 
 if __name__ == '__main__':
     unittest.main()
