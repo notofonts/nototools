@@ -208,13 +208,14 @@ class HbInputGenerator(object):
                 classes = [
                     [n for n, c in class_defs if c == cls]
                     for cls in rule.Class]
-                for input_glyphs in self._permutations([prefixes] + classes):
-                    if not (any(subst_lookup.LookupListIndex == target_i
-                                for subst_lookup in rule.SubstLookupRecord) and
-                            self._is_sublist(input_glyphs, glyphs)):
-                        continue
-                    inputs.append(self._input_with_context(
-                        gsub, input_glyphs, cur_i, fea, seen))
+                input_lists = [prefixes] + classes
+                input_glyphs = self._min_permutation(input_lists, glyphs)
+                if not (any(subst_lookup.LookupListIndex == target_i
+                            for subst_lookup in rule.SubstLookupRecord) and
+                        self._is_sublist(input_glyphs, glyphs)):
+                    continue
+                inputs.append(self._input_with_context(
+                    gsub, input_glyphs, cur_i, fea, seen))
         return inputs
 
     def _input_from_6_1(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
@@ -241,21 +242,21 @@ class HbInputGenerator(object):
     def _input_from_6_3(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
         """Return inputs from GSUB type 6.3 (coverage-based chaining) rules."""
 
-        input_glyph_lists = [c.glyphs for c in st.InputCoverage]
-        for input_glyphs in self._permutations(input_glyph_lists):
-            if not (any(subst_lookup.LookupListIndex == target_i
-                        for subst_lookup in st.SubstLookupRecord) and
-                    self._is_sublist(input_glyphs, glyphs)):
-                return []
-            if st.LookAheadCoverage:
-                la = [min(c.glyphs) for c in st.LookAheadCoverage]
-                input_glyphs = input_glyphs + la
-            if st.BacktrackCoverage:
-                bt = list(reversed([min(c.glyphs)
-                                    for c in st.BacktrackCoverage]))
-                input_glyphs = bt + input_glyphs
-            return [self._input_with_context(
-                gsub, input_glyphs, cur_i, fea, seen)]
+        input_lists = [c.glyphs for c in st.InputCoverage]
+        input_glyphs = self._min_permutation(input_lists, glyphs)
+        if not (any(subst_lookup.LookupListIndex == target_i
+                    for subst_lookup in st.SubstLookupRecord) and
+                self._is_sublist(input_glyphs, glyphs)):
+            return []
+        if st.LookAheadCoverage:
+            la = [min(c.glyphs) for c in st.LookAheadCoverage]
+            input_glyphs = input_glyphs + la
+        if st.BacktrackCoverage:
+            bt = list(reversed([min(c.glyphs)
+                                for c in st.BacktrackCoverage]))
+            input_glyphs = bt + input_glyphs
+        return [self._input_with_context(
+            gsub, input_glyphs, cur_i, fea, seen)]
 
     def _sequence_from_glyph_names(self, glyphs, features, seen):
         """Return a sequence of glyphs from glyph names."""
@@ -269,16 +270,25 @@ class HbInputGenerator(object):
             text.append(cur_text)
         return features, ''.join(text)
 
-    def _permutations(self, lists, cur=None):
-        """Return permutations of items picked one from each input list."""
+    def _min_permutation(self, lists, target):
+        """Deterministically select a permutation, containing target list as a
+        sublist, of items picked one from each input list.
+        """
 
-        if cur is None:
-            cur = []
-        if len(cur) >= len(lists):
-            return [cur]
-        res = []
-        for val in lists[len(cur)]:
-            res.extend(self._permutations(lists, cur + [val]))
+        if not all(lists):
+            return []
+        i = 0
+        j = 0
+        res = [None for _ in range(len(lists))]
+        for cur_list in lists:
+            if j < len(target) and target[j] in cur_list:
+                res[i] = target[j]
+                j += 1
+            else:
+                res[i] = min(cur_list)
+            i += 1
+        if j < len(target):
+            return []
         return res
 
     def _is_sublist(self, lst, sub):
