@@ -30,8 +30,8 @@ large errors.
 
 from __future__ import division
 
-import Image
 import os
+from PIL import Image
 import re
 import StringIO
 import subprocess
