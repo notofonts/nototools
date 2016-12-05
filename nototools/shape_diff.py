@@ -109,15 +109,6 @@ class ShapeDiffFinder:
         hb_input_generator_a = hb_input.HbInputGenerator(self.font_a)
         hb_input_generator_b = hb_input.HbInputGenerator(self.font_b)
 
-        a_png_file = tempfile.NamedTemporaryFile()
-        a_png = a_png_file.name
-        b_png_file = tempfile.NamedTemporaryFile()
-        b_png = b_png_file.name
-        cmp_png_file = tempfile.NamedTemporaryFile()
-        cmp_png = cmp_png_file.name
-        diffs_file = tempfile.NamedTemporaryFile()
-        diffs_filename = diffs_file.name
-
         if render_path:
             font_name, _ = os.path.splitext(self.basepath)
             render_path = os.path.join(render_path, font_name)
