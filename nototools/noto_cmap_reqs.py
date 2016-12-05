@@ -99,7 +99,9 @@ class CmapOps(object):
         'Hangul Jamo Extended-B',
         'Hangul Syllables',
     }
-    self._suppress_cp_report = False
+    self._suppressed_scripts = {
+        'EXCL',
+    }
     self._block = None
     self._undefined_exceptions = undefined_exceptions or set()
 
@@ -114,7 +116,7 @@ class CmapOps(object):
             text, tool_utils.write_int_ranges(
                 self._block_count[text]))
 
-  def _report_cp(self, cp, text):
+  def _report_cp(self, cp, text, script):
     if not self._log_events:
       return
     cp_block = unicode_data.block(cp)
@@ -123,9 +125,10 @@ class CmapOps(object):
       self._block = cp_block
       print '# block: ' + self._block
       self._block_count = collections.defaultdict(set)
-      self._suppress_cp_report = self._block in self._suppressed_blocks
     if self._log_details:
-      if not self._suppress_cp_report:
+      if not (
+          self._block in self._suppressed_blocks or
+          script in self._suppressed_scripts):
         print self._cp_info(cp), text
     else:
       self._block_count[text].add(cp)
@@ -161,7 +164,7 @@ class CmapOps(object):
   def _script_cp_ok_add(self, cp, script):
     if cp not in self._script_to_chars[script]:
       self._script_to_chars[script].add(cp)
-      self._report_cp(cp, 'added to ' + script)
+      self._report_cp(cp, 'added to ' + script, script)
 
   def _script_ok_remove(self, cp, script):
     if unicode_data.is_defined(cp):
@@ -169,7 +172,7 @@ class CmapOps(object):
 
   def _script_cp_ok_remove(self, cp, script):
     if cp in self._script_to_chars[script]:
-      self._report_cp(cp, 'removed from ' + script)
+      self._report_cp(cp, 'removed from ' + script, script)
       self._script_to_chars[script].remove(cp)
 
   def _finish_phase(self):
@@ -2648,7 +2651,9 @@ def _assign_legacy_phase2(cmap_ops):
       cmap_ops.phase('assign legacy %s' % script)
       cmap_ops.add_all(missing_legacy, script)
 
-  """
+
+def _check_CJK():
+  # not used
   # check CJK
   cmap_ops.log('check cjk legacy')
   legacy_cjk_chars = set()
@@ -2667,7 +2672,7 @@ def _assign_legacy_phase2(cmap_ops):
   if not_in_new:
     print 'not in new (%d):' % len(not_in_new)
     compare_cmap_data._print_detailed(not_in_new)
-  """
+
 
 def _assign_bidi_mirroring(cmap_ops):
   """Ensure that if a bidi mirroring char is in a font, its mirrored char
