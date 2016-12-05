@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
-from fontTools.ttLib import TTFont
+from __future__ import division, print_function
 
+from fontTools.ttLib import TTFont
 from nototools import summary
 
 
@@ -29,13 +30,26 @@ class HbInputGenerator(object):
         self.font = font
         self.reverse_cmap = build_reverse_cmap(self.font)
 
+        self.widths = {}
+        glyph_set = font.getGlyphSet()
+        for name in glyph_set.keys():
+            glyph = glyph_set[name]
+            if glyph.width:
+                width = glyph.width
+            elif hasattr(glyph._glyph, 'xMax'):
+                width = abs(glyph._glyph.xMax - glyph._glyph.xMin)
+            else:
+                width = 0
+            self.widths[name] = width
+        space_name = font['cmap'].tables[0].cmap[0x0020]
+        self.widths['space'] = self.widths[space_name]
+
     def all_inputs(self, warn=False):
         """Generate harfbuzz inputs for all glyphs in a given font."""
 
         inputs = []
-        glyph_names = self.font.getGlyphOrder()
         glyph_set = self.font.getGlyphSet()
-        for name in glyph_names:
+        for name in self.font.getGlyphOrder():
             is_zero_width = glyph_set[name].width == 0
             cur_input = self.input_from_name(name, pad=is_zero_width)
             if cur_input is not None:
@@ -74,16 +88,37 @@ class HbInputGenerator(object):
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
             text = unichr(self.reverse_cmap[name])
-            if pad:
-                text = '  ' + text
             inputs.append((features, text))
 
         # check the substitution features
-        if 'GSUB' not in self.font:
+        inputs.extend(self._inputs_from_gsub(name, features, seen))
+        seen.remove(name)
+
+        # since this method sometimes returns None to avoid cycles, the
+        # recursive calls that it makes might have themselves returned None,
+        # but we should avoid returning None here if there are other options
+        inputs = [i for i in inputs if i is not None]
+        if not inputs:
             return None
+        features, text = min(inputs)
+
+        if pad:
+            width, space = self.widths[name], self.widths['space']
+            text = ' ' * (width // space + (1 if width % space else 0)) + text
+        return features, text
+
+    def _inputs_from_gsub(self, name, features, seen):
+        """Check GSUB for possible input yielding glyph with given name.
+        The `features` and `seen` arguments are passed in from the original call
+        to input_from_name().
+        """
+
+        inputs = []
+        if 'GSUB' not in self.font:
+            return inputs
         gsub = self.font['GSUB'].table
         if gsub.LookupList is None:
-            return None
+            return inputs
         for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
             for st in lookup.SubTable:
 
@@ -92,59 +127,136 @@ class HbInputGenerator(object):
                     for glyph, subst in st.mapping.items():
                         if subst == name:
                             inputs.append(self._input_with_context(
-                                gsub, glyph, lookup_index, features, seen))
+                                gsub, [glyph], lookup_index, features, seen))
 
                 # see if this glyph is a ligature
                 elif lookup.LookupType == 4:
                     for prefix, ligatures in st.ligatures.items():
                         for ligature in ligatures:
                             if ligature.LigGlyph == name:
-                                glyphs = [prefix] + ligature.Component
-                                inputs.append(self._sequence_from_glyph_names(
-                                    glyphs, features, seen))
+                                glyphs = [prefix] + list(ligature.Component)
+                                inputs.append(self._input_with_context(
+                                    gsub, glyphs, lookup_index, features, seen))
+        return inputs
 
-        seen.remove(name)
-
-        # since this method sometimes returns None to avoid cycles, the
-        # recursive calls that it makes might have themselves returned None,
-        # but we should avoid returning None here if there are other options
-        inputs = [i for i in inputs if i is not None]
-        return min(inputs) if inputs else None
-
-    def _input_with_context(self, gsub, glyph, lookup_index, features, seen):
-        """Given GSUB, input glyph, and lookup index, return input to harfbuzz
-        to render the input glyph with the referred-to lookup activated.
+    def _input_with_context(self, gsub, glyphs, target_i, features, seen):
+        """Given GSUB, input glyphs, and target lookup index, return input to
+        harfbuzz to render the input glyphs with the target lookup activated.
         """
 
         inputs = []
 
         # try to get a feature tag to activate this lookup
         for feature in gsub.FeatureList.FeatureRecord:
-            if lookup_index in feature.Feature.LookupListIndex:
+            if target_i in feature.Feature.LookupListIndex:
                 features += (feature.FeatureTag,)
-                inputs.append(self.input_from_name(glyph, features, seen))
+                inputs.append(self._sequence_from_glyph_names(
+                    glyphs, features, seen))
 
-        # try for a chaining substitution
-        for lookup in gsub.LookupList.Lookup:
-            for st in lookup.SubTable:
-                if lookup.LookupType != 6:
-                    continue
-                for sub_lookup in st.SubstLookupRecord:
-                    if sub_lookup.LookupListIndex != lookup_index:
-                        continue
-                    if st.LookAheadCoverage:
-                        glyphs = [glyph, min(st.LookAheadCoverage[0].glyphs)]
-                    elif st.BacktrackCoverage:
-                        glyphs = [min(st.BacktrackCoverage[0].glyphs), glyph]
-                    else:
-                        continue
-                    inputs.append(self._sequence_from_glyph_names(
-                        glyphs, features, seen))
+        for cur_i, lookup in enumerate(gsub.LookupList.Lookup):
+            # try contextual substitutions
+            if lookup.LookupType == 5:
+                for st in lookup.SubTable:
+                    #TODO handle format 3
+                    if st.Format == 1:
+                        inputs.extend(self._input_from_5_1(
+                            gsub, st, glyphs, target_i, cur_i, features, seen))
+                    if st.Format == 2:
+                        inputs.extend(self._input_from_5_2(
+                            gsub, st, glyphs, target_i, cur_i, features, seen))
 
-        assert inputs, 'Lookup list index %d not found.' % lookup_index
+            # try chaining substitutions
+            if lookup.LookupType == 6:
+                for st in lookup.SubTable:
+                    #TODO handle format 2
+                    if st.Format == 1:
+                        inputs.extend(self._input_from_6_1(
+                            gsub, st, glyphs, target_i, cur_i, features, seen))
+                    if st.Format == 3:
+                        inputs.extend(self._input_from_6_3(
+                            gsub, st, glyphs, target_i, cur_i, features, seen))
+
         inputs = [i for i in inputs if i is not None]
         return min(inputs) if inputs else None
 
+    def _input_from_5_1(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+        """Return inputs from GSUB type 5.1 (simple context) rules."""
+
+        inputs = []
+        for ruleset in st.SubRuleSet:
+            for rule in ruleset.SubRule:
+                for prefix in st.Coverage.glyphs:
+                    input_glyphs = [prefix] + rule.Input
+                    if not (any(subst_lookup.LookupListIndex == target_i
+                                for subst_lookup in rule.SubstLookupRecord) and
+                            self._is_sublist(input_glyphs, glyphs)):
+                        continue
+                    inputs.append(self._input_with_context(
+                        gsub, input_glyphs, cur_i, fea, seen))
+        return inputs
+
+    def _input_from_5_2(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+        """Return inputs from GSUB type 5.2 (class-based context) rules."""
+
+        inputs = []
+        prefixes = st.Coverage.glyphs
+        class_defs = st.ClassDef.classDefs.items()
+        for ruleset in st.SubClassSet:
+            if ruleset is None:
+                continue
+            for rule in ruleset.SubClassRule:
+                classes = [
+                    [n for n, c in class_defs if c == cls]
+                    for cls in rule.Class]
+                input_lists = [prefixes] + classes
+                input_glyphs = self._min_permutation(input_lists, glyphs)
+                if not (any(subst_lookup.LookupListIndex == target_i
+                            for subst_lookup in rule.SubstLookupRecord) and
+                        self._is_sublist(input_glyphs, glyphs)):
+                    continue
+                inputs.append(self._input_with_context(
+                    gsub, input_glyphs, cur_i, fea, seen))
+        return inputs
+
+    def _input_from_6_1(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+        """Return inputs from GSUB type 6.1 (simple chaining) rules."""
+
+        inputs = []
+        for ruleset in st.ChainSubRuleSet:
+            for rule in ruleset.ChainSubRule:
+                for prefix in st.Coverage.glyphs:
+                    input_glyphs = [prefix] + rule.Input
+                    if not (any(subst_lookup.LookupListIndex == target_i
+                                for subst_lookup in rule.SubstLookupRecord) and
+                            self._is_sublist(input_glyphs, glyphs)):
+                        continue
+                    if rule.LookAhead:
+                        input_glyphs = input_glyphs + rule.LookAhead
+                    if rule.Backtrack:
+                        bt = list(reversed(rule.Backtrack))
+                        input_glyphs = bt + input_glyphs
+                    inputs.append(self._input_with_context(
+                        gsub, input_glyphs, cur_i, fea, seen))
+        return inputs
+
+    def _input_from_6_3(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+        """Return inputs from GSUB type 6.3 (coverage-based chaining) rules."""
+
+        input_lists = [c.glyphs for c in st.InputCoverage]
+        input_glyphs = self._min_permutation(input_lists, glyphs)
+        if not (any(subst_lookup.LookupListIndex == target_i
+                    for subst_lookup in st.SubstLookupRecord) and
+                self._is_sublist(input_glyphs, glyphs)):
+            return []
+        if st.LookAheadCoverage:
+            la = [min(c.glyphs) for c in st.LookAheadCoverage]
+            input_glyphs = input_glyphs + la
+        if st.BacktrackCoverage:
+            bt = list(reversed([min(c.glyphs)
+                                for c in st.BacktrackCoverage]))
+            input_glyphs = bt + input_glyphs
+        return [self._input_with_context(
+            gsub, input_glyphs, cur_i, fea, seen)]
 
     def _sequence_from_glyph_names(self, glyphs, features, seen):
         """Return a sequence of glyphs from glyph names."""
@@ -157,6 +269,33 @@ class HbInputGenerator(object):
             features, cur_text = cur_input
             text.append(cur_text)
         return features, ''.join(text)
+
+    def _min_permutation(self, lists, target):
+        """Deterministically select a permutation, containing target list as a
+        sublist, of items picked one from each input list.
+        """
+
+        if not all(lists):
+            return []
+        i = 0
+        j = 0
+        res = [None for _ in range(len(lists))]
+        for cur_list in lists:
+            if j < len(target) and target[j] in cur_list:
+                res[i] = target[j]
+                j += 1
+            else:
+                res[i] = min(cur_list)
+            i += 1
+        if j < len(target):
+            return []
+        return res
+
+    def _is_sublist(self, lst, sub):
+        """Return whether sub is a sub-list of lst."""
+
+        return any(lst[i:i + len(sub)] == sub
+                   for i in range(1 + len(lst) - len(sub)))
 
 
 def build_reverse_cmap(font):

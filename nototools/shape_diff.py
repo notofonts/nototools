@@ -18,8 +18,8 @@
 ShapeDiffFinder takes in two paths, to font binaries. It then provides methods
 which compare these fonts, storing results in a report dictionary. These methods
 are `find_area_diffs`, which compares glyph areas, `find_rendered_diffs`, which
-compares harfbuzz output using image magick, and `find_shape_diffs`, which takes
-the difference of shapes and calculates the area.
+compares harfbuzz output using PIL, and `find_shape_diffs`, which takes the
+difference of shapes and calculates the area.
 
 Some caveats: glyph areas can be the same even if the shapes are wildly
 different (though they're useful for shapes which should be identical except
@@ -28,9 +28,12 @@ for some offset). Image comparison is usually either slow (hi-res) or inaccurate
 large errors.
 """
 
+from __future__ import division
 
 import os
+from PIL import Image
 import re
+import StringIO
 import subprocess
 import tempfile
 
@@ -100,8 +103,8 @@ class ShapeDiffFinder:
         for name, areas in mismatched.items():
             stats.append((calc(areas), name, self.basepath, areas[0], areas[1]))
 
-    def find_rendered_diffs(self, font_size=256, render_path=None):
-        """Find diffs of glyphs as rendered by harfbuzz + image magick."""
+    def find_rendered_diffs(self, font_size=128, render_path=None):
+        """Find diffs of glyphs as rendered by harfbuzz."""
 
         hb_input_generator_a = hb_input.HbInputGenerator(self.font_a)
         hb_input_generator_b = hb_input.HbInputGenerator(self.font_b)
@@ -122,6 +125,7 @@ class ShapeDiffFinder:
                 os.makedirs(render_path)
 
         self.build_names()
+        diffs = []
         for name in self.names:
             class_a = self.gdef_a.get(name, GDEF_UNDEF)
             class_b = self.gdef_b.get(name, GDEF_UNDEF)
@@ -158,59 +162,75 @@ class ShapeDiffFinder:
             if unichr(0) in text:
                 continue
 
-            with open(diffs_filename, 'a') as ofile:
-                ofile.write('%s\n' % name)
-
-            subprocess.call([
+            img_file_a = StringIO.StringIO(subprocess.check_output([
                 'hb-view', '--font-size=%d' % font_size,
-                '--output-file=%s' % a_png,
-                '--features=%s' % ','.join(features), self.path_a, text])
-            subprocess.call([
+                '--features=%s' % ','.join(features), self.path_a, text]))
+            img_file_b = StringIO.StringIO(subprocess.check_output([
                 'hb-view', '--font-size=%d' % font_size,
-                '--output-file=%s' % b_png,
-                '--features=%s' % ','.join(features), self.path_b, text])
+                '--features=%s' % ','.join(features), self.path_b, text]))
+            img_a = Image.open(img_file_a)
+            img_b = Image.open(img_file_b)
+            width_a, height_a = img_a.size
+            width_b, height_b = img_b.size
+            data_a = img_a.getdata()
+            data_b = img_b.getdata()
+            img_file_a.close()
+            img_file_b.close()
 
-            img_info = subprocess.check_output(['identify', a_png]).split()
-            assert img_info[0] == a_png and img_info[1] == 'PNG'
-            width, height = (int(x) for x in img_info[2].split('x'))
-            area = width * height
-            subprocess.call([
-                'convert', '-gravity', 'center', '-background', 'black',
-                '-extent', img_info[2], b_png, b_png])
+            assert height_a == height_b
+            width, height = max(width_a, width_b), height_a
 
-            if render_path:
-                output_png = self._rendered_png(render_path, name)
-                # see for a discussion of this rendering technique:
-                # https://github.com/googlei18n/nototools/issues/162#issuecomment-175885431
-                subprocess.call([
-                    'convert',
-                    '(', b_png, '-colorspace', 'gray', ')',
-                    '(', a_png, '-colorspace', 'gray', ')',
-                    '(', '-clone', '0-1', '-compose', 'darken', '-composite', ')',
-                    '-channel', 'RGB', '-combine', output_png])
+            diff = 0
+            offset_a = (width - width_a) // 2
+            offset_b = (width - width_b) // 2
+            for y in range(height):
+                for x in range(width):
+                    ax = x - offset_a
+                    bx = x - offset_b
+                    if (ax < 0 or bx < 0 or ax >= width_a or bx >= width_b or
+                        data_a[ax + y * width_a] != data_b[bx + y * width_b]):
+                        diff += 1
 
-            with open(diffs_filename, 'a') as ofile:
-                subprocess.call(
-                    ['compare', '-metric', 'AE', a_png, b_png, cmp_png],
-                    stderr=ofile)
-                ofile.write('\n')
+            if self.ratio_diffs:
+                diff /= (width * height)
 
-        with open(diffs_filename) as ifile:
-            lines = [l.strip() for l in ifile.readlines() if l.strip()]
-        diffs = [(lines[i], lines[i + 1]) for i in range(0, len(lines), 2)]
+            if render_path and diff > self.diff_threshold:
+                img_cmp = Image.new('RGB', (width, height))
+                data_cmp = list(img_cmp.getdata())
+                self._project(data_a, width_a, data_cmp, width, height, 1)
+                self._project(data_b, width_b, data_cmp, width, height, 0)
+                for y in range(height):
+                    for x in range(width):
+                        i = x + y * width
+                        r, g, b = data_cmp[i]
+                        assert b == 0
+                        data_cmp[i] = r, g, min(r, g)
+                img_cmp.putdata(data_cmp)
+                img_cmp.save(self._rendered_png(render_path, name))
+
+            diffs.append((name, diff))
 
         mismatched = {}
         for name, diff in diffs:
-            diff = float(diff) / area if self.ratio_diffs else int(diff)
             if diff > self.diff_threshold:
                 mismatched[name] = diff
-            else:
-                output_png = self._rendered_png(render_path, name)
-                os.remove(output_png)
 
         stats = self.stats['compared']
         for name, diff in mismatched.items():
             stats.append((diff, name, self.basepath))
+
+    def _project(
+            self, src_data, src_width, dst_data, width, height, channel):
+        """Project a single-channel image onto a channel of an RGB image."""
+
+        offset = (width - src_width) // 2
+        for y in range(height):
+            for x in range(src_width):
+                src_i = x + y * src_width
+                dst_i = x + offset + y * width
+                pixel = list(dst_data[dst_i])
+                pixel[channel] = src_data[src_i]
+                dst_data[dst_i] = tuple(pixel)
 
     def find_shape_diffs(self):
         """Report differences in glyph shapes, using BooleanOperations."""
