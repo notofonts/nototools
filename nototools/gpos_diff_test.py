@@ -19,34 +19,11 @@ import unittest
 from nototools.gpos_diff import GposDiffFinder
 from nototools.hb_input_test import make_font
 
-SIMPLE = ('''
-pos a b -10;
-pos a c -20;
-''', '''
-pos a b -30;
-pos a d -40;
-''')
-
-MULTIPLE_RULES = ('''
-@a_b = [a b];
-pos a d -10;
-pos @a_b d -20;
-''', '''
-pos a d -30;
-''')
-
-SINGLE_VS_CLASS = ('''
-pos a d -10;
-''', '''
-@a_b = [a b];
-pos @a_b d -20;
-''')
-
 
 class GposDiffFinderText(unittest.TestCase):
-    def _expect_kerning_diffs(self, sources, pairs, values):
-        font_a = make_font('feature kern {\n%s\n} kern;' % sources[0])
-        font_b = make_font('feature kern {\n%s\n} kern;' % sources[1])
+    def _expect_kerning_diffs(self, source_a, source_b, pairs, values):
+        font_a = make_font('feature kern {\n%s\n} kern;' % source_a)
+        font_b = make_font('feature kern {\n%s\n} kern;' % source_b)
         file_a = tempfile.NamedTemporaryFile()
         file_b = tempfile.NamedTemporaryFile()
         font_a.save(file_a.name)
@@ -62,20 +39,34 @@ class GposDiffFinderText(unittest.TestCase):
             self.assertIn('pos %s %s: %s vs %s' % value_diff, diffs)
 
     def test_simple(self):
-        self._expect_kerning_diffs(
-            SIMPLE,
+        self._expect_kerning_diffs('''
+                pos a b -10;
+                pos a c -20;
+            ''', '''
+                pos a b -30;
+                pos a d -40;
+            ''',
             [('-', 'a', 'c', [-20]), ('+', 'a', 'd', [-40])],
             [('a', 'b', [-10], [-30])])
 
     def test_multiple_rules(self):
-        self._expect_kerning_diffs(
-            MULTIPLE_RULES,
+        self._expect_kerning_diffs('''
+                @a_b = [a b];
+                pos a d -10;
+                pos @a_b d -20;
+            ''', '''
+                pos a d -30;
+            ''',
             [('-', 'b', 'd', [-20])],
             [('a', 'd', [-10, -20], [-30])])
 
     def test_single_vs_class(self):
-        self._expect_kerning_diffs(
-            SINGLE_VS_CLASS,
+        self._expect_kerning_diffs('''
+                pos a d -10;
+            ''', '''
+                @a_b = [a b];
+                pos @a_b d -20;
+            ''',
             [('+', 'b', 'd', [-20])],
             [('a', 'd', [-10], [-20])])
 

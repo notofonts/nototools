@@ -28,112 +28,6 @@ from fontTools.ttLib.tables._c_m_a_p import cmap_format_4
 
 from nototools.hb_input import HbInputGenerator
 
-CYCLIC_RULES = '''
-feature onum {
-    sub zero by zero.oldstyle;
-} onum;
-
-feature lnum {
-    sub zero.oldstyle by zero;
-} lnum;
-'''
-
-CONTEXTUAL_FORMAT1 = '''
-FontDame GSUB table
-
-feature table begin
-0\ttest\ttest-lookup-ctx
-feature table end
-
-lookup\ttest-lookup-ctx\tcontext
-glyph\tb,a\t1,test-lookup-sub
-lookup end
-
-lookup\ttest-lookup-sub\tsingle
-a\tA.sc
-lookup end
-'''
-
-CONTEXTUAL_FORMAT2 = '''
-FontDame GSUB table
-
-feature table begin
-0\ttest\ttest-lookup-ctx
-feature table end
-
-lookup\ttest-lookup-ctx\tcontext
-class definition begin
-a\t1
-b\t2
-c\t3
-d\t1
-class definition end
-class\t1,2,3,1\t1,test-lookup-sub
-lookup end
-
-lookup\ttest-lookup-sub\tligature
-A.sc\ta\tb\tc
-D.sc\td\tb\tc
-lookup end
-'''
-
-CHAINED_FORMAT1 = '''
-FontDame GSUB table
-
-feature table begin
-0\ttest\ttest-lookup-ctx
-feature table end
-
-lookup\ttest-lookup-ctx\tchained
-glyph\tb\ta\tc\t1,test-lookup-sub
-lookup end
-
-lookup\ttest-lookup-sub\tsingle
-a\tA.sc
-lookup end
-'''
-
-SPEC_5fi1 = '''
-lookup CNTXT_LIGS {
-    substitute f i by f_i;
-    substitute c t by c_t;
-} CNTXT_LIGS;
-
-lookup CNTXT_SUB {
-    substitute n by n.end;
-    substitute s by s.end;
-} CNTXT_SUB;
-
-feature test {
-    substitute [a e i o u] f' lookup CNTXT_LIGS i' n' lookup CNTXT_SUB;
-    substitute [a e i o u] c' lookup CNTXT_LIGS t' s' lookup CNTXT_SUB;
-} test;
-'''
-
-SPEC_5fi2 = '''
-feature test {
-    substitute [a e n] d' by d.alt;
-} test;
-'''
-
-SPEC_5fi3 = '''
-feature test {
-    substitute [A-Z] [A.sc-Z.sc]' by [a-z];
-} test;
-'''
-
-SPEC_5fi4 = '''
-feature test {
-    substitute [e e.begin]' t' c by ampersand;
-} test;
-'''
-
-CHAINING_REVERSE_BACKTRACK = '''
-feature test {
-    substitute [b e] [c f] a' [d g] by A.sc;
-} test;
-'''
-
 
 def make_font(feature_source, fea_type='fea'):
     """Return font with GSUB compiled from given source.
@@ -225,41 +119,131 @@ class HbInputGeneratorTest(unittest.TestCase):
         self.assertEqual(g.input_from_name('A.sc'), None)
 
     def test_cyclic_rules_not_followed(self):
-        g = self._make_generator(CYCLIC_RULES)
+        g = self._make_generator('''
+            feature onum {
+                sub zero by zero.oldstyle;
+            } onum;
+
+            feature lnum {
+                sub zero.oldstyle by zero;
+            } lnum;
+        ''')
         self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
 
     def test_contextual_substitution_type1(self):
-        g = self._make_generator(CONTEXTUAL_FORMAT1, fea_type='mti')
+        g = self._make_generator('''
+            FontDame GSUB table
+
+            feature table begin
+            0\ttest\ttest-lookup-ctx
+            feature table end
+
+            lookup\ttest-lookup-ctx\tcontext
+            glyph\tb,a\t1,test-lookup-sub
+            lookup end
+
+            lookup\ttest-lookup-sub\tsingle
+            a\tA.sc
+            lookup end
+        ''', fea_type='mti')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'ba'))
 
     def test_contextual_substitution_type2(self):
-        g = self._make_generator(CONTEXTUAL_FORMAT2, fea_type='mti')
+        g = self._make_generator('''
+            FontDame GSUB table
+
+            feature table begin
+            0\ttest\ttest-lookup-ctx
+            feature table end
+
+            lookup\ttest-lookup-ctx\tcontext
+            class definition begin
+            a\t1
+            b\t2
+            c\t3
+            d\t1
+            class definition end
+            class\t1,2,3,1\t1,test-lookup-sub
+            lookup end
+
+            lookup\ttest-lookup-sub\tligature
+            A.sc\ta\tb\tc
+            D.sc\td\tb\tc
+            lookup end
+        ''', fea_type='mti')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'abca'))
         self.assertEqual(g.input_from_name('D.sc'), (('test',), 'dbca'))
 
     def test_chaining_substitution_type1(self):
-        g = self._make_generator(CHAINED_FORMAT1, fea_type='mti')
+        g = self._make_generator('''
+            FontDame GSUB table
+
+            feature table begin
+            0\ttest\ttest-lookup-ctx
+            feature table end
+
+            lookup\ttest-lookup-ctx\tchained
+            glyph\tb\ta\tc\t1,test-lookup-sub
+            lookup end
+
+            lookup\ttest-lookup-sub\tsingle
+            a\tA.sc
+            lookup end
+        ''', fea_type='mti')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'bac'))
 
     def test_chaining_substitution_type3(self):
-        g = self._make_generator(SPEC_5fi1)
+        g = self._make_generator('''
+            lookup CNTXT_LIGS {
+                substitute f i by f_i;
+                substitute c t by c_t;
+            } CNTXT_LIGS;
+
+            lookup CNTXT_SUB {
+                substitute n by n.end;
+                substitute s by s.end;
+            } CNTXT_SUB;
+
+            feature test {
+                substitute [a e i o u]
+                    f' lookup CNTXT_LIGS i' n' lookup CNTXT_SUB;
+                substitute [a e i o u]
+                    c' lookup CNTXT_LIGS t' s' lookup CNTXT_SUB;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('f_i'), (('test',), 'afin'))
         self.assertEqual(g.input_from_name('c_t'), (('test',), 'acts'))
         self.assertEqual(g.input_from_name('n.end'), (('test',), 'afin'))
         self.assertEqual(g.input_from_name('s.end'), (('test',), 'acts'))
 
-        g = self._make_generator(SPEC_5fi2)
+        g = self._make_generator('''
+            feature test {
+                substitute [a e n] d' by d.alt;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('d.alt'), (('test',), 'ad'))
 
     def test_no_feature_rule_takes_precedence(self):
-        g = self._make_generator(SPEC_5fi3)
+        g = self._make_generator('''
+            feature test {
+                substitute [A-Z] [A.sc-Z.sc]' by [a-z];
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('a'), ((), 'a'))
 
-        g = self._make_generator(SPEC_5fi4)
+        g = self._make_generator('''
+            feature test {
+                substitute [e e.begin]' t' c by ampersand;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('ampersand'), ((), '&'))
 
     def test_chaining_substitution_backtrack_reversed(self):
-        g = self._make_generator(CHAINING_REVERSE_BACKTRACK)
+        g = self._make_generator('''
+            feature test {
+                substitute [b e] [c f] a' [d g] by A.sc;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'bcad'))
 
     def test_is_sublist(self):
