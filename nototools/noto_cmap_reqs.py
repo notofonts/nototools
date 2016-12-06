@@ -2811,6 +2811,42 @@ def _assign_programming_lang_symbols(cmap_ops):
   cmap_ops.remove_all(apl_cps - preserve_symbols2_cps, 'SYM2')
 
 
+def _assign_symbols_from_groups(cmap_ops):
+  """Use 'group data' to assign various symbols to Zmth, Zsym, SYM2,
+  MONO, MUSIC' based on character groups.  This fine-tunes the block
+  assignments (some related symbols are scattered across blocks,
+  and symbols blocks are themselves mixed)."""
+
+  cmap_ops.phase('assign symbols from groups')
+  with open('codepoint_groups.txt', 'r') as f:
+    for lineix, line in enumerate(f):
+      ix = line.find('#')
+      if ix >= 0:
+        line = line[:ix]
+      line = line.strip()
+      if not line:
+        continue
+
+      cols = [s.strip() for s in line.split(';')]
+      if not len(cols) == 3:
+        print ('incorrect cols on line %d "%s"' % (lineix, line))
+      if cols[0] == '':
+        # no assignments for this line
+        continue
+
+      add, remove = [], []
+      for s in cols[0].split():
+        (add, remove)[s.startswith('-')].append(s)
+      name = cols[1]
+      cps = tool_utils.parse_int_ranges(cols[2])
+
+      cmap_ops.log('group: %s (%d)' % (name, len(cps))
+      if add:
+        cmap_ops.add_all_to_all(cps, add)
+      if remove:
+        cmap_ops.remove_all_from_all(cps, remove)
+
+
 def _assign_mono(cmap_ops):
   """Monospace should be similar to LGC, with the addition of box drawing
   and block elements.  It should also include all CP437 codepoints."""
@@ -2991,6 +3027,7 @@ def build_script_to_chars(log_level):
   _assign_bidi_mirroring(cmap_ops)
   _unassign_lgc_from_symbols(cmap_ops)
   _assign_programming_lang_symbols(cmap_ops)
+  _assign_symbols_from_groups(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
   _assign_sym2(cmap_ops) # after LGC removed, add back for enclosing keycaps
   _assign_math(cmap_ops)
