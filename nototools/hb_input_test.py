@@ -135,76 +135,84 @@ feature test {
 '''
 
 
+def make_font(feature_source, fea_type='fea'):
+    """Return font with GSUB compiled from given source.
+
+    Adds a bunch of filler tables so the font can be saved if needed, for
+    debugging purposes.
+    """
+
+    font = makeTTFont()
+    glyph_order = font.getGlyphOrder()
+
+    font['cmap'] = cmap = newTable('cmap')
+    table = cmap_format_4(4)
+    table.platformID = 3
+    table.platEncID = 1
+    table.language = 0
+    table.cmap = {AGL2UV[n]: n for n in glyph_order if n in AGL2UV}
+    cmap.tableVersion = 0
+    cmap.tables = [table]
+
+    font['glyf'] = glyf = newTable('glyf')
+    glyf.glyphs = {}
+    glyf.glyphOrder = glyph_order
+    for name in glyph_order:
+        pen = TTGlyphPen(None)
+        glyf[name] = pen.glyph()
+
+    font['head'] = head = newTable('head')
+    head.tableVersion = 1.0
+    head.fontRevision = 1.0
+    head.flags = head.checkSumAdjustment = head.magicNumber =\
+        head.created = head.modified = head.macStyle = head.lowestRecPPEM =\
+        head.fontDirectionHint = head.indexToLocFormat =\
+        head.glyphDataFormat =\
+        head.xMin = head.xMax = head.yMin = head.yMax = 0
+    head.unitsPerEm = 1000
+
+    font['hhea'] = hhea = newTable('hhea')
+    hhea.tableVersion = 0x00010000
+    hhea.ascent = hhea.descent = hhea.lineGap =\
+        hhea.caretSlopeRise = hhea.caretSlopeRun = hhea.caretOffset =\
+        hhea.reserved0 = hhea.reserved1 = hhea.reserved2 = hhea.reserved3 =\
+        hhea.metricDataFormat = hhea.advanceWidthMax = hhea.xMaxExtent =\
+        hhea.minLeftSideBearing = hhea.minRightSideBearing =\
+        hhea.numberOfHMetrics = 0
+
+    font['hmtx'] = hmtx = newTable('hmtx')
+    hmtx.metrics = {}
+    for name in glyph_order:
+        hmtx[name] = (600, 50)
+
+    font['loca'] = newTable('loca')
+
+    font['maxp'] = maxp = newTable('maxp')
+    maxp.tableVersion = 0x00005000
+    maxp.numGlyphs = 0
+
+    font['post'] = post = newTable('post')
+    post.formatType = 2.0
+    post.extraNames = []
+    post.mapping = {}
+    post.glyphOrder = glyph_order
+    post.italicAngle = post.underlinePosition = post.underlineThickness =\
+        post.isFixedPitch = post.minMemType42 = post.maxMemType42 =\
+        post.minMemType1 = post.maxMemType1 = 0
+
+    if fea_type == 'fea':
+        addOpenTypeFeaturesFromString(font, feature_source)
+    elif fea_type == 'mti':
+        font['GSUB'] = mtiLib.build(UnicodeIO(feature_source), font)
+
+    return font
+
+
 class HbInputGeneratorTest(unittest.TestCase):
     def _make_generator(self, feature_source, fea_type='fea'):
-        """Return input generator for font with GSUB compiled from given source.
+        """Return input generator for GSUB compiled from given source."""
 
-        Adds a bunch of filler tables so the font can be saved if needed, for
-        debugging purposes.
-        """
-
-        font = makeTTFont()
-        glyph_order = font.getGlyphOrder()
-
-        font['cmap'] = cmap = newTable('cmap')
-        table = cmap_format_4(4)
-        table.platformID = 3
-        table.platEncID = 1
-        table.language = 0
-        table.cmap = {AGL2UV[n]: n for n in glyph_order if n in AGL2UV}
-        cmap.tableVersion = 0
-        cmap.tables = [table]
-
-        font['glyf'] = glyf = newTable('glyf')
-        glyf.glyphs = {}
-        glyf.glyphOrder = glyph_order
-        for name in glyph_order:
-            pen = TTGlyphPen(None)
-            glyf[name] = pen.glyph()
-
-        font['head'] = head = newTable('head')
-        head.tableVersion = 1.0
-        head.fontRevision = 1.0
-        head.flags = head.checkSumAdjustment = head.magicNumber =\
-            head.created = head.modified = head.macStyle = head.lowestRecPPEM =\
-            head.fontDirectionHint = head.indexToLocFormat =\
-            head.glyphDataFormat =\
-            head.xMin = head.xMax = head.yMin = head.yMax = 0
-        head.unitsPerEm = 1000
-
-        font['hhea'] = hhea = newTable('hhea')
-        hhea.tableVersion = 0x00010000
-        hhea.ascent = hhea.descent = hhea.lineGap =\
-            hhea.caretSlopeRise = hhea.caretSlopeRun = hhea.caretOffset =\
-            hhea.reserved0 = hhea.reserved1 = hhea.reserved2 = hhea.reserved3 =\
-            hhea.metricDataFormat = hhea.advanceWidthMax = hhea.xMaxExtent =\
-            hhea.minLeftSideBearing = hhea.minRightSideBearing =\
-            hhea.numberOfHMetrics = 0
-
-        font['hmtx'] = hmtx = newTable('hmtx')
-        hmtx.metrics = {}
-        for name in glyph_order:
-            hmtx[name] = (600, 50)
-
-        font['loca'] = newTable('loca')
-
-        font['maxp'] = maxp = newTable('maxp')
-        maxp.tableVersion = 0x00005000
-        maxp.numGlyphs = 0
-
-        font['post'] = post = newTable('post')
-        post.formatType = 2.0
-        post.extraNames = []
-        post.mapping = {}
-        post.glyphOrder = glyph_order
-        post.italicAngle = post.underlinePosition = post.underlineThickness =\
-            post.isFixedPitch = post.minMemType42 = post.maxMemType42 =\
-            post.minMemType1 = post.maxMemType1 = 0
-
-        if fea_type == 'fea':
-            addOpenTypeFeaturesFromString(font, feature_source)
-        elif fea_type == 'mti':
-            font['GSUB'] = mtiLib.build(UnicodeIO(feature_source), font)
+        font = make_font(feature_source, fea_type)
         return HbInputGenerator(font)
 
     def test_no_gsub(self):
