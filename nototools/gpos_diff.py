@@ -15,8 +15,8 @@
 
 """Provides GposDiffFinder, which finds differences in ttxn feature output.
 
-GposDiffFinder takes in two paths, to plaintext files containing the output of
-ttxn. It provides methods which compare the OpenType feature contents of these
+GposDiffFinder takes in two paths, to font binaries from which ttxn output is
+made. It provides methods which compare the OpenType feature contents of these
 files: `find_kerning_diffs`, `find_mark_class_diffs`, and
 `find_positioning_diffs`.
 
@@ -28,16 +28,20 @@ differences via a returned string.
 
 from collections import defaultdict
 import re
+import subprocess
+import tempfile
 
 
 class GposDiffFinder:
     """Provides methods to report diffs in GPOS content between ttxn outputs."""
 
     def __init__(self, file_a, file_b, error_bound, output_lines=6):
-        with open(file_a) as ifile:
-            self.text_a = ifile.read()
-        with open(file_b) as ifile:
-            self.text_b = ifile.read()
+        ttxn_file_a = tempfile.NamedTemporaryFile()
+        ttxn_file_b = tempfile.NamedTemporaryFile()
+        subprocess.call(['ttxn', '-o', ttxn_file_a.name, '-f', file_a])
+        subprocess.call(['ttxn', '-o', ttxn_file_b.name, '-f', file_b])
+        self.text_a = ttxn_file_a.read()
+        self.text_b = ttxn_file_b.read()
         self.err = error_bound
         self.out_lines = output_lines
 
