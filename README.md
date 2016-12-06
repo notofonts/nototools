@@ -1,3 +1,5 @@
+[![Travis Build Status](https://travis-ci.org/googlei18n/nototools.svg)](https://travis-ci.org/googlei18n/nototools)
+
 # Noto Tools
 
 The `nototools` python package contains python scripts used to maintain the [Noto Fonts](https://github.com/googlei18n/noto-fonts/) project, including the [google.com/get/noto](https://www.google.com/get/noto) website.
