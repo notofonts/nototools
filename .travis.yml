@@ -13,9 +13,6 @@ install:
   - wget http://download.macromedia.com/pub/developer/opentype/FDK.2.5.65322/FDK-25-LINUX.b65322.zip
   - unzip -q FDK-25-LINUX.b65322.zip
   - PATH="${PATH}:$(pwd)/FDK-25-LINUX.b65322/Tools/linux"
-  - ls FDK-25-LINUX.b65322/Tools/linux
-  - ttxn -h
-  - tx -h
 
 script:
   - cd nototools && ./run_tests
