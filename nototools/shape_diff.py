@@ -109,15 +109,6 @@ class ShapeDiffFinder:
         hb_input_generator_a = hb_input.HbInputGenerator(self.font_a)
         hb_input_generator_b = hb_input.HbInputGenerator(self.font_b)
 
-        a_png_file = tempfile.NamedTemporaryFile()
-        a_png = a_png_file.name
-        b_png_file = tempfile.NamedTemporaryFile()
-        b_png = b_png_file.name
-        cmp_png_file = tempfile.NamedTemporaryFile()
-        cmp_png = cmp_png_file.name
-        diffs_file = tempfile.NamedTemporaryFile()
-        diffs_filename = diffs_file.name
-
         if render_path:
             font_name, _ = os.path.splitext(self.basepath)
             render_path = os.path.join(render_path, font_name)
@@ -177,18 +168,20 @@ class ShapeDiffFinder:
             img_file_a.close()
             img_file_b.close()
 
-            assert height_a == height_b
-            width, height = max(width_a, width_b), height_a
+            width, height = max(width_a, width_b), max(height_a, height_b)
+            offset_ax = (width - width_a) // 2
+            offset_ay = (height - height_a) // 2
+            offset_bx = (width - width_b) // 2
+            offset_by = (height - height_b) // 2
 
             diff = 0
-            offset_a = (width - width_a) // 2
-            offset_b = (width - width_b) // 2
             for y in range(height):
                 for x in range(width):
-                    ax = x - offset_a
-                    bx = x - offset_b
+                    ax, ay = x - offset_ax, y - offset_ay
+                    bx, by = x - offset_bx, y - offset_by
                     if (ax < 0 or bx < 0 or ax >= width_a or bx >= width_b or
-                        data_a[ax + y * width_a] != data_b[bx + y * width_b]):
+                        ay < 0 or by < 0 or ay >= height_a or by >= height_b or
+                        data_a[ax + ay * width_a] != data_b[bx + by * width_b]):
                         diff += 1
 
             if self.ratio_diffs:
@@ -197,8 +190,10 @@ class ShapeDiffFinder:
             if render_path and diff > self.diff_threshold:
                 img_cmp = Image.new('RGB', (width, height))
                 data_cmp = list(img_cmp.getdata())
-                self._project(data_a, width_a, data_cmp, width, height, 1)
-                self._project(data_b, width_b, data_cmp, width, height, 0)
+                self._project(data_a, width_a, height_a,
+                              data_cmp, width, height, 1)
+                self._project(data_b, width_b, height_b,
+                              data_cmp, width, height, 0)
                 for y in range(height):
                     for x in range(width):
                         i = x + y * width
@@ -220,14 +215,16 @@ class ShapeDiffFinder:
             stats.append((diff, name, self.basepath))
 
     def _project(
-            self, src_data, src_width, dst_data, width, height, channel):
+            self, src_data, src_width, src_height,
+            dst_data, width, height, channel):
         """Project a single-channel image onto a channel of an RGB image."""
 
-        offset = (width - src_width) // 2
-        for y in range(height):
+        offset_x = (width - src_width) // 2
+        offset_y = (height - src_height) // 2
+        for y in range(src_height):
             for x in range(src_width):
                 src_i = x + y * src_width
-                dst_i = x + offset + y * width
+                dst_i = x + offset_x + (y + offset_y) * width
                 pixel = list(dst_data[dst_i])
                 pixel[channel] = src_data[src_i]
                 dst_data[dst_i] = tuple(pixel)
