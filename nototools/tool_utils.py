@@ -60,10 +60,7 @@ def resolve_path(somepath):
       key = 'afdko'
     else:
       key = 'noto_' + base
-    if not key in notoconfig.values:
-      print 'notoconfig has no entry for %s' % key
-      return None
-    base = notoconfig.values.get(key)
+    base = notoconfig.get(key)
     while rest.startswith(path.sep):
       rest = rest[len(path.sep):]
     somepath = path.join(base, rest)

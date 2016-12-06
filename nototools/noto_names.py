@@ -693,8 +693,6 @@ def family_to_name_info_for_phase(phase):
   result = _PHASE_TO_NAME_INFO_CACHE.get(phase, None)
   if not result and phase in _PHASE_TO_FILENAME:
     tooldir = tool_utils.resolve_path('[tools]/nototools')
-    if not tooldir:
-      tooldir = path.abspath(path.dirname(__file__))
     result = read_family_name_info_file(
         path.join(tooldir, _PHASE_TO_FILENAME[phase]))
     _PHASE_TO_NAME_INFO_CACHE[phase] = result
