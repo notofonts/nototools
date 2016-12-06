@@ -22,6 +22,8 @@ rules in these files, reporting the differences via a returned string.
 
 
 import re
+import subprocess
+import tempfile
 
 
 class GsubDiffFinder(object):
