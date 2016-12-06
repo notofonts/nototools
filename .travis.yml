@@ -11,9 +11,7 @@ install:
   # for ttxn
   - wget http://download.macromedia.com/pub/developer/opentype/FDK.2.5.65322/FDK-25-LINUX.b65322.zip
   - unzip -q FDK-25-LINUX.b65322.zip
-  - cd FDK-25-LINUX.b65322
-  - ./FinishInstallLinux
-  - cd ..
+  - PATH="${PATH}:$(pwd)/FDK-25-LINUX.b65322/Tools/linux"
 
 script:
   - cd nototools && ./run_tests
