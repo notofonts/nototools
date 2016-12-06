@@ -70,9 +70,8 @@ class GposDiffFinderText(unittest.TestCase):
     def test_multiple_rules(self):
         self._expect_kerning_diffs(
             MULTIPLE_RULES,
-            [('-', 'a', 'd', [-10, -20]), ('-', 'b', 'd', [-20]),
-             ('+', 'a', 'd', [-30])],
-            [])
+            [('-', 'b', 'd', [-20])],
+            [('a', 'd', [-10, -20], [-30])])
 
     def test_single_vs_class(self):
         self._expect_kerning_diffs(

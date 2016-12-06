@@ -176,7 +176,7 @@ class GposDiffFinder:
             sign, left, right = key
             key_match = self._reverse_sign(sign), left, right
             if (key_match in unmatched and
-                len(unmatched[key]) == len(unmatched[key_match])):
+                unmatched[key] and unmatched[key_match]):
                 if sign == '+':
                     key, key_match = key_match, key
                 mismatched[left, right] = (
