@@ -55,7 +55,7 @@ class GposDiffFinder:
 
         unmatched = defaultdict(list)
         mismatched = defaultdict(list)
-        rx = re.compile('pos ([\w\d@_.]+) ([\w\d@_.]+) (-?\d+);')
+        rx = re.compile('pos \[?([\w\d@_.]+)\]? \[?([\w\d@_.]+)\]? (-?\d+);')
         self._parse_kerning(rx, '-', self.text_a, classes_a, unmatched)
         self._parse_kerning(rx, '+', self.text_b, classes_b, unmatched)
         self._organize_kerning_diffs(unmatched, mismatched)

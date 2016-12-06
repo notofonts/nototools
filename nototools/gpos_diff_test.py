@@ -27,6 +27,21 @@ pos a b -30;
 pos a d -40;
 ''')
 
+MULTIPLE_RULES = ('''
+@a_b = [a b];
+pos a d -10;
+pos @a_b d -20;
+''', '''
+pos a d -30;
+''')
+
+SINGLE_VS_CLASS = ('''
+pos a d -10;
+''', '''
+@a_b = [a b];
+pos @a_b d -20;
+''')
+
 
 class GposDiffFinderText(unittest.TestCase):
     def _expect_kerning_diffs(self, sources, pairs, values):
@@ -51,6 +66,19 @@ class GposDiffFinderText(unittest.TestCase):
             SIMPLE,
             [('-', 'a', 'c', [-20]), ('+', 'a', 'd', [-40])],
             [('a', 'b', [-10], [-30])])
+
+    def test_multiple_rules(self):
+        self._expect_kerning_diffs(
+            MULTIPLE_RULES,
+            [('-', 'a', 'd', [-10, -20]), ('-', 'b', 'd', [-20]),
+             ('+', 'a', 'd', [-30])],
+            [])
+
+    def test_single_vs_class(self):
+        self._expect_kerning_diffs(
+            SINGLE_VS_CLASS,
+            [('+', 'b', 'd', [-20])],
+            [('a', 'd', [-10], [-20])])
 
 
 if __name__ == '__main__':
