@@ -13,6 +13,7 @@ install:
   - unzip FDK-25-LINUX.b65322.zip
   - cd FDK-25-LINUX.b65322
   - ./FinishInstallLinux
+  - cd ..
 
 script:
   - cd nototools && ./run_tests
