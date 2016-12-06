@@ -99,7 +99,9 @@ class CmapOps(object):
         'Hangul Jamo Extended-B',
         'Hangul Syllables',
     }
-    self._suppress_cp_report = False
+    self._suppressed_scripts = {
+        'EXCL',
+    }
     self._block = None
     self._undefined_exceptions = undefined_exceptions or set()
 
@@ -114,7 +116,7 @@ class CmapOps(object):
             text, tool_utils.write_int_ranges(
                 self._block_count[text]))
 
-  def _report_cp(self, cp, text):
+  def _report_cp(self, cp, text, script):
     if not self._log_events:
       return
     cp_block = unicode_data.block(cp)
@@ -123,9 +125,10 @@ class CmapOps(object):
       self._block = cp_block
       print '# block: ' + self._block
       self._block_count = collections.defaultdict(set)
-      self._suppress_cp_report = self._block in self._suppressed_blocks
     if self._log_details:
-      if not self._suppress_cp_report:
+      if not (
+          self._block in self._suppressed_blocks or
+          script in self._suppressed_scripts):
         print self._cp_info(cp), text
     else:
       self._block_count[text].add(cp)
@@ -161,7 +164,7 @@ class CmapOps(object):
   def _script_cp_ok_add(self, cp, script):
     if cp not in self._script_to_chars[script]:
       self._script_to_chars[script].add(cp)
-      self._report_cp(cp, 'added to ' + script)
+      self._report_cp(cp, 'added to ' + script, script)
 
   def _script_ok_remove(self, cp, script):
     if unicode_data.is_defined(cp):
@@ -169,7 +172,7 @@ class CmapOps(object):
 
   def _script_cp_ok_remove(self, cp, script):
     if cp in self._script_to_chars[script]:
-      self._report_cp(cp, 'removed from ' + script)
+      self._report_cp(cp, 'removed from ' + script, script)
       self._script_to_chars[script].remove(cp)
 
   def _finish_phase(self):
@@ -2648,7 +2651,9 @@ def _assign_legacy_phase2(cmap_ops):
       cmap_ops.phase('assign legacy %s' % script)
       cmap_ops.add_all(missing_legacy, script)
 
-  """
+
+def _check_CJK():
+  # not used
   # check CJK
   cmap_ops.log('check cjk legacy')
   legacy_cjk_chars = set()
@@ -2667,7 +2672,7 @@ def _assign_legacy_phase2(cmap_ops):
   if not_in_new:
     print 'not in new (%d):' % len(not_in_new)
     compare_cmap_data._print_detailed(not_in_new)
-  """
+
 
 def _assign_bidi_mirroring(cmap_ops):
   """Ensure that if a bidi mirroring char is in a font, its mirrored char
@@ -2697,6 +2702,113 @@ def _unassign_lgc_from_symbols(cmap_ops):
   sym2_set_to_remove = sym2_set & lgc_set
   cmap_ops.remove_all(sym_set_to_remove, 'Zsym')
   cmap_ops.remove_all(sym2_set_to_remove, 'SYM2')
+
+
+def _assign_programming_lang_symbols(cmap_ops):
+  """Assign characters used in programming languages, which generally
+  should be in MONO and in some cases need to be compatible with math
+  in general."""
+
+  def add_mirrored(cps):
+    mirrored_cps = set()
+    for cp in cps:
+      if unicode_data.mirrored(cp):
+        mirrored_glyph = unicode_data.bidi_mirroring_glyph(cp)
+        if mirrored_glyph != None:
+          mirrored_cps.add(mirrored_glyph)
+    cps |= (mirrored_cps)
+
+  # some characters we want to preserve in symbols despite adding them
+  # to math.
+  preserve_symbols_cps = tool_utils.parse_int_ranges(
+      """
+      2190 # LEFTWARDS ARROW
+      2191 # UPWARDS ARROW
+      2192 # RIGHTWARDS ARROW
+      2193 # DOWNWARDS ARROW
+      2194 # LEFT RIGHT ARROW
+      2474 # PARENTHESIZED DIGIT ONE
+      2475 # PARENTHESIZED DIGIT TWO
+      266d # MUSIC FLAT SIGN
+      266f # MUSIC SHARP SIGN
+      27f6 # LONG RIGHTWARDS ARROW
+      """)
+
+  # similarly, preserve some in symbols2
+  preserve_symbols2_cps = tool_utils.parse_int_ranges(
+      """
+      21e8 # RIGHTWARDS WHITE ARROW
+      2219 # BULLET OPERATOR
+      2299 # CIRCLED DOT OPERATOR
+      25a1 # WHITE SQUARE
+      25b7 # WHITE RIGHT-POINTING TRIANGLE
+      25bb # WHITE RIGHT-POINTING POINTER
+      25c2 # BLACK LEFT-POINTING SMALL TRIANGLE
+      25c3 # WHITE LEFT-POINTING SMALL TRIANGLE
+      25c5 # WHITE LEFT-POINTING POINTER
+      25c7 # WHITE DIAMOND
+      25c8 # WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND
+      25cb # WHITE CIRCLE
+      2736 # SIX POINTED BLACK STAR
+      """)
+
+  cmap_ops.phase('programming - haskell')
+  # see noto-fonts#669 agda non-ascii character list
+  haskell_cps = tool_utils.parse_int_ranges(
+      """
+      00a0 00ac 00b2 00b7 00b9 00bd 00d7 00e0 00e9 00f3 00f6-00f7 019b
+      02b0 02b3 02e1-02e2 0307 0393 0398 03a0 03a3 03b5 03b7 03bb-03be
+      03c1 03c3-03c4 03c6 03c8-03c9 2022 2026 2032-2033 203c 203f
+      2045-2046 2070 207a-207b 207f-2089 2113 2115 211a 2124 2190-2194
+      219d-219e 21a0 21a2-21a3 21a6 21d0-21d4 21db 21e8 2200-2201
+      2203-2205 2208-2209 220b 220e 2218-2219 221e 2223 2227-222a
+      2236-2238 223c 2241 2243 2245 2247-224b 2254 2257 225f 2261-2262
+      2264-2265 226c 226e-2273 2275 227a-227b 2286-2288 228e 2291-229c
+      22a4-22a5 22b4 22b8 22c2-22c3 22c6 22c9-22ca 22ce 22d0 22e2
+      2308-230b 236e 2474-2475 25a1 25b7 25bb 25c2-25c3 25c5 25c7-25c8
+      266d 266f 2736 27e6-27eb 27f6 2987-2988 2a00 2a05-2a06 ff5b ff5d
+      """)
+
+  # add extra not in the set above:
+  # (from github.com/adobe-fonts/source-code-pro/issues/114)
+  haskell_cps |= tool_utils.parse_int_ranges(
+      """2202 2210 2220 2234 2235 2284 2285 2289""")
+
+  # add mirrored cps to this set
+  add_mirrored(haskell_cps)
+
+  cmap_ops.add_all_to_all(haskell_cps, ['Zmth', 'MONO'])
+  cmap_ops.remove_all(haskell_cps - preserve_symbols_cps, 'Zsym')
+  cmap_ops.remove_all(haskell_cps - preserve_symbols2_cps, 'SYM2')
+
+  cmap_ops.phase('programming - APL')
+  # For the below APL sets, see noto-fonts#751
+  apl_cps = tool_utils.parse_int_ranges(
+      """
+      0021 0024 0027-0029 002b-002c 002e-002f 003a-003f 005b-005d 005f
+      007b 007d 00a8 00af 00d7 00f7 2190-2193 2205-2207 220a 2212 2218
+      2223 2227-222a 2235 223c 2260-2262 2264-2265 2282-2283 2286-2287
+      2296 22a2-22a5 22c4 22c6 2308 230a 2336-237a 2395 25cb
+      """)
+
+  # do not use circled uppercase letters as a substitute for APL underscored
+  # letters.  Dyalog APL does this and hacks a font to make them to render as
+  # underscored. Also apl385 does this and renders these as underscored.  This
+  # is contrary to Unicode (which should just have gone ahead and encoded these,
+  # but I guess balked since they were already kind of deprecated by that time).
+  # apl_cps |= tool_utils.parse_int_ranges('24B6-24CF')
+
+  # additionally requested relational algebra symbols
+  apl_cps |= tool_utils.parse_int_ranges('22c8-22ca 25b7 27d5-27d7')
+
+  # additionally requested NARS symbols
+  apl_cps |= tool_utils.parse_int_ranges('00a7 03c0 221a 221e 2299')
+
+  add_mirrored(apl_cps)
+
+  cmap_ops.add_all_to_all(apl_cps, ['Zmth', 'MONO'])
+  cmap_ops.remove_all(apl_cps - preserve_symbols_cps, 'Zsym')
+  cmap_ops.remove_all(apl_cps - preserve_symbols2_cps, 'SYM2')
 
 
 def _assign_mono(cmap_ops):
@@ -2878,6 +2990,7 @@ def build_script_to_chars(log_level):
   _assign_legacy_phase2(cmap_ops)
   _assign_bidi_mirroring(cmap_ops)
   _unassign_lgc_from_symbols(cmap_ops)
+  _assign_programming_lang_symbols(cmap_ops)
   _assign_mono(cmap_ops) # after LGC is defined except for basics
   _assign_sym2(cmap_ops) # after LGC removed, add back for enclosing keycaps
   _assign_math(cmap_ops)
