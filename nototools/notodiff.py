@@ -61,7 +61,7 @@ def _shape(
 def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
     """Do a GPOS table comparison and print results.
 
-    path_a and b refer to plaintext files containing ttxn output. print_font
+    path_a and b refer to binaries from which ttxn output is made. print_font
     is a boolean flag designating whether to print path_a (useful if _gpos is
     being called multiple times in succession).
     """
@@ -81,7 +81,7 @@ def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
 def _gsub(path_a, path_b, out_lines, print_font=False):
     """Do a GSUB table comparison and print results.
 
-    path_a and b refer to plaintext files containing ttxn output. print_font
+    path_a and b refer to binaries from which ttxn output is made. print_font
     is a boolean flag designating whether to print path_a (useful if _gsub is
     being called multiple times in succession).
     """
@@ -111,15 +111,13 @@ def _run_multiple(func, filematch, dir_a, dir_b, *args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Compare fonts or ttxn output.')
+        description='Compare fonts.')
     parser.add_argument('--before', required=True)
     parser.add_argument('--after', required=True)
     parser.add_argument('-t', '--diff-type', default='area',
                         choices=('area', 'shape', 'area-shape-product',
                                  'rendered', 'gpos', 'gsub'),
-                        help='type of comparison to run (defaults to "area"), '
-                        'if "gpos" is provided the input paths should point to '
-                        'ttxn output')
+                        help='type of comparison to run (defaults to "area")')
     parser.add_argument('-m', '--match',
                         help='if provided, compares all matching files found '
                         'in PATH_A with respective matches in PATH_B')
