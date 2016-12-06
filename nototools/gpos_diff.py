@@ -16,7 +16,7 @@
 """Provides GposDiffFinder, which finds differences in ttxn feature output.
 
 GposDiffFinder takes in two paths, to font binaries from which ttxn output is
-made. It provides methods which compare the OpenType feature contents of these
+made. It provides methods that compare the OpenType feature contents of these
 files: `find_kerning_diffs`, `find_mark_class_diffs`, and
 `find_positioning_diffs`.
 
