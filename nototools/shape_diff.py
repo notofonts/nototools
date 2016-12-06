@@ -16,13 +16,13 @@
 """Provides ShapeDiffFinder, which finds differences in OTF/TTF glyph shapes.
 
 ShapeDiffFinder takes in two paths, to font binaries. It then provides methods
-which compare these fonts, storing results in a report dictionary. These methods
+that compare these fonts, storing results in a report dictionary. These methods
 are `find_area_diffs`, which compares glyph areas, `find_rendered_diffs`, which
 compares harfbuzz output using PIL, and `find_shape_diffs`, which takes the
 difference of shapes and calculates the area.
 
 Some caveats: glyph areas can be the same even if the shapes are wildly
-different (though they're useful for shapes which should be identical except
+different (though they're useful for shapes that should be identical except
 for some offset). Image comparison is usually either slow (hi-res) or inaccurate
 (lo-res). Still, these are usually useful for raising red flags and catching
 large errors.
@@ -302,7 +302,7 @@ class ShapeDiffFinder:
             stats: List of tuples with diff data which is sorted and printed.
             whitelist: Names of glyphs to exclude from report.
             out_lines: Number of diff lines to print.
-            include_vals: Include the values which have been diffed in report.
+            include_vals: Include the values that have been diffed in report.
             multiple_fonts: Designates whether stats have been accumulated from
                 multiple fonts, if so then font names will be printed as well.
         """

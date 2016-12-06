@@ -15,23 +15,27 @@
 
 """Provides GsubDiffFinder, which finds differences in GSUB tables.
 
-GsubDiffFinder takes in two paths, to plaintext files containing the output of
-ttxn. It provides `find_gsub_diffs` which compares the OpenType substitution
+GsubDiffFinder takes in two paths, to font binaries from which ttxn output is
+made. It provides `find_gsub_diffs` which compares the OpenType substitution
 rules in these files, reporting the differences via a returned string.
 """
 
 
 import re
+import subprocess
+import tempfile
 
 
 class GsubDiffFinder(object):
     """Provides methods to report diffs in GSUB content between ttxn outputs."""
 
     def __init__(self, file_a, file_b, output_lines=20):
-        with open(file_a) as ifile:
-            self.text_a = ifile.read()
-        with open(file_b) as ifile:
-            self.text_b = ifile.read()
+        ttxn_file_a = tempfile.NamedTemporaryFile()
+        ttxn_file_b = tempfile.NamedTemporaryFile()
+        subprocess.call(['ttxn', '-o', ttxn_file_a.name, '-f', file_a])
+        subprocess.call(['ttxn', '-o', ttxn_file_b.name, '-f', file_b])
+        self.text_a = ttxn_file_a.read()
+        self.text_b = ttxn_file_b.read()
         self.file_a = file_a
         self.file_b = file_b
         self.output_lines = output_lines

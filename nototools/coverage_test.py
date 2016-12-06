@@ -20,23 +20,25 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import os
 from os import path
+import tempfile
 import unittest
 
-import coverage
+from nototools import coverage
+from nototools.hb_input_test import make_font
 
 
 class CharacterSetTest(unittest.TestCase):
     """Test class for coverage.character_set."""
     def test_sanity(self):
         """Test basic sanity of the method."""
-        font_file_name = path.join(
-            path.dirname(__file__), os.pardir,
-            'fonts', 'individual', 'unhinted', 'NotoSansAvestan-Regular.ttf')
-        charset = coverage.character_set(font_file_name)
+        font_file = tempfile.NamedTemporaryFile()
+        font = make_font('')
+        font.save(font_file.name)
+        charset = coverage.character_set(font_file.name)
 
         self.assertTrue(ord(' ') in charset)
-        self.assertTrue(0x10B00 in charset)
-        self.assertFalse(ord('A') in charset)
+        self.assertTrue(ord('A') in charset)
+        self.assertFalse(0x10B00 in charset)
 
 
 if __name__ == '__main__':

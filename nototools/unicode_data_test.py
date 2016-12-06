@@ -109,8 +109,7 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertEqual(unicode_data.age(0xE0021), '3.1')
         self.assertEqual(unicode_data.age(0x20BD), '7.0')
         self.assertEqual(unicode_data.age(0x2B820), '8.0')
-        # below will fail once unicode 9 character age data updates
-        self.assertIsNone(unicode_data.age(0x104B0))
+        self.assertEqual(unicode_data.age(0x104B0), '9.0')
 
     def test_bidi_mirroring_glyph(self):
         """Tests the bidi_mirroring_glyph() method."""
@@ -125,7 +124,7 @@ class UnicodeDataTest(unittest.TestCase):
         self.assertEqual(unicode_data.script_code('NKo'), 'Nkoo')
         self.assertEqual(unicode_data.script_code("N'Ko"), 'Nkoo')
         self.assertEqual(unicode_data.script_code('NewTaiLue'), 'Talu')
-        self.assertEqual(unicode_data.script_code('Klingon'), 'Zzzz')
+        self.assertEqual(unicode_data.script_code('Klingon'), 'Piqd')
 
     def test_human_readable_script_name(self):
         """Tests the human_readable_script_name method."""

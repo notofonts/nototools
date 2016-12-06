@@ -15,8 +15,8 @@
 
 """Provides GposDiffFinder, which finds differences in ttxn feature output.
 
-GposDiffFinder takes in two paths, to plaintext files containing the output of
-ttxn. It provides methods which compare the OpenType feature contents of these
+GposDiffFinder takes in two paths, to font binaries from which ttxn output is
+made. It provides methods that compare the OpenType feature contents of these
 files: `find_kerning_diffs`, `find_mark_class_diffs`, and
 `find_positioning_diffs`.
 
@@ -28,16 +28,20 @@ differences via a returned string.
 
 from collections import defaultdict
 import re
+import subprocess
+import tempfile
 
 
 class GposDiffFinder:
     """Provides methods to report diffs in GPOS content between ttxn outputs."""
 
     def __init__(self, file_a, file_b, error_bound, output_lines=6):
-        with open(file_a) as ifile:
-            self.text_a = ifile.read()
-        with open(file_b) as ifile:
-            self.text_b = ifile.read()
+        ttxn_file_a = tempfile.NamedTemporaryFile()
+        ttxn_file_b = tempfile.NamedTemporaryFile()
+        subprocess.call(['ttxn', '-o', ttxn_file_a.name, '-f', file_a])
+        subprocess.call(['ttxn', '-o', ttxn_file_b.name, '-f', file_b])
+        self.text_a = ttxn_file_a.read()
+        self.text_b = ttxn_file_b.read()
         self.err = error_bound
         self.out_lines = output_lines
 
@@ -51,7 +55,7 @@ class GposDiffFinder:
 
         unmatched = defaultdict(list)
         mismatched = defaultdict(list)
-        rx = re.compile('pos ([\w\d@_.]+) ([\w\d@_.]+) (-?\d+);')
+        rx = re.compile('pos \[?([\w\d@_.]+)\]? \[?([\w\d@_.]+)\]? (-?\d+);')
         self._parse_kerning(rx, '-', self.text_a, classes_a, unmatched)
         self._parse_kerning(rx, '+', self.text_b, classes_b, unmatched)
         self._organize_kerning_diffs(unmatched, mismatched)
@@ -172,7 +176,7 @@ class GposDiffFinder:
             sign, left, right = key
             key_match = self._reverse_sign(sign), left, right
             if (key_match in unmatched and
-                len(unmatched[key]) == len(unmatched[key_match])):
+                unmatched[key] and unmatched[key_match]):
                 if sign == '+':
                     key, key_match = key_match, key
                 mismatched[left, right] = (

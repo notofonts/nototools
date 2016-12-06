@@ -28,183 +28,85 @@ from fontTools.ttLib.tables._c_m_a_p import cmap_format_4
 
 from nototools.hb_input import HbInputGenerator
 
-CYCLIC_RULES = '''
-feature onum {
-    sub zero by zero.oldstyle;
-} onum;
 
-feature lnum {
-    sub zero.oldstyle by zero;
-} lnum;
-'''
+def make_font(feature_source, fea_type='fea'):
+    """Return font with GSUB compiled from given source.
 
-CONTEXTUAL_FORMAT1 = '''
-FontDame GSUB table
+    Adds a bunch of filler tables so the font can be saved if needed, for
+    debugging purposes.
+    """
 
-feature table begin
-0\ttest\ttest-lookup-ctx
-feature table end
+    font = makeTTFont()
+    glyph_order = font.getGlyphOrder()
 
-lookup\ttest-lookup-ctx\tcontext
-glyph\tb,a\t1,test-lookup-sub
-lookup end
+    font['cmap'] = cmap = newTable('cmap')
+    table = cmap_format_4(4)
+    table.platformID = 3
+    table.platEncID = 1
+    table.language = 0
+    table.cmap = {AGL2UV[n]: n for n in glyph_order if n in AGL2UV}
+    cmap.tableVersion = 0
+    cmap.tables = [table]
 
-lookup\ttest-lookup-sub\tsingle
-a\tA.sc
-lookup end
-'''
+    font['glyf'] = glyf = newTable('glyf')
+    glyf.glyphs = {}
+    glyf.glyphOrder = glyph_order
+    for name in glyph_order:
+        pen = TTGlyphPen(None)
+        glyf[name] = pen.glyph()
 
-CONTEXTUAL_FORMAT2 = '''
-FontDame GSUB table
+    font['head'] = head = newTable('head')
+    head.tableVersion = 1.0
+    head.fontRevision = 1.0
+    head.flags = head.checkSumAdjustment = head.magicNumber =\
+        head.created = head.modified = head.macStyle = head.lowestRecPPEM =\
+        head.fontDirectionHint = head.indexToLocFormat =\
+        head.glyphDataFormat =\
+        head.xMin = head.xMax = head.yMin = head.yMax = 0
+    head.unitsPerEm = 1000
 
-feature table begin
-0\ttest\ttest-lookup-ctx
-feature table end
+    font['hhea'] = hhea = newTable('hhea')
+    hhea.tableVersion = 0x00010000
+    hhea.ascent = hhea.descent = hhea.lineGap =\
+        hhea.caretSlopeRise = hhea.caretSlopeRun = hhea.caretOffset =\
+        hhea.reserved0 = hhea.reserved1 = hhea.reserved2 = hhea.reserved3 =\
+        hhea.metricDataFormat = hhea.advanceWidthMax = hhea.xMaxExtent =\
+        hhea.minLeftSideBearing = hhea.minRightSideBearing =\
+        hhea.numberOfHMetrics = 0
 
-lookup\ttest-lookup-ctx\tcontext
-class definition begin
-a\t1
-b\t2
-c\t3
-d\t1
-class definition end
-class\t1,2,3,1\t1,test-lookup-sub
-lookup end
+    font['hmtx'] = hmtx = newTable('hmtx')
+    hmtx.metrics = {}
+    for name in glyph_order:
+        hmtx[name] = (600, 50)
 
-lookup\ttest-lookup-sub\tligature
-A.sc\ta\tb\tc
-D.sc\td\tb\tc
-lookup end
-'''
+    font['loca'] = newTable('loca')
 
-CHAINED_FORMAT1 = '''
-FontDame GSUB table
+    font['maxp'] = maxp = newTable('maxp')
+    maxp.tableVersion = 0x00005000
+    maxp.numGlyphs = 0
 
-feature table begin
-0\ttest\ttest-lookup-ctx
-feature table end
+    font['post'] = post = newTable('post')
+    post.formatType = 2.0
+    post.extraNames = []
+    post.mapping = {}
+    post.glyphOrder = glyph_order
+    post.italicAngle = post.underlinePosition = post.underlineThickness =\
+        post.isFixedPitch = post.minMemType42 = post.maxMemType42 =\
+        post.minMemType1 = post.maxMemType1 = 0
 
-lookup\ttest-lookup-ctx\tchained
-glyph\tb\ta\tc\t1,test-lookup-sub
-lookup end
+    if fea_type == 'fea':
+        addOpenTypeFeaturesFromString(font, feature_source)
+    elif fea_type == 'mti':
+        font['GSUB'] = mtiLib.build(UnicodeIO(feature_source), font)
 
-lookup\ttest-lookup-sub\tsingle
-a\tA.sc
-lookup end
-'''
-
-SPEC_5fi1 = '''
-lookup CNTXT_LIGS {
-    substitute f i by f_i;
-    substitute c t by c_t;
-} CNTXT_LIGS;
-
-lookup CNTXT_SUB {
-    substitute n by n.end;
-    substitute s by s.end;
-} CNTXT_SUB;
-
-feature test {
-    substitute [a e i o u] f' lookup CNTXT_LIGS i' n' lookup CNTXT_SUB;
-    substitute [a e i o u] c' lookup CNTXT_LIGS t' s' lookup CNTXT_SUB;
-} test;
-'''
-
-SPEC_5fi2 = '''
-feature test {
-    substitute [a e n] d' by d.alt;
-} test;
-'''
-
-SPEC_5fi3 = '''
-feature test {
-    substitute [A-Z] [A.sc-Z.sc]' by [a-z];
-} test;
-'''
-
-SPEC_5fi4 = '''
-feature test {
-    substitute [e e.begin]' t' c by ampersand;
-} test;
-'''
-
-CHAINING_REVERSE_BACKTRACK = '''
-feature test {
-    substitute [b e] [c f] a' [d g] by A.sc;
-} test;
-'''
+    return font
 
 
 class HbInputGeneratorTest(unittest.TestCase):
     def _make_generator(self, feature_source, fea_type='fea'):
-        """Return input generator for font with GSUB compiled from given source.
+        """Return input generator for GSUB compiled from given source."""
 
-        Adds a bunch of filler tables so the font can be saved if needed, for
-        debugging purposes.
-        """
-
-        font = makeTTFont()
-        glyph_order = font.getGlyphOrder()
-
-        font['cmap'] = cmap = newTable('cmap')
-        table = cmap_format_4(4)
-        table.platformID = 3
-        table.platEncID = 1
-        table.language = 0
-        table.cmap = {AGL2UV[n]: n for n in glyph_order if n in AGL2UV}
-        cmap.tableVersion = 0
-        cmap.tables = [table]
-
-        font['glyf'] = glyf = newTable('glyf')
-        glyf.glyphs = {}
-        glyf.glyphOrder = glyph_order
-        for name in glyph_order:
-            pen = TTGlyphPen(None)
-            glyf[name] = pen.glyph()
-
-        font['head'] = head = newTable('head')
-        head.tableVersion = 1.0
-        head.fontRevision = 1.0
-        head.flags = head.checkSumAdjustment = head.magicNumber =\
-            head.created = head.modified = head.macStyle = head.lowestRecPPEM =\
-            head.fontDirectionHint = head.indexToLocFormat =\
-            head.glyphDataFormat =\
-            head.xMin = head.xMax = head.yMin = head.yMax = 0
-        head.unitsPerEm = 1000
-
-        font['hhea'] = hhea = newTable('hhea')
-        hhea.tableVersion = 0x00010000
-        hhea.ascent = hhea.descent = hhea.lineGap =\
-            hhea.caretSlopeRise = hhea.caretSlopeRun = hhea.caretOffset =\
-            hhea.reserved0 = hhea.reserved1 = hhea.reserved2 = hhea.reserved3 =\
-            hhea.metricDataFormat = hhea.advanceWidthMax = hhea.xMaxExtent =\
-            hhea.minLeftSideBearing = hhea.minRightSideBearing =\
-            hhea.numberOfHMetrics = 0
-
-        font['hmtx'] = hmtx = newTable('hmtx')
-        hmtx.metrics = {}
-        for name in glyph_order:
-            hmtx[name] = (600, 50)
-
-        font['loca'] = newTable('loca')
-
-        font['maxp'] = maxp = newTable('maxp')
-        maxp.tableVersion = 0x00005000
-        maxp.numGlyphs = 0
-
-        font['post'] = post = newTable('post')
-        post.formatType = 2.0
-        post.extraNames = []
-        post.mapping = {}
-        post.glyphOrder = glyph_order
-        post.italicAngle = post.underlinePosition = post.underlineThickness =\
-            post.isFixedPitch = post.minMemType42 = post.maxMemType42 =\
-            post.minMemType1 = post.maxMemType1 = 0
-
-        if fea_type == 'fea':
-            addOpenTypeFeaturesFromString(font, feature_source)
-        elif fea_type == 'mti':
-            font['GSUB'] = mtiLib.build(UnicodeIO(feature_source), font)
+        font = make_font(feature_source, fea_type)
         return HbInputGenerator(font)
 
     def test_no_gsub(self):
@@ -217,41 +119,131 @@ class HbInputGeneratorTest(unittest.TestCase):
         self.assertEqual(g.input_from_name('A.sc'), None)
 
     def test_cyclic_rules_not_followed(self):
-        g = self._make_generator(CYCLIC_RULES)
+        g = self._make_generator('''
+            feature onum {
+                sub zero by zero.oldstyle;
+            } onum;
+
+            feature lnum {
+                sub zero.oldstyle by zero;
+            } lnum;
+        ''')
         self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
 
     def test_contextual_substitution_type1(self):
-        g = self._make_generator(CONTEXTUAL_FORMAT1, fea_type='mti')
+        g = self._make_generator('''
+            FontDame GSUB table
+
+            feature table begin
+            0\ttest\ttest-lookup-ctx
+            feature table end
+
+            lookup\ttest-lookup-ctx\tcontext
+            glyph\tb,a\t1,test-lookup-sub
+            lookup end
+
+            lookup\ttest-lookup-sub\tsingle
+            a\tA.sc
+            lookup end
+        ''', fea_type='mti')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'ba'))
 
     def test_contextual_substitution_type2(self):
-        g = self._make_generator(CONTEXTUAL_FORMAT2, fea_type='mti')
+        g = self._make_generator('''
+            FontDame GSUB table
+
+            feature table begin
+            0\ttest\ttest-lookup-ctx
+            feature table end
+
+            lookup\ttest-lookup-ctx\tcontext
+            class definition begin
+            a\t1
+            b\t2
+            c\t3
+            d\t1
+            class definition end
+            class\t1,2,3,1\t1,test-lookup-sub
+            lookup end
+
+            lookup\ttest-lookup-sub\tligature
+            A.sc\ta\tb\tc
+            D.sc\td\tb\tc
+            lookup end
+        ''', fea_type='mti')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'abca'))
         self.assertEqual(g.input_from_name('D.sc'), (('test',), 'dbca'))
 
     def test_chaining_substitution_type1(self):
-        g = self._make_generator(CHAINED_FORMAT1, fea_type='mti')
+        g = self._make_generator('''
+            FontDame GSUB table
+
+            feature table begin
+            0\ttest\ttest-lookup-ctx
+            feature table end
+
+            lookup\ttest-lookup-ctx\tchained
+            glyph\tb\ta\tc\t1,test-lookup-sub
+            lookup end
+
+            lookup\ttest-lookup-sub\tsingle
+            a\tA.sc
+            lookup end
+        ''', fea_type='mti')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'bac'))
 
     def test_chaining_substitution_type3(self):
-        g = self._make_generator(SPEC_5fi1)
+        g = self._make_generator('''
+            lookup CNTXT_LIGS {
+                substitute f i by f_i;
+                substitute c t by c_t;
+            } CNTXT_LIGS;
+
+            lookup CNTXT_SUB {
+                substitute n by n.end;
+                substitute s by s.end;
+            } CNTXT_SUB;
+
+            feature test {
+                substitute [a e i o u]
+                    f' lookup CNTXT_LIGS i' n' lookup CNTXT_SUB;
+                substitute [a e i o u]
+                    c' lookup CNTXT_LIGS t' s' lookup CNTXT_SUB;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('f_i'), (('test',), 'afin'))
         self.assertEqual(g.input_from_name('c_t'), (('test',), 'acts'))
         self.assertEqual(g.input_from_name('n.end'), (('test',), 'afin'))
         self.assertEqual(g.input_from_name('s.end'), (('test',), 'acts'))
 
-        g = self._make_generator(SPEC_5fi2)
+        g = self._make_generator('''
+            feature test {
+                substitute [a e n] d' by d.alt;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('d.alt'), (('test',), 'ad'))
 
     def test_no_feature_rule_takes_precedence(self):
-        g = self._make_generator(SPEC_5fi3)
+        g = self._make_generator('''
+            feature test {
+                substitute [A-Z] [A.sc-Z.sc]' by [a-z];
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('a'), ((), 'a'))
 
-        g = self._make_generator(SPEC_5fi4)
+        g = self._make_generator('''
+            feature test {
+                substitute [e e.begin]' t' c by ampersand;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('ampersand'), ((), '&'))
 
     def test_chaining_substitution_backtrack_reversed(self):
-        g = self._make_generator(CHAINING_REVERSE_BACKTRACK)
+        g = self._make_generator('''
+            feature test {
+                substitute [b e] [c f] a' [d g] by A.sc;
+            } test;
+        ''')
         self.assertEqual(g.input_from_name('A.sc'), (('test',), 'bcad'))
 
     def test_is_sublist(self):
