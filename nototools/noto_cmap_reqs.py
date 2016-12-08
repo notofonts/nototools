@@ -234,6 +234,12 @@ class CmapOps(object):
         for script in scripts:
           self._script_cp_ok_remove(cp, script)
 
+  def remove_script_from(self, src_script, from_script):
+    self._verify_script_exists(from_script)
+    cps = self.script_chars(src_script)
+    for cp in cps:
+      self._script_ok_remove(cp, from_script)
+
   def move_to_from(self, cp, to_script, from_script):
     self._verify_script_exists(from_script)
     self._verify_script_exists(to_script)
@@ -446,7 +452,7 @@ def _reassign_common_by_block(cmap_ops):
     'Combining Diacritical Marks for Symbols': 'Zsym',
     'Letterlike Symbols': 'LGC',
     'Number Forms': 'Zsym',
-    'Arrows': 'Zsym',
+    'Arrows': 'Zmth',
     'Mathematical Operators': 'Zmth',
     'Miscellaneous Technical': 'Zsym',
     'Control Pictures': 'SYM2',
@@ -458,8 +464,8 @@ def _reassign_common_by_block(cmap_ops):
     'Miscellaneous Symbols': 'Zsym',
     'Dingbats': 'SYM2',
     'Miscellaneous Mathematical Symbols-A': 'Zmth',
-    'Supplemental Arrows-A': 'Zsym',
-    'Supplemental Arrows-B': 'Zsym',
+    'Supplemental Arrows-A': 'Zmth',
+    'Supplemental Arrows-B': 'Zmth',
     'Miscellaneous Mathematical Symbols-B': 'Zmth',
     'Supplemental Mathematical Operators': 'Zmth',
     'Miscellaneous Symbols and Arrows': 'SYM2',
@@ -528,6 +534,13 @@ def _reassign_common_by_block(cmap_ops):
         print >> sys.stderr, '  %s' % block
 
   cmap_ops.delete_script('Zyyy')
+
+
+def _block_cps(block):
+  start, end = unicode_data.block_range(block)
+  return frozenset([
+      cp for cp in range(start, end + 1)
+      if unicode_data.is_defined(cp)])
 
 
 def _reassign_by_block(cmap_ops):
@@ -2730,6 +2743,7 @@ def _assign_programming_lang_symbols(cmap_ops):
       2474 # PARENTHESIZED DIGIT ONE
       2475 # PARENTHESIZED DIGIT TWO
       266d # MUSIC FLAT SIGN
+      266e # MUSIC NATURAL SIGN
       266f # MUSIC SHARP SIGN
       27f6 # LONG RIGHTWARDS ARROW
       """)
@@ -2777,6 +2791,26 @@ def _assign_programming_lang_symbols(cmap_ops):
   # add mirrored cps to this set
   add_mirrored(haskell_cps)
 
+  # add 'leftwards' variants (not mirrored) and a few other variants
+  # because it seems odd to split these groups even if there's no use for
+  # them in haskell.
+  leftwards_variants = tool_utils.parse_int_ranges(
+      """
+    # Arrows
+      219c # LEFTWARDS WAVE ARROW (ref 219d)
+      21a4 # LEFTWARDS ARROW FROM BAR (ref 21a6)
+      21da # LEFTWARDS TRIPLE ARROW (ref 21db)
+      21e6 # LEFTWARDS WHITE ARROW (ref 21e8)
+    # Miscellaneous Technical
+      2310 # REVERSED NOT SIGN (ref 00ac)
+      2319 # TURNED NOT SIGN (ref 00ac)
+    # Miscellaneous Symbols
+      266e # MUSIC NATURAL SIGN (ref 266d)
+    # Supplemental Arrows-A
+      27f5 # LONG LEFTWARDS ARROW (ref 27f6)
+      """)
+  haskell_cps |= leftwards_variants
+
   cmap_ops.add_all_to_all(haskell_cps, ['Zmth', 'MONO'])
   cmap_ops.remove_all(haskell_cps - preserve_symbols_cps, 'Zsym')
   cmap_ops.remove_all(haskell_cps - preserve_symbols2_cps, 'SYM2')
@@ -2806,9 +2840,7 @@ def _assign_programming_lang_symbols(cmap_ops):
 
   add_mirrored(apl_cps)
 
-  cmap_ops.add_all_to_all(apl_cps, ['Zmth', 'MONO'])
-  cmap_ops.remove_all(apl_cps - preserve_symbols_cps, 'Zsym')
-  cmap_ops.remove_all(apl_cps - preserve_symbols2_cps, 'SYM2')
+  cmap_ops.add_all(apl_cps, 'MONO')
 
 
 def _assign_symbols_from_groups(cmap_ops):
@@ -2836,11 +2868,49 @@ def _assign_symbols_from_groups(cmap_ops):
 
       add, remove = [], []
       for s in cols[0].split():
-        (add, remove)[s.startswith('-')].append(s)
+        if s.startswith('-'):
+          remove.append(s[1:])
+        else:
+          add.append(s)
       name = cols[1]
-      cps = tool_utils.parse_int_ranges(cols[2])
 
-      cmap_ops.log('group: %s (%d)' % (name, len(cps))
+      # We use parens to delimit parts of the ranges that are 'for
+      # reference' but should not impact codepoint assignment.
+      # since parse_int_ranges doesn't understand these, strip
+      # out the parenthesized sections. These don't nest but we
+      # don't check for this, only that open ranges are closed.
+      ranges = cols[2]
+      parts = None
+      ix = 0
+      while ix < len(ranges):
+        open_p = ranges.find('(', ix)
+        if open_p < 0:
+          if parts != None:
+            parts.append(ranges[ix:].strip())
+          break
+        close_p = ranges.find(')', open_p+1)
+        if close_p < 0:
+          raise Exception(
+              'unclosed paren in ranges on line %d "%s"' % (lineix, line))
+        if parts == None:
+          parts = []
+        parts.append(ranges[ix:open_p])
+        ix = close_p + 1
+      if parts:
+        ranges = ' '.join(parts)
+
+      try:
+        cps = tool_utils.parse_int_ranges(ranges)
+      except Exception as err:
+        print >> sys.stderr, err
+        print >> sys.stderr, cols[2]
+        print >> sys.stderr, 'problem on %d "%s"' % (lineix, line)
+        raise err
+      if len(cps) > 50:
+        print >> sys.stderr, 'large range (%d) on %d "%s"' % (
+            len(cps), lineix, line)
+
+      cmap_ops.log('group: %s (%d)' % (name, len(cps)))
       if add:
         cmap_ops.add_all_to_all(cps, add)
       if remove:
@@ -2850,9 +2920,11 @@ def _assign_symbols_from_groups(cmap_ops):
 def _assign_mono(cmap_ops):
   """Monospace should be similar to LGC, with the addition of box drawing
   and block elements.  It should also include all CP437 codepoints."""
+
   cmap_ops.phase('assign mono')
   lgc_chars = cmap_ops.script_chars('LGC')
   cmap_ops.add_all(lgc_chars, 'MONO')
+
   cp437_cps = unicode_data.codeset('cp437')
   cmap_ops.phase('assign cp437 to mono')
   assert cp437_cps != None
@@ -2861,9 +2933,8 @@ def _assign_mono(cmap_ops):
   # for variant zero
   cmap_ops.add(0xfe00, 'MONO')
 
-  # add APL to MONO as well?:
-  # apl_chars = tool_utils.parse_int_ranges('2336-237a 2395')
-  # cmap_ops.add_all(apl_chars, 'MONO')
+  # geometric shapes should be in MONO too, many are but they're scattered
+  cmap_ops.add_all(_block_cps('Geometric Shapes'), 'MONO')
 
 
 def _assign_sym2(cmap_ops):
@@ -2878,9 +2949,13 @@ def _assign_sym2(cmap_ops):
 
 
 def _assign_math(cmap_ops):
-  """Add STIX characters (see http://www.stixfonts.org/allGlyphs.html).
-  This does not include PUA characters from that document."""
+  """No longer use STIX character set, we will just fallback for characters
+  not in math.  To this end, we remove any LGC characters except for ascii
+  letters, since combining harpoons/arrows in math might apply to them."""
 
+  cmap_ops.phase('assign math')
+
+  # We keep this here for awhile for reference, but no longer use it.
   STIX_CPS = tool_utils.parse_int_ranges(
       """
       0020-007e 00a0-0180 0188 0190 0192 0195 0199-019b 019e 01a0-01a1 01a5
@@ -2907,39 +2982,17 @@ def _assign_math(cmap_ops):
       1d552-1d6a5 1d6a8-1d7c9 1d7ce-1d7ff
       """)
 
-  """Stix does not include the following that we defaulted to the Math font,
-  assume this is ok:
-    # Miscellaneous Mathematical Symbols-A
-    27C0  # THREE DIMENSIONAL ANGLE
-    27CA  # VERTICAL BAR WITH HORIZONTAL STROKE
-    27CB  # MATHEMATICAL RISING DIAGONAL
-    27CD  # MATHEMATICAL FALLING DIAGONAL
-    27CE  # SQUARED LOGICAL AND
-    27CF  # SQUARED LOGICAL OR
-    # Mathematical Alphanumeric Symbols
-    1D400  # MATHEMATICAL BOLD CAPITAL A
-    1D7CA  # MATHEMATICAL BOLD CAPITAL DIGAMMA
-    1D7CB  # MATHEMATICAL BOLD SMALL DIGAMMA
-    # Arabic Mathematical Alphabetic Symbols
-      - all of these -
+  # Assume fallback will work for these in general
+  cmap_ops.remove_all(cmap_ops.script_chars('LGC'), 'Zmth')
+  cmap_ops.remove_all(cmap_ops.script_chars('SYM2'), 'Zmth')
 
-  math_not_in_stix = set(cmap_ops.script_chars('Zmth')) - STIX_CPS
+  # Add ASCII alphanumerics
+  alphanum = tool_utils.parse_int_ranges('0041-005a 0061-007a')
+  cmap_ops.add_all(alphanum, 'Zmth')
 
-  print 'math_not_in_stix (%d cps):' % len(math_not_in_stix)
-  lines = []
-  cps = math_not_in_stix
-  block = None
-  for cp in sorted(cps):
-    cp_block = unicode_data.block(cp)
-    if cp_block != block:
-      block = cp_block
-      lines.append('# ' + block)
-    cp_name = unicode_data.name(cp, '<unnamed>')
-    lines.append('%04X  # %s' % (cp, cp_name))
-  print '\n'.join(lines)
-  """
-
-  cmap_ops.add_all(STIX_CPS, 'Zmth')
+  # Add back blocks that get split up too arbitrarily
+  cmap_ops.add_all(_block_cps('Mathematical Operators'), 'Zmth')
+  cmap_ops.add_all(_block_cps('Miscellaneous Mathematical Symbols-B'), 'Zmth')
 
 
 def _remove_unwanted(cmap_ops):
