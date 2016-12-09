@@ -362,9 +362,8 @@ def printable_font_versions(font):
 
 
 def _build_cmap_dict(filename):
-    tooldir = tool_utils.resolve_path('[tools]/nototools')
-    data = cmap_data.read_cmap_data_file(
-        path.join(tooldir, filename))
+    filename = tool_utils.resolve_path(filename)
+    data = cmap_data.read_cmap_data_file(filename)
     script_to_rowdata = cmap_data.create_map_from_table(data.table)
     return {script: frozenset(tool_utils.parse_int_ranges(rd.ranges))
             for script, rd in script_to_rowdata.iteritems()}
@@ -376,11 +375,13 @@ def _get_cmap_data_for_phase(phase):
     global _phase_2_map, _phase_3_map
     if phase < 3:
         if not _phase_2_map:
-            _phase_2_map = _build_cmap_dict('noto_cmap_phase2.xml')
+            _phase_2_map = _build_cmap_dict(
+                '[tools]/nototools/data/noto_cmap_phase2.xml')
         return _phase_2_map
     else:
         if not _phase_3_map:
-            _phase_3_map = _build_cmap_dict('noto_cmap_phase3.xml')
+            _phase_3_map = _build_cmap_dict(
+                '[tools]/nototools/data/noto_cmap_phase3.xml')
         return _phase_3_map
 
 
@@ -1944,8 +1945,7 @@ def write_font_props(font_props):
 def main():
     default_config_file = notoconfig.values.get('lint_config')
     if not default_config_file:
-      curdir = path.abspath(path.dirname(__file__))
-      default_config_file = path.join(curdir, 'lint_config.txt')
+      default_config_file = '[tools]/nototools/data/lint_config.txt'
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -2013,6 +2013,7 @@ def main():
 
     if arguments.dump_font_props:
         for font_file_path in arguments.font_files:
+            font_file_path = tool_utils.resolve_path(font_file_path)
             font_props, filename_error = get_font_properties_with_fallback(
                 font_file_path, phase=arguments.phase)
             if filename_error:
@@ -2021,13 +2022,15 @@ def main():
                 write_font_props(font_props)
         return
 
-    lint_spec = get_lint_spec(arguments.config_file, arguments.config)
+    config_file = tool_utils.resolve_path(arguments.config_file)
+    lint_spec = get_lint_spec(config_file, arguments.config)
 
     if arguments.csv and arguments.csv_header:
         print("Type,Script,Style,Variant,Subfamily,Manufacturer,Category,"
               "Hint Status,File Name,Revision,Issue")
 
     for font_file_path in arguments.font_files:
+        font_file_path = tool_utils.resolve_path(font_file_path)
         font_props, filename_error = get_font_properties_with_fallback(
             font_file_path, phase=arguments.phase)
         if not font_props:
