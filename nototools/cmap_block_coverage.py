@@ -33,7 +33,9 @@ _OMITTED = tool_utils.parse_int_ranges("""
     fe00-fe0f  # variation selectors
     feff  # BOM
     e0000-e007f # tags
-    fe000-fe4e4 fe4ef-fe82b fe82d fe838-ffffd  # plane 15 PUA - emoji
+    e0100-e01ff # supplementary variation selectors
+    f0000-ffffd # supplementary PUA
+    # fe000-fe4e4 fe4ef-fe82b fe82d fe838-ffffd  # plane 15 PUA - emoji
     100000-10ffff  # plane 16 pua""")
 _LGC_LIST = ['LGC', 'Latn', 'Grek', 'Cyrl']
 
