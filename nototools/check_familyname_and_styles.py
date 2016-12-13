@@ -26,6 +26,7 @@ import argparse
 import re
 
 from nototools import noto_fonts
+from nototools import tool_utils
 
 _style_re = re.compile(r'--\s+(.*)\s+--')
 _extended_style_re = re.compile(r'^([TRBH]+)(?:/([CR]+)(?:/([RI]+))?)?$')
@@ -124,6 +125,7 @@ def _for_all_familynames(namefile, fn):
 
 
 def check_familynames(namefile):
+  namefile = tool_utils.resolve_path(namefile)
   passed = [True]
   def fn(name, styles):
     name_passed = check_familyname(name, styles)
@@ -136,6 +138,7 @@ def generate_filenames(namefile, outfile):
   namelist = []
   def fn(name, styles):
     namelist.extend(generate_family_filenames(name, styles))
+  namefile = tool_utils.resolve_path(namefile)
   _for_all_familynames(namefile, fn)
   allnames = '\n'.join(namelist)
   if outfile:
@@ -147,7 +150,7 @@ def generate_filenames(namefile, outfile):
 
 
 def main():
-  DEFAULT_NAMEDATA = 'familyname_and_styles.txt'
+  DEFAULT_NAMEDATA = '[tools]/nototools/data/familyname_and_styles.txt'
 
   parser = argparse.ArgumentParser()
   parser.add_argument(

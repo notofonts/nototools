@@ -29,8 +29,6 @@ from xml.etree import ElementTree as ET
 """Generate a coverage.xml file listing the codepoints covered by
 a font family plus a name."""
 
-default_coverage_file = 'noto_cmap_phase2.xml'
-
 MetaData = collections.namedtuple('MetaData', 'date,program,args')
 CmapData = collections.namedtuple('CmapData', 'name,ranges')
 CoverageData = collections.namedtuple('CoverageData', 'metadata,cmapdata')
@@ -211,6 +209,8 @@ def read(coveragefile):
 
 
 def main():
+  default_coverage_file = '[tools]/nototools/data/noto_cmap_phase3.xml'
+
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '-o', '--output_file', help='name of xml file to output', metavar='file')
@@ -228,16 +228,18 @@ def main():
       metavar='file')
   args = parser.parse_args()
 
+  cmap_path = None
   if args.dirs or args.files:
     paths = tool_utils.collect_paths(args.dirs, args.files)
     cps, paths = get_cps_from_files(paths)
   elif args.cmap_data:
-    cps = get_cps_from_cmap_data_file(args.cmap_data)
+    cmap_path = tool_utils.resolve_path(args.cmap_data)
+    cps = get_cps_from_cmap_data_file(cmap_path)
     paths = None
   else:
     print 'Please specify font files, directories, or a cmap data file.'
     return
-  coverage = create(args.name, cps, paths=paths, cmap_data=args.cmap_data)
+  coverage = create(args.name, cps, paths=paths, cmap_data=cmap_path)
   write(coverage, args.output_file)
 
 

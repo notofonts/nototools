@@ -30,7 +30,8 @@ setup(name='nototools',
       dependency_links=['https://github.com/behdad/fontTools/tarball/master#egg=fontTools-3.0'],
       package_data={
           'nototools': [
-              'nototools/*.sh',
+              '*.sh',
+              'data/*',
           ]
       },
       # $ grep "def main(" nototools/* | cut -d: -f1

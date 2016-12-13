@@ -81,8 +81,8 @@ APACHE_LICENSE_URL = "http://www.apache.org/licenses/LICENSE-2.0"
 
 # default files where we store family name info
 FAMILY_NAME_INFO_FILE='family_name_info.xml'
-PHASE_2_FAMILY_NAME_INFO_FILE = 'family_name_info_p2.xml'
-PHASE_3_FAMILY_NAME_INFO_FILE = 'family_name_info_p3.xml'
+PHASE_2_FAMILY_NAME_INFO_FILE = '[tools]/nototools/data/family_name_info_p2.xml'
+PHASE_3_FAMILY_NAME_INFO_FILE = '[tools]/nototools/data/family_name_info_p3.xml'
 
 # Represents how we write family names in the name table.
 #
@@ -673,6 +673,7 @@ def _read_tree(root):
 
 
 def write_family_name_info_file(family_to_name_info, filename, pretty=False):
+  filename = tool_utils.resolve_path(filename)
   _build_tree(family_to_name_info, pretty).write(
       filename, encoding='utf8', xml_declaration=True)
 
@@ -691,16 +692,16 @@ _PHASE_TO_FILENAME = {
 def family_to_name_info_for_phase(phase):
   """Phase is an int, either 2 or 3."""
   result = _PHASE_TO_NAME_INFO_CACHE.get(phase, None)
-  if not result and phase in _PHASE_TO_FILENAME:
-    tooldir = tool_utils.resolve_path('[tools]/nototools')
-    result = read_family_name_info_file(
-        path.join(tooldir, _PHASE_TO_FILENAME[phase]))
+  if not result:
+    filename = _PHASE_TO_FILENAME[phase]
+    result = read_family_name_info_file(filename)
     _PHASE_TO_NAME_INFO_CACHE[phase] = result
   return result
 
 
 def read_family_name_info_file(filename):
   """Returns a map from preferred family name to FontNameInfo."""
+  filename = tool_utils.resolve_path(filename)
   return _read_tree(ET.parse(filename).getroot())
 
 
@@ -876,10 +877,11 @@ def main():
     if not args.info_file:
       print 'must specify an info file to dump'
       return
-    if not path.exists(args.info_file):
+    info_file = tool_utils.resolve_path(args.info_file)
+    if not path.exists(info_file):
       print '"%s" does not exist.' % args.info_file
       return
-    _dump(fonts, args.info_file, args.phase)
+    _dump(fonts, info_file, args.phase)
   elif args.cmd == 'write':
     if not args.phase:
       print 'Must specify phase when generating info.'
