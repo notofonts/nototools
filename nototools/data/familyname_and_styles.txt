@@ -5,6 +5,7 @@
 -- TRBH/CR/RI --
 NotoSans
 NotoSansDisplay
+NotoSansUI
 -- TRBH/CR --
 NotoSansMonospace
 -- TRBH/CR/RI --
@@ -30,8 +31,8 @@ NotoSerifHebrew  # no New
 NotoSansDevanagari
 NotoSansDevanagariUI
 NotoSerifDevanagari
-NotoSansArabicNew
-NotoSansArabicNewUI
+NotoSansArabic
+NotoSansArabicUI
 NotoSerifArabic  # was Naskh
 NotoSansGeorgian
 NotoSerifGeorgian
@@ -204,3 +205,40 @@ NotoSansYi
 -- RB/R/RI --
 Arimo
 Tinos
+
+#extras
+Cousine
+-- R --
+NotoEmoji
+NotoColorEmoji
+-- R --
+NotoMono
+
+# CJK
+-- TRBH --
+noto-cjk/NotoSansCJKjp
+noto-cjk/NotoSansCJKkr
+noto-cjk/NotoSansCJKsc
+noto-cjk/NotoSansCJKtc
+noto-cjk/NotoSansMonoCJKjp
+noto-cjk/NotoSansMonoCJKkr
+noto-cjk/NotoSansMonoCJKsc
+noto-cjk/NotoSansMonoCJKtc
+noto-cjk/NotoSansKR
+noto-cjk/NotoSansJP
+noto-cjk/NotoSansSC
+noto-cjk/NotoSansTC
+
+# legacy fonts
+-- RB --
+NotoKufiArabic
+NotoNaskhArabic
+NotoNaskhArabicUI
+NotoSansCham
+NotoSansKhmr
+NotoSansKhmrUI
+NotoSerifKhmr
+NotoSansLao
+NotoSansLaoUI
+NotoSerifLao
+
