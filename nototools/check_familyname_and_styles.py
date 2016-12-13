@@ -134,12 +134,14 @@ def check_familynames(namefile):
   return passed[0]
 
 
-def generate_filenames(namefile, outfile):
+def generate_filenames(namefile, outfile, sort=False):
   namelist = []
   def fn(name, styles):
     namelist.extend(generate_family_filenames(name, styles))
   namefile = tool_utils.resolve_path(namefile)
   _for_all_familynames(namefile, fn)
+  if sort:
+    namelist.sort()
   allnames = '\n'.join(namelist)
   if outfile:
     with open(outfile, 'w') as f:
@@ -160,6 +162,9 @@ def main():
   parser.add_argument(
       '-c', '--check', help='check family name/style data', action='store_true')
   parser.add_argument(
+      '-s', '--sort', help='sort generated filenames before write',
+      action='store_true')
+  parser.add_argument(
       '-w', '--write', help='write filenames, default stdout', nargs='?',
       const='stdout', metavar='file')
   args = parser.parse_args()
@@ -175,7 +180,7 @@ def main():
     outfile = None if args.write == 'stdout' else args.write
     if not outfile and args.check:
       print
-    generate_filenames(args.familynamedata, outfile)
+    generate_filenames(args.familynamedata, outfile, args.sort)
     if outfile:
       print 'Wrote', outfile
 
