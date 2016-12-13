@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf8'?>
-<family_name_data date="2016-05-19">
+<family_name_data date="2016-12-12">
   <info family="arimo-lgc" />
   <info family="cousine-lgc" />
   <info family="emoji-zsye" />
@@ -12,8 +12,8 @@
   <info family="sans-adlm" />
   <info family="sans-aghb" />
   <info family="sans-ahom" />
-  <info family="sans-arab-new" family_name_style="very short" use_preferred="t" />
-  <info family="sans-arab-new-ui" family_name_style="extra short" use_preferred="t" />
+  <info family="sans-arab" family_name_style="short" use_preferred="t" />
+  <info family="sans-arab-ui" family_name_style="very short" use_preferred="t" />
   <info family="sans-armi" />
   <info family="sans-armn" family_name_style="very short" use_preferred="t" />
   <info family="sans-avst" />
@@ -33,10 +33,10 @@
   <info family="sans-cham" />
   <info family="sans-cham-new" use_preferred="t" />
   <info family="sans-cher" use_preferred="t" />
-  <info family="sans-cjk-jp" use_preferred="t" />
-  <info family="sans-cjk-kr" use_preferred="t" />
-  <info family="sans-cjk-sc" use_preferred="t" />
-  <info family="sans-cjk-tc" use_preferred="t" />
+  <info family="sans-cjk-jp" include_regular="t" use_preferred="t" />
+  <info family="sans-cjk-kr" include_regular="t" use_preferred="t" />
+  <info family="sans-cjk-sc" include_regular="t" use_preferred="t" />
+  <info family="sans-cjk-tc" include_regular="t" use_preferred="t" />
   <info family="sans-copt" />
   <info family="sans-cprt" />
   <info family="sans-deva" family_name_style="very short" use_preferred="t" />
@@ -55,8 +55,8 @@
   <info family="sans-guru" family_name_style="very short" use_preferred="t" />
   <info family="sans-guru-ui" family_name_style="very short" use_preferred="t" />
   <info family="sans-hano" />
-  <info family="sans-hans" use_preferred="t" />
-  <info family="sans-hant" use_preferred="t" />
+  <info family="sans-hans" include_regular="t" use_preferred="t" />
+  <info family="sans-hant" include_regular="t" use_preferred="t" />
   <info family="sans-hatr" />
   <info family="sans-hebr" />
   <info family="sans-hebr-new" family_name_style="very short" use_preferred="t" />
@@ -65,7 +65,7 @@
   <info family="sans-hung" />
   <info family="sans-ital" />
   <info family="sans-java" />
-  <info family="sans-jpan" use_preferred="t" />
+  <info family="sans-jpan" include_regular="t" use_preferred="t" />
   <info family="sans-kali" />
   <info family="sans-khar" />
   <info family="sans-khmr" />
@@ -75,7 +75,7 @@
   <info family="sans-khoj" />
   <info family="sans-knda" family_name_style="short" use_preferred="t" />
   <info family="sans-knda-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-kore" use_preferred="t" />
+  <info family="sans-kore" include_regular="t" use_preferred="t" />
   <info family="sans-kthi" />
   <info family="sans-lana" />
   <info family="sans-laoo" />
@@ -85,7 +85,7 @@
   <info family="sans-lepc" />
   <info family="sans-lgc" family_name_style="short" use_preferred="t" />
   <info family="sans-lgc-display" family_name_style="short" use_preferred="t" />
-  <info family="sans-lgc-ui" />
+  <info family="sans-lgc-ui" family_name_style="short" use_preferred="t" />
   <info family="sans-limb" />
   <info family="sans-lina" />
   <info family="sans-linb" />
@@ -171,7 +171,6 @@
   <info family="sans-xpeo" />
   <info family="sans-xsux" />
   <info family="sans-yiii" />
-  <info family="sans-zmth" />
   <info family="sans-zsym" use_preferred="t" />
   <info family="serif-arab" family_name_style="short" use_preferred="t" />
   <info family="serif-armn" family_name_style="very short" use_preferred="t" />

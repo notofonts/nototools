@@ -98,11 +98,11 @@ PHASE_3_FAMILY_NAME_INFO_FILE = '[tools]/nototools/data/family_name_info_p3.xml'
 # Preferred names are actually WWS names, non-wws fields are promoted
 # to the family and WWS name fields are never populated.
 #
-# If omit_regular is true, postscript and full names exclude the subfamily
-# when it is 'Regular' (Noto phase 2 non-CJK behavior).
+# If include_regular is true, postscript and full names include the subfamily
+# when it is 'Regular' (CJK behavior).
 FamilyNameInfo = collections.namedtuple(
     'FamilyNameInfo',
-    'no_style_linking, use_preferred, omit_regular, family_name_style')
+    'no_style_linking, use_preferred, include_regular, family_name_style')
 
 # Represents expected name table data for a font.
 # Fields expected to be empty are None.  Fields that are expected
@@ -362,22 +362,22 @@ def _copyright_re(noto_font):
     return GOOGLE_COPYRIGHT_RE
 
 
-def _full_name(preferred_family, preferred_subfamily, omit_regular):
+def _full_name(preferred_family, preferred_subfamily, include_regular):
   wws_family, wws_subfamily = _wws_parts(preferred_family, preferred_subfamily)
   result = wws_family[:]
   for n in wws_subfamily:
-    if n not in result and (not omit_regular or n != 'Regular'):
+    if n not in result and (include_regular or n != 'Regular'):
       result.append(n)
   return ' '.join(result)
 
 
-def _postscript_name(preferred_family, preferred_subfamily, omit_regular):
+def _postscript_name(preferred_family, preferred_subfamily, include_regular):
   wws_family, wws_subfamily = _wws_parts(preferred_family, preferred_subfamily)
   # fix for names with punctuation
   punct_re = re.compile("[\s'-]")
   result = ''.join(punct_re.sub('', p) for p in wws_family)
   tail = [n for n in wws_subfamily if
-          n not in wws_family and (not omit_regular or n != 'Regular')]
+          n not in wws_family and (include_regular or n != 'Regular')]
   if tail:
     result += '-' + ''.join(tail)
 
@@ -543,10 +543,10 @@ def name_table_data(noto_font, family_to_name_info, phase):
       original_family=ofn,
       original_subfamily=osfn,
       unique_id='-',
-      full_name=_full_name(family_parts, subfamily_parts, info.omit_regular),
+      full_name=_full_name(family_parts, subfamily_parts, info.include_regular),
       version_re=_version_re(noto_font, phase),
       postscript_name=_postscript_name(
-          family_parts, subfamily_parts, info.omit_regular),
+          family_parts, subfamily_parts, info.include_regular),
       trademark=_trademark(noto_font),
       manufacturer=_manufacturer(noto_font),
       designer=_designer(noto_font, phase),
@@ -588,6 +588,9 @@ def _select_name_style(styles):
 
 
 def create_family_to_name_info(notofonts, phase):
+  if phase not in [2, 3]:
+    raise ValueError('expected phase 2 or 3 but got "%s"' % phase)
+
   family_to_parts = collections.defaultdict(set)
   family_to_name_styles = collections.defaultdict(set)
   cjk_families = set()
@@ -611,13 +614,12 @@ def create_family_to_name_info(notofonts, phase):
     family_is_cjk = family_id in cjk_families
     no_style_linking = phase == 2 and family_is_cjk
     use_preferred = no_style_linking or bool(part_set - _ORIGINAL_PARTS)
-    # In phase 3, we keep 'Regular' in the postscript/full name always, prior to
-    # that we only do so for CJK.
-    omit_regular = phase == 2 and not family_is_cjk
+    # Keep 'Regular' in the postscript/full name only for CJK.
+    include_regular = family_is_cjk
     name_style = 'normal' if phase == 2 else _select_name_style(
         family_to_name_styles[family_id])
     result[family_id] = FamilyNameInfo(
-        no_style_linking, use_preferred, omit_regular, name_style)
+        no_style_linking, use_preferred, include_regular, name_style)
   return result
 
 
@@ -658,7 +660,7 @@ def _read_info_element(info_node):
   return FamilyNameInfo(
       bval('no_style_linking'),
       bval('no_style_linking') or bval('use_preferred') or bval('use_wws'),
-      bval('omit_regular'),
+      bval('include_regular'),
       nval('family_name_style'))
 
 
