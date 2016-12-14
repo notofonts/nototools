@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Copyright 2015 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +31,7 @@ import os
 from os import path
 
 # 'NOTOTOOLS_DIR' and 'DEFAULT_NOTOTOOLS' apparently don't work
-DEFAULT_ROOT = path.dirname(path.dirname(__file__))
+DEFAULT_ROOT = path.dirname(path.dirname(path.abspath(__file__)))
 
 values = {}
 
@@ -86,3 +87,12 @@ def get(key):
       return DEFAULT_ROOT
     raise Exception('.notoconfig has no entry for "%s"' % key)
   return values[key]
+
+
+if __name__ == '__main__':
+  keyset = set(values.keys())
+  keyset.add('noto_tools')
+  wid = max(len(k) for k in keyset)
+  fmt = '%%%ds: %%s' % wid
+  for k in sorted(keyset):
+    print fmt % (k, get(k))
