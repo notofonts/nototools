@@ -24,6 +24,7 @@ import subprocess
 
 import font_caching
 
+from fontTools.pens.boundsPen import BoundsPen
 
 def min_with_none(first, second):
     """Returns the minimum of the two inputs, ignoring Nones."""
@@ -44,12 +45,21 @@ def max_with_none(first, second):
     else:
         return max(first, second)
 
+
 def transform_y(transform, y_value):
     """Applies a transform matrix to a y coordinate."""
     return int(round(y_value * transform[1][1]))
 
 
-def get_glyph_cleaned_extents(glyph, glyf_table):
+def get_glyph_cleaned_extents(ttglyph, glyf_set):
+    pen = BoundsPen(glyf_set, ignoreSinglePoints=True)
+    ttglyph.draw(pen)
+    if not pen.bounds:
+      return None, None
+    return pen.bounds[1], pen.bounds[3]
+
+
+def get_glyph_cleaned_extents_OLD(glyph, glyf_table):
     """Get the vertical extent of glyphs, ignoring single-point contours.
 
     This is take care of weirdness in the various fonts, who may need the
@@ -113,12 +123,12 @@ def get_glyph_cleaned_extents(glyph, glyf_table):
 def get_glyph_vertical_extents(glyph_id, font_file_name):
     """Returns visible vertical extents given a glyph ID and font name."""
     font = font_caching.open_font(font_file_name)
-    glyf_table = font['glyf']
+    glyph_set = font.getGlyphSet()
 
-    glyph_name = glyf_table.getGlyphName(glyph_id)
-    glyph = glyf_table.glyphs[glyph_name]
+    glyph_name = font.getGlyphName(glyph_id)
+    ttglyph = glyf_set[glyph_name]
 
-    return get_glyph_cleaned_extents(glyph, glyf_table)
+    return get_glyph_cleaned_extents(ttglyph, glyf_set)
 
 
 # FIXME: figure out how to make this configurable

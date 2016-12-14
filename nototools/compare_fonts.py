@@ -270,8 +270,8 @@ class FontCompare(object):
     if self._skip('bounds'):
       return
 
-    target_glyf = self.target['glyf']
-    test_glyf = self.test['glyf']
+    target_glyphset = self.target.getGlyphSet()
+    test_glyphset = self.test.getGlyphSet()
 
     target_max = self.target['OS/2'].usWinAscent
     test_max = self.test['OS/2'].usWinAscent
@@ -286,10 +286,12 @@ class FontCompare(object):
         continue
       target_glyph_name = self.target_cmap[cp]
       test_glyph_name = self.test_cmap[cp]
-      target_glyph = target_glyf[target_glyph_name]
-      test_glyph = test_glyf[test_glyph_name]
-      target_ymin, target_ymax = render.get_glyph_cleaned_extents(target_glyph, target_glyf)
-      test_ymin, test_ymax = render.get_glyph_cleaned_extents(test_glyph, test_glyf)
+      target_ttglyph = target_glyphset[target_glyph_name]
+      test_ttglyph = test_glyphset[test_glyph_name]
+      target_ymin, target_ymax = render.get_glyph_cleaned_extents(
+          target_ttglyph, target_glyphset)
+      test_ymin, test_ymax = render.get_glyph_cleaned_extents(
+          test_ttglyph, test_glyphset)
       target_exceeds_max = target_ymax > target_max
       target_exceeds_min = target_ymin < target_min
       test_exceeds_max = test_ymax > test_max
@@ -498,16 +500,27 @@ def get_reference_name_2(name):
   return _ref_name_2_map.get(name)
 
 
+def get_target_path(name, target_dir):
+  target_name = get_reference_name_2(name)
+  if not target_name:
+    raise ValueError('could not find target name for %s' % name)
+  target_path = path.join(target_dir, target_name)
+  if not path.isfile(target_path):
+    # fall back
+    target_name = get_reference_name_1(name)
+    target_path = path.join(target_dir, target_name)
+  return target_path
+
+
 def check_fonts(target_dir, fonts, incremental_version=False, emit_config=False, reverse=False,
                 ignored_cp=None, only_cp=None, enabled_tests=None):
   for font in fonts:
     target_name = path.basename(font)
     if not incremental_version:
-      target_name = get_reference_name_2(target_name)
-      if not target_name:
-        raise ValueError('could not find target name for %s' % path.basename(font))
+      target_path = get_target_path(target_name, target_dir)
+    else:
+      target_path = path.join(target_dir, target_name)
 
-    target_path = path.join(target_dir, target_name)
     if not path.isfile(target_path):
       raise ValueError('could not find %s in target dir %s' % (
           target_name, target_dir))

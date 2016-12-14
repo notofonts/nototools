@@ -1120,11 +1120,14 @@ def check_font(font_props, filename_error,
 
         font_ymin = None
         font_ymax = None
+        glyph_set = font.getGlyphSet()
         for glyph_index in range(len(glyf_table.glyphOrder)):
             glyph_name = glyf_table.glyphOrder[glyph_index]
             glyph = glyf_table[glyph_name]
             # Compute the ink's yMin and yMax
-            ymin, ymax = render.get_glyph_cleaned_extents(glyph, glyf_table)
+
+            ttglyph = glyph_set[glyph_name]
+            ymin, ymax = render.get_glyph_cleaned_extents(ttglyph, glyph_set)
             font_ymin = render.min_with_none(font_ymin, ymin)
             font_ymax = render.max_with_none(font_ymax, ymax)
 
