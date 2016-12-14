@@ -376,8 +376,7 @@ def _postscript_name(preferred_family, preferred_subfamily, include_regular):
   # fix for names with punctuation
   punct_re = re.compile("[\s'-]")
   result = ''.join(punct_re.sub('', p) for p in wws_family)
-  tail = [n for n in wws_subfamily if
-          n not in wws_family and (include_regular or n != 'Regular')]
+  tail = [n for n in wws_subfamily if n not in wws_family]
   if tail:
     result += '-' + ''.join(tail)
 
