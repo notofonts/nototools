@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf8'?>
-<family_name_data date="2016-12-12">
+<family_name_data date="2016-12-14">
   <info family="arimo-lgc" />
   <info family="cousine-lgc" />
   <info family="emoji-zsye" />
   <info family="emoji-zsye-color" />
   <info family="kufi-arab" />
-  <info family="mono-mono" />
+  <info family="mono-mono" use_preferred="t" />
   <info family="naskh-arab" />
   <info family="naskh-arab-ui" />
   <info family="nastaliq-aran" />
@@ -30,7 +30,7 @@
   <info family="sans-cakm" />
   <info family="sans-cans" family_name_style="extra short" use_preferred="t" />
   <info family="sans-cari" />
-  <info family="sans-cham" />
+  <info family="sans-cham" use_preferred="t" />
   <info family="sans-cham-new" use_preferred="t" />
   <info family="sans-cher" use_preferred="t" />
   <info family="sans-cjk-jp" include_regular="t" use_preferred="t" />
@@ -58,7 +58,7 @@
   <info family="sans-hans" include_regular="t" use_preferred="t" />
   <info family="sans-hant" include_regular="t" use_preferred="t" />
   <info family="sans-hatr" />
-  <info family="sans-hebr" />
+  <info family="sans-hebr" family_name_style="short" use_preferred="t" />
   <info family="sans-hebr-new" family_name_style="very short" use_preferred="t" />
   <info family="sans-hluw" />
   <info family="sans-hmng" />
@@ -68,20 +68,20 @@
   <info family="sans-jpan" include_regular="t" use_preferred="t" />
   <info family="sans-kali" />
   <info family="sans-khar" />
-  <info family="sans-khmr" />
+  <info family="sans-khmr" family_name_style="short" use_preferred="t" />
   <info family="sans-khmr-new" family_name_style="very short" use_preferred="t" />
-  <info family="sans-khmr-new-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-khmr-ui" />
+  <info family="sans-khmr-new-ui" family_name_style="extra short" use_preferred="t" />
+  <info family="sans-khmr-ui" family_name_style="very short" use_preferred="t" />
   <info family="sans-khoj" />
   <info family="sans-knda" family_name_style="short" use_preferred="t" />
   <info family="sans-knda-ui" family_name_style="very short" use_preferred="t" />
   <info family="sans-kore" include_regular="t" use_preferred="t" />
   <info family="sans-kthi" />
   <info family="sans-lana" />
-  <info family="sans-laoo" />
+  <info family="sans-laoo" family_name_style="short" use_preferred="t" />
   <info family="sans-laoo-new" family_name_style="short" use_preferred="t" />
   <info family="sans-laoo-new-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-laoo-ui" />
+  <info family="sans-laoo-ui" family_name_style="short" use_preferred="t" />
   <info family="sans-lepc" />
   <info family="sans-lgc" family_name_style="short" use_preferred="t" />
   <info family="sans-lgc-display" family_name_style="short" use_preferred="t" />
@@ -100,7 +100,7 @@
   <info family="sans-merc" />
   <info family="sans-mero" />
   <info family="sans-mlym" family_name_style="very short" use_preferred="t" />
-  <info family="sans-mlym-ui" family_name_style="very short" use_preferred="t" />
+  <info family="sans-mlym-ui" family_name_style="extra short" use_preferred="t" />
   <info family="sans-modi" />
   <info family="sans-mong" />
   <info family="sans-mroo" />
@@ -144,7 +144,7 @@
   <info family="sans-sylo" />
   <info family="sans-sym2" />
   <info family="sans-syrc-eastern" family_name_style="short" use_preferred="t" />
-  <info family="sans-syrc-estrangela" family_name_style="very short" use_preferred="t" />
+  <info family="sans-syrc-estrangela" family_name_style="extra short" use_preferred="t" />
   <info family="sans-syrc-western" family_name_style="short" use_preferred="t" />
   <info family="sans-tagb" />
   <info family="sans-takr" />
@@ -159,10 +159,10 @@
   <info family="sans-tfng" />
   <info family="sans-tglg" />
   <info family="sans-thaa" use_preferred="t" />
-  <info family="sans-thai" />
+  <info family="sans-thai" use_preferred="t" />
   <info family="sans-thai-new" family_name_style="very short" use_preferred="t" />
   <info family="sans-thai-new-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-thai-ui" />
+  <info family="sans-thai-ui" use_preferred="t" />
   <info family="sans-tibt" use_preferred="t" />
   <info family="sans-tirh" />
   <info family="sans-ugar" />
@@ -181,10 +181,10 @@
   <info family="serif-gujr" use_preferred="t" />
   <info family="serif-guru" use_preferred="t" />
   <info family="serif-hebr" family_name_style="short" use_preferred="t" />
-  <info family="serif-khmr" />
+  <info family="serif-khmr" family_name_style="short" use_preferred="t" />
   <info family="serif-khmr-new" family_name_style="very short" use_preferred="t" />
   <info family="serif-knda" use_preferred="t" />
-  <info family="serif-laoo" />
+  <info family="serif-laoo" family_name_style="short" use_preferred="t" />
   <info family="serif-laoo-new" family_name_style="very short" use_preferred="t" />
   <info family="serif-lgc" family_name_style="short" use_preferred="t" />
   <info family="serif-lgc-display" family_name_style="short" use_preferred="t" />
