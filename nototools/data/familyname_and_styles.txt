@@ -11,21 +11,20 @@ NotoSansMonospace
 -- TRBH/CR/RI --
 NotoSerif
 NotoSerifDisplay
--- TRH --
+-- TRBH --
 NotoSansSymbols
 -- R --
 NotoSansSymbols2
 NotoMath
--- RB --
+-- TRBH --
 NotoSansThai
 NotoSansThaiUI
 -- TRBH/CR --
 NotoSansThaiNew
 NotoSansThaiNewUI
 NotoSerifThai
--- R --
-NotoSansHebrew
 -- TRBH/CR --
+NotoSansHebrew
 NotoSansHebrewNew
 NotoSerifHebrew  # no New
 NotoSansDevanagari
@@ -84,7 +83,7 @@ NotoSansEthiopic
 NotoSerifEthiopic
 -- RB --
 NotoNastaliqUrdu
--- TRH --
+-- TRBH --
 NotoSansOriya
 NotoSansOriyaUI
 NotoSerifOriya
@@ -211,7 +210,7 @@ Cousine
 -- R --
 NotoEmoji
 NotoColorEmoji
--- R --
+-- LB --
 NotoMono
 
 # CJK
@@ -234,10 +233,14 @@ noto-cjk/NotoSansTC
 NotoKufiArabic
 NotoNaskhArabic
 NotoNaskhArabicUI
+
+# legacy names since we haven't decided on naming yet
+-- TRBH --
 NotoSansCham
-NotoSansKhmr
-NotoSansKhmrUI
-NotoSerifKhmr
+-- TRBH/CR --
+NotoSansKhmer
+NotoSansKhmerUI
+NotoSerifKhmer
 NotoSansLao
 NotoSansLaoUI
 NotoSerifLao

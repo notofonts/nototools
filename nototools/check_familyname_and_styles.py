@@ -29,53 +29,61 @@ from nototools import noto_fonts
 from nototools import tool_utils
 
 _style_re = re.compile(r'--\s+(.*)\s+--')
-_extended_style_re = re.compile(r'^([TRBH]+)(?:/([CR]+)(?:/([RI]+))?)?$')
+_extended_style_re = re.compile(r'^([TLRBH]+)(?:/([CR]+)(?:/([RI]+))?)?$')
 
-# Below we use the longest names we intend, so that the noto_names code can
-# identify which families need extra short abbreviations.  The style of
-# abbreviation is based on the longest names in the family.
+# Map a key name to the expected instance weight/width/italic names.
 
-_WEIGHT_NAMES = {
-    'T': 'Thin',
-    'R': 'Regular',
-    'B': 'Bold',
-    'H': 'ExtraBold' # Nee 'Heavy'. Not 'Black' because 'ExtraBold' is longer.
+_WEIGHT_KEY_TO_NAMES = {
+    'TRBH': ['Thin', 'Light', 'Regular', 'Medium', 'SemiBold', 'Bold', 'Black'],
+    'LB': ['Light', 'Regular', 'Medium', 'SemiBold', 'Bold'],  # for mono
+    'RB': ['Regular', 'Bold'],  # for Nastaliq
+    'R': ['Regular']
 }
 
-_WIDTH_NAMES = {
-    'C': 'SemiCondensed', # We use this since it is longer. We don't expect to
-                          # use ExtraCondensed.
-    'R': ''
+_WIDTH_KEY_TO_NAMES = {
+    'CR': ['', 'SemiCondensed', 'Condensed'],
+    'R': [''],
 }
 
-_ITALIC_NAMES = {
-    'I': 'Italic',
-    'R': '',
+_SLOPE_KEY_TO_NAMES = {
+    'RI': ['', 'Italic'],
+    'R': [''],
 }
 
 def _get_stylenames(styles):
   """Returns the list of style names for the encoded styles.  These are the
-  (master-ish) style names encoded as weights / widths/ italic, where weights
-  is any of 'T', 'R', 'B', or 'H', widths any of 'C' or 'R', and italic 'I'.
+  (master-ish) style names encoded as weights / widths / italic, where each
+  field is one of the above key values.
   If there's not an italic then the italic is omitted, if there's only
   regular width and no italic then widths are omitted."""
   m = _extended_style_re.match(styles)
-  assert m
-  weights = m.group(1)
-  widths = m.group(2) or 'R'
-  slopes = m.group(3) or 'R'
+  if not m:
+    raise ValueError('could not match style "%s"' % styles)
+  weight_key = m.group(1)
+  width_key = m.group(2) or 'R'
+  slope_key = m.group(3) or 'R'
+
+  weight_names = _WEIGHT_KEY_TO_NAMES.get(weight_key)
+  width_names = _WIDTH_KEY_TO_NAMES.get(width_key)
+  slope_names = _SLOPE_KEY_TO_NAMES.get(slope_key)
+  err_msg = []
+  if weight_names == None:
+    err_msg.append('bad weight key "%s"' % weight_key)
+  if width_names == None:
+    err_msg.append('bad width key "%s"' % width_key)
+  if slope_names == None:
+    err_msg.append('bad slope key "%s"' % slope_key)
+  if err_msg:
+    raise ValueError(', '.join(err_msg))
 
   names = []
-  for wd in widths:
-    width_name = _WIDTH_NAMES[wd]
-    for wt in weights:
-      weight_name = _WEIGHT_NAMES[wt]
-      for it in slopes:
-        italic_name = _ITALIC_NAMES[it]
-        final_weight_name = weight_name
-        if wt == 'R' and (width_name or italic_name):
-          final_weight_name = ''
-        names.append(width_name + final_weight_name + italic_name)
+  for weight in weight_names:
+    for width in width_names:
+      for slope in slope_names:
+        if weight == 'Regular' and (width or slope):
+          weight = ''
+        names.append(width + weight + slope)
+
   return names
 
 
