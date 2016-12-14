@@ -117,7 +117,8 @@ NotoFont = collections.namedtuple(
 
 
 WEIGHTS = {
-    'Thin': 250,
+    'Thin': 100,
+    'ExtraLight': 200,
     'Light': 300,
     'DemiLight': 350,
     'SemiLight': 350, # because currently some phase 3 fonts have this
