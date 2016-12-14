@@ -197,8 +197,11 @@ def out_of_box_size(curve):
     # Bounding box of the bezier will contain that of the endpoints.
     # The out-of-box size for the entire curve will be maximum of the deviation
     # for the first curve and that of the remaining curve.
-    return max(ex1 - bx1, ey1 - by1, bx2 - ex2, by2 - ey2,
+    delta = max(ex1 - bx1, ey1 - by1, bx2 - ex2, by2 - ey2,
                out_of_box_size(remaining_curve))
+    # ignore very small deviations
+    return 0 if delta < 1 else delta
+
 
 def calc_bounds(piece):
     if len(piece) == 2:
