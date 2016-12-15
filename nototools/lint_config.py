@@ -355,6 +355,7 @@ class TestSpec(object):
       unexpected
       format_12_has_bmp
       format_4_subset_of_12
+      unaliased
     required
     script_required except|only cp
     private_use except|only cp
