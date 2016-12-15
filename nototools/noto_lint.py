@@ -197,8 +197,11 @@ def out_of_box_size(curve):
     # Bounding box of the bezier will contain that of the endpoints.
     # The out-of-box size for the entire curve will be maximum of the deviation
     # for the first curve and that of the remaining curve.
-    return max(ex1 - bx1, ey1 - by1, bx2 - ex2, by2 - ey2,
+    delta = max(ex1 - bx1, ey1 - by1, bx2 - ex2, by2 - ey2,
                out_of_box_size(remaining_curve))
+    # ignore very small deviations
+    return 0 if delta < 1 else delta
+
 
 def calc_bounds(piece):
     if len(piece) == 2:
@@ -745,7 +748,8 @@ def check_font(font_props, filename_error,
         cmap_table = font['cmap']
         cmaps = {}
         # Format 14 is variation sequences
-        expected_tables = [(4, 3, 1), (12, 3, 10), (14, 0, 5)]
+        expected_tables = [
+            (4, 3, 1), (12, 3, 10), (14, 0, 5), (4, 0, 3), (12, 0, 4)]
         if font_props.is_cjk:
             expected_tables.extend([
                 # Adobe says historically some programs used these to identify
@@ -755,10 +759,7 @@ def check_font(font_props, filename_error,
                 (6, 1, 2),  # Traditional Chinese
                 (6, 1, 3),  # Korean
                 (6, 1, 25), # Simplified Chinese
-                # Adobe says these just point at the windows versions, so there
-                # is no issue.
-                (4, 0, 3),    # Unicode, BMP only
-                (12, 0, 4)])  # Unicode, Includes Non-BMP
+                ])
         for table in cmap_table.tables:
             if (table.format,
                 table.platformID,
@@ -768,7 +769,15 @@ def check_font(font_props, filename_error,
                      "which it shouldn't have." % (
                          table.format, table.platformID, table.platEncID))
             elif table != (12, 0, 4):
-                cmaps[table.format] = table.cmap
+                if table.format in cmaps:
+                    # if we have both 4,3,1 and 4,0,3, they should be aliases
+                    # similarly if we have both 12,3,10 and 12,0,4
+                    if id(table.cmap) != id(cmaps[table.format]):
+                        warn("cmap/tables/notaliased", "cmap",
+                             "'cmap' has two format %d subtables that are not"
+                             " aliases" % table.format)
+                else:
+                  cmaps[table.format] = table.cmap
 
         if 4 not in cmaps:
             warn("cmap/tables/missing", "cmap",
@@ -778,11 +787,11 @@ def check_font(font_props, filename_error,
             cmap = cmaps[12]
             # if there is a format 12 table, it should have non-BMP characters
             if max(cmap.keys()) <= 0xFFFF:
-                warn("cmap/tables/format_12_has_bmp", "cmap",
-                     "'cmap' has a format 12 subtable but no "
-                     "non-BMP characters.")
+              warn("cmap/tables/format_12_has_bmp", "cmap",
+                   "'cmap' has a format 12 subtable but no "
+                   "non-BMP characters.")
 
-            # the format 4 table should be a subset of the format 12 one
+            # format 4 table should be a subset of the format 12 one
             if tests.check('cmap/tables/format_4_subset_of_12') and 4 in cmaps:
                 for char in cmaps[4]:
                     if char not in cmap:

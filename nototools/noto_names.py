@@ -376,8 +376,7 @@ def _postscript_name(preferred_family, preferred_subfamily, include_regular):
   # fix for names with punctuation
   punct_re = re.compile("[\s'-]")
   result = ''.join(punct_re.sub('', p) for p in wws_family)
-  tail = [n for n in wws_subfamily if
-          n not in wws_family and (include_regular or n != 'Regular')]
+  tail = [n for n in wws_subfamily if n not in wws_family]
   if tail:
     result += '-' + ''.join(tail)
 
@@ -429,10 +428,31 @@ def _manufacturer(noto_font):
   raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
+DESIGNER_STRINGS = {
+    'mti-chahine': 'Nadine Chahine - Monotype Design Team',
+    'mti-bosma': 'Jelle Bosma - Monotype Design Team',
+    'mti-hong': 'Danh Hong and the Monotype Design Team',
+    'mti': 'Monotype Design Team',
+}
+
+FAMILY_ID_TO_DESIGNER_KEY_P3 = {
+    'sans-arab': 'mti-chahine',
+    'sans-deva': 'mti-bosma',
+    'sans-khmr': 'mti-hong',
+    'serif-khmr': 'mti-hong',
+    'sans-sinh': 'mti-bosma',
+    'serif-sinh': 'mti-bosma',
+}
+
 def _designer(noto_font, phase):
   if noto_font.manufacturer == 'Adobe':
     return '-'
   if noto_font.manufacturer == 'Monotype':
+    if phase == 3:
+      family_id = noto_fonts.noto_font_to_family_id(noto_font)
+      designer_key = FAMILY_ID_TO_DESIGNER_KEY_P3.get(family_id)
+      if designer_key:
+        return DESIGNER_STRINGS[designer_key]
     if noto_font.family == 'Noto':
       if noto_font.style == 'Serif' and noto_font.script in [
           'Beng', 'Gujr', 'Knda', 'Mlym', 'Taml', 'Telu']:

@@ -117,7 +117,8 @@ NotoFont = collections.namedtuple(
 
 
 WEIGHTS = {
-    'Thin': 250,
+    'Thin': 100,
+    'ExtraLight': 200,
     'Light': 300,
     'DemiLight': 350,
     'SemiLight': 350, # because currently some phase 3 fonts have this
@@ -231,8 +232,9 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     hint_status = path.basename(filedir)
     if (hint_status not in ['hinted', 'unhinted']
         and 'noto-source' not in filedir):
-      print >> sys.stderr, (
-          'unknown hint status for %s, defaulting to unhinted') % filedir
+      # print >> sys.stderr, (
+      #    'unknown hint status for %s, defaulting to unhinted') % filedir
+      pass
     is_hinted = hint_status == 'hinted'
 
   manufacturer = (
