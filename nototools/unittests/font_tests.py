@@ -679,6 +679,7 @@ class TestGlyphAreas(unittest.TestCase):
             standard[name].draw(pen)
             areas[name] = pen.pop()
 
+        errors = []
         for other in glyph_sets[1:]:
             other_pen = GlyphAreaPen(other)
             for name, area in areas.iteritems():
@@ -687,15 +688,16 @@ class TestGlyphAreas(unittest.TestCase):
                 other[name].draw(other_pen)
                 other_area = other_pen.pop()
                 if name in self.unchanged or not area:
-                    self.assertEqual(
-                        area, other_area,
-                        name + " has changed, but should not have: %s vs. %s." %
-                        (area, other_area))
+                    if area != other_area:
+                        errors.append(
+                            "%s has changed, but should not have: %s vs. %s." %
+                            (name, area, other_area))
                 else:
-                    self.assertNotEqual(
-                        area, other_area,
-                        name + " has not changed, but should have: %s vs. %s." %
-                        (area, other_area))
+                    if area == other_area:
+                        errors.append(
+                            "%s has not changed, but should have: %s vs. %s." %
+                            (name, area, other_area))
+        self.assertFalse(errors, '\n'.join([''] + errors))
 
 
 class TestSpacingMarks(FontTest):
