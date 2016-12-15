@@ -1823,7 +1823,12 @@ def check_font(font_props, filename_error,
         all_glyphs = set(font.getGlyphOrder())
         subsetter = subset.Subsetter()
         subsetter.populate(unicodes=cmap.keys())
-        subsetter._closure_glyphs(font)
+        try:
+          subsetter._closure_glyphs(font)
+        except Exception as e:
+          warn("reachable", "Reachability",
+               "Subsetter failure, bad/missing tables?: '%s'" % e)
+          return
 
         unreachable_glyphs = all_glyphs - subsetter.glyphs_all
         if unreachable_glyphs:
@@ -1837,7 +1842,7 @@ def check_font(font_props, filename_error,
                         reported_list.append((glyph_name, glyph_id))
             if reported_list:
                 report_info = ', '.join('%s (%d)' % t for t in sorted(reported_list))
-                warn("reachable", "Reachabily",
+                warn("reachable", "Reachability",
                      "The following %d glyphs are unreachable in the font: %s." %
                      (len(reported_glyphs), report_info),
                      check_test=False)
