@@ -14,9 +14,9 @@ Install python dependencies,
 
     pip install -r requirements.txt ;
 
-Then install nototools as normal,
+Then install nototools.  Since nototools changes frequently, installing using 'develop' is recommended:
 
-    python setup.py install ;
+    python setup.py develop ;
 
 ## Usage
 
