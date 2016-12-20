@@ -104,13 +104,13 @@ class HbInputGenerator(object):
         inputs = [i for i in inputs if i is not None]
         if not inputs:
             self.memo[name] = None
-            return self.memo[name]
-        features, text = min(inputs)
-
-        if pad:
-            width, space = self.widths[name], self.widths['space']
-            text = ' ' * (width // space + (1 if width % space else 0)) + text
-        self.memo[name] = features, text
+        else:
+            features, text = min(inputs)
+            if pad:
+                width, space = self.widths[name], self.widths['space']
+                padding = ' ' * (width // space + (1 if width % space else 0))
+                text = padding + text
+            self.memo[name] = features, text
         return self.memo[name]
 
     def _inputs_from_gsub(self, name, features, seen):
@@ -191,8 +191,8 @@ class HbInputGenerator(object):
         inputs = []
         for ruleset in st.SubRuleSet:
             for rule in ruleset.SubRule:
-                if (not any(subst_lookup.LookupListIndex == target_i
-                            for subst_lookup in rule.SubstLookupRecord)):
+                if not any(subst_lookup.LookupListIndex == target_i
+                           for subst_lookup in rule.SubstLookupRecord):
                     continue
                 for prefix in st.Coverage.glyphs:
                     input_glyphs = [prefix] + rule.Input
@@ -231,8 +231,8 @@ class HbInputGenerator(object):
         inputs = []
         for ruleset in st.ChainSubRuleSet:
             for rule in ruleset.ChainSubRule:
-                if (not any(subst_lookup.LookupListIndex == target_i
-                            for subst_lookup in rule.SubstLookupRecord)):
+                if not any(subst_lookup.LookupListIndex == target_i
+                           for subst_lookup in rule.SubstLookupRecord):
                     continue
                 for prefix in st.Coverage.glyphs:
                     input_glyphs = [prefix] + rule.Input
