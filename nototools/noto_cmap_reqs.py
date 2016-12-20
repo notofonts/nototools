@@ -1378,6 +1378,7 @@ _SCRIPT_REQUIRED = [
    205C  # DOTTED CROSS
    205D  # TRICOLON
    205E  # VERTICAL FOUR DOTS
+   20BE  # LARI SIGN
    # Supplemental Punctuation
    2E2A  # TWO DOTS OVER ONE DOT PUNCTUATION
    2E2B  # ONE DOT OVER TWO DOTS PUNCTUATION
@@ -2612,7 +2613,7 @@ def _assign_script_special_chars(cmap_ops):
 
 def _assign_legacy_phase2(cmap_ops):
   """Assign legacy chars in some scripts, excluding some blocks."""
-  legacy_data = cmap_data.read_cmap_data_file('noto_cmap_phase2.xml')
+  legacy_data = cmap_data.read_cmap_data_file('data/noto_cmap_phase2.xml')
   legacy_map = cmap_data.create_map_from_table(legacy_data.table)
   legacy_script_to_chars = {
       script: tool_utils.parse_int_ranges(row.ranges)
