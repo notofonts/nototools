@@ -28,6 +28,7 @@ class HbInputGenerator(object):
 
     def __init__(self, font):
         self.font = font
+        self.memo = {}
         self.reverse_cmap = build_reverse_cmap(self.font)
 
         self.widths = {}
@@ -76,6 +77,9 @@ class HbInputGenerator(object):
         case this path of generating input should not be followed further).
         """
 
+        if name in self.memo:
+            return self.memo[name]
+
         inputs = []
 
         # avoid following cyclic paths through features
@@ -99,13 +103,15 @@ class HbInputGenerator(object):
         # but we should avoid returning None here if there are other options
         inputs = [i for i in inputs if i is not None]
         if not inputs:
-            return None
-        features, text = min(inputs)
-
-        if pad:
-            width, space = self.widths[name], self.widths['space']
-            text = ' ' * (width // space + (1 if width % space else 0)) + text
-        return features, text
+            self.memo[name] = None
+        else:
+            features, text = min(inputs)
+            if pad:
+                width, space = self.widths[name], self.widths['space']
+                padding = ' ' * (width // space + (1 if width % space else 0))
+                text = padding + text
+            self.memo[name] = features, text
+        return self.memo[name]
 
     def _inputs_from_gsub(self, name, features, seen):
         """Check GSUB for possible input yielding glyph with given name.
@@ -185,11 +191,12 @@ class HbInputGenerator(object):
         inputs = []
         for ruleset in st.SubRuleSet:
             for rule in ruleset.SubRule:
+                if not any(subst_lookup.LookupListIndex == target_i
+                           for subst_lookup in rule.SubstLookupRecord):
+                    continue
                 for prefix in st.Coverage.glyphs:
                     input_glyphs = [prefix] + rule.Input
-                    if not (any(subst_lookup.LookupListIndex == target_i
-                                for subst_lookup in rule.SubstLookupRecord) and
-                            self._is_sublist(input_glyphs, glyphs)):
+                    if not self._is_sublist(input_glyphs, glyphs):
                         continue
                     inputs.append(self._input_with_context(
                         gsub, input_glyphs, cur_i, fea, seen))
@@ -224,11 +231,12 @@ class HbInputGenerator(object):
         inputs = []
         for ruleset in st.ChainSubRuleSet:
             for rule in ruleset.ChainSubRule:
+                if not any(subst_lookup.LookupListIndex == target_i
+                           for subst_lookup in rule.SubstLookupRecord):
+                    continue
                 for prefix in st.Coverage.glyphs:
                     input_glyphs = [prefix] + rule.Input
-                    if not (any(subst_lookup.LookupListIndex == target_i
-                                for subst_lookup in rule.SubstLookupRecord) and
-                            self._is_sublist(input_glyphs, glyphs)):
+                    if not self._is_sublist(input_glyphs, glyphs):
                         continue
                     if rule.LookAhead:
                         input_glyphs = input_glyphs + rule.LookAhead
