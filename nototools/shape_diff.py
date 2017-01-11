@@ -180,9 +180,11 @@ class ShapeDiffFinder:
                     ax, ay = x - offset_ax, y - offset_ay
                     bx, by = x - offset_bx, y - offset_by
                     if (ax < 0 or bx < 0 or ax >= width_a or bx >= width_b or
-                        ay < 0 or by < 0 or ay >= height_a or by >= height_b or
-                        data_a[ax + ay * width_a] != data_b[bx + by * width_b]):
+                        ay < 0 or by < 0 or ay >= height_a or by >= height_b):
                         diff += 1
+                    else:
+                        diff += abs(data_a[ax + ay * width_a] -
+                                    data_b[bx + by * width_b]) / 255
 
             if self.ratio_diffs:
                 diff /= (width * height)
