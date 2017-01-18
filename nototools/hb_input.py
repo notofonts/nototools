@@ -59,17 +59,15 @@ class HbInputGenerator(object):
                 print('not tested (unreachable?): %s' % name)
         return inputs
 
-    def input_from_name(self, name, features=(), seen=None, pad=False):
+    def input_from_name(self, name, seen=None, pad=False):
         """Given glyph name, return input to harbuzz to render this glyph.
 
         Returns input in the form of a (features, text) tuple, where `features`
         is a list of feature tags to activate and `text` is an input string.
 
-        Argument `features` will simply be passed through to the output, and is
-        used for recursive calls to the method. `seen` is used by the method to
-        avoid following cycles when recursively looking for possible input.
-        `pad` can be used to add whitespace to text output, for non-spacing
-        glyphs.
+        Argument `seen` is used by the method to avoid following cycles when
+        recursively looking for possible input. `pad` can be used to add
+        whitespace to text output, for non-spacing glyphs.
 
         Can return None in two situations: if no possible input is found (no
         simple unicode mapping or substitution rule exists to generate the
@@ -92,10 +90,10 @@ class HbInputGenerator(object):
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
             text = unichr(self.reverse_cmap[name])
-            inputs.append((features, text))
+            inputs.append(((), text))
 
         # check the substitution features
-        inputs.extend(self._inputs_from_gsub(name, features, seen))
+        inputs.extend(self._inputs_from_gsub(name, seen))
         seen.remove(name)
 
         # since this method sometimes returns None to avoid cycles, the
@@ -113,10 +111,10 @@ class HbInputGenerator(object):
             self.memo[name] = features, text
         return self.memo[name]
 
-    def _inputs_from_gsub(self, name, features, seen):
+    def _inputs_from_gsub(self, name, seen):
         """Check GSUB for possible input yielding glyph with given name.
-        The `features` and `seen` arguments are passed in from the original call
-        to input_from_name().
+        The `seen` argument is passed in from the original call to
+        input_from_name().
         """
 
         inputs = []
@@ -133,7 +131,7 @@ class HbInputGenerator(object):
                     for glyph, subst in st.mapping.items():
                         if subst == name:
                             inputs.append(self._input_with_context(
-                                gsub, [glyph], lookup_index, features, seen))
+                                gsub, [glyph], lookup_index, seen))
 
                 # see if this glyph is a ligature
                 elif lookup.LookupType == 4:
@@ -142,10 +140,10 @@ class HbInputGenerator(object):
                             if ligature.LigGlyph == name:
                                 glyphs = [prefix] + list(ligature.Component)
                                 inputs.append(self._input_with_context(
-                                    gsub, glyphs, lookup_index, features, seen))
+                                    gsub, glyphs, lookup_index, seen))
         return inputs
 
-    def _input_with_context(self, gsub, glyphs, target_i, features, seen):
+    def _input_with_context(self, gsub, glyphs, target_i, seen):
         """Given GSUB, input glyphs, and target lookup index, return input to
         harfbuzz to render the input glyphs with the target lookup activated.
         """
@@ -155,9 +153,8 @@ class HbInputGenerator(object):
         # try to get a feature tag to activate this lookup
         for feature in gsub.FeatureList.FeatureRecord:
             if target_i in feature.Feature.LookupListIndex:
-                features += (feature.FeatureTag,)
                 inputs.append(self._sequence_from_glyph_names(
-                    glyphs, features, seen))
+                    glyphs, (feature.FeatureTag,), seen))
 
         for cur_i, lookup in enumerate(gsub.LookupList.Lookup):
             # try contextual substitutions
@@ -166,10 +163,10 @@ class HbInputGenerator(object):
                     #TODO handle format 3
                     if st.Format == 1:
                         inputs.extend(self._input_from_5_1(
-                            gsub, st, glyphs, target_i, cur_i, features, seen))
+                            gsub, st, glyphs, target_i, cur_i, seen))
                     if st.Format == 2:
                         inputs.extend(self._input_from_5_2(
-                            gsub, st, glyphs, target_i, cur_i, features, seen))
+                            gsub, st, glyphs, target_i, cur_i, seen))
 
             # try chaining substitutions
             if lookup.LookupType == 6:
@@ -177,15 +174,15 @@ class HbInputGenerator(object):
                     #TODO handle format 2
                     if st.Format == 1:
                         inputs.extend(self._input_from_6_1(
-                            gsub, st, glyphs, target_i, cur_i, features, seen))
+                            gsub, st, glyphs, target_i, cur_i, seen))
                     if st.Format == 3:
                         inputs.extend(self._input_from_6_3(
-                            gsub, st, glyphs, target_i, cur_i, features, seen))
+                            gsub, st, glyphs, target_i, cur_i, seen))
 
         inputs = [i for i in inputs if i is not None]
         return min(inputs) if inputs else None
 
-    def _input_from_5_1(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+    def _input_from_5_1(self, gsub, st, glyphs, target_i, cur_i, seen):
         """Return inputs from GSUB type 5.1 (simple context) rules."""
 
         inputs = []
@@ -199,10 +196,10 @@ class HbInputGenerator(object):
                     if not self._is_sublist(input_glyphs, glyphs):
                         continue
                     inputs.append(self._input_with_context(
-                        gsub, input_glyphs, cur_i, fea, seen))
+                        gsub, input_glyphs, cur_i, seen))
         return inputs
 
-    def _input_from_5_2(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+    def _input_from_5_2(self, gsub, st, glyphs, target_i, cur_i, seen):
         """Return inputs from GSUB type 5.2 (class-based context) rules."""
 
         inputs = []
@@ -222,10 +219,10 @@ class HbInputGenerator(object):
                         self._is_sublist(input_glyphs, glyphs)):
                     continue
                 inputs.append(self._input_with_context(
-                    gsub, input_glyphs, cur_i, fea, seen))
+                    gsub, input_glyphs, cur_i, seen))
         return inputs
 
-    def _input_from_6_1(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+    def _input_from_6_1(self, gsub, st, glyphs, target_i, cur_i, seen):
         """Return inputs from GSUB type 6.1 (simple chaining) rules."""
 
         inputs = []
@@ -244,10 +241,10 @@ class HbInputGenerator(object):
                         bt = list(reversed(rule.Backtrack))
                         input_glyphs = bt + input_glyphs
                     inputs.append(self._input_with_context(
-                        gsub, input_glyphs, cur_i, fea, seen))
+                        gsub, input_glyphs, cur_i, seen))
         return inputs
 
-    def _input_from_6_3(self, gsub, st, glyphs, target_i, cur_i, fea, seen):
+    def _input_from_6_3(self, gsub, st, glyphs, target_i, cur_i, seen):
         """Return inputs from GSUB type 6.3 (coverage-based chaining) rules."""
 
         input_lists = [c.glyphs for c in st.InputCoverage]
@@ -264,17 +261,18 @@ class HbInputGenerator(object):
                                 for c in st.BacktrackCoverage]))
             input_glyphs = bt + input_glyphs
         return [self._input_with_context(
-            gsub, input_glyphs, cur_i, fea, seen)]
+            gsub, input_glyphs, cur_i, seen)]
 
     def _sequence_from_glyph_names(self, glyphs, features, seen):
         """Return a sequence of glyphs from glyph names."""
 
         text = []
         for glyph in glyphs:
-            cur_input = self.input_from_name(glyph, features, seen)
+            cur_input = self.input_from_name(glyph, seen)
             if cur_input is None:
                 return None
-            features, cur_text = cur_input
+            cur_features, cur_text = cur_input
+            features += cur_features
             text.append(cur_text)
         return features, ''.join(text)
 
