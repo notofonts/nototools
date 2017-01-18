@@ -157,6 +157,35 @@ class HbInputGeneratorTest(unittest.TestCase):
         ''')
         self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
 
+    def test_onum_after_lnum(self):
+        g = self._make_generator('''
+            feature onum {
+                sub zero by zero.oldstyle;
+            } onum;
+        ''')
+        self.assertEqual(g.input_from_name('zero'), ((), '0'))
+        self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
+        g = self._make_generator('''
+            feature onum {
+                sub zero by zero.oldstyle;
+            } onum;
+
+            feature lnum {
+                sub zero.oldstyle by zero;
+            } lnum;
+        ''')
+        self.assertEqual(g.input_from_name('zero'), ((), '0'))
+        self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
+
+    def test_lnum_after_onum(self):
+        g = self._make_generator('''
+            feature onum {
+                sub zero by zero.oldstyle;
+            } onum;
+        ''')
+        self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
+        self.assertEqual(g.input_from_name('zero'), ((), '0'))
+
     def test_contextual_substitution_type1(self):
         g = self._make_generator('''
             FontDame GSUB table
