@@ -101,14 +101,14 @@ class HbInputGenerator(object):
         # but we should avoid returning None here if there are other options
         inputs = [i for i in inputs if i is not None]
         if not inputs:
-            self.memo[name] = None
-        else:
-            features, text = min(inputs)
-            if pad:
-                width, space = self.widths[name], self.widths['space']
-                padding = ' ' * (width // space + (1 if width % space else 0))
-                text = padding + text
-            self.memo[name] = features, text
+            return None
+
+        features, text = min(inputs)
+        if pad:
+            width, space = self.widths[name], self.widths['space']
+            padding = ' ' * (width // space + (1 if width % space else 0))
+            text = padding + text
+        self.memo[name] = features, text
         return self.memo[name]
 
     def _inputs_from_gsub(self, name, seen):
