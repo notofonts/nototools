@@ -1525,6 +1525,10 @@ def check_font(font_props, filename_error,
         else:
             check_complex_stylistic_set_name_ids('gpos')
 
+        # Assume no GSUB necessary for Adlm
+        if font_props.script == 'Adlm':
+            return
+
         if "GSUB" not in font:
             warn("complex/gsub/missing", "GSUB",
                  "There is no GSUB table in the font.")

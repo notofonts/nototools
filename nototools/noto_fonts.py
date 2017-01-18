@@ -138,7 +138,7 @@ _FONT_NAME_REGEX = (
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
     '(Mono(?:space)?)?'
     '(.*?)'
-    '(Eastern|Estrangela|Western|Slanted|New)?'
+    '(Eastern|Estrangela|Western|Slanted|New|Unjoined)?'
     '(UI)?'
     '(Display)?'
     '-?'
