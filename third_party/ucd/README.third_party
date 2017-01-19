@@ -13,5 +13,5 @@ Local Modifications:
 2. Updates to Indic properties have been
    pulled from https://github.com/roozbehp/unicode-data/
 
-3. emoji-data files are from (snapshot taken 2016-07-15)
-   http://www.unicode.org/repos/draft/trunk/Public/emoji/4.0
+3. emoji-data files are from (snapshot taken 2017-01-19)
+   http://www.unicode.org/repos/draft/trunk/Public/emoji/5.0
