@@ -1,11 +1,11 @@
 # emoji-zwj-sequences.txt
-# Date: 2016-11-16, 18:29:53 GMT
-# © 2016 Unicode®, Inc.
+# Date: 2017-01-17, 08:07:28 GMT
+# © 2017 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Emoji ZWJ Sequence Catalog for UTR #51
-# Version: 4.0
+# Version: 5.0
 #
 # For documentation and usage, see http://www.unicode.org/reports/tr51
 #
@@ -344,8 +344,72 @@
 1F575 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man detective: dark skin tone                                  # 8.0  [1] (🕵🏿‍♂️)
 1F575 FE0F 200D 2640 FE0F                   ; Emoji_ZWJ_Sequence  ; woman detective                                                # 7.0  [1] (🕵️‍♀️)
 1F575 FE0F 200D 2642 FE0F                   ; Emoji_ZWJ_Sequence  ; man detective                                                  # 7.0  [1] (🕵️‍♂️)
+1F9D9 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman mage                                                     #10.0  [1] (🧙‍♀️)
+1F9D9 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man mage                                                       #10.0  [1] (🧙‍♂️)
+1F9D9 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman mage: light skin tone                                    #10.0  [1] (🧙🏻‍♀️)
+1F9D9 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man mage: light skin tone                                      #10.0  [1] (🧙🏻‍♂️)
+1F9D9 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman mage: medium-light skin tone                             #10.0  [1] (🧙🏼‍♀️)
+1F9D9 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man mage: medium-light skin tone                               #10.0  [1] (🧙🏼‍♂️)
+1F9D9 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman mage: medium skin tone                                   #10.0  [1] (🧙🏽‍♀️)
+1F9D9 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man mage: medium skin tone                                     #10.0  [1] (🧙🏽‍♂️)
+1F9D9 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman mage: medium-dark skin tone                              #10.0  [1] (🧙🏾‍♀️)
+1F9D9 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man mage: medium-dark skin tone                                #10.0  [1] (🧙🏾‍♂️)
+1F9D9 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman mage: dark skin tone                                     #10.0  [1] (🧙🏿‍♀️)
+1F9D9 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man mage: dark skin tone                                       #10.0  [1] (🧙🏿‍♂️)
+1F9DA 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman fairy                                                    #10.0  [1] (🧚‍♀️)
+1F9DA 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man fairy                                                      #10.0  [1] (🧚‍♂️)
+1F9DA 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman fairy: light skin tone                                   #10.0  [1] (🧚🏻‍♀️)
+1F9DA 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man fairy: light skin tone                                     #10.0  [1] (🧚🏻‍♂️)
+1F9DA 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman fairy: medium-light skin tone                            #10.0  [1] (🧚🏼‍♀️)
+1F9DA 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man fairy: medium-light skin tone                              #10.0  [1] (🧚🏼‍♂️)
+1F9DA 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman fairy: medium skin tone                                  #10.0  [1] (🧚🏽‍♀️)
+1F9DA 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man fairy: medium skin tone                                    #10.0  [1] (🧚🏽‍♂️)
+1F9DA 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman fairy: medium-dark skin tone                             #10.0  [1] (🧚🏾‍♀️)
+1F9DA 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man fairy: medium-dark skin tone                               #10.0  [1] (🧚🏾‍♂️)
+1F9DA 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman fairy: dark skin tone                                    #10.0  [1] (🧚🏿‍♀️)
+1F9DA 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man fairy: dark skin tone                                      #10.0  [1] (🧚🏿‍♂️)
+1F9DB 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman vampire                                                  #10.0  [1] (🧛‍♀️)
+1F9DB 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man vampire                                                    #10.0  [1] (🧛‍♂️)
+1F9DB 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman vampire: light skin tone                                 #10.0  [1] (🧛🏻‍♀️)
+1F9DB 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man vampire: light skin tone                                   #10.0  [1] (🧛🏻‍♂️)
+1F9DB 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman vampire: medium-light skin tone                          #10.0  [1] (🧛🏼‍♀️)
+1F9DB 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man vampire: medium-light skin tone                            #10.0  [1] (🧛🏼‍♂️)
+1F9DB 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman vampire: medium skin tone                                #10.0  [1] (🧛🏽‍♀️)
+1F9DB 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man vampire: medium skin tone                                  #10.0  [1] (🧛🏽‍♂️)
+1F9DB 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman vampire: medium-dark skin tone                           #10.0  [1] (🧛🏾‍♀️)
+1F9DB 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man vampire: medium-dark skin tone                             #10.0  [1] (🧛🏾‍♂️)
+1F9DB 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman vampire: dark skin tone                                  #10.0  [1] (🧛🏿‍♀️)
+1F9DB 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man vampire: dark skin tone                                    #10.0  [1] (🧛🏿‍♂️)
+1F9DC 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; merwoman                                                       #10.0  [1] (🧜‍♀️)
+1F9DC 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; merman                                                         #10.0  [1] (🧜‍♂️)
+1F9DC 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; merwoman: light skin tone                                      #10.0  [1] (🧜🏻‍♀️)
+1F9DC 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; merman: light skin tone                                        #10.0  [1] (🧜🏻‍♂️)
+1F9DC 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; merwoman: medium-light skin tone                               #10.0  [1] (🧜🏼‍♀️)
+1F9DC 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; merman: medium-light skin tone                                 #10.0  [1] (🧜🏼‍♂️)
+1F9DC 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; merwoman: medium skin tone                                     #10.0  [1] (🧜🏽‍♀️)
+1F9DC 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; merman: medium skin tone                                       #10.0  [1] (🧜🏽‍♂️)
+1F9DC 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; merwoman: medium-dark skin tone                                #10.0  [1] (🧜🏾‍♀️)
+1F9DC 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; merman: medium-dark skin tone                                  #10.0  [1] (🧜🏾‍♂️)
+1F9DC 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; merwoman: dark skin tone                                       #10.0  [1] (🧜🏿‍♀️)
+1F9DC 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; merman: dark skin tone                                         #10.0  [1] (🧜🏿‍♂️)
+1F9DD 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman elf                                                      #10.0  [1] (🧝‍♀️)
+1F9DD 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man elf                                                        #10.0  [1] (🧝‍♂️)
+1F9DD 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman elf: light skin tone                                     #10.0  [1] (🧝🏻‍♀️)
+1F9DD 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man elf: light skin tone                                       #10.0  [1] (🧝🏻‍♂️)
+1F9DD 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman elf: medium-light skin tone                              #10.0  [1] (🧝🏼‍♀️)
+1F9DD 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man elf: medium-light skin tone                                #10.0  [1] (🧝🏼‍♂️)
+1F9DD 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman elf: medium skin tone                                    #10.0  [1] (🧝🏽‍♀️)
+1F9DD 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man elf: medium skin tone                                      #10.0  [1] (🧝🏽‍♂️)
+1F9DD 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman elf: medium-dark skin tone                               #10.0  [1] (🧝🏾‍♀️)
+1F9DD 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man elf: medium-dark skin tone                                 #10.0  [1] (🧝🏾‍♂️)
+1F9DD 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman elf: dark skin tone                                      #10.0  [1] (🧝🏿‍♀️)
+1F9DD 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man elf: dark skin tone                                        #10.0  [1] (🧝🏿‍♂️)
+1F9DE 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman genie                                                    #10.0  [1] (🧞‍♀️)
+1F9DE 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man genie                                                      #10.0  [1] (🧞‍♂️)
+1F9DF 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman zombie                                                   #10.0  [1] (🧟‍♀️)
+1F9DF 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man zombie                                                     #10.0  [1] (🧟‍♂️)
 
-# Total elements: 72
+# Total elements: 136
 
 # ================================================
 
@@ -547,8 +611,44 @@
 1F93E 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man playing handball: medium-dark skin tone                    # 9.0  [1] (🤾🏾‍♂️)
 1F93E 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman playing handball: dark skin tone                         # 9.0  [1] (🤾🏿‍♀️)
 1F93E 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man playing handball: dark skin tone                           # 9.0  [1] (🤾🏿‍♂️)
+1F9D6 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman in steamy room                                           #10.0  [1] (🧖‍♀️)
+1F9D6 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man in steamy room                                             #10.0  [1] (🧖‍♂️)
+1F9D6 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in steamy room: light skin tone                          #10.0  [1] (🧖🏻‍♀️)
+1F9D6 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in steamy room: light skin tone                            #10.0  [1] (🧖🏻‍♂️)
+1F9D6 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in steamy room: medium-light skin tone                   #10.0  [1] (🧖🏼‍♀️)
+1F9D6 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in steamy room: medium-light skin tone                     #10.0  [1] (🧖🏼‍♂️)
+1F9D6 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in steamy room: medium skin tone                         #10.0  [1] (🧖🏽‍♀️)
+1F9D6 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in steamy room: medium skin tone                           #10.0  [1] (🧖🏽‍♂️)
+1F9D6 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in steamy room: medium-dark skin tone                    #10.0  [1] (🧖🏾‍♀️)
+1F9D6 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in steamy room: medium-dark skin tone                      #10.0  [1] (🧖🏾‍♂️)
+1F9D6 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in steamy room: dark skin tone                           #10.0  [1] (🧖🏿‍♀️)
+1F9D6 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in steamy room: dark skin tone                             #10.0  [1] (🧖🏿‍♂️)
+1F9D7 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman climbing                                                 #10.0  [1] (🧗‍♀️)
+1F9D7 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man climbing                                                   #10.0  [1] (🧗‍♂️)
+1F9D7 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman climbing: light skin tone                                #10.0  [1] (🧗🏻‍♀️)
+1F9D7 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man climbing: light skin tone                                  #10.0  [1] (🧗🏻‍♂️)
+1F9D7 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman climbing: medium-light skin tone                         #10.0  [1] (🧗🏼‍♀️)
+1F9D7 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man climbing: medium-light skin tone                           #10.0  [1] (🧗🏼‍♂️)
+1F9D7 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman climbing: medium skin tone                               #10.0  [1] (🧗🏽‍♀️)
+1F9D7 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man climbing: medium skin tone                                 #10.0  [1] (🧗🏽‍♂️)
+1F9D7 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman climbing: medium-dark skin tone                          #10.0  [1] (🧗🏾‍♀️)
+1F9D7 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man climbing: medium-dark skin tone                            #10.0  [1] (🧗🏾‍♂️)
+1F9D7 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman climbing: dark skin tone                                 #10.0  [1] (🧗🏿‍♀️)
+1F9D7 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man climbing: dark skin tone                                   #10.0  [1] (🧗🏿‍♂️)
+1F9D8 200D 2640 FE0F                        ; Emoji_ZWJ_Sequence  ; woman in lotus position                                        #10.0  [1] (🧘‍♀️)
+1F9D8 200D 2642 FE0F                        ; Emoji_ZWJ_Sequence  ; man in lotus position                                          #10.0  [1] (🧘‍♂️)
+1F9D8 1F3FB 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in lotus position: light skin tone                       #10.0  [1] (🧘🏻‍♀️)
+1F9D8 1F3FB 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in lotus position: light skin tone                         #10.0  [1] (🧘🏻‍♂️)
+1F9D8 1F3FC 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in lotus position: medium-light skin tone                #10.0  [1] (🧘🏼‍♀️)
+1F9D8 1F3FC 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in lotus position: medium-light skin tone                  #10.0  [1] (🧘🏼‍♂️)
+1F9D8 1F3FD 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in lotus position: medium skin tone                      #10.0  [1] (🧘🏽‍♀️)
+1F9D8 1F3FD 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in lotus position: medium skin tone                        #10.0  [1] (🧘🏽‍♂️)
+1F9D8 1F3FE 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in lotus position: medium-dark skin tone                 #10.0  [1] (🧘🏾‍♀️)
+1F9D8 1F3FE 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in lotus position: medium-dark skin tone                   #10.0  [1] (🧘🏾‍♂️)
+1F9D8 1F3FF 200D 2640 FE0F                  ; Emoji_ZWJ_Sequence  ; woman in lotus position: dark skin tone                        #10.0  [1] (🧘🏿‍♀️)
+1F9D8 1F3FF 200D 2642 FE0F                  ; Emoji_ZWJ_Sequence  ; man in lotus position: dark skin tone                          #10.0  [1] (🧘🏿‍♂️)
 
-# Total elements: 196
+# Total elements: 232
 
 # ================================================
 

@@ -688,7 +688,9 @@ def _load_emoji_data():
       'Emoji': set(),
       'Emoji_Presentation': set(),
       'Emoji_Modifier': set(),
-      'Emoji_Modifier_Base': set()
+      'Emoji_Modifier_Base': set(),
+      'Emoji_Regional_Indicator': set(),
+      'Emoji_Component': set(),
   }
 
   set_names = '|'.join(sorted(emoji_sets.keys()))
@@ -717,6 +719,12 @@ def _load_emoji_data():
       emoji_sets['Emoji_Modifier_Base'])
   _emoji = frozenset(
       emoji_sets['Emoji'])
+
+  # we have no real use for the 'Emoji_Regional_Indicator' and
+  # 'Emoji_Component' sets, and they're not documented, so ignore them.
+  # The regional indicator set is just the 26 regional indicator
+  # symbols, and the component set is number sign, asterisk, ASCII digits,
+  # the regional indicators, and the skin tone modifiers.
 
 
 def _load_emoji_sequence_data():
@@ -762,7 +770,7 @@ def _load_emoji_zwj_sequence_data():
   if _emoji_zwj_sequences:
       return
   line_re = re.compile(
-      r'([0-9A-F ]+);\s+Emoji_ZWJ_Sequence\s+;([^#]*)#\s(\d+.\d+)\s.*?')
+      r'([0-9A-F ]+);\s*Emoji_ZWJ_Sequence\s*;([^#]*)#\s*(\d+\.\d+)\s.*?')
   data = {}
   with open_unicode_data_file('emoji-zwj-sequences.txt') as f:
     for line in f:

@@ -1,11 +1,11 @@
 # emoji-sequences.txt
-# Date: 2016-11-14, 15:36:23 GMT
-# © 2016 Unicode®, Inc.
+# Date: 2017-01-17, 08:40:56 GMT
+# © 2017 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 #
 # Emoji Sequence Data for UTR #51
-# Version: 4.0
+# Version: 5.0
 #
 # For documentation and usage, see http://www.unicode.org/reports/tr51
 #
@@ -685,6 +685,11 @@
 1F91E 1F3FD   ; Emoji_Modifier_Sequence   ; crossed fingers: medium skin tone                              # 9.0  [1] (🤞🏽)
 1F91E 1F3FE   ; Emoji_Modifier_Sequence   ; crossed fingers: medium-dark skin tone                         # 9.0  [1] (🤞🏾)
 1F91E 1F3FF   ; Emoji_Modifier_Sequence   ; crossed fingers: dark skin tone                                # 9.0  [1] (🤞🏿)
+1F91F 1F3FB   ; Emoji_Modifier_Sequence   ; love-you hand: light skin tone                                 #10.0  [1] (🤟🏻)
+1F91F 1F3FC   ; Emoji_Modifier_Sequence   ; love-you hand: medium-light skin tone                          #10.0  [1] (🤟🏼)
+1F91F 1F3FD   ; Emoji_Modifier_Sequence   ; love-you hand: medium skin tone                                #10.0  [1] (🤟🏽)
+1F91F 1F3FE   ; Emoji_Modifier_Sequence   ; love-you hand: medium-dark skin tone                           #10.0  [1] (🤟🏾)
+1F91F 1F3FF   ; Emoji_Modifier_Sequence   ; love-you hand: dark skin tone                                  #10.0  [1] (🤟🏿)
 1F926 1F3FB   ; Emoji_Modifier_Sequence   ; person facepalming: light skin tone                            # 9.0  [1] (🤦🏻)
 1F926 1F3FC   ; Emoji_Modifier_Sequence   ; person facepalming: medium-light skin tone                     # 9.0  [1] (🤦🏼)
 1F926 1F3FD   ; Emoji_Modifier_Sequence   ; person facepalming: medium skin tone                           # 9.0  [1] (🤦🏽)
@@ -695,6 +700,16 @@
 1F930 1F3FD   ; Emoji_Modifier_Sequence   ; pregnant woman: medium skin tone                               # 9.0  [1] (🤰🏽)
 1F930 1F3FE   ; Emoji_Modifier_Sequence   ; pregnant woman: medium-dark skin tone                          # 9.0  [1] (🤰🏾)
 1F930 1F3FF   ; Emoji_Modifier_Sequence   ; pregnant woman: dark skin tone                                 # 9.0  [1] (🤰🏿)
+1F931 1F3FB   ; Emoji_Modifier_Sequence   ; breast-feeding: light skin tone                                #10.0  [1] (🤱🏻)
+1F931 1F3FC   ; Emoji_Modifier_Sequence   ; breast-feeding: medium-light skin tone                         #10.0  [1] (🤱🏼)
+1F931 1F3FD   ; Emoji_Modifier_Sequence   ; breast-feeding: medium skin tone                               #10.0  [1] (🤱🏽)
+1F931 1F3FE   ; Emoji_Modifier_Sequence   ; breast-feeding: medium-dark skin tone                          #10.0  [1] (🤱🏾)
+1F931 1F3FF   ; Emoji_Modifier_Sequence   ; breast-feeding: dark skin tone                                 #10.0  [1] (🤱🏿)
+1F932 1F3FB   ; Emoji_Modifier_Sequence   ; palms up together: light skin tone                             #10.0  [1] (🤲🏻)
+1F932 1F3FC   ; Emoji_Modifier_Sequence   ; palms up together: medium-light skin tone                      #10.0  [1] (🤲🏼)
+1F932 1F3FD   ; Emoji_Modifier_Sequence   ; palms up together: medium skin tone                            #10.0  [1] (🤲🏽)
+1F932 1F3FE   ; Emoji_Modifier_Sequence   ; palms up together: medium-dark skin tone                       #10.0  [1] (🤲🏾)
+1F932 1F3FF   ; Emoji_Modifier_Sequence   ; palms up together: dark skin tone                              #10.0  [1] (🤲🏿)
 1F933 1F3FB   ; Emoji_Modifier_Sequence   ; selfie: light skin tone                                        # 9.0  [1] (🤳🏻)
 1F933 1F3FC   ; Emoji_Modifier_Sequence   ; selfie: medium-light skin tone                                 # 9.0  [1] (🤳🏼)
 1F933 1F3FD   ; Emoji_Modifier_Sequence   ; selfie: medium skin tone                                       # 9.0  [1] (🤳🏽)
@@ -740,7 +755,72 @@
 1F93E 1F3FD   ; Emoji_Modifier_Sequence   ; person playing handball: medium skin tone                      # 9.0  [1] (🤾🏽)
 1F93E 1F3FE   ; Emoji_Modifier_Sequence   ; person playing handball: medium-dark skin tone                 # 9.0  [1] (🤾🏾)
 1F93E 1F3FF   ; Emoji_Modifier_Sequence   ; person playing handball: dark skin tone                        # 9.0  [1] (🤾🏿)
+1F9D1 1F3FB   ; Emoji_Modifier_Sequence   ; adult: light skin tone                                         #10.0  [1] (🧑🏻)
+1F9D1 1F3FC   ; Emoji_Modifier_Sequence   ; adult: medium-light skin tone                                  #10.0  [1] (🧑🏼)
+1F9D1 1F3FD   ; Emoji_Modifier_Sequence   ; adult: medium skin tone                                        #10.0  [1] (🧑🏽)
+1F9D1 1F3FE   ; Emoji_Modifier_Sequence   ; adult: medium-dark skin tone                                   #10.0  [1] (🧑🏾)
+1F9D1 1F3FF   ; Emoji_Modifier_Sequence   ; adult: dark skin tone                                          #10.0  [1] (🧑🏿)
+1F9D2 1F3FB   ; Emoji_Modifier_Sequence   ; child: light skin tone                                         #10.0  [1] (🧒🏻)
+1F9D2 1F3FC   ; Emoji_Modifier_Sequence   ; child: medium-light skin tone                                  #10.0  [1] (🧒🏼)
+1F9D2 1F3FD   ; Emoji_Modifier_Sequence   ; child: medium skin tone                                        #10.0  [1] (🧒🏽)
+1F9D2 1F3FE   ; Emoji_Modifier_Sequence   ; child: medium-dark skin tone                                   #10.0  [1] (🧒🏾)
+1F9D2 1F3FF   ; Emoji_Modifier_Sequence   ; child: dark skin tone                                          #10.0  [1] (🧒🏿)
+1F9D3 1F3FB   ; Emoji_Modifier_Sequence   ; older adult: light skin tone                                   #10.0  [1] (🧓🏻)
+1F9D3 1F3FC   ; Emoji_Modifier_Sequence   ; older adult: medium-light skin tone                            #10.0  [1] (🧓🏼)
+1F9D3 1F3FD   ; Emoji_Modifier_Sequence   ; older adult: medium skin tone                                  #10.0  [1] (🧓🏽)
+1F9D3 1F3FE   ; Emoji_Modifier_Sequence   ; older adult: medium-dark skin tone                             #10.0  [1] (🧓🏾)
+1F9D3 1F3FF   ; Emoji_Modifier_Sequence   ; older adult: dark skin tone                                    #10.0  [1] (🧓🏿)
+1F9D4 1F3FB   ; Emoji_Modifier_Sequence   ; bearded person: light skin tone                                #10.0  [1] (🧔🏻)
+1F9D4 1F3FC   ; Emoji_Modifier_Sequence   ; bearded person: medium-light skin tone                         #10.0  [1] (🧔🏼)
+1F9D4 1F3FD   ; Emoji_Modifier_Sequence   ; bearded person: medium skin tone                               #10.0  [1] (🧔🏽)
+1F9D4 1F3FE   ; Emoji_Modifier_Sequence   ; bearded person: medium-dark skin tone                          #10.0  [1] (🧔🏾)
+1F9D4 1F3FF   ; Emoji_Modifier_Sequence   ; bearded person: dark skin tone                                 #10.0  [1] (🧔🏿)
+1F9D5 1F3FB   ; Emoji_Modifier_Sequence   ; person with headscarf: light skin tone                         #10.0  [1] (🧕🏻)
+1F9D5 1F3FC   ; Emoji_Modifier_Sequence   ; person with headscarf: medium-light skin tone                  #10.0  [1] (🧕🏼)
+1F9D5 1F3FD   ; Emoji_Modifier_Sequence   ; person with headscarf: medium skin tone                        #10.0  [1] (🧕🏽)
+1F9D5 1F3FE   ; Emoji_Modifier_Sequence   ; person with headscarf: medium-dark skin tone                   #10.0  [1] (🧕🏾)
+1F9D5 1F3FF   ; Emoji_Modifier_Sequence   ; person with headscarf: dark skin tone                          #10.0  [1] (🧕🏿)
+1F9D6 1F3FB   ; Emoji_Modifier_Sequence   ; person in steamy room: light skin tone                         #10.0  [1] (🧖🏻)
+1F9D6 1F3FC   ; Emoji_Modifier_Sequence   ; person in steamy room: medium-light skin tone                  #10.0  [1] (🧖🏼)
+1F9D6 1F3FD   ; Emoji_Modifier_Sequence   ; person in steamy room: medium skin tone                        #10.0  [1] (🧖🏽)
+1F9D6 1F3FE   ; Emoji_Modifier_Sequence   ; person in steamy room: medium-dark skin tone                   #10.0  [1] (🧖🏾)
+1F9D6 1F3FF   ; Emoji_Modifier_Sequence   ; person in steamy room: dark skin tone                          #10.0  [1] (🧖🏿)
+1F9D7 1F3FB   ; Emoji_Modifier_Sequence   ; person climbing: light skin tone                               #10.0  [1] (🧗🏻)
+1F9D7 1F3FC   ; Emoji_Modifier_Sequence   ; person climbing: medium-light skin tone                        #10.0  [1] (🧗🏼)
+1F9D7 1F3FD   ; Emoji_Modifier_Sequence   ; person climbing: medium skin tone                              #10.0  [1] (🧗🏽)
+1F9D7 1F3FE   ; Emoji_Modifier_Sequence   ; person climbing: medium-dark skin tone                         #10.0  [1] (🧗🏾)
+1F9D7 1F3FF   ; Emoji_Modifier_Sequence   ; person climbing: dark skin tone                                #10.0  [1] (🧗🏿)
+1F9D8 1F3FB   ; Emoji_Modifier_Sequence   ; person in lotus position: light skin tone                      #10.0  [1] (🧘🏻)
+1F9D8 1F3FC   ; Emoji_Modifier_Sequence   ; person in lotus position: medium-light skin tone               #10.0  [1] (🧘🏼)
+1F9D8 1F3FD   ; Emoji_Modifier_Sequence   ; person in lotus position: medium skin tone                     #10.0  [1] (🧘🏽)
+1F9D8 1F3FE   ; Emoji_Modifier_Sequence   ; person in lotus position: medium-dark skin tone                #10.0  [1] (🧘🏾)
+1F9D8 1F3FF   ; Emoji_Modifier_Sequence   ; person in lotus position: dark skin tone                       #10.0  [1] (🧘🏿)
+1F9D9 1F3FB   ; Emoji_Modifier_Sequence   ; mage: light skin tone                                          #10.0  [1] (🧙🏻)
+1F9D9 1F3FC   ; Emoji_Modifier_Sequence   ; mage: medium-light skin tone                                   #10.0  [1] (🧙🏼)
+1F9D9 1F3FD   ; Emoji_Modifier_Sequence   ; mage: medium skin tone                                         #10.0  [1] (🧙🏽)
+1F9D9 1F3FE   ; Emoji_Modifier_Sequence   ; mage: medium-dark skin tone                                    #10.0  [1] (🧙🏾)
+1F9D9 1F3FF   ; Emoji_Modifier_Sequence   ; mage: dark skin tone                                           #10.0  [1] (🧙🏿)
+1F9DA 1F3FB   ; Emoji_Modifier_Sequence   ; fairy: light skin tone                                         #10.0  [1] (🧚🏻)
+1F9DA 1F3FC   ; Emoji_Modifier_Sequence   ; fairy: medium-light skin tone                                  #10.0  [1] (🧚🏼)
+1F9DA 1F3FD   ; Emoji_Modifier_Sequence   ; fairy: medium skin tone                                        #10.0  [1] (🧚🏽)
+1F9DA 1F3FE   ; Emoji_Modifier_Sequence   ; fairy: medium-dark skin tone                                   #10.0  [1] (🧚🏾)
+1F9DA 1F3FF   ; Emoji_Modifier_Sequence   ; fairy: dark skin tone                                          #10.0  [1] (🧚🏿)
+1F9DB 1F3FB   ; Emoji_Modifier_Sequence   ; vampire: light skin tone                                       #10.0  [1] (🧛🏻)
+1F9DB 1F3FC   ; Emoji_Modifier_Sequence   ; vampire: medium-light skin tone                                #10.0  [1] (🧛🏼)
+1F9DB 1F3FD   ; Emoji_Modifier_Sequence   ; vampire: medium skin tone                                      #10.0  [1] (🧛🏽)
+1F9DB 1F3FE   ; Emoji_Modifier_Sequence   ; vampire: medium-dark skin tone                                 #10.0  [1] (🧛🏾)
+1F9DB 1F3FF   ; Emoji_Modifier_Sequence   ; vampire: dark skin tone                                        #10.0  [1] (🧛🏿)
+1F9DC 1F3FB   ; Emoji_Modifier_Sequence   ; merperson: light skin tone                                     #10.0  [1] (🧜🏻)
+1F9DC 1F3FC   ; Emoji_Modifier_Sequence   ; merperson: medium-light skin tone                              #10.0  [1] (🧜🏼)
+1F9DC 1F3FD   ; Emoji_Modifier_Sequence   ; merperson: medium skin tone                                    #10.0  [1] (🧜🏽)
+1F9DC 1F3FE   ; Emoji_Modifier_Sequence   ; merperson: medium-dark skin tone                               #10.0  [1] (🧜🏾)
+1F9DC 1F3FF   ; Emoji_Modifier_Sequence   ; merperson: dark skin tone                                      #10.0  [1] (🧜🏿)
+1F9DD 1F3FB   ; Emoji_Modifier_Sequence   ; elf: light skin tone                                           #10.0  [1] (🧝🏻)
+1F9DD 1F3FC   ; Emoji_Modifier_Sequence   ; elf: medium-light skin tone                                    #10.0  [1] (🧝🏼)
+1F9DD 1F3FD   ; Emoji_Modifier_Sequence   ; elf: medium skin tone                                          #10.0  [1] (🧝🏽)
+1F9DD 1F3FE   ; Emoji_Modifier_Sequence   ; elf: medium-dark skin tone                                     #10.0  [1] (🧝🏾)
+1F9DD 1F3FF   ; Emoji_Modifier_Sequence   ; elf: dark skin tone                                            #10.0  [1] (🧝🏿)
 
-# Total elements: 430
+# Total elements: 510
 
 #EOF
