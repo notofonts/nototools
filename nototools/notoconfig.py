@@ -50,8 +50,10 @@ def _setup():
         k, v = line.split('=', 1)
         values[k.strip()] = v.strip()
   else:
-    print ('# Homedir has no .notoconfig file, see ' +
-           'nototools/nototools/notoconfig.py')
+    # This needs to be silent.  It causes a makefile error in noto-emoji,
+    # which expects stdout to consist only of the output of a python
+    # script it runs.
+    pass
 
 _setup()
 
