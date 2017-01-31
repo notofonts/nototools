@@ -2741,6 +2741,7 @@ def _assign_programming_lang_symbols(cmap_ops):
       2192 # RIGHTWARDS ARROW
       2193 # DOWNWARDS ARROW
       2194 # LEFT RIGHT ARROW
+      2195 # UP DOWN ARROW
       2474 # PARENTHESIZED DIGIT ONE
       2475 # PARENTHESIZED DIGIT TWO
       266d # MUSIC FLAT SIGN
@@ -2788,6 +2789,10 @@ def _assign_programming_lang_symbols(cmap_ops):
   # (from github.com/adobe-fonts/source-code-pro/issues/114)
   haskell_cps |= tool_utils.parse_int_ranges(
       """2202 2210 2220 2234 2235 2284 2285 2289""")
+
+  # see comment from joeyaiello on noto-fonts/issues/669
+  # others mentioned in that comment are already in haskell
+  haskell_cps.add(0x2195)
 
   # add mirrored cps to this set
   add_mirrored(haskell_cps)
@@ -2841,7 +2846,9 @@ def _assign_programming_lang_symbols(cmap_ops):
 
   add_mirrored(apl_cps)
 
-  cmap_ops.add_all(apl_cps, 'MONO')
+  # Android doesn't want MONO as a fallback, so no codepoint should be added
+  # only to MONO and not to any other Noto font.
+  cmap_ops.add_all_to_all(apl_cps, ['MONO', 'Zmth'])
 
 
 def _assign_symbols_from_groups(cmap_ops):
