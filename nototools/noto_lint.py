@@ -744,6 +744,21 @@ def check_font(font_props, filename_error,
                  check_test=False)
 
 
+    def _check_unexpected_chars(cmap, char_filter):
+        expected_chars = _get_required_chars(
+            noto_font, noto_phase, 'cmap/unexpected')
+        if expected_chars == None:
+            return
+        unexpected_chars = set(cmap) - expected_chars
+        if char_filter and unexpected_chars:
+            unexpected_chars = set(itertools.ifilter(char_filter[1].accept, unexpected_chars))
+        if unexpected_chars:
+            warn("cmap/script_unexpected", "Chars",
+                 "The following %d chars were not expected in the font: %s"
+                 % (len(unexpected_chars), printable_unicode_range(unexpected_chars)),
+                 is_error=False, check_test=False)
+
+
     def check_cmap_table():
         cmap_table = font['cmap']
         cmaps = {}
@@ -872,6 +887,10 @@ def check_font(font_props, filename_error,
                     "There should not be ASCII letters in the font, but there are: %s."
                      % printable_unicode_range(contained_letters),
                      check_test=False)
+
+        if tests.check('cmap/unexpected'):
+            # filter if present should list chars we do not want to warn on.
+            _check_unexpected_chars(cmap, tests.get_filter('cmap/unexpected'))
 
         return cmap
 

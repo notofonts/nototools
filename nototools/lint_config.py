@@ -362,6 +362,7 @@ class TestSpec(object):
     non_characters
     disallowed_ascii
     variants
+    unexpected
   head -- head table tests
     hhea
       ascent
