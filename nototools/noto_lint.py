@@ -405,6 +405,7 @@ HARD_CODED_FONT_INFO = {
     "NotoNastaliq-Regular.ttf": ("Nastaliq", "Urdu", None, "Regular")
 }
 
+# these are based on a upem of 2048
 MAX_UI_HEIGHT = 2163
 MIN_UI_HEIGHT = -555
 ASCENT = 2189
@@ -987,17 +988,24 @@ def check_font(font_props, filename_error,
             # print "have %s" % font_data.unicoderange_bitmap_to_string(bitmap)
 
         hhea_table = font["hhea"]
+        upem = font['head'].unitsPerEm
+        if upem == 2048:
+          ascent = ASCENT
+          descent = DESCENT
+        else:
+          ascent = int(math.ceil(ASCENT * upem / 2048.0))
+          descent = int(math.floor(DESCENT * upem / 2048.0))
 
         if tests.check('head/hhea'):
             if font_props.is_UI or deemed_ui:
-                if hhea_table.ascent != ASCENT:
+                if hhea_table.ascent != ascent:
                     warn("head/hhea/ascent", "Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.ascent, ASCENT))
-                if hhea_table.descent != DESCENT:
+                             % (hhea_table.ascent, ascent))
+                if hhea_table.descent != descent:
                     warn("head/hhea/descent", "Bounds",
                          "Value of descent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.descent, DESCENT))
+                             % (hhea_table.descent, descent))
 
             if hhea_table.lineGap != 0:
                 warn("head/hhea/linegap", "Line Gap",
@@ -1126,6 +1134,14 @@ def check_font(font_props, filename_error,
         if not tests.check('bounds'):
             return
 
+        upem = font['head'].unitsPerEm
+        if upem == 2048:
+          max_ui_height = MAX_UI_HEIGHT
+          min_ui_height = MIN_UI_HEIGHT
+        else:
+          max_ui_height = int(math.ceil(MAX_UI_HEIGHT * upem / 2048.0))
+          min_ui_height = int(math.floor(MIN_UI_HEIGHT * upem / 2048.0))
+
         glyf_table = font['glyf']
         us_win_ascent = font['OS/2'].usWinAscent
         us_win_descent = font['OS/2'].usWinDescent
@@ -1173,16 +1189,16 @@ def check_font(font_props, filename_error,
 
             if font_props.is_UI or deemed_ui:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
-                    ymax is not None and ymax > MAX_UI_HEIGHT):
+                    ymax is not None and ymax > max_ui_height):
                     warn("bounds/glyph/ui_ymax", "Bounds",
                          "Real yMax for glyph %d (%s) is %d, which is more than "
-                         "%d." % (glyph_index, glyph_name, ymax, MAX_UI_HEIGHT),
+                         "%d." % (glyph_index, glyph_name, ymax, max_ui_height),
                          check_test=False)
                 if (tests.checkvalue('bounds/glyph/ui_ymin', glyph_index) and
-                    ymin is not None and ymin < MIN_UI_HEIGHT):
+                    ymin is not None and ymin < min_ui_height):
                     warn("bounds/glyph/ui_ymin", "Bounds",
                          "Real yMin for glyph %d (%s) is %d, which is less than "
-                         "%d." % (glyph_index, glyph_name, ymin, MIN_UI_HEIGHT),
+                         "%d." % (glyph_index, glyph_name, ymin, min_ui_height),
                          check_test=False)
 
             if (tests.checkvalue('bounds/glyph/ymax', glyph_index) and ymax is not None and
@@ -1203,14 +1219,14 @@ def check_font(font_props, filename_error,
 
         if tests.check('bounds/font'):
             if font_props.is_UI or deemed_ui:
-                if font_ymax > MAX_UI_HEIGHT:
+                if font_ymax > max_ui_height:
                     warn("bounds/font/ui_ymax", "Bounds",
                          "Real yMax is %d, but it should be less "
-                         "than or equal to %d." % (font_ymax, MAX_UI_HEIGHT))
-                if font_ymin < MIN_UI_HEIGHT:
+                         "than or equal to %d." % (font_ymax, max_ui_height))
+                if font_ymin < min_ui_height:
                     warn("bounds/font/ui_ymin", "Bounds",
                          "Real yMin is %d, but it should be greater than or equal "
-                         "to %d." % (font_ymin, MIN_UI_HEIGHT))
+                         "to %d." % (font_ymin, min_ui_height))
             else:
                 hhea_table = font["hhea"]
                 if font_ymax > hhea_table.ascent:
