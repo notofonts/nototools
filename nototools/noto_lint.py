@@ -460,7 +460,7 @@ def check_font(font_props, filename_error,
                lint_spec, runlog=False, skiplog=False,
                csv_flag=False, info_flag=False,
                extrema_details=True, nowarn=False,
-               quiet=False, noto_phase=3):
+               quiet=False, noto_phase=3, variable=False):
     global _processed_files
 
     _processed_files += 1
@@ -1242,6 +1242,10 @@ def check_font(font_props, filename_error,
 
     def check_for_intersections_and_off_curve_extrema():
         if 'glyf' not in font:
+            return
+
+        if variable:
+            # ignore these for variable font masters
             return
 
         if not tests.check('paths'):
@@ -2064,6 +2068,10 @@ def main():
         "-p", "--phase",
         help="set noto phase for lint compatibility (default 3)",
         metavar='phase', type=int, default=3)
+    parser.add_argument(
+        "-v", "--variable",
+        help="do checks appropriate to masters for variable fonts.",
+        action="store_true")
 
     arguments = parser.parse_args()
 
@@ -2102,7 +2110,8 @@ def main():
                        arguments.extrema_details,
                        arguments.nowarn,
                        arguments.quiet,
-                       arguments.phase)
+                       arguments.phase,
+                       arguments.variable)
     if arguments.font_props_file:
         font_props_list = parse_font_props(arguments.font_props_file)
         for font_props in font_props_list:
@@ -2116,7 +2125,8 @@ def main():
                         arguments.extrema_details,
                         arguments.nowarn,
                         arguments.quiet,
-                        arguments.phase)
+                        arguments.phase,
+                        arguments.variable)
 
     if not arguments.csv:
         print "------"
