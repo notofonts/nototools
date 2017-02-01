@@ -405,6 +405,7 @@ HARD_CODED_FONT_INFO = {
     "NotoNastaliq-Regular.ttf": ("Nastaliq", "Urdu", None, "Regular")
 }
 
+# these are based on a upem of 2048
 MAX_UI_HEIGHT = 2163
 MIN_UI_HEIGHT = -555
 ASCENT = 2189
@@ -459,7 +460,7 @@ def check_font(font_props, filename_error,
                lint_spec, runlog=False, skiplog=False,
                csv_flag=False, info_flag=False,
                extrema_details=True, nowarn=False,
-               quiet=False, noto_phase=3):
+               quiet=False, noto_phase=3, variable=False):
     global _processed_files
 
     _processed_files += 1
@@ -744,6 +745,21 @@ def check_font(font_props, filename_error,
                  check_test=False)
 
 
+    def _check_unexpected_chars(cmap, char_filter):
+        expected_chars = _get_required_chars(
+            noto_font, noto_phase, 'cmap/unexpected')
+        if expected_chars == None:
+            return
+        unexpected_chars = set(cmap) - expected_chars
+        if char_filter and unexpected_chars:
+            unexpected_chars = set(itertools.ifilter(char_filter[1].accept, unexpected_chars))
+        if unexpected_chars:
+            warn("cmap/script_unexpected", "Chars",
+                 "The following %d chars were not expected in the font: %s"
+                 % (len(unexpected_chars), printable_unicode_range(unexpected_chars)),
+                 is_error=False, check_test=False)
+
+
     def check_cmap_table():
         cmap_table = font['cmap']
         cmaps = {}
@@ -873,6 +889,10 @@ def check_font(font_props, filename_error,
                      % printable_unicode_range(contained_letters),
                      check_test=False)
 
+        if tests.check('cmap/unexpected'):
+            # filter if present should list chars we do not want to warn on.
+            _check_unexpected_chars(cmap, tests.get_filter('cmap/unexpected'))
+
         return cmap
 
     def check_variants():
@@ -968,17 +988,26 @@ def check_font(font_props, filename_error,
             # print "have %s" % font_data.unicoderange_bitmap_to_string(bitmap)
 
         hhea_table = font["hhea"]
+        upem = font['head'].unitsPerEm
+        if upem == 2048:
+          ascent = ASCENT
+          descent = DESCENT
+        else:
+          ascent = int(math.ceil(ASCENT * upem / 2048.0))
+          descent = int(math.floor(DESCENT * upem / 2048.0))
+
+        is_document = noto_font.style == 'Serif'
 
         if tests.check('head/hhea'):
-            if font_props.is_UI or deemed_ui:
-                if hhea_table.ascent != ASCENT:
+            if not is_document and (font_props.is_UI or deemed_ui):
+                if hhea_table.ascent != ascent:
                     warn("head/hhea/ascent", "Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.ascent, ASCENT))
-                if hhea_table.descent != DESCENT:
+                             % (hhea_table.ascent, ascent))
+                if hhea_table.descent != descent:
                     warn("head/hhea/descent", "Bounds",
                          "Value of descent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.descent, DESCENT))
+                             % (hhea_table.descent, descent))
 
             if hhea_table.lineGap != 0:
                 warn("head/hhea/linegap", "Line Gap",
@@ -1107,6 +1136,14 @@ def check_font(font_props, filename_error,
         if not tests.check('bounds'):
             return
 
+        upem = font['head'].unitsPerEm
+        if upem == 2048:
+          max_ui_height = MAX_UI_HEIGHT
+          min_ui_height = MIN_UI_HEIGHT
+        else:
+          max_ui_height = int(math.ceil(MAX_UI_HEIGHT * upem / 2048.0))
+          min_ui_height = int(math.floor(MIN_UI_HEIGHT * upem / 2048.0))
+
         glyf_table = font['glyf']
         us_win_ascent = font['OS/2'].usWinAscent
         us_win_descent = font['OS/2'].usWinDescent
@@ -1154,16 +1191,16 @@ def check_font(font_props, filename_error,
 
             if font_props.is_UI or deemed_ui:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
-                    ymax is not None and ymax > MAX_UI_HEIGHT):
+                    ymax is not None and ymax > max_ui_height):
                     warn("bounds/glyph/ui_ymax", "Bounds",
                          "Real yMax for glyph %d (%s) is %d, which is more than "
-                         "%d." % (glyph_index, glyph_name, ymax, MAX_UI_HEIGHT),
+                         "%d." % (glyph_index, glyph_name, ymax, max_ui_height),
                          check_test=False)
                 if (tests.checkvalue('bounds/glyph/ui_ymin', glyph_index) and
-                    ymin is not None and ymin < MIN_UI_HEIGHT):
+                    ymin is not None and ymin < min_ui_height):
                     warn("bounds/glyph/ui_ymin", "Bounds",
                          "Real yMin for glyph %d (%s) is %d, which is less than "
-                         "%d." % (glyph_index, glyph_name, ymin, MIN_UI_HEIGHT),
+                         "%d." % (glyph_index, glyph_name, ymin, min_ui_height),
                          check_test=False)
 
             if (tests.checkvalue('bounds/glyph/ymax', glyph_index) and ymax is not None and
@@ -1184,14 +1221,14 @@ def check_font(font_props, filename_error,
 
         if tests.check('bounds/font'):
             if font_props.is_UI or deemed_ui:
-                if font_ymax > MAX_UI_HEIGHT:
+                if font_ymax > max_ui_height:
                     warn("bounds/font/ui_ymax", "Bounds",
                          "Real yMax is %d, but it should be less "
-                         "than or equal to %d." % (font_ymax, MAX_UI_HEIGHT))
-                if font_ymin < MIN_UI_HEIGHT:
+                         "than or equal to %d." % (font_ymax, max_ui_height))
+                if font_ymin < min_ui_height:
                     warn("bounds/font/ui_ymin", "Bounds",
                          "Real yMin is %d, but it should be greater than or equal "
-                         "to %d." % (font_ymin, MIN_UI_HEIGHT))
+                         "to %d." % (font_ymin, min_ui_height))
             else:
                 hhea_table = font["hhea"]
                 if font_ymax > hhea_table.ascent:
@@ -1207,6 +1244,10 @@ def check_font(font_props, filename_error,
 
     def check_for_intersections_and_off_curve_extrema():
         if 'glyf' not in font:
+            return
+
+        if variable:
+            # ignore these for variable font masters
             return
 
         if not tests.check('paths'):
@@ -2029,6 +2070,10 @@ def main():
         "-p", "--phase",
         help="set noto phase for lint compatibility (default 3)",
         metavar='phase', type=int, default=3)
+    parser.add_argument(
+        "-v", "--variable",
+        help="do checks appropriate to masters for variable fonts.",
+        action="store_true")
 
     arguments = parser.parse_args()
 
@@ -2067,7 +2112,8 @@ def main():
                        arguments.extrema_details,
                        arguments.nowarn,
                        arguments.quiet,
-                       arguments.phase)
+                       arguments.phase,
+                       arguments.variable)
     if arguments.font_props_file:
         font_props_list = parse_font_props(arguments.font_props_file)
         for font_props in font_props_list:
@@ -2081,7 +2127,8 @@ def main():
                         arguments.extrema_details,
                         arguments.nowarn,
                         arguments.quiet,
-                        arguments.phase)
+                        arguments.phase,
+                        arguments.variable)
 
     if not arguments.csv:
         print "------"
