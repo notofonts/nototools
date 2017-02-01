@@ -996,7 +996,7 @@ def check_font(font_props, filename_error,
           ascent = int(math.ceil(ASCENT * upem / 2048.0))
           descent = int(math.floor(DESCENT * upem / 2048.0))
 
-        is_document = noto_font.style = 'Serif'
+        is_document = noto_font.style == 'Serif'
 
         if tests.check('head/hhea'):
             if not is_document and (font_props.is_UI or deemed_ui):
