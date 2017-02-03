@@ -1,5 +1,5 @@
 # emoji-variation-sequences.txt
-# Date: 2017-01-16, 12:53:02 GMT
+# Date: 2017-01-26, 13:54:04 GMT
 # © 2017 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
@@ -151,8 +151,6 @@
 2639 FE0F  ; emoji style; # (1.1) WHITE FROWNING FACE
 263A FE0E  ; text style;  # (1.1) WHITE SMILING FACE
 263A FE0F  ; emoji style; # (1.1) WHITE SMILING FACE
-263F FE0E  ; text style;  # (1.1) MERCURY
-263F FE0F  ; emoji style; # (1.1) MERCURY
 2640 FE0E  ; text style;  # (1.1) FEMALE SIGN
 2640 FE0F  ; emoji style; # (1.1) FEMALE SIGN
 2642 FE0E  ; text style;  # (1.1) MALE SIGN
@@ -714,6 +712,6 @@
 1F6F3 FE0E ; text style;  # (7.0) PASSENGER SHIP
 1F6F3 FE0F ; emoji style; # (7.0) PASSENGER SHIP
 
-#Total sequences: 352
+#Total sequences: 351
 
 #EOF
