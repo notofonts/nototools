@@ -82,6 +82,7 @@ _proposed_emoji_data_cps = None
 # emoji sequences
 _emoji_combining_sequences = None
 _emoji_flag_sequences = None
+_emoji_tag_sequences = None
 _emoji_modifier_sequences = None
 _emoji_zwj_sequences = None
 
@@ -730,19 +731,20 @@ def _load_emoji_data():
 def _load_emoji_sequence_data():
   """Parse emoji-sequences.txt"""
   global _emoji_combining_sequences, _emoji_flag_sequences
-  global _emoji_modifier_sequences
+  global _emoji_tag_sequences, _emoji_modifier_sequences
   if _emoji_combining_sequences:
       return
   emoji_maps = {
       'Emoji_Combining_Sequence': {},
       'Emoji_Flag_Sequence': {},
+      'Emoji_Tag_Sequence': {},
       'Emoji_Modifier_Sequence': {},
   }
   map_names = '|'.join(sorted(emoji_maps.keys()))
   # there's one line where the unicode version is not preceded by
   # a space, so make it optional.
   line_re = re.compile(
-      r'([0-9A-F ]+);\s+(%s)\s+;([^#]*)#\s*(\d+\.\d+)\s.*' %
+      r'([0-9A-F ]+);\s*(%s)\s*;\s*([^#]*)\s*#\s*(\d+\.\d+)\s.*' %
       map_names)
   with open_unicode_data_file('emoji-sequences.txt') as f:
     for line in f:
@@ -761,6 +763,7 @@ def _load_emoji_sequence_data():
       emoji_map[seq] = value
   _emoji_combining_sequences = emoji_maps['Emoji_Combining_Sequence']
   _emoji_flag_sequences = emoji_maps['Emoji_Flag_Sequence']
+  _emoji_tag_sequences = emoji_maps['Emoji_Tag_Sequence']
   _emoji_modifier_sequences = emoji_maps['Emoji_Modifier_Sequence']
 
 
@@ -810,6 +813,13 @@ def get_emoji_flag_sequences(age=None):
   those <= the provided age."""
   _load_emoji_sequence_data()
   return _age_map_select(_emoji_flag_sequences, age)
+
+
+def get_emoji_tag_sequences(age=None):
+  """Return map of tag sequences to name, optionally limited to
+  those <= the provided age."""
+  _load_emoji_sequence_data()
+  return _age_map_select(_emoji_tag_sequences, age)
 
 
 def get_emoji_modifier_sequences(age=None):
@@ -1046,6 +1056,9 @@ def _dump_emoji_sequences():
   print 'flag sequences'
   for seq, seq_name in sorted(get_emoji_flag_sequences().items()):
       print '+'.join('%04x' % cp for cp in seq), seq_name
+  print 'tag sequences'
+  for seq, seq_name in sorted(get_emoji_tag_sequences().items()):
+      print '+'.join('%04x' % cp for cp in seq), seq_name
   print 'modifier sequences'
   for seq, seq_name in sorted(get_emoji_modifier_sequences().items()):
       print '+'.join('%04x' % cp for cp in seq), seq_name
@@ -1132,6 +1145,7 @@ def _load_namealiases_data():
         continue
       _namealiases_alt_names[cp].append((name, name_type))
 
+
 def alt_names(cp):
   """Return list of name, nametype tuples for cp, or None."""
   _load_namealiases_data()
@@ -1139,17 +1153,19 @@ def alt_names(cp):
 
 
 if __name__ == '__main__':
-    # _dump_emoji_presentation()
-    print 'Alt names'
-    _load_namealiases_data()
-    for cp in sorted(_namealiases_alt_names):
-      print '%5s %s\n  %s' % (
-          '%04x' % cp, name(cp), '\n  '.join(
-              '%s (%s)' % t for t in alt_names(cp)))
-    print
-    print 'See also'
-    _load_nameslist_data()
-    for cp in sorted(_nameslist_see_also):
-      print '%5s %s\n   -> %s' % (
-          '%04x' % cp, name(cp, '???'), '\n   -> '.join(
-            '%04x %s' % (x, name(x, '<?>')) for x in see_also(cp)))
+  _dump_emoji_sequences()
+  """
+  print 'Alt names'
+  _load_namealiases_data()
+  for cp in sorted(_namealiases_alt_names):
+    print '%5s %s\n  %s' % (
+        '%04x' % cp, name(cp), '\n  '.join(
+            '%s (%s)' % t for t in alt_names(cp)))
+  print
+  print 'See also'
+  _load_nameslist_data()
+  for cp in sorted(_nameslist_see_also):
+    print '%5s %s\n   -> %s' % (
+        '%04x' % cp, name(cp, '???'), '\n   -> '.join(
+          '%04x %s' % (x, name(x, '<?>')) for x in see_also(cp)))
+  """
