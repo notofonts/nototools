@@ -17,7 +17,7 @@
 """Bleeding-edge version of Unicode Character Database.
 
 Provides an interface similar to Python's own unicodedata package, but with
-the bleeding-edge data. The implementation is not efficienct at all, it's
+the bleeding-edge data. The implementation is not efficient at all, it's
 just done this way for the ease of use. The data is coming from bleeding
 edge version of the Unicode Standard not yet published, so it is expected to
 be unstable and sometimes inconsistent.
@@ -93,7 +93,7 @@ _namealiases_alt_names = None
 def load_data():
   """Loads the data files needed for the module.
 
-  Could be used by processes who care about controlling when the data is
+  Could be used by processes that care about controlling when the data is
   loaded. Otherwise, data will be loaded the first time it's needed.
   """
   global _data_is_loaded
@@ -110,7 +110,6 @@ def load_data():
     _load_indic_data()
     _load_emoji_data()
     _load_emoji_sequence_data()
-    _load_emoji_zwj_sequence_data()
     _load_unicode_emoji_variants()
     _load_variant_data()
     _load_proposed_emoji_data()
@@ -529,6 +528,8 @@ def _load_unicode_data_txt():
   """Load character data from UnicodeData.txt."""
   global _defined_characters
   global _bidi_mirroring_characters
+  if _defined_characters != None:
+    return
 
   with open_unicode_data_file("UnicodeData.txt") as unicode_data_txt:
     unicode_data = _parse_semicolon_separated_data(unicode_data_txt.read())
@@ -728,112 +729,205 @@ def _load_emoji_data():
   # the regional indicators, and the skin tone modifiers.
 
 
-def _load_emoji_sequence_data():
-  """Parse emoji-sequences.txt"""
-  global _emoji_combining_sequences, _emoji_flag_sequences
-  global _emoji_tag_sequences, _emoji_modifier_sequences
-  if _emoji_combining_sequences:
-      return
-  emoji_maps = {
-      'Emoji_Combining_Sequence': {},
-      'Emoji_Flag_Sequence': {},
-      'Emoji_Tag_Sequence': {},
-      'Emoji_Modifier_Sequence': {},
-  }
-  map_names = '|'.join(sorted(emoji_maps.keys()))
-  # there's one line where the unicode version is not preceded by
-  # a space, so make it optional.
+ZWJ = 0x200d
+EMOJI_VS = 0xfe0f
+EMOJI_SEQUENCE_TYPES = frozenset([
+    'Emoji_Combining_Sequence',
+    'Emoji_Flag_Sequence',
+    'Emoji_Tag_Sequence',
+    'Emoji_Modifier_Sequence',
+    'Emoji_ZWJ_Sequence',
+    'Emoji_Single_Sequence'])
+
+_emoji_sequence_data = None
+_emoji_non_vs_to_canonical = None
+
+def _read_emoji_data_file(filename):
+  """Parse an emoji data file and return a map from sequence to tuples of
+  name, age, type."""
   line_re = re.compile(
       r'([0-9A-F ]+);\s*(%s)\s*;\s*([^#]*)\s*#\s*(\d+\.\d+)\s.*' %
-      map_names)
-  with open_unicode_data_file('emoji-sequences.txt') as f:
+      '|'.join(EMOJI_SEQUENCE_TYPES))
+  result = {}
+  with open_unicode_data_file(filename) as f:
     for line in f:
       line = line.strip()
       if not line or line[0] == '#':
         continue
       m = line_re.match(line)
       if not m:
-        raise ValueError('Did not match "%s"' % line)
+        raise ValueError('Did not match "%s" in %s' % (line, filename))
+      seq_type = m.group(2).strip()
       seq = tuple(int(s, 16) for s in m.group(1).split())
-      emoji_map = emoji_maps[m.group(2)]
-      is_flag = m.group(2) == 'Emoji_Flag_Sequence'
       name = m.group(3).strip()
       age = float(m.group(4))
-      value = (age, name) if name else age
-      emoji_map[seq] = value
-  _emoji_combining_sequences = emoji_maps['Emoji_Combining_Sequence']
-  _emoji_flag_sequences = emoji_maps['Emoji_Flag_Sequence']
-  _emoji_tag_sequences = emoji_maps['Emoji_Tag_Sequence']
-  _emoji_modifier_sequences = emoji_maps['Emoji_Modifier_Sequence']
+      result[seq] = (name, age, seq_type)
+  return result
 
 
-def _load_emoji_zwj_sequence_data():
-  """Parse emoji-zwj-sequences.txt."""
-  global _emoji_zwj_sequences
-  if _emoji_zwj_sequences:
-      return
+EMOJI_QUAL_TYPES = ['fully-qualified', 'non-fully-qualified']
+
+def _read_emoji_test_file():
+  """Parse the emoji-test.txt file.  This has names of proposed emoji that are
+  not yet in the full Unicode data file.  Returns a map from sequence to
+  tuple of qual_type, name."""
   line_re = re.compile(
-      r'([0-9A-F ]+);\s*Emoji_ZWJ_Sequence\s*;([^#]*)#\s*(\d+\.\d+)\s.*?')
-  data = {}
-  with open_unicode_data_file('emoji-zwj-sequences.txt') as f:
+      r'([0-9A-F ]+)\s*;\s*(%s)\s*#\s(?:[^\s]+)\s+(.*)\s*' %
+      '|'.join(EMOJI_QUAL_TYPES)
+  )
+  result = {}
+  with open_unicode_data_file('emoji-test.txt') as f:
     for line in f:
       line = line.strip()
       if not line or line[0] == '#':
         continue
       m = line_re.match(line)
       if not m:
-        raise ValueError('Did not match "%s"' % line)
+        raise ValueError('Did not match "%s" in emoji-test.txt' % line)
       seq = tuple(int(s, 16) for s in m.group(1).split())
-      seq_name = m.group(2).strip()
-      age = float(m.group(3))
-      data[seq] = (age, seq_name)
-  _emoji_zwj_sequences = data
+      qual_type = m.group(2).strip()
+      name = m.group(3).strip()
+      result[seq] = (qual_type, name)
+  return result
 
 
-def _age_map_select(seq_to_age_tup, age):
-  """Return a map from keys to the second item in age_tup, optionally limited
-  to those <= the provided age."""
-  if age is None:
-    return {k: v[1] for k, v in seq_to_age_tup.iteritems()}
-  else:
+def _load_emoji_sequence_data():
+  """Ensure the emoji sequence data is initialized."""
+  global _emoji_sequence_data, _emoji_non_vs_to_canonical
+  if _emoji_sequence_data != None:
+    return
+
+  _emoji_sequence_data = {}
+  _emoji_non_vs_to_canonical = {}
+
+  for datafile in ['emoji-zwj-sequences.txt', 'emoji-sequences.txt']:
+    data = _read_emoji_data_file(datafile)
+    for k, t in data.iteritems():
+      _emoji_sequence_data[k] = t
+      if EMOJI_VS in k:
+        _emoji_non_vs_to_canonical[strip_emoji_vs(k)] = k
+
+  _load_emoji_data()
+  for k in _emoji:
+    char_name = name(k, 'unnamed').lower()
+    sseq = (k,)
+    if k in _presentation_default_text:
+      seq = (k, EMOJI_VS)
+      if char_name != 'unnamed':
+        char_name = 'emoji ' + char_name
+      _emoji_non_vs_to_canonical[sseq] = seq
+    else:
+      seq = sseq
+    _emoji_sequence_data[seq] = (
+        char_name, age(k), 'Emoji_Single_Sequence')
+
+  for k, (qual_type, n) in _read_emoji_test_file().iteritems():
+    if k not in _emoji_sequence_data:
+      if qual_type == 'fully-qualified':
+        raise Exception(
+            'fully qualified test sequence %s not found' % seq_to_string(k))
+    else:
+      current_data = _emoji_sequence_data[k]
+      if current_data[0] == 'unnamed':
+        # Current test data is for Unicode 10, but the file does not contain
+        # this information.
+        current_version = current_data[1] or 10.0
+        _emoji_sequence_data[k] = (n, current_version, current_data[2])
+
+
+def get_emoji_sequences(age=None, types=None):
+  """Return the set of canonical emoji sequences, filtering to those <= age
+  if age is not None, and those with type in types (if not a string) or
+  type == types (if type is a string) if types is not None.  By default
+  all sequences are returned, including those for single emoji."""
+  _load_emoji_sequence_data()
+
+  result = _emoji_sequence_data.keys()
+  if types is not None:
+    if isinstance(types, basestring):
+      types = frozenset([types])
+    result = [k for k in result if _emoji_sequence_data[k][1] in types]
+  if age is not None:
     age = float(age)
-    return {k: v[1] for k, v in seq_to_age_tup.iteritems()
-            if v[0] <= age}
+    result = [k for k in result if _emoji_sequence_data[k][0] <= age]
+  return result
 
 
-def get_emoji_combining_sequences(age=None):
-  """Return map of combining sequences to name, optionally limited to
-  those <= the provided age."""
+def get_emoji_sequence_data(seq):
+  """Return a tuple of the name, age, and type for the (possibly non-canonical)
+  sequence, or None if not recognized as a sequence."""
   _load_emoji_sequence_data()
-  return _age_map_select(_emoji_combining_sequences, age)
+
+  seq = get_canonical_emoji_sequence(seq)
+  if not seq or seq not in _emoji_sequence_data:
+    return None
+  return _emoji_sequence_data[seq]
 
 
-def get_emoji_flag_sequences(age=None):
-  """Return map from flag sequence to name, optionally limited to
-  those <= the provided age."""
+def get_emoji_sequence_name(seq):
+  """Return the name of the (possibly non-canonical)  sequence, or None if
+  not recognized as a sequence."""
+  data = get_emoji_sequence_data(seq)
+  return None if not data else data[0]
+
+
+def get_emoji_sequence_age(seq):
+  """Return the age of the (possibly non-canonical)  sequence, or None if
+  not recognized as a sequence.  Proposed sequences have 1000.0 as the age."""
+  # floats are a pain since the actual values are decimal.  maybe use
+  # strings to represent age.
+  data = get_emoji_sequence_data(seq)
+  return None if not data else data[1]
+
+
+def get_emoji_sequence_type(seq):
+  """Return the type of the (possibly non-canonical)  sequence, or None if
+  not recognized as a sequence.  Types are in EMOJI_SEQUENCE_TYPES."""
+  data = get_emoji_sequence_data(seq)
+  return None if not data else data[2]
+
+
+def is_canonical_emoji_sequence(seq):
+  """Return true if this is a canonical emoji sequence (has 'vs' where Unicode
+  says it should), and is known."""
   _load_emoji_sequence_data()
-  return _age_map_select(_emoji_flag_sequences, age)
+  return seq in _emoji_sequence_data
 
 
-def get_emoji_tag_sequences(age=None):
-  """Return map of tag sequences to name, optionally limited to
-  those <= the provided age."""
+def get_canonical_emoji_sequence(seq):
+  """Return the canonical version of this emoji sequence if the sequence is
+  known, or None."""
   _load_emoji_sequence_data()
-  return _age_map_select(_emoji_tag_sequences, age)
+  seq = strip_emoji_vs(seq)
+  seq = _emoji_non_vs_to_canonical.get(seq, seq)
+  return seq if seq in _emoji_sequence_data else None
 
 
-def get_emoji_modifier_sequences(age=None):
-  """Return map of modifier sequences to name, optionally limited to
-  those <= the provided age."""
-  _load_emoji_sequence_data()
-  return _age_map_select(_emoji_modifier_sequences, age)
+def strip_emoji_vs(seq):
+  """Return a version of this emoji sequence with emoji variation selectors
+  stripped. This is the 'non-canonical' version used by the color emoji font,
+  which doesn't care how the sequence is represented in text."""
+  if EMOJI_VS in seq:
+    return tuple([cp for cp in seq if cp != EMOJI_VS])
+  return seq
 
 
-def get_emoji_zwj_sequences(age=None):
-  """Return a map from emoji_zwj sequences to name, optionally limited
-  to those <= the provided age."""
-  _load_emoji_zwj_sequence_data()
-  return _age_map_select(_emoji_zwj_sequences, age)
+def seq_to_string(seq):
+  """Return a string representation of the codepoint sequence."""
+  return '_'.join('%04x' % cp for cp in seq)
+
+
+def string_to_seq(seq_str):
+  """Return a codepoint sequence (tuple) given its string representation."""
+  return tuple([int(s, 16) for s in seq_str.split('_')])
+
+
+def is_regional_indicator(cp):
+  return 0x1f1e6 <= cp <= 0x1f1ff
+
+
+def is_skintone_modifier(cp):
+  return 0x1f3fb <= cp <= 0x1f3ff
 
 
 def get_presentation_default_emoji():
@@ -1153,19 +1247,5 @@ def alt_names(cp):
 
 
 if __name__ == '__main__':
-  _dump_emoji_sequences()
-  """
-  print 'Alt names'
-  _load_namealiases_data()
-  for cp in sorted(_namealiases_alt_names):
-    print '%5s %s\n  %s' % (
-        '%04x' % cp, name(cp), '\n  '.join(
-            '%s (%s)' % t for t in alt_names(cp)))
-  print
-  print 'See also'
-  _load_nameslist_data()
-  for cp in sorted(_nameslist_see_also):
-    print '%5s %s\n   -> %s' % (
-        '%04x' % cp, name(cp, '???'), '\n   -> '.join(
-          '%04x %s' % (x, name(x, '<?>')) for x in see_also(cp)))
-  """
+  for k in sorted(get_emoji_sequences()):
+    print seq_to_string(k), get_emoji_sequence_data(k)
