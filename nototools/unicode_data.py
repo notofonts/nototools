@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#
+# -*- coding: utf-8 -*-#
 # Copyright 2014 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,11 +80,8 @@ _proposed_emoji_data = None
 _proposed_emoji_data_cps = None
 
 # emoji sequences
-_emoji_combining_sequences = None
-_emoji_flag_sequences = None
-_emoji_tag_sequences = None
-_emoji_modifier_sequences = None
-_emoji_zwj_sequences = None
+_emoji_sequence_data = None
+_emoji_non_vs_to_canonical = None
 
 # nameslist/namealiases
 _nameslist_see_also = None
@@ -132,9 +129,12 @@ def name(char, *args):
   try:
       return unicodedata.name(char)
   except ValueError as val_error:
+    cp = ord(char)
     load_data()
-    if ord(char) in _character_names_data:
-      return _character_names_data[ord(char)]
+    if cp in _character_names_data:
+      return _character_names_data[cp]
+    elif (cp,) in _emoji_sequence_data:
+      return _emoji_sequence_data[(cp,)][0]
     elif args:
       return args[0]
     else:
@@ -528,7 +528,7 @@ def _load_unicode_data_txt():
   """Load character data from UnicodeData.txt."""
   global _defined_characters
   global _bidi_mirroring_characters
-  if _defined_characters != None:
+  if _defined_characters:
     return
 
   with open_unicode_data_file("UnicodeData.txt") as unicode_data_txt:
@@ -739,9 +739,6 @@ EMOJI_SEQUENCE_TYPES = frozenset([
     'Emoji_ZWJ_Sequence',
     'Emoji_Single_Sequence'])
 
-_emoji_sequence_data = None
-_emoji_non_vs_to_canonical = None
-
 def _read_emoji_data_file(filename):
   """Parse an emoji data file and return a map from sequence to tuples of
   name, age, type."""
@@ -787,6 +784,9 @@ def _read_emoji_test_file():
       seq = tuple(int(s, 16) for s in m.group(1).split())
       qual_type = m.group(2).strip()
       name = m.group(3).strip()
+      # some names contains non-ascii curly quotes, change to ascii
+      if '“' in name or '’' in name:
+        name = name.replace('“', '"').replace('”', '"').replace('’', '\'')
       result[seq] = (qual_type, name)
   return result
 
@@ -833,6 +833,9 @@ def _load_emoji_sequence_data():
         # this information.
         current_version = current_data[1] or 10.0
         _emoji_sequence_data[k] = (n, current_version, current_data[2])
+        # Also add single character sequences to character name data
+        if len(k) == 1:
+          _character_names_data[k[0]] = n.upper()
 
 
 def get_emoji_sequences(age=None, types=None):
@@ -1140,25 +1143,6 @@ def codeset(cpname):
     return None
   with open(filepath, 'r') as f:
     return read_codeset(f.read())
-
-
-def _dump_emoji_sequences():
-  """Dump sequences, for testing."""
-  print 'combining sequences'
-  for seq, seq_name in sorted(get_emoji_combining_sequences().items()):
-      print '+'.join('%04x' % cp for cp in seq), seq_name
-  print 'flag sequences'
-  for seq, seq_name in sorted(get_emoji_flag_sequences().items()):
-      print '+'.join('%04x' % cp for cp in seq), seq_name
-  print 'tag sequences'
-  for seq, seq_name in sorted(get_emoji_tag_sequences().items()):
-      print '+'.join('%04x' % cp for cp in seq), seq_name
-  print 'modifier sequences'
-  for seq, seq_name in sorted(get_emoji_modifier_sequences().items()):
-      print '+'.join('%04x' % cp for cp in seq), seq_name
-  print 'zwj sequences'
-  for seq, seq_name in sorted(get_emoji_zwj_sequences().items()):
-      print '+'.join('%04x' % cp for cp in seq), seq_name
 
 
 def _dump_emoji_presentation():
