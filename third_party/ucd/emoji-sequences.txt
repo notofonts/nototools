@@ -1,5 +1,5 @@
 # emoji-sequences.txt
-# Date: 2017-01-17, 08:40:56 GMT
+# Date: 2017-01-30, 04:35:56 GMT
 # © 2017 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
@@ -102,7 +102,7 @@
 1F1E8 1F1FC   ; Emoji_Flag_Sequence       ; Curaçao                                                        # 6.0  [1] (🇨🇼)
 1F1E8 1F1FD   ; Emoji_Flag_Sequence       ; Christmas Island                                               # 6.0  [1] (🇨🇽)
 1F1E8 1F1FE   ; Emoji_Flag_Sequence       ; Cyprus                                                         # 6.0  [1] (🇨🇾)
-1F1E8 1F1FF   ; Emoji_Flag_Sequence       ; Czech Republic                                                 # 6.0  [1] (🇨🇿)
+1F1E8 1F1FF   ; Emoji_Flag_Sequence       ; Czechia                                                        # 6.0  [1] (🇨🇿)
 1F1E9 1F1EA   ; Emoji_Flag_Sequence       ; Germany                                                        # 6.0  [1] (🇩🇪)
 1F1E9 1F1EC   ; Emoji_Flag_Sequence       ; Diego Garcia                                                   # 6.0  [1] (🇩🇬)
 1F1E9 1F1EF   ; Emoji_Flag_Sequence       ; Djibouti                                                       # 6.0  [1] (🇩🇯)
@@ -305,6 +305,16 @@
 1F1FF 1F1FC   ; Emoji_Flag_Sequence       ; Zimbabwe                                                       # 6.0  [1] (🇿🇼)
 
 # Total elements: 258
+
+# ================================================
+
+# Emoji Tag Sequence: See Annex C of TR51 for more information.
+
+1F3F4 E0067 FE0F E0062 FE0F E0065 FE0F E006E FE0F E0067 FE0F E007F FE0F; Emoji_Tag_Sequence; England       # 7.0  [1] (🏴󠁧️󠁢️󠁥️󠁮️󠁧️󠁿️)
+1F3F4 E0067 FE0F E0062 FE0F E0073 FE0F E0063 FE0F E0074 FE0F E007F FE0F; Emoji_Tag_Sequence; Scotland      # 7.0  [1] (🏴󠁧️󠁢️󠁳️󠁣️󠁴️󠁿️)
+1F3F4 E0067 FE0F E0062 FE0F E0077 FE0F E006C FE0F E0073 FE0F E007F FE0F; Emoji_Tag_Sequence; Wales         # 7.0  [1] (🏴󠁧️󠁢️󠁷️󠁬️󠁳️󠁿️)
+
+# Total elements: 3
 
 # ================================================
 
@@ -685,11 +695,11 @@
 1F91E 1F3FD   ; Emoji_Modifier_Sequence   ; crossed fingers: medium skin tone                              # 9.0  [1] (🤞🏽)
 1F91E 1F3FE   ; Emoji_Modifier_Sequence   ; crossed fingers: medium-dark skin tone                         # 9.0  [1] (🤞🏾)
 1F91E 1F3FF   ; Emoji_Modifier_Sequence   ; crossed fingers: dark skin tone                                # 9.0  [1] (🤞🏿)
-1F91F 1F3FB   ; Emoji_Modifier_Sequence   ; love-you hand: light skin tone                                 #10.0  [1] (🤟🏻)
-1F91F 1F3FC   ; Emoji_Modifier_Sequence   ; love-you hand: medium-light skin tone                          #10.0  [1] (🤟🏼)
-1F91F 1F3FD   ; Emoji_Modifier_Sequence   ; love-you hand: medium skin tone                                #10.0  [1] (🤟🏽)
-1F91F 1F3FE   ; Emoji_Modifier_Sequence   ; love-you hand: medium-dark skin tone                           #10.0  [1] (🤟🏾)
-1F91F 1F3FF   ; Emoji_Modifier_Sequence   ; love-you hand: dark skin tone                                  #10.0  [1] (🤟🏿)
+1F91F 1F3FB   ; Emoji_Modifier_Sequence   ; love-you gesture: light skin tone                              #10.0  [1] (🤟🏻)
+1F91F 1F3FC   ; Emoji_Modifier_Sequence   ; love-you gesture: medium-light skin tone                       #10.0  [1] (🤟🏼)
+1F91F 1F3FD   ; Emoji_Modifier_Sequence   ; love-you gesture: medium skin tone                             #10.0  [1] (🤟🏽)
+1F91F 1F3FE   ; Emoji_Modifier_Sequence   ; love-you gesture: medium-dark skin tone                        #10.0  [1] (🤟🏾)
+1F91F 1F3FF   ; Emoji_Modifier_Sequence   ; love-you gesture: dark skin tone                               #10.0  [1] (🤟🏿)
 1F926 1F3FB   ; Emoji_Modifier_Sequence   ; person facepalming: light skin tone                            # 9.0  [1] (🤦🏻)
 1F926 1F3FC   ; Emoji_Modifier_Sequence   ; person facepalming: medium-light skin tone                     # 9.0  [1] (🤦🏼)
 1F926 1F3FD   ; Emoji_Modifier_Sequence   ; person facepalming: medium skin tone                           # 9.0  [1] (🤦🏽)

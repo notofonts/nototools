@@ -1,5 +1,5 @@
 # emoji-data.txt
-# Date: 2017-01-17, 08:40:55 GMT
+# Date: 2017-02-01, 02:06:34 GMT
 # © 2017 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
@@ -55,7 +55,7 @@
 262A          ; Emoji                # 1.1  [1] (☪️)       star and crescent
 262E..262F    ; Emoji                # 1.1  [2] (☮️..☯️)    peace symbol..yin yang
 2638..263A    ; Emoji                # 1.1  [3] (☸️..☺️)    wheel of dharma..smiling face
-263F..2640    ; Emoji                # 1.1  [2] (☿️..♀️)    person sign..female sign
+2640          ; Emoji                # 1.1  [1] (♀️)       female sign
 2642          ; Emoji                # 1.1  [1] (♂️)       male sign
 2648..2653    ; Emoji                # 1.1 [12] (♈..♓)    Aries..Pisces
 2660          ; Emoji                # 1.1  [1] (♠️)       spade suit
@@ -223,9 +223,9 @@
 1F6F7..1F6F8  ; Emoji                #10.0  [2] (🛷..🛸)    sled..flying saucer
 1F910..1F918  ; Emoji                # 8.0  [9] (🤐..🤘)    zipper-mouth face..sign of the horns
 1F919..1F91E  ; Emoji                # 9.0  [6] (🤙..🤞)    call me hand..crossed fingers
-1F91F         ; Emoji                #10.0  [1] (🤟)       love-you hand
+1F91F         ; Emoji                #10.0  [1] (🤟)       love-you gesture
 1F920..1F927  ; Emoji                # 9.0  [8] (🤠..🤧)    cowboy hat face..sneezing face
-1F928..1F92F  ; Emoji                #10.0  [8] (🤨..🤯)    face with one eyebrow raised..shocked face with exploding head
+1F928..1F92F  ; Emoji                #10.0  [8] (🤨..🤯)    face with raised eyebrow..exploding head
 1F930         ; Emoji                # 9.0  [1] (🤰)       pregnant woman
 1F931..1F932  ; Emoji                #10.0  [2] (🤱..🤲)    breast-feeding..palms up together
 1F933..1F93A  ; Emoji                # 9.0  [8] (🤳..🤺)    selfie..person fencing
@@ -237,11 +237,11 @@
 1F95F..1F96B  ; Emoji                #10.0 [13] (🥟..🥫)    dumpling..canned food
 1F980..1F984  ; Emoji                # 8.0  [5] (🦀..🦄)    crab..unicorn face
 1F985..1F991  ; Emoji                # 9.0 [13] (🦅..🦑)    eagle..squid
-1F992..1F997  ; Emoji                #10.0  [6] (🦒..🦗)    giraffe face..cricket
+1F992..1F997  ; Emoji                #10.0  [6] (🦒..🦗)    giraffe..cricket
 1F9C0         ; Emoji                # 8.0  [1] (🧀)       cheese wedge
 1F9D0..1F9E6  ; Emoji                #10.0 [23] (🧐..🧦)    face with monocle..socks
 
-# Total elements: 1183
+# Total elements: 1182
 
 # ================================================
 
@@ -352,9 +352,9 @@
 1F6F7..1F6F8  ; Emoji_Presentation   #10.0  [2] (🛷..🛸)    sled..flying saucer
 1F910..1F918  ; Emoji_Presentation   # 8.0  [9] (🤐..🤘)    zipper-mouth face..sign of the horns
 1F919..1F91E  ; Emoji_Presentation   # 9.0  [6] (🤙..🤞)    call me hand..crossed fingers
-1F91F         ; Emoji_Presentation   #10.0  [1] (🤟)       love-you hand
+1F91F         ; Emoji_Presentation   #10.0  [1] (🤟)       love-you gesture
 1F920..1F927  ; Emoji_Presentation   # 9.0  [8] (🤠..🤧)    cowboy hat face..sneezing face
-1F928..1F92F  ; Emoji_Presentation   #10.0  [8] (🤨..🤯)    face with one eyebrow raised..shocked face with exploding head
+1F928..1F92F  ; Emoji_Presentation   #10.0  [8] (🤨..🤯)    face with raised eyebrow..exploding head
 1F930         ; Emoji_Presentation   # 9.0  [1] (🤰)       pregnant woman
 1F931..1F932  ; Emoji_Presentation   #10.0  [2] (🤱..🤲)    breast-feeding..palms up together
 1F933..1F93A  ; Emoji_Presentation   # 9.0  [8] (🤳..🤺)    selfie..person fencing
@@ -366,7 +366,7 @@
 1F95F..1F96B  ; Emoji_Presentation   #10.0 [13] (🥟..🥫)    dumpling..canned food
 1F980..1F984  ; Emoji_Presentation   # 8.0  [5] (🦀..🦄)    crab..unicorn face
 1F985..1F991  ; Emoji_Presentation   # 9.0 [13] (🦅..🦑)    eagle..squid
-1F992..1F997  ; Emoji_Presentation   #10.0  [6] (🦒..🦗)    giraffe face..cricket
+1F992..1F997  ; Emoji_Presentation   #10.0  [6] (🦒..🦗)    giraffe..cricket
 1F9C0         ; Emoji_Presentation   # 8.0  [1] (🧀)       cheese wedge
 1F9D0..1F9E6  ; Emoji_Presentation   #10.0 [23] (🧐..🧦)    face with monocle..socks
 
@@ -417,7 +417,7 @@
 1F918         ; Emoji_Modifier_Base  # 8.0  [1] (🤘)       sign of the horns
 1F919..1F91C  ; Emoji_Modifier_Base  # 9.0  [4] (🤙..🤜)    call me hand..right-facing fist
 1F91E         ; Emoji_Modifier_Base  # 9.0  [1] (🤞)       crossed fingers
-1F91F         ; Emoji_Modifier_Base  #10.0  [1] (🤟)       love-you hand
+1F91F         ; Emoji_Modifier_Base  #10.0  [1] (🤟)       love-you gesture
 1F926         ; Emoji_Modifier_Base  # 9.0  [1] (🤦)       person facepalming
 1F930         ; Emoji_Modifier_Base  # 9.0  [1] (🤰)       pregnant woman
 1F931..1F932  ; Emoji_Modifier_Base  #10.0  [2] (🤱..🤲)    breast-feeding..palms up together
@@ -426,15 +426,6 @@
 1F9D1..1F9DD  ; Emoji_Modifier_Base  #10.0 [13] (🧑..🧝)    adult..elf
 
 # Total elements: 102
-
-# ================================================
-
-# All omitted code points have Emoji_Regional_Indicator=No 
-# @missing: 0000..10FFFF  ; Emoji_Regional_Indicator ; No
-
-1F1E6..1F1FF  ; Emoji_Regional_Indicator#6.0[26] (🇦..🇿)   REGIONAL INDICATOR SYMBOL LETTER A..REGIONAL INDICATOR SYMBOL LETTER Z
-
-# Total elements: 26
 
 # ================================================
 
