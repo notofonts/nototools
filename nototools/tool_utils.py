@@ -67,6 +67,24 @@ def resolve_path(somepath):
   return path.realpath(path.abspath(path.expanduser(somepath)))
 
 
+def commonpathprefix(paths):
+  """Return the common path prefix and a tuple of the relative subpaths for the
+  provided paths.  Uses resolve_path to convert to absolute paths and returns
+  the common absolute path.  Some subpaths might be the empty string and joining
+  these will produce paths ending in '/', use normpath if you don't want this.
+
+  Python 2.7 only has path.commonprefix, which returns a common string prefix,
+  not a common path prefix.
+  """
+  norm_paths = [resolve_path(p) + path.sep for p in paths]
+  prefix = path.dirname(path.commonprefix(norm_paths))
+  prefix_len = len(prefix)
+  if prefix_len > 1:
+    prefix_len += 1 # not '/' so does not end in '/', strip from subpaths
+  subpaths = tuple(p[prefix_len:-1] for p in norm_paths)
+  return prefix, subpaths
+
+
 def _name_to_key(keyname):
   if keyname == 'adobe_data':
     return 'adobe'
