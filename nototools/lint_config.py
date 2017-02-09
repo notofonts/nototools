@@ -88,10 +88,14 @@ value_list: -- numbers or ranges separated by whitespace, no space around hyphen
 
 def parse_int_ranges(range_string, is_hex=True, sep=' '):
   """Returns a set of ints from a string of numbers or ranges separated by sep.
-  A range is two values separated by hyphen with no intervening separator."""
+  A range is two values separated by hyphen with no intervening separator.
+  Result can be empty if range_string is empty."""
   result = set()
   count = 0
   base = 16 if is_hex else 10
+  range_string = range_string.strip()
+  if not range_string:
+    return set()
   value_list = range_string.split(sep)
   for val in value_list:
     if '-' in val: # assume range
