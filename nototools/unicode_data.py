@@ -383,7 +383,7 @@ def _folded_script_name(script_name):
   """Folds a script name to its bare bones for comparison."""
   # string.translate is changed by codecs, the method no longer takes two
   # parameters and so script_name.translate(None, "'-_ ") fails to compile
-  return _strip_re.sub('', script_name)
+  return _strip_re.sub('', script_name).lower()
 
 
 def script_code(script_name):
