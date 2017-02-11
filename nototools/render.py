@@ -123,7 +123,7 @@ def get_glyph_cleaned_extents_OLD(glyph, glyf_table):
 def get_glyph_vertical_extents(glyph_id, font_file_name):
     """Returns visible vertical extents given a glyph ID and font name."""
     font = font_caching.open_font(font_file_name)
-    glyph_set = font.getGlyphSet()
+    glyf_set = font.getGlyphSet()
 
     glyph_name = font.getGlyphName(glyph_id)
     ttglyph = glyf_set[glyph_name]
