@@ -83,6 +83,7 @@ _proposed_emoji_data_cps = None
 # emoji sequences
 _emoji_sequence_data = None
 _emoji_non_vs_to_canonical = None
+_emoji_group_data = None
 
 # nameslist/namealiases
 _nameslist_see_also = None
@@ -767,35 +768,194 @@ def _read_emoji_data_file(filename):
   return result
 
 
-EMOJI_QUAL_TYPES = ['fully-qualified', 'non-fully-qualified']
+_EMOJI_QUAL_TYPES = ['fully-qualified', 'non-fully-qualified']
 
-def _read_emoji_test_file():
-  """Parse the emoji-test.txt file.  This has names of proposed emoji that are
-  not yet in the full Unicode data file.  Returns a map from sequence to
-  tuple of qual_type, name."""
+def _read_emoji_test_data(data_string):
+  """Parse the emoji-test.txt data.  This has names of proposed emoji that are
+  not yet in the full Unicode data file.  Returns a list of tuples of
+  sequence, group, subgroup, name.
+
+  The data is a string."""
   line_re = re.compile(
-      r'([0-9A-F ]+)\s*;\s*(%s)\s*#\s(?:[^\s]+)\s+(.*)\s*' %
-      '|'.join(EMOJI_QUAL_TYPES)
+      r'([0-9a-fA-F ]+)\s*;\s*(%s)\s*#\s*(?:[^\s]+)\s+(.*)\s*' %
+      '|'.join(_EMOJI_QUAL_TYPES)
   )
-  result = {}
-  with open_unicode_data_file('emoji-test.txt') as f:
-    for line in f:
-      line = line.strip()
-      if not line or line[0] == '#':
-        continue
-      m = line_re.match(line)
-      if not m:
-        raise ValueError('Did not match "%s" in emoji-test.txt' % line)
-      seq = tuple(int(s, 16) for s in m.group(1).split())
-      qual_type = intern(m.group(2).strip().encode('ascii'))
-      name = m.group(3).strip()
-      result[seq] = (qual_type, name)
+  result = []
+  GROUP_PREFIX = '# group: '
+  SUBGROUP_PREFIX = '# subgroup: '
+  group = None
+  subgroup = None
+  for line in data_string.splitlines():
+    line = line.strip()
+    if not line:
+      continue
+
+    if line[0] == '#':
+      if line.startswith(GROUP_PREFIX):
+        group = line[len(GROUP_PREFIX):].strip().encode('ascii')
+        subgroup = None
+      elif line.startswith(SUBGROUP_PREFIX):
+        subgroup = line[len(SUBGROUP_PREFIX):].strip().encode('ascii')
+      continue
+
+    m = line_re.match(line)
+    if not m:
+      raise ValueError('Did not match "%s" in emoji-test.txt' % line)
+    if m.group(2) == _EMOJI_QUAL_TYPES[1]:
+      # we only want fully-qualified sequences, as those are 'canonical'.
+      # Information for the non-fully-qualified sequences should be
+      # redundant.  At the moment we don't verify this so if the file
+      # changes we won't catch that.
+      continue
+    seq = tuple(int(s, 16) for s in m.group(1).split())
+    name = m.group(3).strip()
+    if not (group and subgroup):
+      raise Exception(
+          'sequence %s missing group or subgroup' % seq_to_string(seq))
+    result.append((seq, group, subgroup, name))
+
   return result
+
+_SUPPLEMENTAL_EMOJI_GROUP_DATA = """
+# group: Misc
+
+# subgroup: used with keycaps
+0023 fe0f ; fully-qualified # ? number sign
+002a fe0f ; fully-qualified # ? asterisk
+0030 fe0f ; fully-qualified # ? digit zero
+0031 fe0f ; fully-qualified # ? digit one
+0032 fe0f ; fully-qualified # ? digit two
+0033 fe0f ; fully-qualified # ? digit three
+0034 fe0f ; fully-qualified # ? digit four
+0035 fe0f ; fully-qualified # ? digit five
+0036 fe0f ; fully-qualified # ? digit six
+0037 fe0f ; fully-qualified # ? digit seven
+0038 fe0f ; fully-qualified # ? digit eight
+0039 fe0f ; fully-qualified # ? digit nine
+20e3 ; fully-qualified # ? combining enclosing keycap
+
+# subgroup: skin-tone modifiers
+1f3fb ; fully-qualified # ? emoji modifier fitzpatrick type-1-2
+1f3fc ; fully-qualified # ? emoji modifier fitzpatrick type-3
+1f3fd ; fully-qualified # ? emoji modifier fitzpatrick type-4
+1f3fe ; fully-qualified # ? emoji modifier fitzpatrick type-5
+1f3ff ; fully-qualified # ? emoji modifier fitzpatrick type-6
+
+# subgroup: regional indicator symbols
+1f1e6 ; fully-qualified # ? regional indicator symbol letter A
+1f1e7 ; fully-qualified # ? regional indicator symbol letter B
+1f1e8 ; fully-qualified # ? regional indicator symbol letter C
+1f1e9 ; fully-qualified # ? regional indicator symbol letter D
+1f1ea ; fully-qualified # ? regional indicator symbol letter E
+1f1eb ; fully-qualified # ? regional indicator symbol letter F
+1f1ec ; fully-qualified # ? regional indicator symbol letter G
+1f1ed ; fully-qualified # ? regional indicator symbol letter H
+1f1ee ; fully-qualified # ? regional indicator symbol letter I
+1f1ef ; fully-qualified # ? regional indicator symbol letter J
+1f1f0 ; fully-qualified # ? regional indicator symbol letter K
+1f1f1 ; fully-qualified # ? regional indicator symbol letter L
+1f1f2 ; fully-qualified # ? regional indicator symbol letter M
+1f1f3 ; fully-qualified # ? regional indicator symbol letter N
+1f1f4 ; fully-qualified # ? regional indicator symbol letter O
+1f1f5 ; fully-qualified # ? regional indicator symbol letter P
+1f1f6 ; fully-qualified # ? regional indicator symbol letter Q
+1f1f7 ; fully-qualified # ? regional indicator symbol letter R
+1f1f8 ; fully-qualified # ? regional indicator symbol letter S
+1f1f9 ; fully-qualified # ? regional indicator symbol letter T
+1f1fa ; fully-qualified # ? regional indicator symbol letter U
+1f1fb ; fully-qualified # ? regional indicator symbol letter V
+1f1fc ; fully-qualified # ? regional indicator symbol letter W
+1f1fd ; fully-qualified # ? regional indicator symbol letter X
+1f1fe ; fully-qualified # ? regional indicator symbol letter Y
+1f1ff ; fully-qualified # ? regional indicator symbol letter Z
+
+#subgroup: unknown flag
+fe82b ; fully-qualified # ? unknown flag PUA codepoint
+"""
+
+
+def _load_emoji_group_data():
+  global _emoji_group_data
+  if _emoji_group_data:
+    return
+
+  _emoji_group_data = {}
+
+  with open_unicode_data_file('emoji-test.txt') as f:
+    text = f.read()
+  group_list = _read_emoji_test_data(text)
+  group_list.extend(_read_emoji_test_data(_SUPPLEMENTAL_EMOJI_GROUP_DATA))
+  for i, (seq, group, subgroup, name) in enumerate(group_list):
+    _emoji_group_data[seq] = (i, group, subgroup, name)
+
+  assert len(group_list) == len(_emoji_group_data)
+
+
+def get_emoji_group_data(seq):
+  """Return group data for the canonical sequence seq, or None.
+  Group data is a tuple of index, group, subgroup, and name.  The
+  index is a unique global sort index for the sequence among all
+  sequences in the group data."""
+  _load_emoji_group_data()
+  return _emoji_group_data.get(seq, None)
+
+
+def get_emoji_groups():
+  """Return the main emoji groups, in order."""
+  _load_emoji_group_data()
+  groups = []
+  group = None
+  for _, g, _, _ in sorted(_emoji_group_data.values()):
+    if g != group:
+      group = g
+      groups.append(group)
+  return groups
+
+
+def get_emoji_subgroups(group):
+  """Return the subgroups of this group, in order, or None
+  if the group is not recognized."""
+  _load_emoji_group_data()
+  subgroups = []
+  subgroup = None
+  for _, g, sg, _ in sorted(_emoji_group_data.values()):
+    if g == group:
+      if sg != subgroup:
+        subgroup = sg
+        subgroups.append(subgroup)
+  return subgroups if subgroups else None
+
+
+def get_emoji_in_group(group, subgroup=None):
+  """Return the sorted list of the emoji sequences in the group (limiting to
+  subgroup if subgroup is not None).  Returns None if group does not
+  exist, and an empty list if subgroup does not exist in group."""
+  _load_emoji_group_data()
+  result = None
+  for seq, (index, g, sg, _) in _emoji_group_data.iteritems():
+    if g == group:
+      if result == None:
+        result = []
+      if subgroup and sg != subgroup:
+        continue
+      result.append(seq)
+  result.sort(key=lambda s: _emoji_group_data[s][0])
+  return result
+
+
+def get_sorted_emoji_sequences(seqs):
+  """Seqs is a collection of canonical emoji sequences.  Returns a list of
+  these sequences in the canonical emoji group order.  Sequences that are not
+  canonical are placed at the end, in unicode code point order.
+  """
+  _load_emoji_group_data()
+  return sorted(seqs, key=lambda s: (_emoji_group_data.get(s, 100000), s))
 
 
 def _load_emoji_sequence_data():
   """Ensure the emoji sequence data is initialized."""
   global _emoji_sequence_data, _emoji_non_vs_to_canonical
+
   if _emoji_sequence_data is not None:
     return
 
@@ -811,13 +971,14 @@ def _load_emoji_sequence_data():
       if EMOJI_VS in k:
         _emoji_non_vs_to_canonical[strip_emoji_vs(k)] = k
 
-  _load_unicode_data_txt() # ensure character_names_data is populated
-  _load_emoji_data() # ensure presentation_default_text is populated
+  _load_unicode_data_txt()  # ensure character_names_data is populated
+  _load_emoji_data()  # ensure presentation_default_text is populated
+  _load_emoji_group_data()  # ensure group data is populated
 
   # Get names for single emoji from the test data. We will prefer these over
   # those in UnicodeData (e.g. prefer "one o'clock" to "clock face one oclock"),
   # and if they're not in UnicodeData these are proposed new emoji.
-  for seq, (qual_type, emoji_name) in _read_emoji_test_file().iteritems():
+  for seq, (_, _, _, emoji_name) in _emoji_group_data.iteritems():
     non_vs_seq = strip_emoji_vs(seq)
     if len(non_vs_seq) > 1:
       continue
@@ -932,10 +1093,10 @@ def is_canonical_emoji_sequence(seq):
 def get_canonical_emoji_sequence(seq):
   """Return the canonical version of this emoji sequence if the sequence is
   known, or None."""
-  _load_emoji_sequence_data()
+  if is_canonical_emoji_sequence(seq):
+    return seq
   seq = strip_emoji_vs(seq)
-  seq = _emoji_non_vs_to_canonical.get(seq, seq)
-  return seq if seq in _emoji_sequence_data else None
+  return _emoji_non_vs_to_canonical.get(seq, None)
 
 
 def strip_emoji_vs(seq):
@@ -1282,4 +1443,11 @@ def alt_names(cp):
 
 if __name__ == '__main__':
   for k in sorted(get_emoji_sequences()):
-    print seq_to_string(k), get_emoji_sequence_data(k)
+    if not get_emoji_group_data(k):
+      print 'no data:', seq_to_string(k)
+
+  for group in get_emoji_groups():
+    print 'group:', group
+    for subgroup in get_emoji_subgroups(group):
+      print '  subgroup:', subgroup
+      print '    %d items' % len(get_emoji_in_group(group, subgroup))
