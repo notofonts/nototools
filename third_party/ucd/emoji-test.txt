@@ -3364,9 +3364,10 @@
 1F1FF 1F1FC                                ; fully-qualified     # 🇿🇼 Zimbabwe
 
 # subgroup: subdivision-flag
-1F3F4 E0067 FE0F E0062 FE0F E0065 FE0F E006E FE0F E0067 FE0F E007F FE0F; fully-qualified# 🏴󠁧️󠁢️󠁥️󠁮️󠁧️󠁿️ England
-1F3F4 E0067 FE0F E0062 FE0F E0073 FE0F E0063 FE0F E0074 FE0F E007F FE0F; fully-qualified# 🏴󠁧️󠁢️󠁳️󠁣️󠁴️󠁿️ Scotland
-1F3F4 E0067 FE0F E0062 FE0F E0077 FE0F E006C FE0F E0073 FE0F E007F FE0F; fully-qualified# 🏴󠁧️󠁢️󠁷️󠁬️󠁳️󠁿️ Wales
+# (removed emoji presentation variation selector)
+1F3F4 E0067 E0062 E0065 E006E E0067 E007F; fully-qualified# 🏴󠁧️󠁢️󠁥️󠁮️󠁧️󠁿️ England
+1F3F4 E0067 E0062 E0073 E0063 E0074 E007F; fully-qualified# 🏴󠁧️󠁢️󠁳️󠁣️󠁴️󠁿️ Scotland
+1F3F4 E0067 E0062 E0077 E006C E0073 E007F; fully-qualified# 🏴󠁧️󠁢️󠁷️󠁬️󠁳️󠁿️ Wales
 
 # Flags subtotal:		267
 # Flags subtotal:		267	w/o modifiers
