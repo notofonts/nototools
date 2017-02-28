@@ -225,7 +225,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     weight = 'Regular'
 
   is_UI = ui == 'UI'
-  is_UI_metrics = is_UI or (
+  is_UI_metrics = is_UI or style == 'Emoji' or (
       style == 'Sans' and script in noto_data.DEEMED_UI_SCRIPTS_SET)
 
   is_display = display == 'Display'
