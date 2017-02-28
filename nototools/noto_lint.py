@@ -422,8 +422,8 @@ FontProps = collections.namedtuple(
     'FontProps',
     'is_google, vendor, char_version, '
     'filepath, family, style, script, variant, width, weight, slope, fmt, '
-    'manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, '
-    'is_cjk, subset')
+    'manufacturer, license_type, is_hinted, is_mono, is_UI, is_UI_metrics, '
+    'is_display, is_cjk, subset')
 
 
 def font_properties_from_name(file_path, phase):
@@ -453,7 +453,7 @@ def get_font_properties_with_fallback(file_path, phase):
     return FontProps(
         True, 'Monotype', 6.0,
         file_path, 'Noto', style, script, '', weight, None, 'ttf', 'sil',
-        False, False, bool(ui), False, ''), 'name'
+        False, False, bool(ui), bool(ui), False, ''), 'name'
 
 
 def check_font(font_props, filename_error,
@@ -468,8 +468,8 @@ def check_font(font_props, filename_error,
     def _noto_font_from_font_props(font_props):
       fields = """
           filepath,family,style,script,variant,width,weight,slope,fmt,
-          manufacturer,license_type,is_hinted,is_mono,is_UI,is_display,
-          is_cjk,subset
+          manufacturer,license_type,is_hinted,is_mono,is_UI,is_UI_metrics,
+          is_display,is_cjk,subset
       """.split(',')
       vals = [getattr(font_props, p.strip()) for p in fields]
       return noto_fonts.NotoFont(*vals)
@@ -999,7 +999,7 @@ def check_font(font_props, filename_error,
         is_document = noto_font.style == 'Serif'
 
         if tests.check('head/hhea'):
-            if not is_document and (font_props.is_UI or deemed_ui):
+            if not is_document and font_props.is_UI_metrics:
                 if hhea_table.ascent != ascent:
                     warn("head/hhea/ascent", "Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
@@ -1189,7 +1189,7 @@ def check_font(font_props, filename_error,
               descent_limit = typo_descent
               descent_name = 'sTypoDescent'
 
-            if font_props.is_UI or deemed_ui:
+            if font_props.is_UI_metrics:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
                     ymax is not None and ymax > max_ui_height):
                     warn("bounds/glyph/ui_ymax", "Bounds",
@@ -1220,7 +1220,7 @@ def check_font(font_props, filename_error,
                      check_test=False)
 
         if tests.check('bounds/font'):
-            if font_props.is_UI or deemed_ui:
+            if font_props.is_UI_metrics:
                 if font_ymax > max_ui_height:
                     warn("bounds/font/ui_ymax", "Bounds",
                          "Real yMax is %d, but it should be less "
@@ -1909,8 +1909,6 @@ def check_font(font_props, filename_error,
         "Deva", "Beng", "Guru", "Gujr", "Orya",
         "Taml", "Telu", "Knda", "Mlym", "Sinh",
         "Khmr" }
-
-    deemed_ui = (not font_props.is_UI) and font_props.script in noto_data.DEEMED_UI_SCRIPTS_SET
 
     fi = lint_config.FontInfo(
         filename=path.basename(font_path),

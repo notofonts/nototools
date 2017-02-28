@@ -396,20 +396,24 @@ def _version_re(noto_font, phase):
   if noto_font.manufacturer == 'Adobe':
     sub_len = 3
     hint_ext = ''
+    ttfautohint_tag = ''
   else:
     if phase < 3:
       sub_len = 2
+      ttfautohint_tag = ''
       if noto_font.manufacturer == 'Google':
         hint_ext = '' # no 'uh' suffix for unhinted Color Emoji font
       else:
         hint_ext = '' if noto_font.is_hinted else ' uh'
     else:
       sub_len = 3
-      # in phase 3 we 'reverse the polarity' and annotate the version of hinted
-      # hinted fonts with 'h' and leave unhinted (the default) unannotated.
-      hint_ext = ' h' if noto_font.is_hinted else ''
+      # in phase 3 we don't annotate the primary part of the version string,
+      # but expect 'ttfautohint' to be present somewhere after a semicolon.
+      hint_ext = ''
+      ttfautohint_tag = 'ttfautohint' if noto_font.is_hinted else ''
 
-  return r'^Version ([0-2])\.(\d{%d})%s(?:;.*)?$' % (sub_len, hint_ext)
+  return r'^Version ([0-2])\.(\d{%d})%s(?:;.*%s.*)?$' % (
+      sub_len, hint_ext, ttfautohint_tag)
 
 
 def _trademark(noto_font):
@@ -492,7 +496,8 @@ def _description_re(noto_font, phase):
     hint_prefix = 'Data %shinted.' % (
         '' if noto_font.is_hinted else 'un')
   else:
-    hint_prefix = 'Data hinted.' if noto_font.is_hinted else ''
+    # In phase 3 no hint prefix at all regardless of hinted or unhinted.
+    hint_prefix = ''
 
   designer = ''
   if noto_font.manufacturer == 'Monotype':
