@@ -496,7 +496,7 @@ def _description_re(noto_font, phase):
     hint_prefix = 'Data %shinted.' % (
         '' if noto_font.is_hinted else 'un')
   else:
-    # In phase 3 no prefix whether hinted or unhinted.
+    # In phase 3 no hint prefix at all regardless of hinted or unhinted.
     hint_prefix = ''
 
   designer = ''

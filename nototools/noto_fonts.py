@@ -28,6 +28,7 @@ from nototools import coverage
 from nototools import font_data
 from nototools import lang_data
 from nototools import notoconfig
+from nototools import noto_data
 from nototools import tool_utils
 from nototools import unicode_data
 
@@ -105,15 +106,16 @@ def script_name_for_report(script_key):
 # - is_mono: boolean, true if monospace (currently CJK Latin range, or legacy
 #     LGC Mono)
 # - is_display: boolean, true if display
-# - is_UI: boolean, true if has UI metrics
+# - is_UI: boolean, true if has UI in the name
+# - is_UI_metrics: boolean true if must have UI metrics
 # - is_cjk: boolean, true if a CJK font (from Adobe)
 # - subset: name of cjk subset (KR, JA, SC, TC) for reduced-charset fonts
 #     targeted at these languages
 NotoFont = collections.namedtuple(
     'NotoFont',
     'filepath, family, style, script, variant, width, weight, slope, '
-    'fmt, manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, '
-    'is_cjk, subset')
+    'fmt, manufacturer, license_type, is_hinted, is_mono, is_UI, is_UI_metrics, '
+    'is_display, is_cjk, subset')
 
 
 WEIGHTS = {
@@ -223,6 +225,9 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     weight = 'Regular'
 
   is_UI = ui == 'UI'
+  is_UI_metrics = is_UI or (
+      style == 'Sans' and script in noto_data.DEEMED_UI_SCRIPTS_SET)
+
   is_display = display == 'Display'
   if is_cjk:
     is_hinted = True
@@ -245,8 +250,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
 
   return NotoFont(
       filepath, family, style, script, variant, width, weight, slope, fmt,
-      manufacturer, license_type, is_hinted, is_mono, is_UI, is_display, is_cjk,
-      subset)
+      manufacturer, license_type, is_hinted, is_mono, is_UI, is_UI_metrics,
+      is_display, is_cjk, subset)
 
 
 def match_filename(filename, family_name):
