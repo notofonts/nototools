@@ -117,6 +117,48 @@ DEEMED_UI_SCRIPTS_SET = frozenset({
   'Zsye', # Emoji
 })
 
+# A mapping from scripts to ttfautohint script ids.
+# Most of the keys correspond to scripts we hinted for phase 2.
+# Additions are 'Cher' (which we didn't hint in phase 2), and
+# 'Latn', 'Grek', and 'Cyrl' (which we combine into LGC and don't
+# break out into seprate scripts).
+# A few scripts hinted in phase 2 are not listed by ttfautohint as
+# supported: 'Cham', 'Orya', 'Thaa', and 'Tibt'; these map to None.
+#
+# ttfautohint supports two version of Georgian identified by 'geor'
+# and 'geok', we assume 'geor'.
+HINTED_SCRIPTS = {
+    'Arab': 'arab',  # Arabic
+    'Armn': 'armn',  # Armenian
+    'Beng': 'beng',  # Bengali
+    'Cham': None,    # Cham
+    'Cher': 'cher',  # Cherokee (not hinted in phase2)
+    'Cyrl': 'cyrl',  # Cyrillic (part of LGC)
+    'Deva': 'deva',  # Devanagari
+    'Ethi': 'ethi',  # Ethiopic
+    'Geor': 'geor',  # Georgian (Mkhedruli, not Khutsuri)
+    'Grek': 'grek',  # Greek (part of LGC)
+    'Gujr': 'gujr',  # Gujarati
+    'Guru': 'guru',  # Gurmukhi
+    'Hebr': 'hebr',  # Hebrew
+    'Khmr': 'khmr',  # Khmer
+    'Knda': 'knda',  # Kannada
+    'LGC': None,     # LGC
+    'Laoo': 'lao',   # Lao (only one 'o' for ttfautohint)
+    'Latn': 'latn',  # Latin (part of LGC)
+    'MONO': None,    # MONO
+    'Mlym': 'mlym',  # Malayalam
+    'Mymr': 'mymr',  # Myanmar
+    'Orya': None,    # Oriya
+    'Sinh': 'sinh',  # Sinhala
+    'Taml': 'taml',  # Tamil
+    'Telu': 'telu',  # Telugu
+    'Thaa': None,    # Thaana
+    'Thai': 'thai',  # Thai
+    'Tibt': None,    # Tibetan
+}
+
+
 # Range spec matches "Noto Nastaliq requirements" doc, Tier 1.
 URDU_RANGES = """
     0600..0604,060b..0614,061b,061c,061e..061f,0620,0621..063a,
