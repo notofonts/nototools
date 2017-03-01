@@ -408,8 +408,8 @@ HARD_CODED_FONT_INFO = {
 # these are based on a upem of 2048
 MAX_UI_HEIGHT = 2163
 MIN_UI_HEIGHT = -555
-ASCENT = 2189
-DESCENT = -600
+UI_ASCENT = 2189
+UI_DESCENT = -600
 
 
 _cur_file_name = None
@@ -990,24 +990,22 @@ def check_font(font_props, filename_error,
         hhea_table = font["hhea"]
         upem = font['head'].unitsPerEm
         if upem == 2048:
-          ascent = ASCENT
-          descent = DESCENT
+          ui_ascent = UI_ASCENT
+          ui_descent = UI_DESCENT
         else:
-          ascent = int(math.ceil(ASCENT * upem / 2048.0))
-          descent = int(math.floor(DESCENT * upem / 2048.0))
-
-        is_document = noto_font.style == 'Serif'
+          ui_ascent = int(math.ceil(UI_ASCENT * upem / 2048.0))
+          ui_descent = int(math.floor(UI_DESCENT * upem / 2048.0))
 
         if tests.check('head/hhea'):
-            if not is_document and font_props.is_UI_metrics:
-                if hhea_table.ascent != ascent:
+            if font_props.is_UI_metrics:
+                if hhea_table.ascent != ui_ascent:
                     warn("head/hhea/ascent", "Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.ascent, ascent))
-                if hhea_table.descent != descent:
+                             % (hhea_table.ascent, ui_ascent))
+                if hhea_table.descent != ui_descent:
                     warn("head/hhea/descent", "Bounds",
                          "Value of descent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.descent, descent))
+                             % (hhea_table.descent, ui_descent))
 
             if hhea_table.lineGap != 0:
                 warn("head/hhea/linegap", "Line Gap",
