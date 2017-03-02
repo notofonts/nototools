@@ -143,10 +143,10 @@ HINTED_SCRIPTS = {
     'Hebr': 'hebr',  # Hebrew
     'Khmr': 'khmr',  # Khmer
     'Knda': 'knda',  # Kannada
-    'LGC': None,     # LGC
+    'LGC': 'no-script',     # LGC, autohint but not to any particular script
     'Laoo': 'lao',   # Lao (only one 'o' for ttfautohint)
     'Latn': 'latn',  # Latin (part of LGC)
-    'MONO': None,    # MONO
+    'MONO': 'no-script',    # MONO, autohint like lgc
     'Mlym': 'mlym',  # Malayalam
     'Mymr': 'mymr',  # Myanmar
     'Orya': None,    # Oriya
