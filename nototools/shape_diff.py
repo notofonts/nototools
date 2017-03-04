@@ -60,14 +60,14 @@ class ShapeDiffFinder:
         self.font_a = TTFont(self.path_a)
         self.glyph_set_a = self.font_a.getGlyphSet()
         self.gdef_a = {}
-        if 'GDEF' in self.font_a:
+        if 'GDEF' in self.font_a and not self.font_a['GDEF'].table.GlyphClassDef is None:
             self.gdef_a = self.font_a['GDEF'].table.GlyphClassDef.classDefs
 
         self.path_b = file_b
         self.font_b = TTFont(self.path_b)
         self.glyph_set_b = self.font_b.getGlyphSet()
         self.gdef_b = {}
-        if 'GDEF' in self.font_b:
+        if 'GDEF' in self.font_b and not self.font_b['GDEF'].table.GlyphClassDef is None:
             self.gdef_b = self.font_b['GDEF'].table.GlyphClassDef.classDefs
 
         for stat_type in (
