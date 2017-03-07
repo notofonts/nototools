@@ -51,7 +51,6 @@ def has_gsub_table(fontfile):
     font = ttLib.TTFont(fontfile)
     return 'GSUB' in font
 
-
 SCRIPT_TO_OPENTYPE_SCRIPT_TAG = {
     'CypriotSyllabary': 'cprt',
     'Deseret': 'dsrt',
@@ -77,6 +76,15 @@ SCRIPT_TO_OPENTYPE_SCRIPT_TAG = {
     'Ugaritic': 'ugar',
     'OlChiki': 'olck',
     'TaiLe': 'tale',
+    # Following keys are added to satisfy the use case in merge_fonts.py
+    # Reference:
+    # https://www.google.com/get/noto/#sans-xsux
+    # https://www.google.com/get/noto/#sans-cprt
+    # https://www.google.com/get/noto/#sans-yiii
+    # https://www.microsoft.com/typography/otspec/scripttags.htm
+    'Cuneiform': 'xsux',
+    'Cypriot': 'cprt',
+    'Yi': 'yi  ',
 }
 
 
@@ -232,7 +240,7 @@ def main():
             if len(regular_sources) <= 1:
                 continue
 
-            print 'Merging Noto Sans %s %s' % (merge_target, weight)
+            print('Merging Noto Sans %s %s' % (merge_target, weight))
 
             for index, fontfile in enumerate(regular_sources):
                 if not has_gsub_table(fontfile):

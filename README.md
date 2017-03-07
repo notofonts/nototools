@@ -34,6 +34,7 @@ The following scripts are provided:
 * `generate_sample_text.py`
 * `generate_website_2_data.py`
 * `merge_noto.py`
+* `merge_fonts.py`
 * `noto_lint.py`
 * `scale.py`
 * `subset.py`
