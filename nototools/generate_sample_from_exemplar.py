@@ -63,14 +63,20 @@ def get_script_to_exemplar_data_map():
 
       exemplar_list = cldr_data.get_exemplar_from_file(path.join(data_dir, filename))
       if not exemplar_list:
+        if _VERBOSE:
+          print '  no exemplar list for %s' % path.join(data_dir, filename)
         continue
 
       lsrv = cldr_data.loc_tag_to_lsrv(filename[:-4])
       if not lsrv:
+        if _VERBOSE:
+          print '  no lsrv for %s' % path.join(data_dir, filename)
         continue
       src = path.join(directory, filename)
       script = lsrv[1]
       if not script:
+        if _VERBOSE:
+          print '  no script for %s' % path.join(data_dir, filename)
         continue
 
       loc_tag = cldr_data.lsrv_to_loc_tag(lsrv)
@@ -496,13 +502,13 @@ def generate_samples(dstdir, imgdir, summary):
       print sample
 
     if imgdir:
-      path = os.path.join(imgdir, '%s.png' % script)
+      path = os.path.join(imgdir, 'und-%s_chars.png' % script)
       print 'writing image %s.png' % script
       rtl = script in ['Arab', 'Hebr', 'Nkoo', 'Syrc', 'Tfng', 'Thaa']
       create_image.create_png(sample, path, font_size=34, line_spacing=40, width=800, rtl=rtl)
 
     if dstdir:
-      filename = 'und-%s.txt' % script
+      filename = 'und-%s_chars.txt' % script
       print 'writing data %s' % filename
       filepath = os.path.join(dstdir, filename)
       with codecs.open(filepath, 'w', 'utf-8') as f:
