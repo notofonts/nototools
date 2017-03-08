@@ -28,7 +28,6 @@ class GposDiffFinderText(unittest.TestCase):
         file_b = tempfile.NamedTemporaryFile()
         font_a.save(file_a.name)
         font_b.save(file_b.name)
-	print(file_a.name, file_b.name)
         finder = GposDiffFinder(file_a.name, file_b.name, 0, 100)
 
         diffs = finder.find_kerning_diffs()
