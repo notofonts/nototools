@@ -17,7 +17,7 @@ import tempfile
 import unittest
 
 from nototools.gpos_diff import GposDiffFinder
-from nototools.hb_input_test import make_font
+from nototools.tests.hb_input_test import make_font
 
 
 class GposDiffFinderText(unittest.TestCase):
@@ -28,6 +28,7 @@ class GposDiffFinderText(unittest.TestCase):
         file_b = tempfile.NamedTemporaryFile()
         font_a.save(file_a.name)
         font_b.save(file_b.name)
+	print(file_a.name, file_b.name)
         finder = GposDiffFinder(file_a.name, file_b.name, 0, 100)
 
         diffs = finder.find_kerning_diffs()
