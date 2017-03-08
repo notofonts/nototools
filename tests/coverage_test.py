@@ -24,7 +24,7 @@ import tempfile
 import unittest
 
 from nototools import coverage
-from nototools.tests.hb_input_test import make_font
+from hb_input_test import make_font
 
 
 class CharacterSetTest(unittest.TestCase):
