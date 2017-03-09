@@ -15,7 +15,6 @@
 """Some common utilities for tools to use."""
 
 import contextlib
-import datetime
 import glob
 import logging
 import os
@@ -23,6 +22,7 @@ import os.path as path
 import re
 import shutil
 import subprocess
+import sys
 import time
 import zipfile
 
@@ -203,6 +203,32 @@ def git_file_lastlog(repo, filepath):
          '--', filepath])
 
 
+def git_tags(repo):
+  """Return a list of info about annotated tags.  The list consists of tuples
+  of the commit hash (as a string), the  tag name, and the time, sorted in
+  in reverse chronological order (most recent first).  The hash is for the
+  referenced commit and not the tag itself, but the date is the tag date."""
+  with temp_chdir(repo):
+    text = subprocess.check_output([
+        'git', 'tag', '-l',
+        '--format=%(*objectname)|%(refname:strip=2)|'
+        '%(taggerdate:format:%Y-%m-%d %T %Z)',
+        '--sort=-taggerdate'])
+    return [tuple(line.split('|')) for line in text.splitlines()
+            if not line.strip().startswith('|')]
+
+
+def git_tag_info(repo, tag_name):
+  """Return the annotation for this tag in the repo.  It is limited to no more
+  than 50 lines."""
+  # Unfortunately, I can't get the other formatted tag info and also limit
+  # to the tag annotation without more serious munging of tag or show output.
+  with temp_chdir(repo):
+    text = subprocess.check_output(['git', 'tag', '-l', '-n50', tag_name])
+    lines = text[len(tag_name):].strip().splitlines()
+    return '\n'.join(l.strip() for l in lines)
+
+
 def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
   """
   Return a list of the names of tool-generated files in the provided directory.
@@ -230,8 +256,11 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
 
 
 def git_get_branch(repo):
-  with temp_chdir(repo):
-    return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD']).strip()
+  try:
+    with temp_chdir(repo):
+      return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD']).strip()
+  except:
+    return '<not on any branch>'
 
 
 def git_is_clean(repo):
@@ -251,6 +280,15 @@ def git_is_clean(repo):
         ['git', 'diff-index', '--cached', '--name-status', '-r', 'HEAD', '--ignore-submodules', '--'])
       result = False
   return result
+
+
+def git_head_commit(repo):
+  """Return the commit hash at head and the subject line, as a tuple of two
+  strings."""
+  with temp_chdir(repo):
+    text = subprocess.check_output(
+        ['git', 'show', '-s', '--pretty=oneline', 'HEAD'])
+    return tuple(text.strip().split(None, 1))
 
 
 def git_add_all(repo_subdir):
