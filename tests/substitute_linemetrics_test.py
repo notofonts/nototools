@@ -76,8 +76,6 @@ def dump_linemetrics(font):
     return metrics
 
 
-
-
 if __name__ == '__main__':
     import sys
     sys.exit(unittest.main())
