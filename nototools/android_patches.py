@@ -16,24 +16,26 @@
 
 """Patches for Android versions of Noto fonts."""
 
+import argparse
 import codecs
 import glob
+import os
 from os import path
+import shutil
+import tempfile
 
 from nototools import subset
 from nototools import coverage
 from nototools import fix_khmer_and_lao_coverage as merger
 from nototools import font_data
 from nototools import tool_utils
+from nototools import ttc_utils
 from nototools import unicode_data
 
 from fontTools import ttLib
 from fontTools.ttLib.tables import otTables
 
-SRC_DIR = tool_utils.resolve_path('[tools]/packages/android')
-DST_DIR = tool_utils.resolve_path('[tools]/packages/android-patched')
-
-def _patch_hyphen():
+def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
   """Add hyphen-minus glyphs to fonts that need it.
 
   This is to enable languages to be hyphenated properly,
@@ -58,7 +60,7 @@ def _patch_hyphen():
   HYPHENS = {0x002D, 0x2010}
 
   for sn in script_names:
-    globexp = path.join(SRC_DIR, 'Noto*%s-*.ttf' % sn)
+    globexp = path.join(srcdir, 'Noto*%s-*.ttf' % sn)
     fonts = glob.glob(globexp)
     if not fonts:
       raise ValueError('could not match ' + globexp)
@@ -66,8 +68,8 @@ def _patch_hyphen():
     for font_name in fonts:
       lgc_font_name = font_name.replace(sn, '')
 
-      font_file = path.join(SRC_DIR, font_name)
-      lgc_font_file = path.join(SRC_DIR, lgc_font_name)
+      font_file = path.join(srcdir, font_name)
+      lgc_font_file = path.join(srcdir, lgc_font_name)
 
       chars_to_add = (
           (HYPHENS - coverage.character_set(font_file))
@@ -76,15 +78,20 @@ def _patch_hyphen():
       if chars_to_add:
         print 'patch hyphens', font_name
         merger.merge_chars_from_bank(
-            path.join(SRC_DIR, font_name),
-            path.join(SRC_DIR, lgc_font_name),
-            path.join(DST_DIR, font_name),
+            path.join(srcdir, font_name),
+            path.join(srcdir, lgc_font_name),
+            path.join(srcdir, font_name),
             chars_to_add)
       else:
-        print 'already have hyphens', font_name
+        if copy_unchanged:
+          shutil.copy2(
+              path.join(srcdir,font_name), path.join(dstdir, font_name))
+          print '%s already has hyphens, copying' % font_name
+        else:
+          print '%s already has hyphens' % font_name
 
 
-def _remove_cjk_emoji():
+def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
   """
   Remove default emoji characters from CJK fonts.
 
@@ -114,15 +121,45 @@ def _remove_cjk_emoji():
       + [0x1F238, 0x1F239, 0x1F23A, 0x1F250, 0x1F251]
   )
 
-  names = ['cjk/NotoSans%sCJK%s-Regular.otf' % (m, v)
-           for m in ['', 'Mono']
-           for v in ['jp', 'kr', 'sc', 'tc']]
-  for font_name in names:
+  for font_name in cjk_font_names:
     print 'remove cjk emoji', font_name
     _remove_from_cmap(
-        font_name,
-        path.join(outdir, font_name),
+        path.join(srcdir, font_name),
+        path.join(dstdir, font_name),
         exclude=EMOJI)
+
+
+def patch_cjk_ttc(ttc_srcfile, ttc_dstfile):
+  """Take the source ttc, break it apart, remove the cjk emoji
+  from each file, then repackage them into a new ttc."""
+
+  tmp_dir = tempfile.mkdtemp()
+  font_names = ttc_utils.ttcfile_extract(ttc_srcfile, tmp_dir)
+  tmp_patched_dir = path.join(tmp_dir, 'patched')
+  os.mkdir(tmp_patched_dir)
+  _remove_cjk_emoji(font_names, tmp_dir, tmp_patched_dir)
+  # have ttcfile_build resolve names relative to patched dir
+  with tool_utils.temp_chdir(tmp_patched_dir):
+    ttc_utils.ttcfile_build(ttc_dstfile, font_names)
+  shutil.rmtree(tmp_dir)
+
+
+def patch_cjk_ttcs(srcdir, dstdir):
+  """Call patch_cjk_ttc for each ttc file in srcdir, writing the
+  result to dstdir using the same name."""
+
+  if not path.isdir(srcdir):
+    print '%s is not a directory' % srcdir
+    return
+
+  ttc_files = [f for f in os.listdir(srcdir) if f.endswith('.ttc')]
+  if not ttc_files:
+    print 'no .ttc file to patch in %s' % srcdir
+    return
+
+  tool_utils.ensure_dir_exists(dstdir)
+  for f in ttc_files:
+    patch_cjk_ttc(path.join(srcdir, f), path.join(dstdir, f))
 
 
 # below are used by _subset_symbols
@@ -229,7 +266,7 @@ def _format_set(char_set, name, filename):
   print 'wrote', filename
 
 
-def _subset_symbols():
+def subset_symbols(srcdir, dstdir):
   """Subset Noto Sans Symbols in a curated way.
 
   Noto Sans Symbols is now subsetted in a curated way. Changes include:
@@ -287,10 +324,10 @@ def _subset_symbols():
   # add TV symbols
   target_coverage |= TV_SYMBOLS_FOR_SUBSETTED
 
-  for font_file in glob.glob(path.join(SRC_DIR, 'NotoSansSymbols-*.ttf')):
+  for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
     print 'main subset', font_file
     out_file = path.join(
-        DST_DIR, path.basename(font_file)[:-4] + '-Subsetted.ttf')
+        dstdir, path.basename(font_file)[:-4] + '-Subsetted.ttf')
     subset.subset_font(font_file, out_file, include=target_coverage)
 
   # Roozbeh wants a second subset with emoji presentation characters that
@@ -301,19 +338,37 @@ def _subset_symbols():
       unicode_data.get_unicode_emoji_variants())
   target_coverage |= BELONG_IN_SUBSETTED2
 
-  for font_file in glob.glob(path.join(SRC_DIR, 'NotoSansSymbols-*.ttf')):
+  for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
     print 'secondary subset', font_file
     out_file = path.join(
-        DST_DIR, path.basename(font_file)[:-4] + '-Subsetted2.ttf')
+        dstdir, path.basename(font_file)[:-4] + '-Subsetted2.ttf')
     subset.subset_font(font_file, out_file, include=target_coverage)
 
 
+def patch_fonts(srcdir, dstdir):
+  """Remove dstdir and repopulate with patched contents of srcdir (and
+  its 'cjk' subdirectory if it exists)."""
+
+  tool_utils.ensure_dir_exists(dstdir, clean=True)
+
+  patch_hyphen(srcdir, dstdir)
+  patch_cjk_ttcs(path.join(srcdir, 'cjk'), path.join(dstdir, 'cjk'))
+  subset_symbols(srcdir, dstdir)
+
+
 def main():
-  tool_utils.ensure_dir_exists(DST_DIR, clean=True)
-  _patch_hyphen()
-  # TODO: first unpack from ttc, then rebuild
-  # _remove_cjk_emoji()
-  _subset_symbols()
+  SRC_DIR = tool_utils.resolve_path('[tools]/packages/android')
+  DST_DIR = tool_utils.resolve_path('[tools]/packages/android-patched')
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '-s', '--srcdir', help='directory containing fonts to patch',
+      default=SRC_DIR, metavar='dir')
+  parser.add_argument(
+      '-d', '--dstdir', help='directory into which to write patched fonts',
+      default=DST_DIR, metavar='dir')
+  args = parser.parse_args()
+  patch_fonts(args.srcdir, args.dstdir)
 
 
 if __name__ == '__main__':

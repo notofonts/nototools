@@ -14,6 +14,7 @@
 
 """Some common utilities for tools to use."""
 
+import codecs
 import contextlib
 import datetime
 import glob
@@ -374,6 +375,31 @@ def setup_logging(loglevel, quiet_ttx=True):
     for logger_name in ['fontTools.misc.xmlReader', 'fontTools.ttLib']:
       logger = logging.getLogger(logger_name)
       logger.setLevel(loglevel + 1)
+
+
+def write_lines(lines, outfile):
+  """Write lines as utf-8 to outfile, separated by and ending with newline"""
+  ensure_dir_exists(path.dirname(outfile))
+  with codecs.open(outfile, 'w', 'utf-8') as f:
+    f.write('\n'.join(lines + ['']))
+
+
+def read_lines(infile, ignore_comments=True, strip=True, skip_empty=True):
+  """Read lines from infile and return as a list, optionally stripping comments,
+  whitespace, and/or skipping blank lines."""
+  lines = []
+  with codecs.open(infile, 'r', 'utf-8') as f:
+    for line in f:
+      if ignore_comments:
+        ix = line.find('#')
+        if ix >= 0:
+          line = line[:ix]
+      if strip:
+        line = line.strip()
+      if not line and skip_empty:
+        continue
+      lines.append(line)
+  return lines
 
 
 def _read_filename_list(filenames):

@@ -39,6 +39,8 @@ _sfntHeaderEntrySize = struct.calcsize(_sfntHeaderEntry)
 FontEntry = collections.namedtuple('FontEntry', 'fmt,tables')
 TableEntry = collections.namedtuple('TableEntry', 'tag,offset,length')
 
+_EXTRACT_TOOL_PATH='[afdko]/FDK/Tools/linux/otc2otf'
+_BUILD_TOOL_PATH='[afdko]/FDK/Tools/linux/otf2otc'
 
 class TTCFile(object):
   """Holds some information from the sfnt headers in a .ttc file.
@@ -180,30 +182,118 @@ def ttc_filenames(ttc, data):
   return names
 
 
-def build_ttc(output_path, file_list,
-              tool_path='[afdko]/FDK/Tools/SharedData/FDKScripts/otf2otc.py'):
-  """Use AFDKO to build a .ttc file from a list of input files."""
+def ttcfile_build(output_ttc_path, fontpath_list, tool_path=_BUILD_TOOL_PATH):
+  """Build a .ttc from a list of font files."""
   otf2otc = tool_utils.resolve_path(tool_path)
   if not otf2otc:
     raise ValueError('can not resolve %s' % tool_path)
 
+  tool_utils.ensure_dir_exists(path.dirname(output_ttc_path))
   # capture and discard standard output, the tool is noisy
-  subprocess.check_output(['python', otf2otc, '-o', output_path] + file_list)
+  subprocess.check_output([otf2otc, '-o', output_ttc_path] + fontpath_list)
+
+
+def ttc_namesfile_name(ttc_path):
+  return path.splitext(path.basename(ttc_path))[0] + '_names.txt'
+
+
+def ttcfile_build_from_namesfile(
+    output_ttc_path, file_dir, namesfile_name=None, tool_path=_BUILD_TOOL_PATH):
+  """Read names of files from namesfile and pass them to build_ttc to build
+  a .ttc file.  The names file will default to one named after output_ttc and
+  located in file_dir."""
+
+  output_ttc_path = tool_utils.resolve_path(output_ttc_path)
+  if not namesfile_name:
+    namesfile_name = ttc_namesfile_name(output_ttc_path)
+
+  namesfile_path = path.join(file_dir, namesfile_name)
+  if not path.isfile(namesfile_path):
+    raise ValueError('could not find names file %s' % namesfile_path)
+
+  filenames = tool_utils.read_lines(namesfile_path)
+  with tool_utils.temp_chdir(file_dir):
+    # resolve filenames relative to file_dir
+    fontpath_list = [tool_utils.resolve_path(n) for n in filenames]
+  missing = [n for n in fontpath_list if not path.isfile(n)]
+  if missing:
+    raise ValueError(
+        '%d files were missing:\n  %s' % (
+            len(missing), '\n  '.join(missing)))
+  ttcfile_build(output_ttc_path, fontpath_list)
+
+
+def ttcfile_extract(input_ttc_path, output_dir, tool_path=_EXTRACT_TOOL_PATH):
+  """Extract .ttf/.otf fonts from a .ttc file, and return a list of the names of
+  the extracted fonts."""
+
+  otc2otf = tool_utils.resolve_path(tool_path)
+  if not otc2otf:
+    raise ValueError('can not resolve %s' % tool_path)
+
+  input_ttc_path = tool_utils.resolve_path(input_ttc_path)
+  output_dir = tool_utils.ensure_dir_exists(output_dir)
+  with tool_utils.temp_chdir(output_dir):
+    # capture and discard standard output, the tool is noisy
+    subprocess.check_output([otc2otf, input_ttc_path])
+  return ttcfile_filenames(input_ttc_path)
+
+
+def ttcfile_extract_and_write_namesfile(
+    input_ttc_path, output_dir, namesfile_name=None,
+    extract_tool=_EXTRACT_TOOL_PATH):
+  """Call ttcfile_extract and in addition write a file to output dir containing
+  the names of the extracted files.  The name of the names file will default to
+  one based on the basename of the input path. It is written to output_dir."""
+  names = ttcfile_extract(input_ttc_path, output_dir, extract_tool)
+  if not namesfile_name:
+    namesfile_name = ttc_namesfile_name(input_ttc_path)
+  tool_utils.write_lines(names, path.join(output_dir, namesfile_name))
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('-f', dest='ttcfile', help='ttc file to parse',
-                      metavar='ttc', required=True)
-  parser.add_argument('-o', dest='op', help='operation to perform (dump, names)',
-                      metavar='op', choices=['dump','names'], default='names')
+  epilog="""
+  names (default action)
+    print just the name of each font in the ttc, in order.
+  dump
+    print, in order, the name of each font in the ttc followed by a list
+    of its tables and where they come from-- either an offset in the ttc
+    and length, or "@xx.yy" where xx is the index of the font that first
+    referenced that table data, and yy the index of the table in that font.
+  extract
+    extract the contents of the .ttc to a directory.  An additional file
+    named after the .ttc with a suffix of '_names.txt' lists the file
+    names in the order in which they were in the .ttc.
+  build
+    build the .ttc using the contents of a directory.  The name of the
+    .ttc is used to look in the directory for a list of font file names
+    (like that built by 'extract'); these fonts are included in the .ttc
+    in the listed order.
+  """
+
+  parser = argparse.ArgumentParser(
+      description='Use afdko to operate on ttc files.',
+      epilog=epilog,
+      formatter_class=argparse.RawDescriptionHelpFormatter)
+  parser.add_argument(
+      '-f', '--ttcfile', help='ttc file to operate on', metavar='ttc',
+      required=True)
+  parser.add_argument(
+      '-d', '--dir', dest='filedir', help='directory for individual files',
+      metavar='dir', default='.')
+  parser.add_argument(
+      '-o', '--op', help='operation to perform (names, dump, extract, build)',
+      metavar='op', choices='names dump extract build'.split(), default='names')
   args = parser.parse_args()
 
   if args.op == 'dump':
     ttcfile_dump(args.ttcfile)
   elif args.op == 'names':
     print '\n'.join(ttcfile_filenames(args.ttcfile))
-
+  elif args.op == 'extract':
+    ttcfile_extract_and_write_namesfile(args.ttcfile, args.filedir)
+  elif args.op=='build':
+    ttcfile_build_from_namesfile(args.ttcfile, args.filedir)
 
 if __name__ == '__main__':
   main()
