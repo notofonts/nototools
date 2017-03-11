@@ -49,13 +49,18 @@ from nototools import unicode_data
 TOOLS_DIR = notoconfig.noto_tools()
 FONTS_DIR = notoconfig.noto_fonts()
 CJK_DIR = notoconfig.noto_cjk()
+EMOJI_DIR = notoconfig.noto_emoji()
 
 CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
 LAT_LONG_DIR = path.join(TOOLS_DIR, 'third_party', 'dspl')
 SAMPLE_TEXT_DIR = path.join(TOOLS_DIR, 'sample_texts')
 
-APACHE_LICENSE_LOC = path.join(FONTS_DIR, 'LICENSE')
+# The Apache license is currently not used for our fonts, but leave
+# this just in case this changes in the future.  We have a copy of
+# the Apache license in the noto-emoji repo, since it covers the
+# code there, so just use that.
+APACHE_LICENSE_LOC = path.join(EMOJI_DIR, 'LICENSE')
 SIL_LICENSE_LOC = path.join(CJK_DIR, 'LICENSE')
 
 README_HEADER = """This package is part of the noto project.  Visit
