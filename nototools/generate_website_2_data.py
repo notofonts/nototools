@@ -25,6 +25,7 @@ import argparse
 import codecs
 import collections
 import csv
+import datetime
 import json
 import locale
 import os
@@ -45,19 +46,29 @@ from nototools import noto_fonts
 from nototools import tool_utils
 from nototools import unicode_data
 
-# This fails if .notoconfig is not in your home dir or does not define the
-# requested values.
-TOOLS_DIR = notoconfig.values['noto_tools']
-FONTS_DIR = notoconfig.values['noto_fonts']
-CJK_DIR = notoconfig.values['noto_cjk']
+TOOLS_DIR = notoconfig.noto_tools()
+FONTS_DIR = notoconfig.noto_fonts()
+CJK_DIR = notoconfig.noto_cjk()
+EMOJI_DIR = notoconfig.noto_emoji()
 
 CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
 LAT_LONG_DIR = path.join(TOOLS_DIR, 'third_party', 'dspl')
 SAMPLE_TEXT_DIR = path.join(TOOLS_DIR, 'sample_texts')
 
-APACHE_LICENSE_LOC = path.join(FONTS_DIR, 'LICENSE')
+# The Apache license is currently not used for our fonts, but leave
+# this just in case this changes in the future.  We have a copy of
+# the Apache license in the noto-emoji repo, since it covers the
+# code there, so just use that.
+APACHE_LICENSE_LOC = path.join(EMOJI_DIR, 'LICENSE')
 SIL_LICENSE_LOC = path.join(CJK_DIR, 'LICENSE')
+
+README_HEADER = """This package is part of the noto project.  Visit
+google.com/get/noto for more information.
+
+Built on %s from the following noto repositor%s:
+-----
+"""
 
 
 def check_families(family_map):
@@ -591,10 +602,12 @@ def check_debug(debug):
 
 class WebGen(object):
 
-  def __init__(self, target, clean, pretty_json, no_zips=False, no_images=False,
-               no_css=False, no_data=False, no_build=False, debug=None):
+  def __init__(
+      self, target, clean, repo_info, pretty_json, no_zips=False,
+      no_images=False, no_css=False, no_data=False, no_build=False, debug=None):
     self.target = target
     self.clean = clean
+    self.repo_info = repo_info
     self.pretty_json = pretty_json
     self.no_zips = no_zips
     self.no_images = no_images
@@ -638,35 +651,74 @@ class WebGen(object):
     if self.pretty_json:
       mkdirs(path.join(self.data, 'pretty'))
 
-  def create_zip(self, name, fonts):
+  def create_zip(self, name, fonts, readme_path):
     zipname = name + '.zip'
     zippath = path.join(self.pkgs, zipname)
     if path.isfile(zippath):
       print('Assuming %s is valid.' % zipname)
     else:
-      pairs = []
-      license_types = set()
-      for font in fonts:
-        pairs.append((font.filepath, path.basename(font.filepath)))
-        license_types.add(font.license_type)
+      pairs = [(readme_path, path.basename(readme_path))]
+      license_types = set(font.license_type for font in fonts)
       if 'apache' in license_types:
         pairs.append((APACHE_LICENSE_LOC, 'LICENSE_APACHE.txt'))
       if 'sil' in license_types:
         pairs.append((SIL_LICENSE_LOC, 'LICENSE_OFL.txt'))
+      for font in fonts:
+        pairs.append((font.filepath, path.basename(font.filepath)))
       tool_utils.generate_zip_with_7za_from_filepairs(pairs, zippath)
       print 'Created zip %s' % zippath
     return os.stat(zippath).st_size
 
+  def get_readme_keys(self):
+    return 'fonts cjk emoji all'.split()
+
+  def get_readme_key_for_filepath(self, filepath):
+    abs_filepath = tool_utils.resolve_path(filepath)
+    for key in self.get_readme_keys()[:-1]:
+      key_path = tool_utils.resolve_path('[%s]/' % key)
+      if abs_filepath.startswith(key_path):
+        return key
+    raise Exception('no key for path %s' % abs_filepath)
+
+  def get_readme_path(self, readme_key):
+    return '/tmp/readmes/%s/README' % readme_key
+
+  def build_readmes(self):
+    """Create README files for the zips.  These are named README
+    and are put into /tmp/readmes/{fonts|cjk|emoji|all} before
+    being copied to zip files."""
+
+    date_str = str(datetime.date.today())
+    names = self.get_readme_keys()
+    for name in names:
+      fname = self.get_readme_path(name)
+      tool_utils.ensure_dir_exists(path.dirname(fname))
+      with open(fname, 'w') as f:
+        if name == 'all':
+          f.write(README_HEADER % (date_str, 'ies'))
+          for i, n in enumerate(names[:-1]):
+            if i > 0:
+              f.write('-----\n')
+            f.write(self.repo_info[n])
+            f.write('\n')
+        else:
+          f.write(README_HEADER % (date_str, 'y'))
+          f.write(self.repo_info[name])
+          f.write('\n')
+
   def build_family_zips(self, key, family):
+    readme_key = self.get_readme_key_for_filepath(family.rep_member.filepath)
+    readme_path = self.get_readme_path(readme_key)
+
     zip_name = noto_fonts.get_family_filename(family)
     hinted_size = 0
     unhinted_size = 0
     if family.hinted_members:
       hinted_size = self.create_zip(
-          zip_name + '-hinted', family.hinted_members)
+          zip_name + '-hinted', family.hinted_members, readme_path)
     if family.unhinted_members:
       unhinted_size = self.create_zip(
-          zip_name + '-unhinted', family.unhinted_members)
+          zip_name + '-unhinted', family.unhinted_members, readme_path)
     return zip_name, hinted_size, unhinted_size
 
   def build_zips(self, families):
@@ -678,13 +730,16 @@ class WebGen(object):
   def build_universal_zips(self, families):
     hinted_fonts = []
     unhinted_fonts = []
+    readme_path = self.get_readme_path('all')
     for family_data in families.values():
       hinted_fonts.extend(
           family_data.hinted_members or family_data.unhinted_members)
       unhinted_fonts.extend(
           family_data.unhinted_members or family_data.hinted_members)
-    hinted_size = self.create_zip('Noto-hinted', hinted_fonts)
-    unhinted_size = self.create_zip('Noto-unhinted', unhinted_fonts)
+    hinted_size = self.create_zip(
+        'Noto-hinted', hinted_fonts, readme_path)
+    unhinted_size = self.create_zip(
+        'Noto-unhinted', unhinted_fonts, readme_path)
     return 'Noto', hinted_size, unhinted_size
 
   def copy_font(self, fontpath):
@@ -986,6 +1041,8 @@ class WebGen(object):
     # separately.
     # For now at least, the only .ttc fonts are the CJK fonts
 
+    readme_path = self.get_readme_path('cjk')
+    readme_pair = (readme_path, path.basename(readme_path))
     filenames = [path.basename(f) for f in os.listdir(CJK_DIR)
                  if f.endswith('.ttc')]
     for filename in filenames:
@@ -995,8 +1052,10 @@ class WebGen(object):
           print("Assuming built %s is valid." % zip_basename)
           continue
       oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
-      pairs = [(path.join(CJK_DIR, filename), filename),
-               (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
+      pairs = [
+          readme_pair,
+          (SIL_LICENSE_LOC, 'LICENSE_OFL.txt'),
+          (path.join(CJK_DIR, filename), filename)]
       tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
       newsize = os.stat(zip_path).st_size
       print "Wrote " + zip_path
@@ -1011,7 +1070,7 @@ class WebGen(object):
     src_zip = path.join(CJK_DIR, filename)
     dst_zip = path.join(self.pkgs, filename)
     shutil.copy2(src_zip, dst_zip)
-    pairs = [(SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
+    pairs = [readme_pair, (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
     tool_utils.generate_zip_with_7za_from_filepairs(pairs, dst_zip)
 
 
@@ -1169,6 +1228,8 @@ class WebGen(object):
     if self.no_zips and self.no_data:
       print 'skipping zip output'
     else:
+      self.build_readmes()
+
       family_zip_info = self.build_zips(families)
       universal_zip_info = self.build_universal_zips(families)
 
@@ -1203,18 +1264,67 @@ class WebGen(object):
                         sample_key_to_info)
 
 
+def get_repo_info(skip_checks):
+  """Looks at the three noto fonts repos (fonts, cjk, emoji) and
+  gets information about the current state of each.  Returns
+  a mapping from 'fonts', 'cjk', and 'emoji' to the corresponding
+  info.
+
+  If skip_checks is not set, checks that the repos are in a good
+  state (at a known annotated tag and there are no pending commits),
+  otherwise an exception is raised."""
+
+  repo_info = {}
+  errors = []
+  for repo_name in 'fonts cjk emoji'.split():
+    msg_lines = []
+    repo = tool_utils.resolve_path('[%s]' % repo_name)
+    repo_head_commit = tool_utils.git_head_commit(repo)
+    repo_branch = tool_utils.git_get_branch(repo)
+    msg_lines.append('Repo: noto-%s' % repo_name)
+    if skip_checks:
+      msg_lines.append('Branch: %s' % repo_branch)
+      msg_lines.append('Commit: %s\nSubject: %s' % repo_head_commit)
+    else:
+      if not tool_utils.git_is_clean(repo):
+        errors.append('repo noto-%s is not clean' % repo_name)
+        continue
+      repo_tag = None
+      for tag in tool_utils.git_tags(repo):
+        if tag[0] == repo_head_commit[0]: # matching commits
+          repo_tag = tag
+          break
+      if not repo_tag:
+        errors.append('noto-%s is not at a release tag' % repo_name)
+        continue
+      tag_commit, tag_name, tag_date = tag
+      tag_info = tool_utils.git_tag_info(repo, tag_name)
+      msg_lines.append(
+          'Tag: %s\nDate: %s\nCommit:%s\n\n%s' % (
+              tag_name, tag_date, tag_commit, tag_info))
+    repo_info[repo_name] = '\n'.join(msg_lines)
+  if errors:
+    for _, v in sorted(repo_info.iteritems()):
+      print v
+    raise Exception('Some repos are not clean\n' + '\n'.join(errors))
+  return repo_info
+
+
 def main():
     """Outputs data files for the noto website."""
 
-    default_target = '/tmp/website2'
+    default_dest = '/tmp/website2'
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--clean',  help='clean target directory',
                         action='store_true')
-    parser.add_argument('-t', '--target', help='target dir, default %s' %
-                        default_target, default=default_target, metavar='dir')
+    parser.add_argument('-d', '--dest', help='target dir, default %s' %
+                        default_dest, default=default_dest, metavar='dir')
     parser.add_argument('-pj', '--pretty_json',
                         help='generate additional pretty json',
+                        action='store_true')
+    parser.add_argument('-nr', '--no_repo_check',
+                        help='do not check that repos are in a good state',
                         action='store_true')
     parser.add_argument('-nz', '--no_zips', help='skip zip generation',
                         action='store_true')
@@ -1227,12 +1337,14 @@ def main():
     parser.add_argument('-n', '--no_build',
                         help='skip build of zip, image, data, and css',
                         action='store_true')
-    parser.add_argument('-d', '--debug',
+    parser.add_argument('--debug',
                         help='types of information to dump during build',
                         nargs='*')
     args = parser.parse_args();
 
-    webgen = WebGen(args.target, args.clean, args.pretty_json,
+    repo_info = get_repo_info(args.no_repo_check)
+
+    webgen = WebGen(args.dest, args.clean, repo_info, args.pretty_json,
                     no_zips=args.no_zips, no_images=args.no_images,
                     no_css=args.no_css, no_data=args.no_data,
                     no_build=args.no_build, debug=args.debug)
