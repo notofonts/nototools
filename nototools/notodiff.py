@@ -101,26 +101,34 @@ def _run_multiple(func, filematch, dir_a, dir_b, *args):
     arguments are passed through when calling func.
     """
 
+    compared = 0
     for path_a in glob.glob(os.path.join(dir_a, filematch)):
         path_b = path_a.replace(dir_a, dir_b)
         if os.path.exists(path_b):
-            logger.info('Comparing %s and %s' % (
-                os.path.basename(path_a), os.path.basename(path_b)))
+            compared += 1
+            tail = path_a[len(dir_a):]
+            if tail.startswith('/'):
+                tail = tail[1:]
+            logger.info('Compare %s' % tail)
             func(path_a, path_b, *args)
+    logger.info('Compared %d fonts' % compared)
 
 
 def main():
     parser = argparse.ArgumentParser(
         description='Compare fonts.')
-    parser.add_argument('--before', required=True)
-    parser.add_argument('--after', required=True)
+    parser.add_argument('--before', required=True,
+                        help='first font, or directory if match is used')
+    parser.add_argument('--after', required=True,
+                        help='second font, or directory if match is used')
     parser.add_argument('-t', '--diff-type', default='area',
                         choices=('area', 'shape', 'area-shape-product',
                                  'rendered', 'gpos', 'gsub'),
                         help='type of comparison to run (defaults to "area")')
     parser.add_argument('-m', '--match',
-                        help='if provided, compares all matching files found '
-                        'in PATH_A with respective matches in PATH_B')
+                        help='glob to match files under the BEFORE directory, '
+                        'to compare against those with the same names under '
+                        'the AFTER directory.')
     parser.add_argument('-l', '--out-lines', type=int, default=20,
                         help='number of differences to print (default 20)')
     parser.add_argument('-w', '--whitelist', nargs='+', default=(),
@@ -147,10 +155,12 @@ def main():
         else:
             _shape(args.before, args.after, stats, args.diff_type,
                    args.font_size, args.render_path, args.diff_threshold)
-        print(shape_diff.ShapeDiffFinder.dump(
-            stats, args.whitelist, args.out_lines,
-            include_vals=(args.diff_type in ('area', 'area-shape-product')),
-            multiple_fonts=bool(args.match)))
+
+        if stats:
+            print(shape_diff.ShapeDiffFinder.dump(
+                stats, args.whitelist, args.out_lines,
+                include_vals=(args.diff_type in ('area', 'area-shape-product')),
+                multiple_fonts=bool(args.match)))
 
     elif args.diff_type == 'gpos':
         if args.match:
