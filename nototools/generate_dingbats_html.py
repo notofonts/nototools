@@ -130,7 +130,8 @@ class CodeList(object):
 
   @staticmethod
   def fromrangetext(cpranges):
-    return CodeList.fromset(tool_utils.parse_int_ranges(cpranges))
+    return CodeList.fromset(
+        tool_utils.parse_int_ranges(cpranges, allow_compressed=True))
 
   @staticmethod
   def fromrangefile(cprange_file):
@@ -143,17 +144,8 @@ class CodeList(object):
 
   @staticmethod
   def fromlisttext(cplist):
-    # we'll support ranges
-    if '-' not in cplist:
-      codes = [int(item, 16) for item in cplist.split()]
-    else:
-      codes = []
-      for item in cplist.split():
-        if '-' in item:
-          start, limit = (int(e, 16) for e in item.split('-'))
-          codes.extend(range(start, limit+1))
-        else:
-          codes.append(int(item, 16))
+    codes = tool_utils.parse_int_ranges(
+        cplist, allow_duplicates=True, return_set=False, allow_compressed=True)
     return CodeList.fromlist(codes)
 
   @staticmethod
