@@ -322,7 +322,15 @@ def parse_int_ranges(
   as a separator, and ranges following it or hyphen are interpreted as suffixes
   that replace the same number of characters at the end of the previous value.
   '-' generates the range of intervening characters as before, while '/' does
-  not.  Returns a set or a list depending on return_set."""
+  not.  Returns a set or a list depending on return_set.
+
+  For example, with compressed ranges the following:
+    1ee42/7/9/b/d-f 1ee51-2/4/7/9/b/d/f
+
+  expands to:
+    1ee42 1ee47 1ee49 1ee4b 1ee4d-1ee4f 1ee51-1ee52 1ee54 1ee57 1ee59 1ee5b
+    1ee5d 1ee5f
+  """
 
   base = 16 if is_hex else 10
   vals = []
