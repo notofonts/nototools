@@ -418,7 +418,11 @@ class CodeTableTarget(Target):
     if metrics != None:
       # the metrics apply to the rightmost font
       fontname = self.used_fonts[-1][1][0][0]
-      metrics_font = _get_font(fontname)
+      if fontname:
+        metrics_font = _get_font(fontname)
+      else:
+        metrics_font = None
+        print >> sys.stderr, 'no metrics font'
 
     lines = ['<h3 id="target_%d">%s</h3>' % (tindex, self.name)]
     char_line = _character_string_html(self.codelist, self.used_fonts[-1])
@@ -457,7 +461,7 @@ class CodeTableTarget(Target):
           line.append('<td>&nbsp;')
       name = _flagged_name(cp, flag_sets)
       if metrics != None:
-        cp_metrics = _get_cp_metrics(metrics_font, cp)
+        cp_metrics = _get_cp_metrics(metrics_font, cp) if metrics_font else None
         if cp_metrics:
           lsb, rsb, wid, adv, cy = cp_metrics
           if dump_metrics:
