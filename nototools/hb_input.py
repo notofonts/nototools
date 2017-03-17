@@ -42,8 +42,13 @@ class HbInputGenerator(object):
             else:
                 width = 0
             self.widths[name] = width
-        space_name = font['cmap'].tables[0].cmap[0x0020]
-        self.widths['space'] = self.widths[space_name]
+
+        # some stripped fonts don't have space
+        try:
+          space_name = font['cmap'].tables[0].cmap[0x20]
+          self.space_width = self.widths[space_name]
+        except:
+          self.space_width = -1
 
     def all_inputs(self, warn=False):
         """Generate harfbuzz inputs for all glyphs in a given font."""
@@ -104,8 +109,9 @@ class HbInputGenerator(object):
             return None
 
         features, text = min(inputs)
-        if pad:
-            width, space = self.widths[name], self.widths['space']
+        # can't pad if we don't support space
+        if pad and self.space_width > 0:
+            width, space = self.widths[name], self.space_width
             padding = ' ' * (width // space + (1 if width % space else 0))
             text = padding + text
         self.memo[name] = features, text

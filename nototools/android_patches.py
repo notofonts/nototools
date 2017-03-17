@@ -204,6 +204,25 @@ ONE_OFF_ADDITIONS = {
     0x2B57, # ⭗ HEAVY CIRCLE WITH CIRCLE INSIDE
     0x2B58, # ⭘ HEAVY CIRCLE
     0x2B59, # ⭙ HEAVY CIRCLED SALTIRE
+    0x1F19B, # 🆛 SQUARED THREE D
+    0x1F19C, # 🆜 SQUARED SECOND SCREEN
+    0x1F19D, # 🆝 SQUARED TWO K;So;0;L;;;;;N;;;;;
+    0x1F19E, # 🆞 SQUARED FOUR K;So;0;L;;;;;N;;;;;
+    0x1F19F, # 🆟 SQUARED EIGHT K;So;0;L;;;;;N;;;;;
+    0x1F1A0, # 🆠 SQUARED FIVE POINT ONE;So;0;L;;;;;N;;;;;
+    0x1F1A1, # 🆡 SQUARED SEVEN POINT ONE;So;0;L;;;;;N;;;;;
+    0x1F1A2, # 🆢 SQUARED TWENTY-TWO POINT TWO;So;0;L;;;;;N;;;;;
+    0x1F1A3, # 🆣 SQUARED SIXTY P;So;0;L;;;;;N;;;;;
+    0x1F1A4, # 🆤 SQUARED ONE HUNDRED TWENTY P;So;0;L;;;;;N;;;;;
+    0x1F1A5, # 🆥 SQUARED LATIN SMALL LETTER D;So;0;L;;;;;N;;;;;
+    0x1F1A6, # 🆦 SQUARED HC;So;0;L;;;;;N;;;;;
+    0x1F1A7, # 🆧 SQUARED HDR;So;0;L;;;;;N;;;;;
+    0x1F1A8, # 🆨 SQUARED HI-RES;So;0;L;;;;;N;;;;;
+    0x1F1A9, # 🆩 SQUARED LOSSLESS;So;0;L;;;;;N;;;;;
+    0x1F1AA, # 🆪 SQUARED SHV;So;0;L;;;;;N;;;;;
+    0x1F1AB, # 🆫 SQUARED UHD;So;0;L;;;;;N;;;;;
+    0x1F1AC, # 🆬 SQUARED VOD;So;0;L;;;;;N;;;;;
+    0x1F23B, # 🈻 SQUARED CJK UNIFIED IDEOGRAPH-914D
 }
 
 # letter-based characters, provided by Roboto
@@ -236,7 +255,7 @@ LETTERLIKE_CHARS_IN_ROBOTO = {
     0x214F, # ⅏ SYMBOL FOR SAMARITAN SOURCE
 }
 
-BELONG_IN_SUBSETTED2 = {
+ANDROID_EMOJI = {
     0x2600,  # ☀ BLACK SUN WITH RAYS
     0x2601,  # ☁ CLOUD
     0x260E,  # ☎ BLACK TELEPHONE
@@ -254,6 +273,8 @@ BELONG_IN_SUBSETTED2 = {
 # TV symbols, see https://github.com/googlei18n/noto-fonts/issues/557
 TV_SYMBOLS_FOR_SUBSETTED = tool_utils.parse_int_ranges(
   '1f19b-1f1ac 1f23b')
+
+EMOJI = unicode_data.get_presentation_default_emoji() | ANDROID_EMOJI
 
 def _format_set(char_set, name, filename):
   lines = ['%s = {' % name]
@@ -306,23 +327,16 @@ def subset_symbols(srcdir, dstdir):
   target_coverage |= ONE_OFF_ADDITIONS
   # Remove characters preferably coming from Roboto
   target_coverage -= LETTERLIKE_CHARS_IN_ROBOTO
-  # Remove characters that are supposed to default to emoji
-  target_coverage -= unicode_data.get_presentation_default_emoji()
-
-  # Remove dentistry symbols, as their main use appears to be for CJK:
-  # http://www.unicode.org/L2/L2000/00098-n2195.pdf
-  target_coverage -= set(range(0x23BE, 0x23CC+1))
+  # Remove default emoji presentation (including ones Android prefers default)
+  target_coverage -= EMOJI
 
   # Remove COMBINING ENCLOSING KEYCAP. It's needed for Android's color emoji
   # mechanism to work properly
   target_coverage.remove(0x20E3)
 
-  # Remove symbol characters for Android that belong in subsetted2 but not
-  # subsetted.
-  target_coverage -= BELONG_IN_SUBSETTED2
-
-  # add TV symbols
-  target_coverage |= TV_SYMBOLS_FOR_SUBSETTED
+  # Remove dentistry symbols, as their main use appears to be for CJK:
+  # http://www.unicode.org/L2/L2000/00098-n2195.pdf
+  target_coverage -= set(range(0x23BE, 0x23CC+1))
 
   for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
     print 'main subset', font_file
@@ -330,13 +344,9 @@ def subset_symbols(srcdir, dstdir):
         dstdir, path.basename(font_file)[:-4] + '-Subsetted.ttf')
     subset.subset_font(font_file, out_file, include=target_coverage)
 
-  # Roozbeh wants a second subset with emoji presentation characters that
-  # take text-presentation variation sequences.  This will be a fallback
-  # after the color emoji.
-  target_coverage = set(
-      unicode_data.get_presentation_default_emoji() &
-      unicode_data.get_unicode_emoji_variants())
-  target_coverage |= BELONG_IN_SUBSETTED2
+  # The second subset will be a fallback after the color emoji, for
+  # explicit text presentation sequences.
+  target_coverage = EMOJI | unicode_data.get_unicode_emoji_variants()
 
   for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
     print 'secondary subset', font_file
@@ -349,6 +359,9 @@ def patch_fonts(srcdir, dstdir):
   """Remove dstdir and repopulate with patched contents of srcdir (and
   its 'cjk' subdirectory if it exists)."""
 
+  srcdir = tool_utils.resolve_path(srcdir)
+  dstdir = tool_utils.resolve_path(dstdir)
+
   tool_utils.ensure_dir_exists(dstdir, clean=True)
 
   patch_hyphen(srcdir, dstdir)
@@ -357,16 +370,16 @@ def patch_fonts(srcdir, dstdir):
 
 
 def main():
-  SRC_DIR = tool_utils.resolve_path('[tools]/packages/android')
-  DST_DIR = tool_utils.resolve_path('[tools]/packages/android-patched')
+  SRC_DIR = '[tools]/packages/android'
+  DST_DIR = '[tools]/packages/android-patched'
 
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '-s', '--srcdir', help='directory containing fonts to patch',
-      default=SRC_DIR, metavar='dir')
+      '-s', '--srcdir', help='directory containing fonts to patch '
+      '(default %s)' % SRC_DIR, default=SRC_DIR, metavar='dir')
   parser.add_argument(
-      '-d', '--dstdir', help='directory into which to write patched fonts',
-      default=DST_DIR, metavar='dir')
+      '-d', '--dstdir', help='directory into which to write patched fonts '
+      '(default %s)' % DST_DIR, default=DST_DIR, metavar='dir')
   args = parser.parse_args()
   patch_fonts(args.srcdir, args.dstdir)
 
