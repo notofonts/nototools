@@ -314,13 +314,83 @@ def svn_update(repo):
 
 
 def parse_int_ranges(
-    range_string, is_hex=True, sep=None, allow_duplicates=False):
-  """Returns a set of ints from a string of numbers or ranges separated by sep.
-  A range is two values separated by hyphen with no intervening separator;
-  ranges are inclusive."""
-  result = set()
-  count = 0
+    range_string, is_hex=True, sep=None, allow_duplicates=False,
+    return_set=True, allow_compressed=False):
+  """Returns a set/list of ints from a string of numbers or ranges separated by
+  sep.  A range is two values separated by hyphen with no intervening separator;
+  ranges are inclusive.  If allow_compressed is true, '/' is also allowed
+  as a separator, and ranges following it or hyphen are interpreted as suffixes
+  that replace the same number of characters at the end of the previous value.
+  '-' generates the range of intervening characters as before, while '/' does
+  not.  Returns a set or a list depending on return_set."""
+
   base = 16 if is_hex else 10
+  vals = []
+
+  def _add_segment(prev_str, suffix, is_range):
+    slen = len(suffix)
+    if prev_str == None:
+      next_str = suffix
+      next_val = int(next_str, base)
+    else:
+      if slen > len(prev_str):
+        raise ValueError(
+            'suffix \'%s\' is longer than previous \'%s\'' % (suffix, prev_str))
+      next_str = prev_str[:-slen] + suffix
+
+      next_val = int(next_str, base)
+      if next_val <= vals[-1]:
+        raise ValueError(
+            'next value \'%s\' is not greater than previous \'%s\'' % (
+                next_str, prev_str))
+
+    if is_range:
+      start_val = vals[-1] + 1
+      vals.extend(range(start_val, next_val))
+    vals.append(next_val)
+
+    return next_str
+
+  def _add_range(r):
+    stops = '-/'
+    if len(r) == 0:
+      raise ValueError('empty range')
+    if r[0] in stops:
+      raise ValueError('range "%s" has leading separator' % r)
+    if r[-1] in stops:
+      raise ValueError('range "%s" has trailing separator' % r)
+    r = r + '/'
+
+    prev_str = None
+    is_range = False
+    start = 0
+    len_limit = -1
+    for i in xrange(len(r)):
+      cp = r[i]
+      if cp not in stops:
+        continue
+
+      if i == start:
+        raise ValueError('range "%s" has two separators together' % r)
+
+      if is_range and cp == '-':
+        raise ValueError('range "%s" has two \'-\' in sequence' % r)
+
+      if not allow_compressed:
+        if start == 0:
+          len_limit = i
+        elif i - start > len_limit:
+          raise ValueError(
+              'segment \'%s\' longer than previous segment' % r[start: i])
+        else:
+          len_limit = i - start
+
+      prev_str = _add_segment(prev_str, r[start: i], is_range)
+      is_range = cp == '-'
+      start = i + 1
+
+  # main
+  # handle comments and multiline input
   if '\n' in range_string or '#' in range_string:
     # strip comments and turn into single line
     def strip_comment(line):
@@ -328,31 +398,34 @@ def parse_int_ranges(
       if x >= 0:
         line = line[:x]
       return line.strip()
-    range_string = ' '.join(
+    join_char = ' ' if sep == None else sep
+    range_string = join_char.join(
         filter(
             None,
             (strip_comment(line) for line in range_string.splitlines())))
-  value_list = range_string.split(sep)
-  for val in value_list:
-    if '-' in val: # assume range
-      val_list = val.split('-')
-      if len(val_list) != 2:
-        raise ValueError('could not parse range from \'%s\'' % val)
-      lo = int(val_list[0], base)
-      hi = int(val_list[1], base)
-      if lo >= hi:
-        raise ValueError('val range must have high > low (%s in "%s")' % (
-            val, range_string))
-      result.update(range(lo, hi + 1))
-      count += hi - lo + 1
-    else:
-      result.add(int(val, base))
-      count += 1
-  if not allow_duplicates and len(result) != count:
-    raise ValueError(
-        'duplicate values in %s, expected count is %d but result is %s' % (
-            range_string, count, write_int_ranges(result)))
-  return result
+
+  if not allow_compressed and '/' != sep and range_string.find('/') != -1:
+    raise ValueError('\'/\' only allowed in compressed range format')
+
+  # collect ordered list of values
+  for r in range_string.split(sep):
+    _add_range(r)
+
+  # check for duplicates and/or convert to set
+  if return_set or not allow_duplicates:
+    range_set = set(vals)
+    if not allow_duplicates and len(range_set) != len(vals):
+      fail = set()
+      seen = set()
+      for v in vals:
+        if v in seen:
+          fail.add(v)
+        else:
+          seen.add(v)
+      raise ValueError('range "%s" has %d duplicates: %s' % (
+          range_string, len(fail), write_int_ranges(fail)))
+
+  return range_set if return_set else vals
 
 
 def write_int_ranges(int_values, in_hex=True, sep=' '):
