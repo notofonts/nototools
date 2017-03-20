@@ -130,7 +130,8 @@ class CodeList(object):
 
   @staticmethod
   def fromrangetext(cpranges):
-    return CodeList.fromset(tool_utils.parse_int_ranges(cpranges))
+    return CodeList.fromset(
+        tool_utils.parse_int_ranges(cpranges, allow_compressed=True))
 
   @staticmethod
   def fromrangefile(cprange_file):
@@ -143,17 +144,8 @@ class CodeList(object):
 
   @staticmethod
   def fromlisttext(cplist):
-    # we'll support ranges
-    if '-' not in cplist:
-      codes = [int(item, 16) for item in cplist.split()]
-    else:
-      codes = []
-      for item in cplist.split():
-        if '-' in item:
-          start, limit = (int(e, 16) for e in item.split('-'))
-          codes.extend(range(start, limit+1))
-        else:
-          codes.append(int(item, 16))
+    codes = tool_utils.parse_int_ranges(
+        cplist, allow_duplicates=True, return_set=False, allow_compressed=True)
     return CodeList.fromlist(codes)
 
   @staticmethod
@@ -418,7 +410,11 @@ class CodeTableTarget(Target):
     if metrics != None:
       # the metrics apply to the rightmost font
       fontname = self.used_fonts[-1][1][0][0]
-      metrics_font = _get_font(fontname)
+      if fontname:
+        metrics_font = _get_font(fontname)
+      else:
+        metrics_font = None
+        print >> sys.stderr, 'no metrics font'
 
     lines = ['<h3 id="target_%d">%s</h3>' % (tindex, self.name)]
     char_line = _character_string_html(self.codelist, self.used_fonts[-1])
@@ -457,7 +453,7 @@ class CodeTableTarget(Target):
           line.append('<td>&nbsp;')
       name = _flagged_name(cp, flag_sets)
       if metrics != None:
-        cp_metrics = _get_cp_metrics(metrics_font, cp)
+        cp_metrics = _get_cp_metrics(metrics_font, cp) if metrics_font else None
         if cp_metrics:
           lsb, rsb, wid, adv, cy = cp_metrics
           if dump_metrics:
