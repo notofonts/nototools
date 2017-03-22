@@ -744,6 +744,12 @@ def _reassign_symbols(cmap_ops):
   cmap_ops.add(0x1f610, 'Zsym')
   cmap_ops.remove(0x1f610, 'SYM2')
 
+  # Zsym has combining marks, so add dotted circle.
+  # Combining enclosing marks in Symbols need latin to combine with, so add
+  # letters and digits, also dotted circle if not there already.
+  alphanum = tool_utils.parse_int_ranges('30-39 41-5a 61-7a 25cc')
+  cmap_ops.add_all(alphanum, 'Zsym')
+
 
 def _reassign_emoji(cmap_ops):
   """Reassign all emoji to emoji-color. Then assign all emoji with default
@@ -2714,8 +2720,15 @@ def _unassign_lgc_from_symbols(cmap_ops):
   sym2_set = frozenset(cmap_ops.script_chars('SYM2'))
   sym_set_to_remove = sym_set & lgc_set
   sym2_set_to_remove = sym2_set & lgc_set
+
+  # Combining enclosing marks in Symbols need latin to combine with, so add
+  # letters and digits, also dotted circle if not there already.
+  alphanum = tool_utils.parse_int_ranges('30-39 41-5a 61-7a 25cc')
+  sym_set_to_remove -= alphanum
+
   cmap_ops.remove_all(sym_set_to_remove, 'Zsym')
   cmap_ops.remove_all(sym2_set_to_remove, 'SYM2')
+
 
 
 def _assign_programming_lang_symbols(cmap_ops):
