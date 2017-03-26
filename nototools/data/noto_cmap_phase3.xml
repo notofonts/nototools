@@ -84,7 +84,7 @@
     <tr>Mroo,Mro,47,0000 000d 0020 00a0 16a40-16a5e 16a60-16a69 16a6e-16a6f,-1,</tr>
     <tr>Mtei,Meetei Mayek,97,0000 000d 0020 00a0 00d7 200b-200d 2012-2015 2022 25cc 25fb-25fe aae0-aaf6 abc0-abed abf0-abf9,-1,</tr>
     <tr>Mult,Multani,52,0000 000d 0020 00a0 0a66-0a6f 11280-11286 11288 1128a-1128d 1128f-1129d 1129f-112a9,-1,</tr>
-    <tr>Mymr,Myanmar,238,0000 000d 0020 0022 0027 00a0 1000-109f 200b-200d 2018-2019 201c-201d 25cc a92e a9e0-a9fe aa60-aa7f,-1,</tr>
+    <tr>Mymr,Myanmar,239,0000 000d 0020 0022 0027 00a0 1000-109f 200b-200d 2018-2019 201c-201d 25cc a92e a9e0-a9fe aa60-aa7f,fe00-1,</tr>
     <tr>Narb,Old North Arabian,36,0000 000d 0020 00a0 10a80-10a9f,-1,</tr>
     <tr>Nbat,Nabataean,44,0000 000d 0020 00a0 10880-1089e 108a7-108af,-1,</tr>
     <tr>Newa,Newa,96,0000 000d 0020 00a0 11400-11459 1145b 1145d,-1,</tr>
