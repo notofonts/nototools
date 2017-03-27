@@ -960,9 +960,9 @@ def _character_string_html(codelist, used_font):
   cps = [cp for cp in codelist.codes() if cp in f_codeset]
   if not cps:
     return None
-  line = ['<span class="', rkey, ' line">']
+  line = ['<bdo class="', rkey, ' line" dir="ltr">']
   line.extend(unichr(cp) for cp in cps)
-  line.append('</span>')
+  line.append('</bdo>')
   return ''.join(line)
 
 
