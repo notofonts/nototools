@@ -1955,12 +1955,14 @@ _SCRIPT_REQUIRED = [
   ('Mymr',
    # Comment
    """
-   From core specification.
+   From core specification; FE00 is for dotted forms.
    """,
    # Data
    """
    # General Punctuation
    200B  # ZERO WIDTH SPACE
+   # Variation Selectors
+   FE00  # VARIATION SELECTOR-1
    """),
 
   # Narb - Old North Arabian
