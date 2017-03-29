@@ -26,6 +26,7 @@ import codecs
 import collections
 import csv
 import datetime
+import glob
 import json
 import locale
 import os
@@ -100,7 +101,8 @@ def check_families(family_map):
       else:
         hinted_members = []
       family_map[family_id] = noto_fonts.NotoFamily(
-          name, family_id, rep_member, charset, hinted_members, unhinted_members)
+          name, family_id, rep_member, charset, hinted_members,
+          unhinted_members)
 
 
 def get_script_to_family_ids(family_map):
@@ -552,10 +554,12 @@ def get_css_generic_family(family):
 
 CSS_WEIGHT_MAPPING = {
     'Thin': 250,
+    'ExtraLight': 250,
     'Light': 300,
     'DemiLight': 350,
     'Regular': 400,
     'Medium': 500,
+    'SemiBold': 600,
     'Bold': 700,
     'Black': 900,
 }
@@ -1061,18 +1065,51 @@ class WebGen(object):
       print "Wrote " + zip_path
       print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
 
-    # NotoSansCJK.ttc.zip already has been zipped for size reasons because
-    # git doesn't like very large files. So it wasn't in the above
+    # NotoSans/SerifCJK.ttc.zip already has been zipped for size reasons
+    # because git doesn't like very large files. So it wasn't in the above
     # files. For our purposes ideally it would have the license file in it,
     # but it doesn't.  So we have to copy the zip and add the license to
     # the copy.
-    filename = 'NotoSansCJK.ttc.zip'
-    src_zip = path.join(CJK_DIR, filename)
-    dst_zip = path.join(self.pkgs, filename)
-    shutil.copy2(src_zip, dst_zip)
-    pairs = [readme_pair, (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
-    tool_utils.generate_zip_with_7za_from_filepairs(pairs, dst_zip)
+    for filename in ['NotoSansCJK.ttc.zip', 'NotoSerifCJK.ttc.zip']:
+      src_zip = path.join(CJK_DIR, filename)
+      dst_zip = path.join(self.pkgs, filename)
+      shutil.copy2(src_zip, dst_zip)
+      pairs = [readme_pair, (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
+      tool_utils.generate_zip_with_7za_from_filepairs(pairs, dst_zip)
 
+
+  def build_subset_zips(self):
+    """Generate zipped versions of the CJK subset families for access via
+    the link on the cjk help page."""
+
+    # The font family code skips the subset files, but we want them in the
+    # package directory. Like the ttcs, we handle them separately.
+
+    readme_path = self.get_readme_path('cjk')
+    readme_pair = (readme_path, path.basename(readme_path))
+    for style in ['Sans', 'Serif']:
+      for subset in ['KR', 'JP', 'SC', 'TC']:
+        base_name = 'Noto%s%s' % (style, subset)
+        zip_name = '%s.zip' % base_name
+        zip_path = path.join(self.pkgs, zip_name)
+        if path.isfile(zip_path):
+          print("Assuming built %s is valid." % zip_name)
+          continue
+
+        filenames = glob.glob(path.join(CJK_DIR, base_name + '-*.otf'))
+        if not filenames:
+          raise Exception('no file in %s matched "%s"' % (CJK_DIR, family_pat))
+
+        oldsize = sum(os.stat(f).st_size for f in filenames)
+        pairs = [
+            readme_pair,
+            (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
+        pairs.extend((f, path.basename(f)) for f in filenames)
+
+        tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
+        newsize = os.stat(zip_path).st_size
+        print "Wrote " + zip_path
+        print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
 
   def generate(self):
     if self.clean:
@@ -1236,6 +1273,7 @@ class WebGen(object):
       # build outputs not used by the json but linked to from the web page
       if not self.no_zips:
         self.build_ttc_zips()
+        self.build_subset_zips()
 
     if self.no_css:
       print 'skipping css output'
