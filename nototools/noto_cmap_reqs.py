@@ -2971,8 +2971,9 @@ def _assign_sym2(cmap_ops):
 
 def _assign_math(cmap_ops):
   """No longer use STIX character set, we will just fallback for characters
-  not in math.  To this end, we remove any LGC characters except for ascii
-  letters, since combining harpoons/arrows in math might apply to them."""
+  not in math. However, we want much of math to work without fallback, for
+  instance we need character ranges for the combining marks, and want a serif
+  form of the ASCII, so we duplicate more than usual."""
 
   cmap_ops.phase('assign math')
 
@@ -3003,17 +3004,55 @@ def _assign_math(cmap_ops):
       1d552-1d6a5 1d6a8-1d7c9 1d7ce-1d7ff
       """)
 
-  # Assume fallback will work for these in general
+  # Assume fallback will work for these in general, but...
   cmap_ops.remove_all(cmap_ops.script_chars('LGC'), 'Zmth')
   cmap_ops.remove_all(cmap_ops.script_chars('SYM2'), 'Zmth')
 
-  # Add ASCII alphanumerics
-  alphanum = tool_utils.parse_int_ranges('0041-005a 0061-007a')
-  cmap_ops.add_all(alphanum, 'Zmth')
+  # Add all printable ASCII.  We're not going to rely on fallback for these
+  # after all.
+  printable_ascii = tool_utils.parse_int_ranges('0020-007e')
+  cmap_ops.add_all(printable_ascii, 'Zmth')
 
   # Add back blocks that get split up too arbitrarily
   cmap_ops.add_all(_block_cps('Mathematical Operators'), 'Zmth')
   cmap_ops.add_all(_block_cps('Miscellaneous Mathematical Symbols-B'), 'Zmth')
+
+  # Add back some symbols for math/logic
+  math_geom = tool_utils.parse_int_ranges(
+      '25af/b3/b7/bd/c1/ca/fb', allow_compressed=True)
+  cmap_ops.add_all(math_geom, 'Zmth')
+
+  # Add dotted circle, we have combining marks
+  cmap_ops.add(0x25cc, 'Zmth')
+
+  # Add misc latin ops
+  # plus/minus, multiply, divide, logical not
+  # a7 is used in a variant of APL
+  latin_misc = tool_utils.parse_int_ranges('b1 d7 f7 a7 ac')
+  cmap_ops.add_all(latin_misc, 'Zmth')
+
+  # Fill holes in math alpha blocks, again we don't fallback here after all.
+  math_holes = tool_utils.parse_int_ranges(
+      """
+      2102/0a-0e/10-12/15/19-1d/24/28/2c-2d/2f-31/33-38/3c-40/45-49
+      """, allow_compressed=True)
+  cmap_ops.add_all(math_holes, 'Zmth')
+
+  # Add hebrew alef, bet, gimel, dalet
+  cmap_ops.add_all(tool_utils.parse_int_ranges('2135-2138'), 'Zmth')
+
+  # Add greek regular, we can have combining marks on them too
+  # These correspond to the math greek alpha ranges
+  greek_math_regular = tool_utils.parse_int_ranges(
+      '391-3a1 3f4 3a3-3a9 2207 3b1-3c9 2202 3f5 3d1 3f0 3d5 3f1 3d6')
+  cmap_ops.add_all(greek_math_regular, 'Zmth')
+
+  # Add primes
+  cmap_ops.add_all(tool_utils.parse_int_ranges('2032-2037 2057'), 'Zmth')
+
+  # Duplicate some combining marks from LGC so they can apply to math chars
+  more_combining_marks = tool_utils.parse_int_ranges('302-303 305 307-308 330')
+  cmap_ops.add_all(more_combining_marks, 'Zmth')
 
 
 def _remove_unwanted(cmap_ops):
