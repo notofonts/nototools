@@ -864,7 +864,10 @@ def _flagged_name(cp, flag_sets):
   is a map from flag name to a tuple of cp set and boolean.
   True means add flag if cp in set, False means add flag if it is
   not in the set."""
-  name = unicode_data.name(cp)
+  try:
+    name = unicode_data.name(cp)
+  except:
+    raise Exception('no name for %04X' % cp)
   flags = []
   for k, v in sorted(flag_sets.iteritems()):
     if (cp in v[0]) == v[1]:
@@ -957,9 +960,9 @@ def _character_string_html(codelist, used_font):
   cps = [cp for cp in codelist.codes() if cp in f_codeset]
   if not cps:
     return None
-  line = ['<span class="', rkey, ' line">']
+  line = ['<bdo class="', rkey, ' line" dir="ltr">']
   line.extend(unichr(cp) for cp in cps)
-  line.append('</span>')
+  line.append('</bdo>')
   return ''.join(line)
 
 
