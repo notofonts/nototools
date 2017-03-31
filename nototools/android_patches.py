@@ -354,6 +354,16 @@ def subset_symbols(srcdir, dstdir):
         dstdir, path.basename(font_file)[:-4] + '-Subsetted2.ttf')
     subset.subset_font(font_file, out_file, include=target_coverage)
 
+def patch_post_table(srcdir, dstdir):
+  """Replace post table version 2.0 with version 3.0"""
+
+  # Leave alone OTF
+  for font_file in glob.glob(path.join(srcdir, '*.ttf')):
+    print 'change post table to 3.0', font_file
+    out_file = path.join(dstdir, path.basename(font_file))
+    font = ttLib.TTFont(font_file)
+    font['post'].formatType = 3.0
+    font.save(out_file)
 
 def patch_fonts(srcdir, dstdir):
   """Remove dstdir and repopulate with patched contents of srcdir (and
@@ -367,6 +377,7 @@ def patch_fonts(srcdir, dstdir):
   patch_hyphen(srcdir, dstdir)
   patch_cjk_ttcs(path.join(srcdir, 'cjk'), path.join(dstdir, 'cjk'))
   subset_symbols(srcdir, dstdir)
+  patch_post_table(srcdir, dstdir)
 
 
 def main():
