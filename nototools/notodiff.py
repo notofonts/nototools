@@ -68,7 +68,6 @@ def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
 
     if print_font:
         print('-- %s --' % os.path.basename(path_a))
-        print()
     diff_finder = gpos_diff.GposDiffFinder(path_a, path_b, error_bound,
                                            out_lines)
     print(diff_finder.find_kerning_diffs())
@@ -90,7 +89,7 @@ def _gsub(path_a, path_b, out_lines, print_font=False):
         print('-- %s --' % os.path.basename(path_a))
     diff_finder = gsub_diff.GsubDiffFinder(path_a, path_b, out_lines)
     print(diff_finder.find_gsub_diffs())
-    print
+    print()
 
 
 def _run_multiple(func, filematch, dir_a, dir_b, *args):
