@@ -32,8 +32,10 @@ class GsubDiffFinder(object):
     def __init__(self, file_a, file_b, output_lines=20):
         ttxn_file_a = tempfile.NamedTemporaryFile()
         ttxn_file_b = tempfile.NamedTemporaryFile()
-        subprocess.call(['ttxn', '-o', ttxn_file_a.name, '-f', file_a])
-        subprocess.call(['ttxn', '-o', ttxn_file_b.name, '-f', file_b])
+        subprocess.call(['ttxn', '-q', '-t', 'GSUB', '-o', ttxn_file_a.name,
+                                                     '-f', file_a])
+        subprocess.call(['ttxn', '-q', '-t', 'GSUB', '-o', ttxn_file_b.name,
+                                                     '-f', file_b])
         self.text_a = ttxn_file_a.read()
         self.text_b = ttxn_file_b.read()
         self.file_a = file_a
