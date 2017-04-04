@@ -554,7 +554,7 @@ def get_css_generic_family(family):
 
 CSS_WEIGHT_MAPPING = {
     'Thin': 250,
-    'ExtraLight': 250,
+    'ExtraLight': 200,
     'Light': 300,
     'DemiLight': 350,
     'Regular': 400,
@@ -913,8 +913,10 @@ class WebGen(object):
     promo = None
     if family_id == 'emoji-zsye-color':
       promo = ('Explore all emojis in Noto Color Emoji', './help/emoji')
-    elif family_id in ['sans-jpan', 'sans-kore', 'sans-hans', 'sans-hant']:
-      promo = ('Learn more about Noto Sans CJK', './help/cjk')
+    elif family_id in [
+        'sans-jpan', 'sans-kore', 'sans-hans', 'sans-hant',
+        'serif-jpan', 'serif-kore', 'serif-hans', 'serif-hant']:
+      promo = ('Learn more about Noto Serif/Sans CJK', './help/cjk')
     if promo:
       promo_obj = collections.OrderedDict()
       promo_obj['text'] = promo[0]
@@ -994,10 +996,17 @@ class WebGen(object):
         lspc = 32
       image_file_name = '%s_%s_%d_%s.%s' % (
           family_id, lang_scr, weight, style, imgtype)
-      if is_cjk:
-        family_suffix = ' ' + font.weight
+      if is_cjk and family.name.find('Serif') < 0:
+        # The sans and serif cjk's are named differently, and it confuses
+        # fontconfig.  Sans includes 'Regular' and 'Bold' in the standard
+        # font names, but serif doesn't.  Fontconfig registers two names
+        # for these in the sans (with and without the weight), but only
+        # the name without weight for the serif.  So if you ask pango/cairo
+        # for the serif font and include the weight name, it fails and
+        # falls back to some non-noto font.
+        family_name = family.name + ' ' + font.weight
       else:
-        family_suffix = ''
+        family_name = family.name
       image_location = path.join(self.samples, image_file_name)
       if path.isfile(image_location):
         # Don't rebuild images when continuing.
@@ -1007,7 +1016,7 @@ class WebGen(object):
       create_image.create_img(
           sample_text,
           image_location,
-          family=family.name + family_suffix,
+          family=family_name,
           language=lang_scr,
           rtl=is_rtl,
           width=685,
@@ -1070,7 +1079,10 @@ class WebGen(object):
     # files. For our purposes ideally it would have the license file in it,
     # but it doesn't.  So we have to copy the zip and add the license to
     # the copy.
-    for filename in ['NotoSansCJK.ttc.zip', 'NotoSerifCJK.ttc.zip']:
+    # The Serif ttc is so big github won't let us push it.  In fact, I can't
+    # even commit it to my repo because then I can't push anything.  So
+    # the serif ttc is not here.
+    for filename in ['NotoSansCJK.ttc.zip']:
       src_zip = path.join(CJK_DIR, filename)
       dst_zip = path.join(self.pkgs, filename)
       shutil.copy2(src_zip, dst_zip)
@@ -1340,7 +1352,9 @@ def get_repo_info(skip_checks):
       msg_lines.append(
           'Tag: %s\nDate: %s\nCommit:%s\n\n%s' % (
               tag_name, tag_date, tag_commit, tag_info))
-    repo_info[repo_name] = '\n'.join(msg_lines)
+    message = '\n'.join(msg_lines)
+    print 'repo message for %s:\n%s' % (repo_name, message)
+    repo_info[repo_name] = message
   if errors:
     for _, v in sorted(repo_info.iteritems()):
       print v
