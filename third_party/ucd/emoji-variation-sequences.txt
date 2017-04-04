@@ -1,5 +1,5 @@
 # emoji-variation-sequences.txt
-# Date: 2017-01-26, 13:54:04 GMT
+# Date: 2017-02-18, 13:49:18 GMT
 # © 2017 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use, see http://www.unicode.org/terms_of_use.html
