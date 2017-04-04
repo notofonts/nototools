@@ -123,10 +123,8 @@ WEIGHTS = {
     'ExtraLight': 200,
     'Light': 300,
     'DemiLight': 350,
-    'SemiLight': 350, # because currently some phase 3 fonts have this
     'Regular': 400,
     'Medium': 500,
-    'DemiBold': 600,  # in case
     'SemiBold': 600,
     'Bold': 700,
     'ExtraBold': 800,
