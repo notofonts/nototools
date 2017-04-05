@@ -136,6 +136,8 @@ class TestMetaInfo(FontTest):
         for font in self.fonts:
             weight = noto_fonts.parse_weight(font_data.font_name(font))
             expected_numeric_weight = noto_fonts.WEIGHTS[weight]
+            # hack for windows GDI
+            expected_numeric_weight = max(expected_numeric_weight, 250)
             self.assertEqual(
                 font['OS/2'].usWeightClass,
                 expected_numeric_weight)
