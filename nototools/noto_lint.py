@@ -1065,6 +1065,9 @@ def check_font(font_props, filename_error,
             if not expected_weight:
                 raise ValueError('unexpected weight: %s' % font_props.weight)
 
+            # hack for windows GDI
+            expected_weight = max(expected_weight, 250)
+
             if os2_table.usWeightClass != expected_weight:
                 warn("head/os2/weight_class", "OS/2",
                      "Value of usWeightClass in 'OS/2' table is %d, but should "

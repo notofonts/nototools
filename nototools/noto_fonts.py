@@ -118,20 +118,26 @@ NotoFont = collections.namedtuple(
     'is_display, is_cjk, subset')
 
 
+# These are the ideal pseudo-css weights. 'ideal', because windows GDI limits us
+# to weights >= 250 if we are to prevent auto-bolding, and 'pseudo-css' because
+# css limits us to multiples of 100 currently.  The hope is that both of these
+# restrictions eventually go away, so we encode the values as we wish they would
+# be, and adjust when necessary based on context.
 WEIGHTS = {
     'Thin': 100,
     'ExtraLight': 200,
     'Light': 300,
     'DemiLight': 350,
-    'SemiLight': 350, # because currently some phase 3 fonts have this
     'Regular': 400,
     'Medium': 500,
-    'DemiBold': 600,  # in case
     'SemiBold': 600,
     'Bold': 700,
     'ExtraBold': 800,
     'Black': 900
 }
+
+# Currently we only have one name per weight.  Eventually this can break.
+WEIGHT_TO_STRING = {s:w for w, s in WEIGHTS.iteritems()}
 
 
 _FONT_NAME_REGEX = (
