@@ -552,26 +552,12 @@ def get_css_generic_family(family):
     return None
 
 
-CSS_WEIGHT_MAPPING = {
-    'Thin': 250,
-    'ExtraLight': 200,
-    'Light': 300,
-    'DemiLight': 350,
-    'Regular': 400,
-    'Medium': 500,
-    'SemiBold': 600,
-    'Bold': 700,
-    'Black': 900,
-}
-
 def css_weight(weight_string):
-    return CSS_WEIGHT_MAPPING[weight_string]
+    return noto_fonts.WEIGHTS[weight_string]
 
-
-CSS_WEIGHT_TO_STRING = {s:w for w, s in CSS_WEIGHT_MAPPING.items()}
 
 def css_weight_to_string(weight):
-    return CSS_WEIGHT_TO_STRING[weight]
+    return noto_fonts.WEIGHT_TO_STRING[weight]
 
 
 def css_style(style_value):
@@ -754,30 +740,37 @@ class WebGen(object):
 
   def build_family_css(self, key, family):
     fonts = [m for m in (family.hinted_members or family.unhinted_members)
-             if m.variant != 'Mono' and not m.is_UI]
-    fonts.sort(key=lambda f: str(css_weight(f.weight)) + '-' +
-               ('b' if css_style(f.slope) == 'italic' else 'a'))
+             if not m.is_UI]
+    fonts.sort(
+        key=lambda f: (
+            f.is_mono, css_weight(f.weight), css_style(f.slope) == 'italic'))
 
     css_name = key + '.css'
-    csspath = path.join(self.css, css_name)
-    font_size = 0
-    with open(csspath, 'w') as css_file:
+    css_path = path.join(self.css, css_name)
+    max_font_size = 0
+    with open(css_path, 'w') as css_file:
       for font in fonts:
-        font_name = self.copy_font(font.filepath)
-        font_size = max(font_size, os.stat(font.filepath).st_size)
+        font_path = self.copy_font(font.filepath)
+        max_font_size = max(max_font_size, os.stat(font.filepath).st_size)
+        # Make it possible to access Mono cjk variants and those with irregular
+        # css values by assigning them other names.
+        css_family = family.name
+        if font.is_cjk and font.is_mono:
+          css_family += ' ' + 'Mono'
+        weight = css_weight(font.weight)
+        if weight % 100 != 0:
+          css_family += ' ' + str(weight)
+          # prevent auto-bolding of this font by describing it as bold
+          weight = 700
+        slope = css_style(font.slope)
         css_file.write(
           '@font-face {\n'
           '  font-family: "%s";\n'
           '  font-weight: %d;\n'
           '  font-style: %s;\n'
           '  src: url(../fonts/%s) format("truetype");\n'
-          '}\n' % (
-              family.name,
-              css_weight(font.weight),
-              css_style(font.slope),
-              font_name)
-          )
-    return font_size
+          '}\n' % (css_family, weight, slope, font_path))
+    return max_font_size
 
   def build_css(self, families):
     css_info = {}
