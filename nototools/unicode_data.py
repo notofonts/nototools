@@ -737,6 +737,7 @@ def _load_emoji_data():
 ZWJ = 0x200d
 EMOJI_VS = 0xfe0f
 EMOJI_SEQUENCE_TYPES = frozenset([
+    'Emoji_Keycap_Sequence',
     'Emoji_Combining_Sequence',
     'Emoji_Flag_Sequence',
     'Emoji_Tag_Sequence',
