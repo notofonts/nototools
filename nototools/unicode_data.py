@@ -1119,6 +1119,10 @@ def string_to_seq(seq_str):
   return tuple([int(s, 16) for s in seq_str.split('_')])
 
 
+def is_cp_seq(seq):
+  return all(0 <= n <= 0x10ffff for n in seq)
+
+
 def is_regional_indicator(cp):
   return 0x1f1e6 <= cp <= 0x1f1ff
 
