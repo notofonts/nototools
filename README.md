@@ -8,15 +8,15 @@ The `nototools` python package contains python scripts used to maintain the [Not
 
 On Mac OS X, install dependencies with [homebrew](https://brew.sh)
 
-    brew install cairo pango pygtk imagemagick ;
+    brew install --with-cairo harfbuzz cairo pango pygtk imagemagick
 
 Install python dependencies,
 
-    pip install -r requirements.txt ;
+    pip install -r requirements.txt
 
 Then install nototools.  Since nototools changes frequently, installing using 'develop' is recommended:
 
-    python setup.py develop ;
+    python setup.py develop
 
 ## Usage
 

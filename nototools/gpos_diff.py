@@ -38,8 +38,10 @@ class GposDiffFinder:
     def __init__(self, file_a, file_b, error_bound, output_lines=6):
         ttxn_file_a = tempfile.NamedTemporaryFile()
         ttxn_file_b = tempfile.NamedTemporaryFile()
-        subprocess.call(['ttxn', '-o', ttxn_file_a.name, '-f', file_a])
-        subprocess.call(['ttxn', '-o', ttxn_file_b.name, '-f', file_b])
+        subprocess.call(['ttxn', '-q', '-t', 'GPOS', '-o', ttxn_file_a.name,
+                                                     '-f', file_a])
+        subprocess.call(['ttxn', '-q', '-t', 'GPOS', '-o', ttxn_file_b.name,
+                                                     '-f', file_b])
         self.text_a = ttxn_file_a.read()
         self.text_b = ttxn_file_b.read()
         self.err = error_bound

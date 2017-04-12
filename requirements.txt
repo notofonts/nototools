@@ -1,6 +1,6 @@
-booleanOperations==0.6.2
-defcon==0.2.0
-fonttools==3.2.1
-Pillow==3.4.2
-pyclipper==1.0.5
+booleanOperations==0.7.0
+defcon==0.3.1
+fonttools==3.9.1
+Pillow==4.0.0
+pyclipper==1.0.6
 ufoLib==2.0.0

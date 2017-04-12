@@ -28,6 +28,7 @@ import argparse
 import glob
 import logging
 import os
+import sys
 
 from nototools import gpos_diff, gsub_diff, shape_diff
 
@@ -68,7 +69,6 @@ def _gpos(path_a, path_b, error_bound, out_lines, print_font=False):
 
     if print_font:
         print('-- %s --' % os.path.basename(path_a))
-        print()
     diff_finder = gpos_diff.GposDiffFinder(path_a, path_b, error_bound,
                                            out_lines)
     print(diff_finder.find_kerning_diffs())
@@ -90,7 +90,7 @@ def _gsub(path_a, path_b, out_lines, print_font=False):
         print('-- %s --' % os.path.basename(path_a))
     diff_finder = gsub_diff.GsubDiffFinder(path_a, path_b, out_lines)
     print(diff_finder.find_gsub_diffs())
-    print
+    print()
 
 
 def _run_multiple(func, filematch, dir_a, dir_b, *args):
@@ -112,6 +112,17 @@ def _run_multiple(func, filematch, dir_a, dir_b, *args):
             logger.info('Compare %s' % tail)
             func(path_a, path_b, *args)
     logger.info('Compared %d fonts' % compared)
+
+
+def _validate_paths(before_path, after_path):
+    valid_paths = True
+    if not os.path.exists(before_path):
+        print('Before path is invalid: %s' % before_path)
+        valid_paths = False
+    if not os.path.exists(after_path):
+        print('After path is invalid: %s' % after_path)
+        valid_paths = False
+    return valid_paths
 
 
 def main():
@@ -145,6 +156,9 @@ def main():
     args = parser.parse_args()
 
     logging.basicConfig(level=getattr(logging, args.verbose.upper()))
+
+    if not _validate_paths(args.before, args.after):
+        return 1
 
     if args.diff_type in ('area', 'shape', 'area-shape-product', 'rendered'):
         stats = {}
@@ -181,4 +195,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
