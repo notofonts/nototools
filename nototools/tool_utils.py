@@ -285,7 +285,7 @@ def git_is_clean(repo):
 
 def git_head_commit(repo):
   """Return the commit hash at head, the date and time of the commit as
-  YYYYmmdd-HHMMSS, and the subject line, as a tuple of three strings."""
+  YYYY-mm-dd HH:MM:SS, and the subject line, as a tuple of three strings."""
   with temp_chdir(repo):
     text = subprocess.check_output(
         ['git', 'show', '--date=format:%Y-%m-%d %H:%M:%S',
