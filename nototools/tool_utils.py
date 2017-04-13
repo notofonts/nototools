@@ -284,12 +284,13 @@ def git_is_clean(repo):
 
 
 def git_head_commit(repo):
-  """Return the commit hash at head and the subject line, as a tuple of two
-  strings."""
+  """Return the commit hash at head, the date and time of the commit as
+  YYYY-mm-dd HH:MM:SS, and the subject line, as a tuple of three strings."""
   with temp_chdir(repo):
     text = subprocess.check_output(
-        ['git', 'show', '-s', '--pretty=oneline', 'HEAD'])
-    return tuple(text.strip().split(None, 1))
+        ['git', 'show', '--date=format:%Y-%m-%d %H:%M:%S',
+         '--no-expand-tabs', '--pretty=format:%H\t%cd\t%s', 'HEAD'])
+    return tuple(text.strip().split('\t', 2))
 
 
 def git_add_all(repo_subdir):

@@ -1327,7 +1327,7 @@ def get_repo_info(skip_checks):
     msg_lines.append('Repo: noto-%s' % repo_name)
     if skip_checks:
       msg_lines.append('Branch: %s' % repo_branch)
-      msg_lines.append('Commit: %s\nSubject: %s' % repo_head_commit)
+      msg_lines.append('Commit: %s\nDate:%s\nSubject: %s' % repo_head_commit)
     else:
       if not tool_utils.git_is_clean(repo):
         errors.append('repo noto-%s is not clean' % repo_name)
