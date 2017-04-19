@@ -89,11 +89,39 @@ def draw_on_surface(surface, text, params):
             base_dir = pango.DIRECTION_LTR
         alignment = pango.ALIGN_LEFT
 
-    pango_ctx.set_base_dir(base_dir)
-    layout.set_alignment(alignment)
-
-    layout.set_width(params.width * pango.SCALE)
-    layout.set_spacing((params.line_spacing - params.font_size) * pango.SCALE)
+    # The actual meaning of alignment is confusing.
+    #
+    # In an RTL context, RTL text aligns to the right by default.  So
+    # setting right alignment and an RTL context means asking for
+    # 'default alignment' (just as does setting left alignment and an
+    # LTR context).
+    #
+    # What actually happens depends on the directionality of the actual
+    # text in the paragraph. If the text is Arabic this will be RTL, so
+    # it is aligned to the right, the default alignment for RTL text.
+    # And if the text is English this will be LTR, so it is aligned to
+    # the left, the default alignment for LTR text.
+    #
+    # This is reversed when the context and the alignment disagree:
+    # setting left alignment in an RTL context (or right alignment in an
+    # LTR context) means asking for 'opposite alignment'.  Arabic text
+    # is aligned to the left, and English text to the right.
+    #
+    # pango layout set_auto_dir controls whether the text direction
+    # is based on the text itself, or influenced by the context.  By
+    # default it is off so the text direction is completely independent
+    # of the setting of the context: Arabic text is RTL and English text
+    # is LTR.  However, the algorithm depends on the first 'strongly
+    # directional' character encountered in a paragraph.  If you have
+    # text that is largly Arabic but happens to start with English
+    # (e.g. brand names) it will be assigned LTR, the wrong direction.
+    # Either you force the correct direction by munging the text or you
+    # tell pango to use the context.
+    #
+    # The text will be reordered based on the unicode bidi attributes
+    # of the characters, and this is only as good as your unicode data.
+    # Newly-encoded scripts can be newer than your libraries and will
+    # likely order LTR if you implementation doesn't know about them.
 
     font = pango.FontDescription()
     font.set_family(params.family)
@@ -102,15 +130,14 @@ def draw_on_surface(surface, text, params):
     font.set_weight(params.weight)
 
     layout.set_font_description(font)
+    layout.set_alignment(alignment)
+    layout.set_width(params.width * pango.SCALE)
+    layout.set_wrap(pango.WRAP_WORD_CHAR)
+    layout.set_spacing((params.line_spacing - params.font_size) * pango.SCALE)
 
+    pango_ctx.set_base_dir(base_dir)
+    layout.context_changed()
     layout.set_text(text)
-
-#    # Doesn't work for some reason
-#    pango_ctx.set_base_gravity(pango.GRAVITY_AUTO)
-#    matrix = pango_ctx.get_matrix()
-#    matrix.rotate(90)
-#    pango_ctx.set_matrix(matrix)
-#    layout.context_changed()
 
     extents = layout.get_pixel_extents()
     top_usage = min(extents[0][1], extents[1][1], 0)
@@ -183,7 +210,13 @@ def test():
     test('mn-Mong_udhr.txt', 'mong.png', family='Noto Sans',
          language='mn', vertical=True)
     test('sr-Cyrl_udhr.txt', 'sr_cyrl.png', family='Noto Sans',
-         language='sr-Cyrl', vertical=True)
+         language='sr-Cyrl')
+    test('und-Adlm_chars.txt', 'und-adlm.png', family='Noto Sans',
+         rtl=True)
+
+    # test('en-Latn_udhr.txt', 'en_latn_rtl.png', family='Noto Sans', rtl=True)
+    # bidi_txt = u'First ضميرً Second'
+    # create_img(bidi_txt, 'bidi.png', family='Noto Sans', rtl=True)
 
 
 _weight_map = {

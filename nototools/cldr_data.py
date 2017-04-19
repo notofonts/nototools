@@ -293,6 +293,13 @@ def is_script_rtl(script):
   try:
     return _SCRIPT_METADATA[script][5] == 'YES'
   except KeyError:
+    # special case a few codes and data we have that hasn't been
+    # updated.  Also special case locale-script codes, we have some.
+    if script == 'Adlm':
+      return True
+    if script in ['Zsym', 'Zsye', 'Hrkt', 'Jpan']:
+      return False
+    # we really should throw an exception
     if _DEBUG:
       print 'No script metadata for %s' % script
     return False

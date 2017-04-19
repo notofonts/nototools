@@ -504,8 +504,9 @@ def generate_samples(dstdir, imgdir, summary):
     if imgdir:
       path = os.path.join(imgdir, 'und-%s_chars.png' % script)
       print 'writing image %s.png' % script
-      rtl = script in ['Arab', 'Hebr', 'Nkoo', 'Syrc', 'Tfng', 'Thaa']
-      create_image.create_png(sample, path, font_size=34, line_spacing=40, width=800, rtl=rtl)
+      rtl = script in ['Adlm', 'Arab', 'Hebr', 'Nkoo', 'Syrc', 'Tfng', 'Thaa']
+      create_image.create_png(
+          sample, path, font_size=34, line_spacing=40, width=800, rtl=rtl)
 
     if dstdir:
       filename = 'und-%s_chars.txt' % script
