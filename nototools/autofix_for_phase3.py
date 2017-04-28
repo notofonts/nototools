@@ -93,7 +93,14 @@ def _get_version_info(fonts):
 def _get_fonts_repo_version_info():
   prefix = tool_utils.resolve_path('[fonts]')
 
-  commit, date, _ = tool_utils.git_head_commit(prefix)
+  commit, date, commit_msg = tool_utils.git_head_commit(prefix)
+
+  # check that commit is on the upstream master
+  if not tool_utils.git_check_remote_commit(prefix, commit):
+    raise Exception(
+        'commit %s (%s) not on upstream master branch' % (
+            commit[:12], commit_msg.splitlines()[0].strip()))
+
   date_re = re.compile(r'(\d{4})-(\d{2})-(\d{2})')
   m = date_re.match(date)
   if not m:

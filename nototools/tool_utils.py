@@ -293,6 +293,29 @@ def git_head_commit(repo):
     return tuple(text.strip().split('\t', 2))
 
 
+def git_check_remote_commit(repo, commit, remote='upstream', branch='master'):
+  """Return true if the commit exists in the remote repo at the given branch
+  (or any branch if branch is None). This has the side effect of calling
+  'git fetch {remote}'."""
+  with temp_chdir(repo):
+    subprocess.check_call(['git', 'fetch', remote])
+    # the following will throw an exception if commit is unrecognized
+    text = subprocess.check_output(
+          ['git', 'branch', '-r', '--contains', commit])
+
+    lines = [line.strip() for line in text.splitlines()]
+    if branch:
+      if branch == 'HEAD':
+        # assume a link, it will be reported as one
+        expected = remote + '/HEAD ->'
+        return any(line.startswith(expected) for line in lines)
+      expected = remote + '/' + branch
+      return expected in lines
+    else:
+      expected = remote + '/'
+      return any(line.startswith(remote) for line in lines)
+
+
 def git_add_all(repo_subdir):
   """Add all changed, deleted, and new files in subdir to the staging area."""
   # git can now add everything, even removed files
