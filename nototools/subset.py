@@ -56,6 +56,7 @@ def subset_font(source_file, target_file,
     opt.recalc_bounds = True
     opt.recalc_timestamp = True
     opt.canonical_order = True
+    opt.drop_tables = ['+TTFA']
 
     if options is not None:
         for name, value in options.iteritems():

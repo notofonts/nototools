@@ -26,11 +26,15 @@ TODAY=$(shell date "+%Y-%m-%d")
 TARBALLDIR=packages
 ZIPDIR=packages-zip
 ANDROIDDIR=packages/android
+CROSDIR=packages/cros
 HINTEDFONTDIR=../noto-fonts/hinted
 UNHINTEDFONTDIR=../noto-fonts/unhinted
 
 UNHINTEDFONTS=$(shell find $(UNHINTEDFONTDIR) -name "*.ttf")
 ANDROIDFONTS=$(UNHINTEDFONTS:$(UNHINTEDFONTDIR)/%=$(ANDROIDDIR)/%)
+
+HINTEDFONTS=$(shell find $(HINTEDFONTDIR) -name "*.ttf")
+CROSFONTS=$(HINTEDFONTS:$(HINTEDFONTDIR)/%=$(CROSDIR)/%)
 
 all: tarball zip
 
@@ -70,6 +74,12 @@ $(ANDROIDDIR)/%.ttf: $(UNHINTEDFONTDIR)/%.ttf
 	else \
 	    $(SUBSETTOOL) $< $@; \
 	fi
+
+cros: $(CROSFONTS)
+
+$(CROSDIR)/%.ttf: $(HINTEDFONTDIR)/%.ttf
+	@$(MKDIR) -p $(CROSDIR)
+	$(SUBSETTOOL) $< $@; \
 
 clean: cleantarball cleanzip
 
