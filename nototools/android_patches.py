@@ -369,6 +369,24 @@ def patch_post_table(srcdir, dstdir):
     font['post'].formatType = 3.0
     font.save(out_file)
 
+def patch_name_table(srcdir, dstdir):
+  """Drop name records other than in PID=3/EID=1"""
+
+  # See https://github.com/googlei18n/fontmake/issues/280
+  for font_file in glob.glob(path.join(srcdir, '*.ttf')):
+    print 'drop non-Windows name records', font_file
+    out_file = path.join(dstdir, path.basename(font_file))
+    if path.isfile(out_file):
+      print '  repatching', out_file
+      font_file = out_file
+    font = ttLib.TTFont(font_file)
+    names = []
+    for record in font['name'].names:
+      name_ids = (record.platformID, record.platEncID)
+      if name_ids == (3, 1):
+        names.append(record)
+    font['name'].names = names
+    font.save(out_file)
 
 def patch_fonts(srcdir, dstdir):
   """Remove dstdir and repopulate with patched contents of srcdir (and
