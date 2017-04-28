@@ -85,11 +85,22 @@ def _get_version_info(fonts):
   state of the repo to build a version string.  Otherwise return None."""
 
   prefix = tool_utils.resolve_path('[fonts]')
-
   if not all(tool_utils.resolve_path(f).startswith(prefix) for f in fonts):
     return None
+  return _get_fonts_repo_version_info()
 
-  commit, date, _ = tool_utils.git_head_commit(prefix)
+
+def _get_fonts_repo_version_info():
+  prefix = tool_utils.resolve_path('[fonts]')
+
+  commit, date, commit_msg = tool_utils.git_head_commit(prefix)
+
+  # check that commit is on the upstream master
+  if not tool_utils.git_check_remote_commit(prefix, commit):
+    raise Exception(
+        'commit %s (%s) not on upstream master branch' % (
+            commit[:12], commit_msg.splitlines()[0].strip()))
+
   date_re = re.compile(r'(\d{4})-(\d{2})-(\d{2})')
   m = date_re.match(date)
   if not m:
@@ -119,8 +130,12 @@ def autofix_fonts(
     if not path.isdir(reldir):
       raise Exception('release dir "%s" does not exist' % reldir)
 
-  if version_info is None:
-    version_info = _get_version_info(font_names)
+  if version_info is None or version_info == '[fonts]':
+    if version_info is None:
+      version_info = _get_version_info(font_names)
+    else:
+      version_info = _get_fonts_repo_version_info()
+
     if not version_info:
       raise Exception('could not compute version info from fonts')
     print 'Computed version_info: %s' % version_info
@@ -148,7 +163,15 @@ def _extract_version(font):
 
 
 def _version_str_to_mm(version):
-  return [int(n) for n in version.split('.')]
+  # return the pair of int values for the major and minor versions, plus
+  # a boolean indicating whether this was a phase 2 version number.  That's
+  # a hack, it is a phase 2 number if the initial release version < 2 or
+  # if the minor version had two digits.  Of course this doesn't apply to
+  # cjk but we shouldn't run this on cjk anyway.
+  parts = version.split('.')
+  mm = [int(n) for n in parts]
+  is_phase2 = mm[0] < 2 or len(parts[1]) == 2
+  return mm, is_phase2
 
 
 def _mm_to_version_str(mm):
@@ -171,43 +194,46 @@ def get_new_version(font, relfont, nversion):
 
   if rversion:
     print 'Existing release version: %s' % rversion
+    r_mm, r_is_phase2 = _version_str_to_mm(rversion)
 
-  mm = _version_str_to_mm(version)
+  mm, is_phase2 = _version_str_to_mm(version)
   if nversion is not None:
     if nversion == 'keep':
       if rversion is not None:
+        if r_is_phase2:
+          print 'Warning, keeping phase 2 release version %s' % rversion
         return rversion
-      # falls through
     else:
-      n_mm = _version_str_to_mm(nversion)
+      n_mm, n_is_phase_2 = _version_str_to_mm(nversion)
+      if n_is_phase2:
+        raise Exception('bad phase 3 minor version ("%s")' % nversion)
       if rversion is not None:
-        r_mm = _version_str_to_mm(rversion)
         if n_mm < r_mm:
           raise Exception(
               'new version %s < release version %s' % (nversion, rversion))
-      elif n_mm < mm:
+      if n_mm < mm:
         raise Exception(
             'new version %s < old version %s' % (nversion, version))
       return nversion
 
-  # No new verson string, so compute one.  If we have a release version,
-  # bump that.
+  # No new verson string, so compute one.  If we have a phase 3 version,
+  # start with that.  If it's a phase 2 number with a major version of 2,
+  # force minor to '040' which is higher than any of the phase 2 minor
+  # versions in this category.  Else if major < 2, bump to 2.  Else just
+  # bump the release minor version.
   if rversion:
-    n_mm = _version_str_to_mm(rversion)
-    if n_mm[1] == 999:
+    if r_is_phase2:
+      return '2.040' if r_mm[0] == 2 else '2.000'
+    if r_mm[1] == 999:
       raise Exception('cannot bump version %s' % rversion)
-    n_mm[1] += 1
-    return _mm_to_version_str(n_mm)
+    r_mm[1] += 1
+    return _mm_to_version_str(r_mm)
 
-  # Compute based on old phase 2 version.
-  if mm[0] == 2:
-    # special case phase 2 version string >= 2.0
-    return '2.040'
+  if mm[0] > 2 or (mm[0] == 2 and mm[1] > 0):
+    raise Exception('existing version too high "%s"' % version)
 
-  if mm[0] < 2:
-    return '2.000'
+  return '2.000'
 
-  raise Exception('old version too high "%s"' % version)
 
 
 def _get_font_info(f):
@@ -382,7 +408,8 @@ def main():
   parser.add_argument(
       '-f', '--fonts', help='paths of fonts to swat', metavar='font', nargs='+')
   parser.add_argument(
-      '-i', '--version_info', help='version info string', metavar='str')
+      '-i', '--version_info', help='version info string (opt [fonts] to use '
+      'fonts info)', metavar='str', nargs='?', const='[fonts]')
   parser.add_argument(
       '-v', '--version', help='force version (opt keep)',
       metavar='ver', nargs='?', const='keep')
