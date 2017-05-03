@@ -231,7 +231,7 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
             for cp in sample:
               if ord(cp) in [
                   0xa, 0x28, 0x29, 0x2c, 0x2d, 0x2e, 0x3b, 0x5b, 0x5d, 0x2010,
-                  0xfe0e, 0xfe0f]:
+                  0x202e, 0xfe0e, 0xfe0f]:
                 continue
               if ord(cp) not in charset:
                 failed_cps.add(ord(cp))
@@ -244,8 +244,8 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
               failed_keys.add(full_key)
               continue
 
-          print 'family %s accepts sample %s for lang %s' % (
-              family_id, sample_key, lang_scr)
+          # print 'family %s accepts sample %s for lang %s' % (
+          #    family_id, sample_key, lang_scr)
 
           sample_key_for_lang = sample_key
           if sample_key not in sample_key_to_info:
@@ -1074,12 +1074,20 @@ class WebGen(object):
     # the copy.
     # The Serif ttc is so big github won't let us push it.  In fact, I can't
     # even commit it to my repo because then I can't push anything.  So
-    # the serif ttc is not here.
-    for filename in ['NotoSansCJK.ttc.zip']:
+    # the serif ttc might not be here.  We want to provide it, but we don't
+    # have it in git so the README doesn't apply.  Not sure what to do about
+    # this, for now don't include a README for it.  There's no git repo for
+    # people to trace this file back to.
+    for filename in ['NotoSansCJK.ttc.zip', 'NotoSerifCJK.ttc.zip']:
       src_zip = path.join(CJK_DIR, filename)
+      if not path.isfile(src_zip):
+        print 'Warning: %s does not exist' % filename
+        continue
+      pairs = [(SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
+      if os.stat(src_zip).ST_SIZE < 100000000:  # lower than 100MB
+        pairs.append(readme_pair)
       dst_zip = path.join(self.pkgs, filename)
       shutil.copy2(src_zip, dst_zip)
-      pairs = [readme_pair, (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
       tool_utils.generate_zip_with_7za_from_filepairs(pairs, dst_zip)
 
 
@@ -1330,7 +1338,7 @@ def get_repo_info(skip_checks):
       msg_lines.append('Commit: %s\nDate:%s\nSubject: %s' % repo_head_commit)
     else:
       if not tool_utils.git_is_clean(repo):
-        errors.append('repo noto-%s is not clean' % repo_name)
+        errors.append('noto-%s is not clean' % repo_name)
         continue
       repo_tag = None
       for tag in tool_utils.git_tags(repo):
@@ -1343,14 +1351,14 @@ def get_repo_info(skip_checks):
       tag_commit, tag_name, tag_date = tag
       tag_info = tool_utils.git_tag_info(repo, tag_name)
       msg_lines.append(
-          'Tag: %s\nDate: %s\nCommit:%s\n\n%s' % (
+          'Tag: %s\nDate: %s\nCommit: %s\n\n%s' % (
               tag_name, tag_date, tag_commit, tag_info))
     message = '\n'.join(msg_lines)
-    print 'repo message for %s:\n%s' % (repo_name, message)
     repo_info[repo_name] = message
+
+  for rname, v in sorted(repo_info.iteritems()):
+    print '--%s--\n%s' % (rname, v)
   if errors:
-    for _, v in sorted(repo_info.iteritems()):
-      print v
     raise Exception('Some repos are not clean\n' + '\n'.join(errors))
   return repo_info
 
