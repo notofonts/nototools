@@ -40,20 +40,20 @@ def _setup():
   values will hold a mapping from the <name> to value.
   Blank lines and lines starting with '#' are ignored."""
 
-  configfile = path.expanduser("~/.notoconfig")
-  if path.exists(configfile):
-    with open(configfile, "r") as f:
-      for line in f:
-        line = line.strip()
-        if not line or line.startswith('#'):
-          continue
-        k, v = line.split('=', 1)
-        values[k.strip()] = v.strip()
-  else:
-    # This needs to be silent.  It causes a makefile error in noto-emoji,
-    # which expects stdout to consist only of the output of a python
-    # script it runs.
-    pass
+  paths = [path.expanduser('~/.notoconfig'), '/usr/local/share/noto/config']
+  for configfile in paths:
+    if path.exists(configfile):
+      with open(configfile, "r") as f:
+        for line in f:
+          line = line.strip()
+          if not line or line.startswith('#'):
+            continue
+          k, v = line.split('=', 1)
+          values[k.strip()] = v.strip()
+      break
+  # This needs to be silent.  It causes a makefile error in noto-emoji,
+  # which expects stdout to consist only of the output of a python
+  # script it runs.
 
 _setup()
 
