@@ -259,26 +259,49 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
 def git_get_branch(repo):
   try:
     with temp_chdir(repo):
-      return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD']).strip()
+      return subprocess.check_output(
+          ['git', 'symbolic-ref', '--short', 'HEAD'], stdout=os.devnull).strip()
   except:
     return '<not on any branch>'
 
 
-def git_is_clean(repo):
+def git_is_clean(repo, print_errors=False):
   """Ensure there are no unstaged or uncommitted changes in the repo."""
+
+  def capture_and_show_errors(cmd):
+    def dumplines(msg, text, limit):
+      if text:
+        lines = text.splitlines()
+        print '%s (%d lines):\n  %s' % (
+            msg, len(lines), '\n  '.join(lines[:limit]))
+        if len(lines) > limit:
+          print '  ...'
+
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    dumplines('out', out, 20)
+    dumplines('err', err, 20)
 
   result = True
   with temp_chdir(repo):
-    subprocess.check_call(['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
-    if subprocess.call(['git', 'diff-files', '--quiet', '--ignore-submodules', '--']):
-      print 'There are unstaged changes in the noto branch:'
-      subprocess.call(['git', 'diff-files', '--name-status', '-r', '--ignore-submodules', '--'])
+    subprocess.check_call(
+        ['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
+    if subprocess.call(
+        ['git', 'diff-files', '--quiet', '--ignore-submodules', '--']):
+      if (print_errors):
+        print 'There are unstaged changes:'
+        capture_and_show_errors(
+            ['git', 'diff-files', '--name-status', '-r', '--ignore-submodules',
+             '--'])
       result = False
     if subprocess.call(
-        ['git', 'diff-index', '--cached', '--quiet', 'HEAD', '--ignore-submodules', '--']):
-      print 'There are uncommitted changes in the noto branch:'
-      subprocess.call(
-        ['git', 'diff-index', '--cached', '--name-status', '-r', 'HEAD', '--ignore-submodules', '--'])
+        ['git', 'diff-index', '--cached', '--quiet', 'HEAD',
+         '--ignore-submodules', '--']):
+      if (print_errors):
+        print 'There are uncommitted changes:'
+        capture_and_show_errors(
+            ['git', 'diff-index', '--cached', '--name-status', '-r', 'HEAD',
+             '--ignore-submodules', '--'])
       result = False
   return result
 
