@@ -1332,27 +1332,31 @@ def get_repo_info(skip_checks):
     repo = tool_utils.resolve_path('[%s]' % repo_name)
     repo_head_commit = tool_utils.git_head_commit(repo)
     repo_branch = tool_utils.git_get_branch(repo)
-    msg_lines.append('Repo: noto-%s' % repo_name)
-    if skip_checks:
-      msg_lines.append('Branch: %s' % repo_branch)
-      msg_lines.append('Commit: %s\nDate:%s\nSubject: %s' % repo_head_commit)
+    if not (skip_checks or tool_utils.git_is_clean(repo)):
+      errors.append('noto-%s is not clean' % repo_name)
+      continue
+    repo_tag = None
+    for tag in tool_utils.git_tags(repo):
+      if tag[0] == repo_head_commit[0]: # matching commits
+        repo_tag = tag
+        break
+    if repo_tag:
+      commit, tag_name, date = tag
+      subject = tool_utils.git_tag_info(repo, tag_name)
+      mtype, minfo = 'Tag', tag_name
+    elif skip_checks:
+      commit, date, subject = repo_head_commit
+      body = None
+      mtype, minfo = 'Branch', repo_branch
     else:
-      if not tool_utils.git_is_clean(repo):
-        errors.append('noto-%s is not clean' % repo_name)
-        continue
-      repo_tag = None
-      for tag in tool_utils.git_tags(repo):
-        if tag[0] == repo_head_commit[0]: # matching commits
-          repo_tag = tag
-          break
-      if not repo_tag:
-        errors.append('noto-%s is not at a release tag' % repo_name)
-        continue
-      tag_commit, tag_name, tag_date = tag
-      tag_info = tool_utils.git_tag_info(repo, tag_name)
-      msg_lines.append(
-          'Tag: %s\nDate: %s\nCommit: %s\n\n%s' % (
-              tag_name, tag_date, tag_commit, tag_info))
+      errors.append('noto-%s is not at a release tag' % repo_name)
+      continue
+
+    msg_lines.append('Repo: noto-%s' % repo_name)
+    msg_lines.append('%s: %s' % (mtype, minfo))
+    msg_lines.append('Date: %s' % date)
+    msg_lines.append('Commit: %s'% commit)
+    msg_lines.append('\n%s' % subject)
     message = '\n'.join(msg_lines)
     repo_info[repo_name] = message
 
