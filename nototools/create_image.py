@@ -23,28 +23,69 @@ import argparse
 import codecs
 import os
 from os import path
+import string
 
-# Workaround fontconfig resolving relative paths w.r.t. current directory,
-# when we want it relative to this directory.
-curdir = path.abspath(path.dirname(__file__))
-os.putenv("XDG_CONFIG_HOME", curdir)
-os.putenv("XDG_DATA_HOME", curdir)
-os.putenv("XDG_CACHE_HOME", curdir)
-
-# Note: ensure /etc/fonts/conf.d/10-scale-bitmap-fonts.conf is
-# in sync with fontconfig to make sure color emoji font scales properly.
-
-# This is all we'd need if fontconfig resolved paths differently.
-#
-# NOTE: if the noto fonts are not in the directories listed by fonts.conf,
-# you will have to edit fonts.conf for your environment.
-fonts_conf = path.join(curdir, "fonts.conf")
-os.putenv("FONTCONFIG_FILE", fonts_conf)
-
+from nototools import notoconfig
 
 import cairo
 import pango
 import pangocairo
+
+_fonts_conf_template = """<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  ${font_dirs}
+
+  <include>/etc/fonts/conf.d</include>
+
+  <match target="scan">
+    <test name="family">
+       <string>Noto Color Emoji</string>
+    </test>
+    <edit name="scalable" mode="assign"><bool>true</bool></edit>
+  </match>
+
+  <cachedir>${cache_dir}</cachedir>
+</fontconfig>
+"""
+
+def setup_fonts_conf():
+  """We first look for fonts.conf under the root nototools, and if we don't
+  find it we write it.  The fontconfig cache also goes there.  This of course
+  requires nototools to be writable."""
+
+  # We require notoconfig because we don't know where this code is located,
+  # nor whether the font directories might be relative to it.
+
+  TOOLS_DIR = notoconfig.noto_tools()
+  fonts_conf = path.join(TOOLS_DIR, 'fonts.conf')
+  if not path.isfile(fonts_conf):
+    noto_font_dirs = []
+    FONTS_DIR = notoconfig.noto_fonts()
+    if FONTS_DIR:
+      noto_font_dirs.extend(
+          [path.join(FONTS_DIR, 'hinted'), path.join(FONTS_DIR, 'unhinted')])
+    CJK_DIR = notoconfig.noto_cjk()
+    if CJK_DIR:
+      noto_font_dirs.append(CJK_DIR)
+    EMOJI_DIR = notoconfig.noto_emoji()
+    if EMOJI_DIR:
+      noto_font_dirs.append(path.join(EMOJI_DIR, 'fonts'))
+    font_dirs = '\n  '.join('<dir>%s</dir>' % d for d in noto_font_dirs)
+
+    cache_dir = path.join(TOOLS_DIR, 'fontconfig')
+    template = string.Template(_fonts_conf_template)
+    conf_text = template.substitute(font_dirs=font_dirs, cache_dir=cache_dir)
+    try:
+      with open(fonts_conf, 'w') as f:
+        f.write(conf_text)
+    except IOError as e:
+      raise Exception('unable to write %s: %s' % (fonts_conf, e))
+
+  # Note: ensure /etc/fonts/conf.d/10-scale-bitmap-fonts.conf is
+  # in sync with fontconfig to make sure color emoji font scales properly.
+  os.putenv('FONTCONFIG_FILE', fonts_conf)
+
 
 class DrawParams:
     """Parameters used for rendering text in draw_on_surface and its callers"""
@@ -157,6 +198,8 @@ def draw_on_surface(surface, text, params):
 def create_svg(text, output_path, **kwargs):
     """Creates an SVG image from the given text."""
 
+    setup_fonts_conf()
+
     params = DrawParams(**kwargs);
     temp_surface = cairo.SVGSurface(None, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
@@ -170,6 +213,8 @@ def create_svg(text, output_path, **kwargs):
 
 def create_png(text, output_path, **kwargs):
     """Creates a PNG image from the given text."""
+
+    setup_fonts_conf()
 
     params = DrawParams(**kwargs)
     temp_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
