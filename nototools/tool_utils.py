@@ -259,8 +259,9 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
 def git_get_branch(repo):
   try:
     with temp_chdir(repo):
-      return subprocess.check_output(
-          ['git', 'symbolic-ref', '--short', 'HEAD'], stdout=os.devnull).strip()
+      with open(os.devnull) as trash:
+        return subprocess.check_output(
+            ['git', 'symbolic-ref', '--short', 'HEAD'], stderr=trash).strip()
   except:
     return '<not on any branch>'
 
@@ -311,7 +312,7 @@ def git_head_commit(repo):
   YYYY-mm-dd HH:MM:SS, and the subject line, as a tuple of three strings."""
   with temp_chdir(repo):
     text = subprocess.check_output(
-        ['git', 'show', '--date=format:%Y-%m-%d %H:%M:%S',
+        ['git', 'show', '-s', '--date=format:%Y-%m-%d %H:%M:%S',
          '--no-expand-tabs', '--pretty=format:%H\t%cd\t%s', 'HEAD'])
     return tuple(text.strip().split('\t', 2))
 
