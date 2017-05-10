@@ -56,7 +56,12 @@ class GsubDiffFinder(object):
         for rule in rules_b:
             if rule not in rules_a:
                 diffs.append(('+',) + rule)
-        diffs.sort(self._compare_no_sign)
+        # ('+', 'smcp', 'Q', 'Q.sc')
+        # Sort order:
+        # 1. Feature tag
+        # 2. Glyph name before substitution
+        # 3. Glyph name after substitution
+        diffs.sort(key=lambda t:(t[1], t[2], t[3]))
         report = ['%d differences in GSUB rules' % len(diffs)]
         report.extend(' '.join(diff) for diff in diffs)
         return '\n'.join(report[:self.output_lines + 1])
@@ -77,8 +82,3 @@ class GsubDiffFinder(object):
             for lhs, rhs in re.findall(rule_rx, contents):
                 rules.add((name, lhs, rhs))
         return rules
-
-    def _compare_no_sign(self, left, right):
-        """Compare items of form (sign, data...) ignoring the sign."""
-
-        return cmp(left[1:], right[1:])
