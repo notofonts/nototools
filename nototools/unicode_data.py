@@ -1263,13 +1263,35 @@ def is_cp_seq(seq):
   return all(0 <= n <= 0x10ffff for n in seq)
 
 
+_REGIONAL_INDICATOR_START = 0x1f1e6
+_REGIONAL_INDICATOR_END = 0x1f1ff
+
 def is_regional_indicator(cp):
-  return 0x1f1e6 <= cp <= 0x1f1ff
+  return _REGIONAL_INDICATOR_START <= cp <= _REGIONAL_INDICATOR_END
+
+
+def is_regional_indicator_seq(cps):
+  return len(cps) == 2 and all(is_regional_indicator(cp) for cp in cps)
 
 
 def regional_indicator_to_ascii(cp):
   assert is_regional_indicator(cp)
-  return chr(cp - 0x1f1e6 + ord('A'))
+  return chr(cp - _REGIONAL_INDICATOR_START + ord('A'))
+
+
+def ascii_to_regional_indicator(ch):
+  assert 'A' <= ch <= 'Z'
+  return ord(ch) - ord('A') + _REGIONAL_INDICATOR_START
+
+
+def string_to_regional_indicator_seq(s):
+  assert len(s) == 2
+  return ascii_to_regional_indicator(s[0]), ascii_to_regional_indicator(s[1])
+
+
+def regional_indicator_seq_to_string(cps):
+  assert len(cps) == 2
+  return ''.join(regional_indicator_to_ascii(cp) for cp in cps)
 
 
 def is_tag(cp):
@@ -1285,8 +1307,16 @@ def tag_character_to_ascii(cp):
   return chr(cp - 0xe0000)
 
 
+def is_regional_tag_seq(seq):
+  return (seq[0] == 0x1f3f4 and seq[-1] == 0xe007f and
+          all(0xe0020 < cp < 0xe007e for cp in seq[1:-1]))
+
+
+_FITZ_START = 0x1F3FB
+_FITZ_END = 0x1F3FF
+
 def is_skintone_modifier(cp):
-  return 0x1f3fb <= cp <= 0x1f3ff
+  return _FITZ_START <= cp <= _FITZ_END
 
 
 def get_presentation_default_emoji():
