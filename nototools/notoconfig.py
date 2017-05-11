@@ -30,15 +30,31 @@ from a single root, but that is no longer the case.
 import os
 from os import path
 
-# 'NOTOTOOLS_DIR' and 'DEFAULT_NOTOTOOLS' apparently don't work
-DEFAULT_ROOT = path.dirname(path.dirname(path.abspath(__file__)))
+_ERR_MSG = """
+Could not find ~/.notoconfig or /usr/local/share/noto/config.
 
-values = {}
+Nototools uses this file to locate resources it uses, since many resources
+such as fonts and sample_texts are not installed in locations relative
+to the nototools python files and scripts.
+
+Please create one of the above config files containing a line like the
+following, where the absolute path to the root of the git repo on your
+machine follows the '=' character:
+
+  noto_tools=/path/to/root/of/nototools
+
+If you use any of the other noto repos, add similar lines for 'noto_emoji',
+'noto_fonts', 'noto_cjk', 'noto_source', or 'noto_fonts_alpha'.
+"""
+
+_values = {}
+_config_path = None  # so we know
 
 def _setup():
   """The config consists of lines of the form <name> = <value>.
   values will hold a mapping from the <name> to value.
   Blank lines and lines starting with '#' are ignored."""
+  global _config_path
 
   paths = [path.expanduser('~/.notoconfig'), '/usr/local/share/noto/config']
   for configfile in paths:
@@ -49,7 +65,8 @@ def _setup():
           if not line or line.startswith('#'):
             continue
           k, v = line.split('=', 1)
-          values[k.strip()] = v.strip()
+          _values[k.strip()] = v.strip()
+      _config_path = configfile
       break
   # This needs to be silent.  It causes a makefile error in noto-emoji,
   # which expects stdout to consist only of the output of a python
@@ -57,44 +74,50 @@ def _setup():
 
 _setup()
 
-# convenience for common stuff, should be in local .notoconfig file.
+# convenience for names we expect.
+
+# By default we allow running without a config, since many small tools don't
+# require it.  But if you run code that calls noto_tools and provides no
+# default, we assume you do require it and raise an exception.
 
 def noto_tools(default=''):
-  """Local path to nototools git repo, defaults to root of nototools."""
-  if not default:
-    default = DEFAULT_ROOT
-  return values.get('noto_tools', default)
+  """Local path to nototools git repo.  If this is called, we require config
+  to be set up."""
+  result = _values.get('noto_tools', default)
+  if result:
+    return result
+  raise Exception(_ERR_MSG)
 
 def noto_fonts(default=''):
   """Local path to noto-font git repo"""
-  return values.get('noto_fonts', default)
+  return _values.get('noto_fonts', default)
 
 def noto_cjk(default=''):
   """Local path to noto-cjk git repo"""
-  return values.get('noto_cjk', default)
+  return _values.get('noto_cjk', default)
 
 def noto_emoji(default=''):
   """Local path to noto-emoji git repo"""
-  return values.get('noto_emoji', default)
+  return _values.get('noto_emoji', default)
 
 def noto_source(default=''):
   """Local path to noto-source git repo"""
-  return values.get('noto_source', default)
+  return _values.get('noto_source', default)
+
+def noto_fonts_alpha(default=''):
+  """Local path to noto-fonts-alpha git repo"""
+  return _values.get('noto_fonts_alpha', default)
 
 def get(key):
-  """Throws exception if key not present, except for noto_tools which
-  defaults to the parent of the parent of this file."""
-  if key not in values:
-    if key == 'noto_tools':
-      return DEFAULT_ROOT
-    raise Exception('.notoconfig has no entry for "%s"' % key)
-  return values[key]
-
+  """Throws exception if key not present."""
+  if key not in _values:
+    raise Exception('notoconfig has no entry for "%s"' % key)
+  return _values[key]
 
 if __name__ == '__main__':
-  keyset = set(values.keys())
-  keyset.add('noto_tools')
+  keyset = set(_values.keys())
   wid = max(len(k) for k in keyset)
   fmt = '%%%ds: %%s' % wid
   for k in sorted(keyset):
     print fmt % (k, get(k))
+  print 'config: %s' % _config_path
