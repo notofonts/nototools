@@ -74,7 +74,7 @@ Built on %s from the following noto repositor%s:
 
 def check_families(family_map):
   # ensure the count of fonts in a family is what we expect
-  for family_id, family in family_map.iteritems():
+  for family_id, family in sorted(family_map.iteritems()):
     hinted_members = family.hinted_members
     unhinted_members = family.unhinted_members
 
@@ -178,7 +178,7 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
         if not jpan_lang_scrs:
           break;
 
-  for f, ls in family_id_to_lang_scrs.iteritems():
+  for f, ls in sorted(family_id_to_lang_scrs.iteritems()):
     if not ls:
       print '!family %s has no lang' % f
 
@@ -1084,7 +1084,7 @@ class WebGen(object):
         print 'Warning: %s does not exist' % filename
         continue
       pairs = [(SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
-      if os.stat(src_zip).ST_SIZE < 100000000:  # lower than 100MB
+      if os.stat(src_zip).st_size < 100000000:  # lower than 100MB
         pairs.append(readme_pair)
       dst_zip = path.join(self.pkgs, filename)
       shutil.copy2(src_zip, dst_zip)
@@ -1143,9 +1143,10 @@ class WebGen(object):
 
     if 'families' in self.debug:
       print '\n#debug families'
-      for family_id, family in sorted(families.iteritems()):
-        print '%s (%s, %s)' % (
-            family_id, family.name, noto_fonts.get_family_filename(family))
+      print '%d found' % len(families)
+      for i, (family_id, family) in enumerate(sorted(families.iteritems())):
+        print '%2d] %s (%s, %s)' % (
+            i, family_id, family.name, noto_fonts.get_family_filename(family))
         if family.hinted_members:
           print '  hinted: %s' % ', '.join(sorted(
               [path.basename(m.filepath) for m in family.hinted_members]))
@@ -1156,14 +1157,15 @@ class WebGen(object):
     script_to_family_ids = get_script_to_family_ids(families)
     if 'script_to_family_ids' in self.debug:
       print '\n#debug script to family ids'
-      for script, family_ids in sorted(script_to_family_ids.iteritems()):
-        print '%s: %s' % (script, ', '.join(sorted(family_ids)))
+      print '%d found' % len(script_to_family_ids)
+      for i, (script, family_ids) in enumerate(
+          sorted(script_to_family_ids.iteritems())):
+        print '%2d] %s: %s' % (i, script, ', '.join(sorted(family_ids)))
 
     all_lang_scrs = set(['und-' + script for script in script_to_family_ids])
     all_lang_scrs.update(lang_data.lang_scripts())
-
     lang_scr_to_sample_infos = {}
-    for lang_scr in all_lang_scrs:
+    for lang_scr in sorted(all_lang_scrs):
       lang, script = lang_scr.split('-')
       if not script in script_to_family_ids:
         print 'no family supports script in %s' % lang_scr
@@ -1177,6 +1179,7 @@ class WebGen(object):
 
     if 'lang_scr_to_sample_infos' in self.debug:
       print '\n#debug lang+script to sample infos'
+      print '%d found' % len(lang_scr_to_sample_infos)
       for lang_scr, info_list in sorted(lang_scr_to_sample_infos.iteritems()):
         for info in info_list:
           print '%s: %s, %s, len %d' % (
@@ -1186,48 +1189,59 @@ class WebGen(object):
         lang_scr_to_sample_infos.keys(), script_to_family_ids)
     if 'family_id_to_lang_scrs' in self.debug:
       print '\n#debug family id to list of lang+script'
-      for family_id, lang_scrs in sorted(family_id_to_lang_scrs.iteritems()):
-        print '%s: (%d) %s' % (
-            family_id, len(lang_scrs), ' '.join(sorted(lang_scrs)))
+      print '%d found' % len(family_id_to_lang_scrs)
+      for i, (family_id, lang_scrs) in enumerate(
+          sorted(family_id_to_lang_scrs.iteritems())):
+        print '%3d] %s: (%d) %s' % (
+            i, family_id, len(lang_scrs), ' '.join(sorted(lang_scrs)))
 
     family_id_to_lang_scr_to_sample_key, sample_key_to_info = (
         get_family_id_to_lang_scr_to_sample_key(
             family_id_to_lang_scrs, families, lang_scr_to_sample_infos))
     if 'family_id_to_lang_scr_to_sample_key' in self.debug:
       print '\n#debug family id to map from lang+script to sample key'
-      for family_id, lang_scr_to_sample_key in sorted(
-          family_id_to_lang_scr_to_sample_key.iteritems()):
-        print '%s (%d):' % (family_id, len(lang_scr_to_sample_key))
-        for lang_scr, sample_key in sorted(lang_scr_to_sample_key.iteritems()):
-          print '  %s: %s' % (lang_scr, sample_key)
+      print '%d found' % len(family_id_to_lang_scr_to_sample_key)
+      for i, (family_id, lang_scr_to_sample_key) in enumerate(
+          sorted(family_id_to_lang_scr_to_sample_key.iteritems())):
+        print '%2d] %s (%d):' % (i, family_id, len(lang_scr_to_sample_key))
+        for j, (lang_scr, sample_key) in enumerate(
+            sorted(lang_scr_to_sample_key.iteritems())):
+          print '  [%2d] %s: %s' % (j, lang_scr, sample_key)
     if 'sample_key_to_info' in self.debug:
       print '\n#debug sample key to sample info'
-      for sample_key, info in sorted(sample_key_to_info.iteritems()):
-        print '%s: %s, len %d' % (
-            sample_key, info[1], len(info[0]))
+      print '%d found' % len(sample_key_to_info)
+      for i, (sample_key, info) in enumerate(
+          sorted(sample_key_to_info.iteritems())):
+        print '%2d] %s: %s, len %d' % (
+            i, sample_key, info[1], len(info[0]))
 
     family_id_to_regions = get_family_id_to_regions(
         family_id_to_lang_scr_to_sample_key)
     if 'family_id_to_regions' in self.debug:
       print '\n#debug family id to regions'
-      for family_id, regions in sorted(family_id_to_regions.iteritems()):
-        print '%s: (%d) %s' % (
-            family_id, len(regions), ', '.join(sorted(regions)))
+      print '%d found' % len(family_id_to_regions)
+      for i, (family_id, regions) in enumerate(
+          sorted(family_id_to_regions.iteritems())):
+        print '%2d] %s: (%d) %s' % (
+            i, family_id, len(regions), ', '.join(sorted(regions)))
 
     region_to_family_ids = get_region_to_family_ids(family_id_to_regions)
     if 'region_to_family_ids' in self.debug:
       print '\n#debug region to family ids'
-      for region, family_ids in sorted(region_to_family_ids.iteritems()):
-        print '%s: (%d) %s' % (
-            region, len(family_ids), ', '.join(sorted(family_ids)))
+      print '%d found' % len(region_to_family_ids)
+      for i, (region, family_ids) in enumerate(
+          sorted(region_to_family_ids.iteritems())):
+        print '%2d] %s: (%d) %s' % (
+            i, region, len(family_ids), ', '.join(sorted(family_ids)))
 
     family_id_to_default_lang_scr = get_family_id_to_default_lang_scr(
         family_id_to_lang_scrs, families)
     if 'family_id_to_default_lang_scr' in self.debug:
       print '\n#debug family id to default lang scr'
-      for family_id, lang_scr in sorted(
-          family_id_to_default_lang_scr.iteritems()):
-        print '%s: %s' % (family_id, lang_scr)
+      print '%d found' % len(family_id_to_default_lang_scr)
+      for i, (family_id, lang_scr) in enumerate(
+          sorted(family_id_to_default_lang_scr.iteritems())):
+        print '%2d] %s: %s' % (i, family_id, lang_scr)
 
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
@@ -1238,7 +1252,7 @@ class WebGen(object):
     # all families have languages, and all those have samples.
     # all families have a default language, and that is in the sample list
     error_list = []
-    for family in families.values():
+    for family in sorted(families.values()):
       family_id = family.family_id
       if not family_id in family_id_to_lang_scr_to_sample_key:
         error_list.append('no entry for family %s' % family_id)
@@ -1249,7 +1263,7 @@ class WebGen(object):
         error_list.append('no langs for family %s' % family_id)
         continue
 
-      for lang_scr in lang_scr_to_sample_key:
+      for lang_scr in sorted(lang_scr_to_sample_key):
         sample_key = lang_scr_to_sample_key[lang_scr]
         if not sample_key:
           error_list.append(
