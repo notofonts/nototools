@@ -64,14 +64,29 @@ class GposDiffFinder:
 
         unmatched = [(k, v) for k, v in unmatched.iteritems() if v]
         res = ['%d differences in kerning pairs' % len(unmatched)]
-        unmatched.sort(self._compare_kerning_rules)
+        # (('+', 'a', 'b'), [-20, 10])
+        # Sort order:
+        # 1. Reverse absolute value of kerning
+        # 2. Left-side glyph name
+        # 3. Right-side glyph name
+        unmatched.sort(key=lambda t:(-max(abs(v) for v in t[1]),
+                                     t[0][1],
+                                     t[0][2]))
         for (sign, left, right), vals in unmatched[:self.out_lines]:
             res.append('%s pos %s %s %s' % (sign, left, right, vals))
         res.append('')
 
         mismatched = [(k, v) for k, v in mismatched.iteritems() if any(v)]
         res.append('%d differences in kerning values' % len(mismatched))
-        mismatched.sort(self._compare_kerning_values)
+        # (('V', 'A'), ([-4], [-17]))
+        # Sort order:
+        # 1. Reverse absolute difference between before and after kern values
+        # 2. Left-side glyph name
+        # 3. Right-side glyph name
+        mismatched.sort(key=lambda t:(-sum(abs(v1-v2) for v1, v2 in
+                                                        zip(t[1][0], t[1][1])),
+                                      t[0][0],
+                                      t[0][1]))
         for (left, right), (vals1, vals2) in mismatched[:self.out_lines]:
             if sum(abs(v1 - v2) for v1, v2 in zip(vals1, vals2)) > self.err:
                 res.append('pos %s %s: %s vs %s' % (left, right, vals1, vals2))
@@ -90,7 +105,11 @@ class GposDiffFinder:
 
         res = ['%d differences in mark class definitions' % len(unmatched)]
         unmatched = unmatched.items()
-        unmatched.sort(self._compare_keys)
+        # (('+', 'uni0325', '@uni0323_6'), (0, -30))
+        # Sort order:
+        # 1. Glyph class
+        # 2. Mark class
+        unmatched.sort(key=lambda t: (t[0][1], t[0][2]))
         for (sign, member, mark_class), (x, y) in unmatched[:self.out_lines]:
             res.append('%s mark [%s] <anchor %d %d> %s;' %
                        (sign, member, x, y, mark_class))
@@ -98,7 +117,15 @@ class GposDiffFinder:
 
         res.append('%d differences in mark class values' % len(mismatched))
         mismatched = mismatched.items()
-        mismatched.sort(self._compare_anchors)
+        # (('uni0300', '@uni0300_23'), ((0, 527), (300, 527)))
+        # Sort order:
+        # 1. Reverse absolute difference between position before and after
+        # 2. Glyph class
+        # 3. Mark class
+        mismatched.sort(key=lambda t:(-(abs(t[1][0][0] - t[1][1][0])
+                                      + abs(t[1][0][1] - t[1][1][1])),
+                                      t[0][0],
+                                      t[0][1]))
         for (member, cls), ((x1, y1), (x2, y2)) in mismatched[:self.out_lines]:
             if abs(x1 - x2) > self.err or abs(y1 - y2) > self.err:
                 res.append('%s %s <%d %d> vs <%d %d>' %
@@ -119,7 +146,8 @@ class GposDiffFinder:
         res = ['%d differences in mark-to-%s positioning rule coverage' %
                (len(unmatched), mark_type)]
         unmatched = unmatched.items()
-        unmatched.sort(self._compare_keys)
+        # Sort order: same as 'mark class definitions'
+        unmatched.sort(key=lambda t: (t[0][1], t[0][2]))
         for (sign, member, mark_class), (x, y) in unmatched[:self.out_lines]:
             res.append('%s pos %s [%s] <anchor %d %d> mark %s;' %
                        (sign, mark_type, member, x, y, mark_class))
@@ -128,7 +156,11 @@ class GposDiffFinder:
         res.append('%d differences in mark-to-%s positioning rule values' %
                    (len(mismatched), mark_type))
         mismatched = mismatched.items()
-        mismatched.sort(self._compare_anchors)
+        # Sort order: same as 'mark class values'
+        mismatched.sort(key=lambda t:(-(abs(t[1][0][0] - t[1][1][0])
+                                      + abs(t[1][0][1] - t[1][1][1])),
+                                      t[0][0],
+                                      t[0][1]))
         for (member, cls), ((x1, y1), (x2, y2)) in mismatched[:self.out_lines]:
             if abs(x1 - x2) > self.err or abs(y1 - y2) > self.err:
                 res.append('%s %s <%d %d> vs <%d %d>' %
@@ -200,38 +232,6 @@ class GposDiffFinder:
                     del unmatched[key_match]
                 else:
                     unmatched[sign, member, mark_class] = val
-
-    def _compare_anchors(self, left, right):
-        """Compare differences between anchors, putting larger diffs first."""
-
-        _, ((x1, y1), (x2, y2)) = left
-        left_diff = abs(x1 - x2) + abs(y1 - y2)
-        _, ((x1, y1), (x2, y2)) = right
-        right_diff = abs(x1 - x2) + abs(y1 - y2)
-        return right_diff - left_diff
-
-    def _compare_kerning_rules(self, left, right):
-        """Compare kerning rules, rules with larger values first."""
-
-        _, vals = left
-        left_val = max(abs(v) for v in vals)
-        _, vals = right
-        right_val = max(abs(v) for v in vals)
-        return right_val - left_val
-
-    def _compare_kerning_values(self, left, right):
-        """Compare differences between kerning values, larger diffs first."""
-
-        _, (vals1, vals2) = left
-        left_diff = sum(abs(v1 - v2) for v1, v2 in zip(vals1, vals2))
-        _, (vals1, vals2) = right
-        right_diff = sum(abs(v1 - v2) for v1, v2 in zip(vals1, vals2))
-        return right_diff - left_diff
-
-    def _compare_keys(self, left, right):
-        """Compare items with keys of form (sign, data...) ignoring the sign."""
-
-        return cmp(''.join(left[0][1:]), ''.join(right[0][1:]))
 
     def _reverse_sign(self, sign):
         """Return the reverse of a sign contained in a string."""
