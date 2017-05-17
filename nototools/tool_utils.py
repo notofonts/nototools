@@ -188,6 +188,15 @@ def zip_extract_with_timestamp(zippath, dstdir):
       os.utime(info.filename, (date_time, date_time))
 
 
+def git_checkout(repo, branch_or_tag, verbose=False):
+  """checkout the branch or tag"""
+  with temp_chdir(repo):
+    result = subprocess.check_output(
+        ['git', 'checkout', branch_or_tag], stderr=subprocess.STDOUT)
+    if verbose:
+      print '%s:\n%s\n-----' % (repo, result)
+
+
 def git_mv(repo, old, new):
   """Rename old to new in repo"""
   with temp_chdir(repo):
