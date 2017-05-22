@@ -43,20 +43,25 @@ def noto_check_clean():
   return True
 
 
-def noto_checkout_master():
+def noto_checkout_master(dry_run=False):
   """Check out the noto repos at master.  Return True if ok, else log
   error and return False."""
 
   if not noto_check_clean():
     return False
 
-  for p in _REPO_PATHS:
-    tool_utils.git_checkout(p, 'master')
+  if not dry_run:
+    for p in _REPO_PATHS:
+      tool_utils.git_checkout(p, 'master')
+  else:
+    print 'would have checked out master in %s' % (', '.join(_REPOS))
+
   return True
 
 
 def noto_checkout(
-    fonts_tag='latest', emoji_tag='latest', cjk_tag='latest', verbose=False):
+    fonts_tag='latest', emoji_tag='latest', cjk_tag='latest', verbose=False,
+    dry_run=False):
   """Check out the noto repos at the provided tags.  Return True if ok,
   else log error and return False.  Default is 'latest' for the latest
   tag."""
@@ -82,12 +87,14 @@ def noto_checkout(
     print >> sys.stderr, 'failed to find:\n  %s' % '\n  '.join(failed_tags)
     return False
 
-  for p, t in zip(_REPO_PATHS, resolved_tags):
-    tool_utils.git_checkout(p, t)
+  if not dry_run:
+    for p, t in zip(_REPO_PATHS, resolved_tags):
+      tool_utils.git_checkout(p, t)
 
-  if verbose:
-    print 'checked out:\n  %s' % '\n  '.join(
-        '%s: %s' % (r, t) for r, t in zip(_REPOS, resolved_tags))
+  if verbose or dry_run:
+    print '%schecked out:\n  %s' % (
+        'would have ' if dry_run else '',
+        '\n  '.join('%s: %s' % (r, t) for r, t in zip(_REPOS, resolved_tags)))
 
   return True
 
@@ -109,15 +116,18 @@ def main():
   parser.add_argument(
       '-v', '--verbose', help='report tags chosen on success',
       action='store_true')
+  parser.add_argument(
+      '-n', '--dry_run', help='report tags chosen but take no other action',
+      action='store_true')
 
   args = parser.parse_args()
 
   if args.master:
-    result = noto_checkout_master()
+    result = noto_checkout_master(args.dry_run)
   else:
     result = noto_checkout(
         fonts_tag=args.fonts_tag, emoji_tag=args.emoji_tag,
-        cjk_tag=args.cjk_tag, verbose=args.verbose)
+        cjk_tag=args.cjk_tag, verbose=args.verbose, dry_run=args.dry_run)
   sys.exit(0 if result else 100)
 
 
