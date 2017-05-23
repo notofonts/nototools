@@ -2004,9 +2004,8 @@ def write_font_props(font_props):
 
 
 def main():
-    default_config_file = notoconfig.values.get('lint_config')
-    if not default_config_file:
-      default_config_file = '[tools]/nototools/data/lint_config.txt'
+    default_config_file = notoconfig.get(
+        'lint_config', '[tools]/nototools/data/lint_config.txt')
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

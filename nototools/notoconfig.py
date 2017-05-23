@@ -108,11 +108,8 @@ def noto_fonts_alpha(default=''):
   """Local path to noto-fonts-alpha git repo"""
   return _values.get('noto_fonts_alpha', default)
 
-def get(key):
-  """Throws exception if key not present."""
-  if key not in _values:
-    raise Exception('notoconfig has no entry for "%s"' % key)
-  return _values[key]
+def get(key, default=''):
+  return _values.get(key, default)
 
 if __name__ == '__main__':
   keyset = set(_values.keys())
