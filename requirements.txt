@@ -4,3 +4,4 @@ fonttools==3.9.1
 Pillow==4.0.0
 pyclipper==1.0.6
 ufoLib==2.0.0
+Pillow
