@@ -1,0 +1,16 @@
+.dv { display: inline-block; margin: 3px; padding: 2px; border: 1px solid black }
+.ti { margin: 0 auto; background-color: lightblue; display: block; text-align: center }
+.im { display: block; margin: 0 auto }
+#fdata { float: left }
+#fdata .box { display: inline-block; margin: 2px 5px; width: 1em; height: 1em }
+#fdata .b { background-color: #0f0 }
+#fdata .t { background-color: #f00 }
+#fdata table { border-spacing: 0 }
+#main { }
+#header { position: fixed; top: 0; left: 0; width: 100%; padding: 5px 5px; border-bottom: solid 1px black; background-color: white }
+#ref { float:right; margin-right: 10px; background-color: #ffd; position: relative }
+#image { display: inline-block; margin: 0px auto; min-width: 200px }
+#data { display: inline-block; margin: 0px auto; }
+#data table tr th { text-align: right }
+#img_lock { position: absolute; top: 5px; left: 5px; }
+#switch { margin: 1em 0 0 1em }
