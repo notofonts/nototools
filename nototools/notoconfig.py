@@ -113,8 +113,11 @@ def get(key, default=''):
 
 if __name__ == '__main__':
   keyset = set(_values.keys())
-  wid = max(len(k) for k in keyset)
-  fmt = '%%%ds: %%s' % wid
-  for k in sorted(keyset):
-    print fmt % (k, get(k))
-  print 'config: %s' % _config_path
+  if not keyset:
+    print 'no keys defined, probably no notoconfig file was found.'
+  else:
+    wid = max(len(k) for k in keyset)
+    fmt = '%%%ds: %%s' % wid
+    for k in sorted(keyset):
+      print fmt % (k, get(k))
+    print 'config: %s' % _config_path
