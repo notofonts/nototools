@@ -1118,6 +1118,18 @@ _SCRIPT_REQUIRED = [
   # Beng - Bengali
 
   # Bhks - Bhks (Bhaiksuki)
+  ('Bhks',
+   # Comment
+   """
+   Reported by user on nototools#429
+   """,
+   # Data
+   """
+   # General Punctuation
+   200B  # ZERO WIDTH SPACE
+   # Geometric Shapes
+   25CC  # DOTTED CIRCLE
+   """),
 
   # Brah - Brahmi
 

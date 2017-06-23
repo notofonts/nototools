@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <cmapdata>
-  <meta date="2017-06-01" program="noto_cmap_reqs">
+  <meta date="2017-06-23" program="noto_cmap_reqs">
     <args>
-      <mergefile val="mti_cmaps_170601.xml" />
+      <mergefile val="data/noto_cmap_phase3.xml" />
     </args>
   </meta>
   <table nrows="136">
@@ -20,7 +20,7 @@
     <tr>Bass,Bassa Vah,45,0000 000d 0020 0022 002c 002e 00a0 201c-201d 16ad0-16aed 16af0-16af5,-1,</tr>
     <tr>Batk,Batak,74,0000 000d 0020 00a0 00d7 1bc0-1bf3 1bfc-1bff 200b-200d 2012-2015 2022 25cc 25fb-25fe,-1,</tr>
     <tr>Beng,Bengali,157,0000 000d 0020-0023 0025 0027-003f 005b-005f 007b-007e 00a0 00ad 00d7 00f7 0951-0952 0964-0965 0980-0983 0985-098c 098f-0990 0993-09a8 09aa-09b0 09b2 09b6-09b9 09bc-09c4 09c7-09c8 09cb-09ce 09d7 09dc-09dd 09df-09e3 09e6-09fb 200b-200d 2010 2013-2014 2018-2019 201c-201d 2026 20b9 2212 25cc a8f1,-1,</tr>
-    <tr>Bhks,Bhaiksuki,101,0000 000d 0020 00a0 11c00-11c08 11c0a-11c36 11c38-11c45 11c50-11c6c,-1,</tr>
+    <tr>Bhks,Bhaiksuki,103,0000 000d 0020 00a0 200b 25cc 11c00-11c08 11c0a-11c36 11c38-11c45 11c50-11c6c,-1,</tr>
     <tr>Brah,Brahmi,127,0000 000d 0020 00a0 00d7 200b-200d 2012-2015 2022 25cc 25fb-25fe 11000-1104d 11052-1106f 1107f,-1,</tr>
     <tr>Bugi,Buginese,49,0000 000d 0020 00a0 00d7 1a00-1a1b 1a1e-1a1f 200b-200d 2012-2015 2022 25cc 25fb-25fe a9cf,-1,</tr>
     <tr>Buhd,Buhid,40,0000 000d 0020 00a0 00d7 1735-1736 1740-1753 200b-200d 2012-2015 2022 25cc 25fb-25fe,-1,</tr>
