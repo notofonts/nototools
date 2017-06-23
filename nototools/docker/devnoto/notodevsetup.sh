@@ -26,7 +26,7 @@ EOF
 # we usually run as root in docker so this is not strictly necessary...
 chmod a+r /usr/local/share/noto/config
 
-# crate a script to setup nototools and install it, this has to be run in
+# create a script to setup nototools and install it, this has to be run in
 # an active container that has mapped noto.
 cat << EOF >> /usr/local/share/noto/setup_nototools.sh
 pushd /app/noto/nototools
