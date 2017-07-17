@@ -355,6 +355,17 @@ def _primary_script_for_block(block):
   return _block_to_primary_script[block]
 
 
+def _remove_unicode_assignments(cmap_ops):
+  """The starting point is based on the script and script extensions data from
+  Unicode.  Sometimes the assignments seem premature."""
+  cmap_ops.phase('remove unicode assignments')
+
+  # Jelle says A8F1 makes no sense for Bengali since other characters needed
+  # for cantillation are not defined.  Unicode script extensions assign it to
+  # Deva and Beng, leave it for Deva.
+  cmap_ops.remove(0xa8f1, 'Beng')
+
+
 def _unassign_inherited_and_common_with_extensions(cmap_ops):
   """Inherited and common characters with an extension that is neither of
   these get removed from inherited/common scripts."""
@@ -1116,6 +1127,16 @@ _SCRIPT_REQUIRED = [
   # Batk - Batak
 
   # Beng - Bengali
+  ('Beng',
+   #Comment
+   """
+   Added by Monotype.
+   """,
+   # Data
+   """
+   # Spacing Modifier Letters
+   02BC  # MODIFIER LETTER APOSTROPHE
+   """),
 
   # Bhks - Bhks (Bhaiksuki)
   ('Bhks',
@@ -1363,6 +1384,8 @@ _SCRIPT_REQUIRED = [
    030E  # COMBINING DOUBLE VERTICAL LINE ABOVE
    # Mathematical Operators
    22EE  # VERTICAL ELLIPSIS
+   # Geometric Shapes
+   25CC  # DOTTED CIRCLE
    """),
 
   # Geor - Georgian
@@ -2042,6 +2065,21 @@ _SCRIPT_REQUIRED = [
   # Orya - Oriya
 
   # Osge - Osge (Osage)
+  ('Osge',
+   # Comment
+   """
+   Added by Monotype.
+   """,
+   # Data
+   """
+   # Combining Diacritical Marks
+   0301  # COMBINING ACUTE ACCENT
+   0304  # COMBINING MACRON
+   030B  # COMBINING DOUBLE ACUTE ACCENT
+   0358  # COMBINING DOT ABOVE RIGHT
+   # Geometric Shapes
+   25CC  # DOTTED CIRCLE
+   """),
 
   # Osma - Osmanya
 
@@ -3134,6 +3172,7 @@ def build_script_to_chars(log_level):
       script_to_chars, log_events=log_events, log_details=log_details,
       undefined_exceptions=temp_defined)
 
+  _remove_unicode_assignments(cmap_ops)
   _unassign_inherited_and_common_with_extensions(cmap_ops)
   _reassign_inherited(cmap_ops)
   _reassign_common(cmap_ops)
