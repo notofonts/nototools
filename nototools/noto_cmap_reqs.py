@@ -3107,6 +3107,31 @@ def _assign_math(cmap_ops):
   cmap_ops.add_all(more_combining_marks, 'Zmth')
 
 
+def _assign_dotted_circle(cmap_ops):
+  """All scripts with combining marks should provide dotted circle (and provide
+  an appropriate rendering of the mark in combination with it)."""
+  cmap_ops.phase('assign dotted circle')
+
+  def is_combining(cp):
+    return unicode_data.category(cp) == 'Mn'
+
+  # Note wikipedia shows Arabic marks placed w.r.t. tatweel, not the dotted
+  # circle, but as using dotted circle is the convention used by Unicode in
+  # their code charts we'll require it for Arabic too.
+  script_to_chars = cmap_ops.create_script_to_chars()
+  for script, charset in sorted(script_to_chars.iteritems()):
+    if script == 'EXCL':
+      continue
+    nsm = frozenset(cp for cp in charset if is_combining(cp))
+    if nsm:
+      count = len(nsm)
+      range_str = tool_utils.write_int_ranges(sorted(nsm)[:8])
+      msg = '%s has %d marks: %s' % (
+          script, count, range_str if count < 8 else range_str + '...')
+      cmap_ops.log(msg)
+      cmap_ops.add(0x25CC, script)
+
+
 def _remove_unwanted(cmap_ops):
   """Remove characters we know we don't want in any font."""
   # Chars we never want.
@@ -3197,6 +3222,7 @@ def build_script_to_chars(log_level):
   _assign_mono(cmap_ops) # after LGC is defined except for basics
   _assign_sym2(cmap_ops) # after LGC removed, add back for enclosing keycaps
   _assign_math(cmap_ops)
+  _assign_dotted_circle(cmap_ops) # for all fonts with combining marks
   _remove_unwanted(cmap_ops)  # comes before assign_basic, assign_wanted
   _assign_wanted(cmap_ops)
   _assign_basic(cmap_ops)
