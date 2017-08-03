@@ -17,9 +17,11 @@ cat << EOF >> /usr/local/share/noto/config
 # noto_tools is used to locate sample text data. it's not copied with the
 # install so we need to point to it.
 noto_tools=/app/noto/nototools
+noto_fonts_alpha=/app/noto/noto-fonts-alpha
 noto_fonts=/app/noto/noto-fonts
 noto_cjk=/app/noto/noto-cjk
 noto_emoji=/app/noto/noto-emoji
+noto_source=/app/noto/noto-source
 # the ttcutils use afdko via this, we don't do a full install
 afdko=/app/pkgs/afdko
 EOF
