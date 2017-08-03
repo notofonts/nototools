@@ -998,11 +998,11 @@ def check_font(font_props, filename_error,
 
         if tests.check('head/hhea'):
             if font_props.is_UI_metrics:
-                if hhea_table.ascent != ui_ascent:
+                if hhea_table.ascent > ui_ascent:
                     warn("head/hhea/ascent", "Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
                              % (hhea_table.ascent, ui_ascent))
-                if hhea_table.descent != ui_descent:
+                if hhea_table.descent < ui_descent:
                     warn("head/hhea/descent", "Bounds",
                          "Value of descent in 'hhea' table is %d, but should be %d."
                              % (hhea_table.descent, ui_descent))
@@ -1066,7 +1066,9 @@ def check_font(font_props, filename_error,
                 raise ValueError('unexpected weight: %s' % font_props.weight)
 
             # hack for windows GDI
-            expected_weight = max(expected_weight, 250)
+            # remove this for phase 3
+            if noto_phase <= 2:
+              expected_weight = max(expected_weight, 250)
 
             if os2_table.usWeightClass != expected_weight:
                 warn("head/os2/weight_class", "OS/2",
@@ -1193,15 +1195,17 @@ def check_font(font_props, filename_error,
             if font_props.is_UI_metrics:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
                     ymax is not None and ymax > max_ui_height):
-                    warn("bounds/glyph/ui_ymax", "Bounds",
+                    warn("bounds/glyph/ui_ymax", "UI Bounds",
                          "Real yMax for glyph %d (%s) is %d, which is more than "
-                         "%d." % (glyph_index, glyph_name, ymax, max_ui_height),
+                         "max ui height %d." % (
+                             glyph_index, glyph_name, ymax, max_ui_height),
                          check_test=False)
                 if (tests.checkvalue('bounds/glyph/ui_ymin', glyph_index) and
                     ymin is not None and ymin < min_ui_height):
-                    warn("bounds/glyph/ui_ymin", "Bounds",
+                    warn("bounds/glyph/ui_ymin", "UI Bounds",
                          "Real yMin for glyph %d (%s) is %d, which is less than "
-                         "%d." % (glyph_index, glyph_name, ymin, min_ui_height),
+                         "min ui height %d." % (
+                             glyph_index, glyph_name, ymin, min_ui_height),
                          check_test=False)
 
             if (tests.checkvalue('bounds/glyph/ymax', glyph_index) and ymax is not None and
@@ -1223,11 +1227,11 @@ def check_font(font_props, filename_error,
         if tests.check('bounds/font'):
             if font_props.is_UI_metrics:
                 if font_ymax > max_ui_height:
-                    warn("bounds/font/ui_ymax", "Bounds",
+                    warn("bounds/font/ui_ymax", "UI Bounds",
                          "Real yMax is %d, but it should be less "
                          "than or equal to %d." % (font_ymax, max_ui_height))
                 if font_ymin < min_ui_height:
-                    warn("bounds/font/ui_ymin", "Bounds",
+                    warn("bounds/font/ui_ymin", "UI Bounds",
                          "Real yMin is %d, but it should be greater than or equal "
                          "to %d." % (font_ymin, min_ui_height))
             else:
