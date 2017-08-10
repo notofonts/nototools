@@ -359,6 +359,77 @@ def noto_font_to_wws_family_id(notofont):
   return id
 
 
+_special_wws_names = {
+    'arimo-lgc': ['Arimo'],
+    'cousine-lgc': ['Cousine'],
+    'emoji-zsye': ['Noto', 'Emoji'],
+    'emoji-zsye-color': ['Noto', 'Color', 'Emoji'],
+    'kufi-arab': ['Noto', 'Kufi', 'Arabic'],
+    'mono-mono': ['Noto', 'Mono'],
+    'naskh-arab': ['Noto', 'Naskh', 'Arabic'],
+    'naskh-arab-ui': ['Noto', 'Naskh', 'Arabic', 'UI'],
+    'nastaliq-aran': ['Noto', 'Nastaliq', 'Urdu'],
+    'tinos-lgc': ['Tinos'],
+}
+
+def wws_family_id_to_name_parts(wws_id):
+  """Return the list of family name parts corresponding to the wws id."""
+
+  # first handle special cases:
+  parts = _special_wws_names.get(wws_id)
+  if parts:
+    return parts
+
+  part_keys = wws_id.split('-')
+  key = part_keys[0]
+  if key == 'sans':
+    parts = ['Noto', 'Sans']
+  elif key == 'serif':
+    parts = ['Noto', 'Serif']
+  script = part_keys[1]
+  if script == 'lgc':
+    # do nothing, we don't label this pseudo-script
+    pass
+  elif script == 'cjk':
+    if len(part_keys) == 2:
+      parts.append('CJK')
+    else:
+      parts.append(part_keys[2].upper())
+  elif script in ['hans', 'hant', 'jpan', 'kore']:
+    # mono comes before CJK in the name
+    if len(part_keys) > 2 and part_keys[2] == 'mono':
+      parts.append('Mono')
+      part_keys = part_keys[:2] # trim mono so we don't try to add it again
+    parts.append('CJK')
+    if script == 'hans':
+      parts.append('sc')
+    elif script == 'hant':
+      parts.append('tc')
+    elif script == 'jpan':
+      parts.append('jp')
+    else:
+      parts.append('kr')
+  elif script == 'sym2':
+    parts.append('Symbols2')
+  else:
+    # Mono works as a script. The phase 2 'mono-mono' tag was special-cased
+    # above so it won't get added a second time.
+    script_name = preferred_script_name(script.title())
+    script_name = script_name.replace(' ', '').replace("'", '').replace('-', '')
+    parts.append(script_name)
+  if len(part_keys) > 2:
+    extra = part_keys[2]
+    if extra in ['tc', 'sc', 'jp', 'kr']:
+      pass
+    elif extra == 'ui':
+      parts.append('UI')
+    elif extra in ['eastern', 'estrangela', 'western', 'display', 'unjoined']:
+      parts.append(extra.title())
+    else:
+      raise Exception('unknown extra tag in %s' % wws_id)
+  return parts
+
+
 def get_noto_fonts(paths=NOTO_FONT_PATHS):
   """Scan paths for fonts, and create a NotoFont for each one, returning a list
   of these.  'paths' defaults to the standard noto font paths, using notoconfig."""
