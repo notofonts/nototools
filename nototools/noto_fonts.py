@@ -129,7 +129,6 @@ WEIGHTS = {
     'ExtraLight': 200,
     'Light': 300,
     'DemiLight': 350,  # used in cjk fonts
-    'SemiLight': 350,  # used in other noto fonts
     'Regular': 400,
     'Medium': 500,
     'SemiBold': 600,
