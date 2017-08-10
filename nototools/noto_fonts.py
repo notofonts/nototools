@@ -127,7 +127,8 @@ WEIGHTS = {
     'Thin': 100,
     'ExtraLight': 200,
     'Light': 300,
-    'DemiLight': 350,
+    'DemiLight': 350,  # used in cjk fonts
+    'SemiLight': 350,  # used in other noto fonts
     'Regular': 400,
     'Medium': 500,
     'SemiBold': 600,
@@ -135,10 +136,6 @@ WEIGHTS = {
     'ExtraBold': 800,
     'Black': 900
 }
-
-# Currently we only have one name per weight.  Eventually this can break.
-WEIGHT_TO_STRING = {s:w for w, s in WEIGHTS.iteritems()}
-
 
 _FONT_NAME_REGEX = (
     # family should be prepended - this is so Roboto can be used with unittests
