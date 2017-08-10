@@ -554,17 +554,58 @@ def get_family_filename(family):
   return name
 
 
+def _all_noto_font_key_to_names(paths):
+  """return a map from wws key to the family portion of the font file name"""
+  wws_key_to_family_name = {}
+  for font in get_noto_fonts(paths):
+    fontname, _ = path.splitext(path.basename(font.filepath))
+    ix = fontname.find('-')
+    familyname = fontname if ix == -1 else fontname[:ix]
+    wws_key = noto_font_to_wws_family_id(font)
+    if wws_key_to_family_name.get(wws_key, familyname) != familyname:
+      print '!!! mismatching font names for key %s: %s and %s' % (
+          wws_key, wws_key_to_family_name[wws_key], familyname)
+    else:
+      wws_key_to_family_name[wws_key] = familyname
+  return wws_key_to_family_name
+
+
+def test(paths):
+  """test name generation to make sure we match the font name from the wws id"""
+  wws_key_to_family_name = _all_noto_font_key_to_names(paths)
+  for key, val in sorted(wws_key_to_family_name.items()):
+    print key, val
+    name = ''.join(wws_family_id_to_name_parts(key))
+    if name != val:
+      raise Exception('!!! generated name %s does not match' % name)
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '-d', '--dirs', help='list of directories to find fonts in',
-      metavar='dir', nargs='+',default=NOTO_FONT_PATHS)
+      metavar='dir', nargs='+')
+  parser.add_argument(
+      '-t', '--test', help='test mapping from wws key back to font file name',
+      nargs='?', const=True, metavar='bool')
   args = parser.parse_args()
-  fonts = get_noto_fonts(paths=args.dirs)
-  for font in fonts:
-    print font.filepath
-    for attr in font._fields:
-      print '  %15s: %s' % (attr, getattr(font, attr))
+
+  if args.test:
+    if not args.dirs:
+      # when testing name generation we add the alpha fonts
+      args.dirs = NOTO_FONT_PATHS + [
+          '[fonts_alpha]/from-pipeline/unhinted/ttf/sans',
+          '[fonts_alpha]/from-pipeline/unhinted/ttf/serif']
+    test(args.dirs)
+  else:
+    if not args.dirs:
+      # when not testing we just use the standard fonts
+      args.dirs = NOTO_FONT_PATHS
+    fonts = get_noto_fonts(paths=args.dirs)
+    for font in fonts:
+      print font.filepath
+      for attr in font._fields:
+        print '  %15s: %s' % (attr, getattr(font, attr))
 
 
 if __name__ == "__main__":
