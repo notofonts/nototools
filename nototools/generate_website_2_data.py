@@ -556,10 +556,6 @@ def css_weight(weight_string):
     return noto_fonts.WEIGHTS[weight_string]
 
 
-def css_weight_to_string(weight):
-    return noto_fonts.WEIGHT_TO_STRING[weight]
-
-
 def css_style(style_value):
     if style_value is None:
         return 'normal'
