@@ -1538,7 +1538,9 @@ def check_font(font_props, filename_error,
             return
 
         whitelist = [
+            'Hluw',  # Anatolian Hieroglyphs
             'Cari',  # Carian
+            'Xsux',  # Cuneiform
             'Cprt',  # Cypriot
             'Dsrt',  # Deseret
             'Egyp',  # Egyptian Hieroglyphs
@@ -1557,7 +1559,6 @@ def check_font(font_props, filename_error,
             'Phnx',  # Phoenician
             'Runr',  # Runic
             'Shaw',  # Shavian
-            'Xsux',  # Cuneiform
             'Ugar',  # Ugaritic
             'Vaii',  # Vai
             'Yiii',  # Yi
