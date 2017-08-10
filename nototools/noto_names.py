@@ -648,7 +648,7 @@ def _select_name_style(styles):
   return 'normal'
 
 
-def create_family_to_name_info(notofonts, phase):
+def create_family_to_name_info(notofonts, phase, extra_styles):
   if phase not in [2, 3]:
     raise ValueError('expected phase 2 or 3 but got "%s"' % phase)
 
@@ -668,6 +668,42 @@ def create_family_to_name_info(notofonts, phase):
     family_to_name_styles[family_id].add(family_name_style)
     if noto_font.is_cjk:
       cjk_families.add(family_id)
+
+  # If extra_styles is true, we assume all wws styles are present.  The
+  # practical import of this is that use_preferred will be true, and the
+  # family name style will be short enough to accommodate the longest
+  # wws style name.  So we just synthesize this and run each font through
+  # one more time with those styles.
+  # For a given wws id the fonts should all be wws variants.  Since we
+  # substitute fixed wws values, any font with the same wws id will do.
+  #
+  # This is a kludge, as it duplicates a lot of the above code.
+  if extra_styles:
+    seen_ids = set()
+    for noto_font in notofonts:
+      if noto_font.is_cjk:
+        # Don't do this for cjk
+        continue
+      family_id = noto_fonts.noto_font_to_wws_family_id(noto_font)
+      if family_id in seen_ids:
+        continue
+      seen_ids.add(family_id)
+      preferred_family, _ = _preferred_parts(noto_font)
+      preferred_subfamily = filter(None, [
+          'Mono' if noto_font.is_mono else None,
+          'UI' if noto_font.is_UI else None,
+          'Display' if noto_font.is_display else None,
+          'ExtraCondensed',  # longest width name
+          'ExtraLight', # longest weight name
+          'Italic'])  # longest slope name
+      _, subfamily_parts = _wws_parts(preferred_family, preferred_subfamily)
+      family_to_parts[family_id].update(subfamily_parts)
+      family_parts, _ = _original_parts(preferred_family, preferred_subfamily)
+      family_name_style = _name_style_for_length(
+          family_parts, ORIGINAL_FAMILY_LIMIT)
+      family_to_name_styles[family_id].add(family_name_style)
+
+
   result = {}
   for family_id, part_set in family_to_parts.iteritems():
     # Even through CJK mono fonts are in their own families and have only
@@ -831,19 +867,19 @@ def _dump(fonts, info_file, phase):
   _dump_family_names(fonts, family_to_name_info, phase)
 
 
-def _write(fonts, info_file, phase):
+def _write(fonts, info_file, phase, extra_styles):
   """Build family name info from font_paths and write to info_file.
   Write to stdout if info_file is None."""
-  family_to_name_info =  create_family_to_name_info(fonts, phase)
+  family_to_name_info =  create_family_to_name_info(fonts, phase, extra_styles)
   if info_file:
     write_family_name_info_file(family_to_name_info, info_file, pretty=True)
   else:
     print write_family_name_info(family_to_name_info, pretty=True)
 
 
-def _test(fonts, phase):
+def _test(fonts, phase, extra_styles):
   """Build name info from font_paths and dump the names for them."""
-  family_to_name_info = create_family_to_name_info(fonts, phase)
+  family_to_name_info = create_family_to_name_info(fonts, phase, extra_styles)
   print write_family_name_info(family_to_name_info, pretty=True)
   _dump_family_names(fonts, family_to_name_info, phase)
 
@@ -915,6 +951,9 @@ def main():
       '-f', '--files', metavar='fname', help='fonts to examine, prefix with'
       '\'@\' to read list from file', nargs='+')
   parser.add_argument(
+      '-x', '--extra_styles', help='assume all wws styles for write/test',
+      action='store_true')
+  parser.add_argument(
       'cmd', metavar='cmd', help='operation to perform (%s)' % ', '.join(CMDS),
       choices=CMDS)
   args = parser.parse_args()
@@ -951,9 +990,9 @@ def main():
     if not args.phase:
       print 'Must specify phase when generating info.'
       return
-    _write(fonts, args.info_file, args.phase)
+    _write(fonts, out, args.phase, args.extra_styles)
   elif args.cmd == 'test':
-    _test(fonts, args.phase)
+    _test(fonts, args.phase, args.extra_styles)
   elif args.cmd == 'info':
     _info(fonts)
 
