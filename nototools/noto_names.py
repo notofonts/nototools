@@ -55,9 +55,11 @@ from xml.etree import ElementTree as ET
 
 # Standard values used in Noto fonts.
 
+# Maximum number of characters in the original name field.
+ORIGINAL_FAMILY_LIMIT = 32
+
 # Regex values returned in NameTableData must start with ^ and end with $,
 # since lint uses this to understand the value is a regex.
-
 GOOGLE_COPYRIGHT_RE = r'^Copyright 20\d\d Google Inc. All Rights Reserved\.$'
 
 ADOBE_COPYRIGHT_RE = (
@@ -631,7 +633,8 @@ def create_family_to_name_info(notofonts, phase):
     # It's been asserted that the family name can't be longer than 32 chars.
     # Assume this is only true for nameID 1 and not nameID 16 or 17.
     family_parts, _ = _original_parts(preferred_family, preferred_subfamily)
-    family_name_style = _name_style_for_length(family_parts, 31)
+    family_name_style = _name_style_for_length(
+        family_parts, ORIGINAL_FAMILY_LIMIT)
     family_to_name_styles[family_id].add(family_name_style)
     if noto_font.is_cjk:
       cjk_families.add(family_id)
@@ -770,8 +773,8 @@ def _dump_name_data(name_data):
   for attr in NameTableData._fields:
     value = getattr(name_data, attr)
     if value:
-      if attr == 'original_family' and len(value) > 31:
-        print '## family too long'
+      if attr == 'original_family' and len(value) > ORIGINAL_FAMILY_LIMIT:
+        print '## family too long (%2d): %s' % (len(value), value)
         err = True
       print '  %20s: %s' % (attr, value)
     else:
