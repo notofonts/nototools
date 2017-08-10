@@ -71,6 +71,7 @@ def convert_to_four_letter(script_name):
 
 
 def preferred_script_name(script_key):
+  # Returns the script_key if we have nothing else.
   try:
     return unicode_data.human_readable_script_name(script_key)
   except:
@@ -127,7 +128,7 @@ WEIGHTS = {
     'Thin': 100,
     'ExtraLight': 200,
     'Light': 300,
-    'DemiLight': 350,
+    'DemiLight': 350,  # used in cjk fonts
     'Regular': 400,
     'Medium': 500,
     'SemiBold': 600,
@@ -135,10 +136,6 @@ WEIGHTS = {
     'ExtraBold': 800,
     'Black': 900
 }
-
-# Currently we only have one name per weight.  Eventually this can break.
-WEIGHT_TO_STRING = {s:w for w, s in WEIGHTS.iteritems()}
-
 
 _FONT_NAME_REGEX = (
     # family should be prepended - this is so Roboto can be used with unittests
@@ -316,6 +313,9 @@ def noto_font_to_family_id(notofont):
   # exclude 'noto-' from head of key, they all start with it except
   # arimo, cousine, and tinos, and we can special-case those.
   # For cjk with subset we ignore script and use 'cjk' plus the subset.
+  # For cjk, we ignore the mono/non-mono distinctions, since we don't
+  # display different samples or provide different download bundles based
+  # on this.
   tags = []
   if notofont.family != 'Noto':
     tags.append(notofont.family)
@@ -327,11 +327,16 @@ def noto_font_to_family_id(notofont):
     tags.append('cjk')
     tags.append(notofont.subset)
   else:
-    tags.append(notofont.script)
+    # Sans Mono should get tag sans-mono, but 'Mono' (phase 2 name) should get
+    # tag mono-mono, and Sans/Serif Mono CJK should not include mono in tag.
+    # Above we've already added mono for non-cjk fonts, so if the style is not
+    # empty we don't want to add mono a second time.
+    if not (notofont.style and notofont.script.lower() == 'mono'):
+      tags.append(notofont.script)
   if notofont.variant:
     tags.append(notofont.variant)
-  key = '-'.join(tags)
-  return key.lower()
+  key = '-'.join(tags).lower()
+  return key
 
 
 def noto_font_to_wws_family_id(notofont):
@@ -341,13 +346,87 @@ def noto_font_to_wws_family_id(notofont):
   support for those fonts.  For example, 'Noto Sans Devanagari UI' and
   'Noto Sans Devanagari' support the same languages (e.g. have the same cmap)
   but have different wws family names and different name rules (names for the
-  UI variant use very short abbreviations)."""
+  UI variant use very short abbreviations).
+  CJK font naming does reflect 'mono' so we add it back to the id."""
   id = noto_font_to_family_id(notofont)
+  if notofont.is_cjk and notofont.is_mono:
+    id += '-mono'
   if notofont.is_UI:
     id += '-ui'
   if notofont.is_display:
     id += '-display'
   return id
+
+
+_special_wws_names = {
+    'arimo-lgc': ['Arimo'],
+    'cousine-lgc': ['Cousine'],
+    'emoji-zsye': ['Noto', 'Emoji'],
+    'emoji-zsye-color': ['Noto', 'Color', 'Emoji'],
+    'kufi-arab': ['Noto', 'Kufi', 'Arabic'],
+    'mono-mono': ['Noto', 'Mono'],
+    'naskh-arab': ['Noto', 'Naskh', 'Arabic'],
+    'naskh-arab-ui': ['Noto', 'Naskh', 'Arabic', 'UI'],
+    'nastaliq-aran': ['Noto', 'Nastaliq', 'Urdu'],
+    'tinos-lgc': ['Tinos'],
+}
+
+def wws_family_id_to_name_parts(wws_id):
+  """Return the list of family name parts corresponding to the wws id."""
+
+  # first handle special cases:
+  parts = _special_wws_names.get(wws_id)
+  if parts:
+    return parts
+
+  part_keys = wws_id.split('-')
+  key = part_keys[0]
+  if key == 'sans':
+    parts = ['Noto', 'Sans']
+  elif key == 'serif':
+    parts = ['Noto', 'Serif']
+  script = part_keys[1]
+  if script == 'lgc':
+    # do nothing, we don't label this pseudo-script
+    pass
+  elif script == 'cjk':
+    if len(part_keys) == 2:
+      parts.append('CJK')
+    else:
+      parts.append(part_keys[2].upper())
+  elif script in ['hans', 'hant', 'jpan', 'kore']:
+    # mono comes before CJK in the name
+    if len(part_keys) > 2 and part_keys[2] == 'mono':
+      parts.append('Mono')
+      part_keys = part_keys[:2] # trim mono so we don't try to add it again
+    parts.append('CJK')
+    if script == 'hans':
+      parts.append('sc')
+    elif script == 'hant':
+      parts.append('tc')
+    elif script == 'jpan':
+      parts.append('jp')
+    else:
+      parts.append('kr')
+  elif script == 'sym2':
+    parts.append('Symbols2')
+  else:
+    # Mono works as a script. The phase 2 'mono-mono' tag was special-cased
+    # above so it won't get added a second time.
+    script_name = preferred_script_name(script.title())
+    script_name = script_name.replace(' ', '').replace("'", '').replace('-', '')
+    parts.append(script_name)
+  if len(part_keys) > 2:
+    extra = part_keys[2]
+    if extra in ['tc', 'sc', 'jp', 'kr']:
+      pass
+    elif extra == 'ui':
+      parts.append('UI')
+    elif extra in ['eastern', 'estrangela', 'western', 'display', 'unjoined']:
+      parts.append(extra.title())
+    else:
+      raise Exception('unknown extra tag in %s' % wws_id)
+  return parts
 
 
 def get_noto_fonts(paths=NOTO_FONT_PATHS):
@@ -474,17 +553,58 @@ def get_family_filename(family):
   return name
 
 
+def _all_noto_font_key_to_names(paths):
+  """return a map from wws key to the family portion of the font file name"""
+  wws_key_to_family_name = {}
+  for font in get_noto_fonts(paths):
+    fontname, _ = path.splitext(path.basename(font.filepath))
+    ix = fontname.find('-')
+    familyname = fontname if ix == -1 else fontname[:ix]
+    wws_key = noto_font_to_wws_family_id(font)
+    if wws_key_to_family_name.get(wws_key, familyname) != familyname:
+      print '!!! mismatching font names for key %s: %s and %s' % (
+          wws_key, wws_key_to_family_name[wws_key], familyname)
+    else:
+      wws_key_to_family_name[wws_key] = familyname
+  return wws_key_to_family_name
+
+
+def test(paths):
+  """test name generation to make sure we match the font name from the wws id"""
+  wws_key_to_family_name = _all_noto_font_key_to_names(paths)
+  for key, val in sorted(wws_key_to_family_name.items()):
+    print key, val
+    name = ''.join(wws_family_id_to_name_parts(key))
+    if name != val:
+      raise Exception('!!! generated name %s does not match' % name)
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '-d', '--dirs', help='list of directories to find fonts in',
-      metavar='dir', nargs='+',default=NOTO_FONT_PATHS)
+      metavar='dir', nargs='+')
+  parser.add_argument(
+      '-t', '--test', help='test mapping from wws key back to font file name',
+      nargs='?', const=True, metavar='bool')
   args = parser.parse_args()
-  fonts = get_noto_fonts(paths=args.dirs)
-  for font in fonts:
-    print font.filepath
-    for attr in font._fields:
-      print '  %15s: %s' % (attr, getattr(font, attr))
+
+  if args.test:
+    if not args.dirs:
+      # when testing name generation we add the alpha fonts
+      args.dirs = NOTO_FONT_PATHS + [
+          '[fonts_alpha]/from-pipeline/unhinted/ttf/sans',
+          '[fonts_alpha]/from-pipeline/unhinted/ttf/serif']
+    test(args.dirs)
+  else:
+    if not args.dirs:
+      # when not testing we just use the standard fonts
+      args.dirs = NOTO_FONT_PATHS
+    fonts = get_noto_fonts(paths=args.dirs)
+    for font in fonts:
+      print font.filepath
+      for attr in font._fields:
+        print '  %15s: %s' % (attr, getattr(font, attr))
 
 
 if __name__ == "__main__":
