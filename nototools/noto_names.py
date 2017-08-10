@@ -99,7 +99,8 @@ PHASE_3_FAMILY_NAME_INFO_FILE = '[tools]/nototools/data/family_name_info_p3.xml'
 # to the family and WWS name fields are never populated.
 #
 # If include_regular is true, postscript and full names include the subfamily
-# when it is 'Regular' (CJK behavior).
+# when it is 'Regular' (CJK behavior) for phase 2.  Always included for
+# phase 3.
 FamilyNameInfo = collections.namedtuple(
     'FamilyNameInfo',
     'no_style_linking, use_preferred, include_regular, family_name_style')
@@ -550,6 +551,9 @@ def name_table_data(noto_font, family_to_name_info, phase):
     print >> sys.stderr, subfamily_parts
     return None
 
+  # for phase 3 we'll now force include_regular
+  include_regular = phase == 3 or info.include_regular
+
   ofn, osfn = _original_names(
       family_parts, subfamily_parts, info.no_style_linking,
       info.family_name_style)
@@ -568,10 +572,10 @@ def name_table_data(noto_font, family_to_name_info, phase):
       original_family=ofn,
       original_subfamily=osfn,
       unique_id='-',
-      full_name=_full_name(family_parts, subfamily_parts, info.include_regular),
+      full_name=_full_name(family_parts, subfamily_parts, include_regular),
       version_re=_version_re(noto_font, phase),
       postscript_name=_postscript_name(
-          family_parts, subfamily_parts, info.include_regular),
+          family_parts, subfamily_parts, include_regular),
       trademark=_trademark(noto_font),
       manufacturer=_manufacturer(noto_font),
       designer=_designer(noto_font, phase),
@@ -639,8 +643,9 @@ def create_family_to_name_info(notofonts, phase):
     family_is_cjk = family_id in cjk_families
     no_style_linking = phase == 2 and family_is_cjk
     use_preferred = no_style_linking or bool(part_set - _ORIGINAL_PARTS)
-    # Keep 'Regular' in the postscript/full name only for CJK.
-    include_regular = family_is_cjk
+    # Keep 'Regular' in the postscript/full name only for CJK in phase 2,
+    # or always if phase 3.
+    include_regular = phase == 3 or family_is_cjk
     name_style = 'normal' if phase == 2 else _select_name_style(
         family_to_name_styles[family_id])
     result[family_id] = FamilyNameInfo(
