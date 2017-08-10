@@ -940,7 +940,8 @@ def main():
       epilog=HELP, formatter_class=argparse.RawDescriptionHelpFormatter)
   parser.add_argument(
       '-i', '--info_file', metavar='fname',
-      help='name of xml family info file, overrides name based on phase')
+      help='name of xml family info file, overrides name based on phase, '
+      'use \'-\' to write to stdout')
   parser.add_argument(
       '-p', '--phase', metavar = 'phase', type=int,
       help='determine info file name by phase (2 or 3)')
@@ -990,6 +991,7 @@ def main():
     if not args.phase:
       print 'Must specify phase when generating info.'
       return
+    out = None if args.info_file == '-' else args.info_file
     _write(fonts, out, args.phase, args.extra_styles)
   elif args.cmd == 'test':
     _test(fonts, args.phase, args.extra_styles)
@@ -998,4 +1000,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+  main()
