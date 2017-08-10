@@ -71,6 +71,7 @@ def convert_to_four_letter(script_name):
 
 
 def preferred_script_name(script_key):
+  # Returns the script_key if we have nothing else.
   try:
     return unicode_data.human_readable_script_name(script_key)
   except:
@@ -313,6 +314,9 @@ def noto_font_to_family_id(notofont):
   # exclude 'noto-' from head of key, they all start with it except
   # arimo, cousine, and tinos, and we can special-case those.
   # For cjk with subset we ignore script and use 'cjk' plus the subset.
+  # For cjk, we ignore the mono/non-mono distinctions, since we don't
+  # display different samples or provide different download bundles based
+  # on this.
   tags = []
   if notofont.family != 'Noto':
     tags.append(notofont.family)
@@ -324,11 +328,16 @@ def noto_font_to_family_id(notofont):
     tags.append('cjk')
     tags.append(notofont.subset)
   else:
-    tags.append(notofont.script)
+    # Sans Mono should get tag sans-mono, but 'Mono' (phase 2 name) should get
+    # tag mono-mono, and Sans/Serif Mono CJK should not include mono in tag.
+    # Above we've already added mono for non-cjk fonts, so if the style is not
+    # empty we don't want to add mono a second time.
+    if not (notofont.style and notofont.script.lower() == 'mono'):
+      tags.append(notofont.script)
   if notofont.variant:
     tags.append(notofont.variant)
-  key = '-'.join(tags)
-  return key.lower()
+  key = '-'.join(tags).lower()
+  return key
 
 
 def noto_font_to_wws_family_id(notofont):
@@ -338,8 +347,11 @@ def noto_font_to_wws_family_id(notofont):
   support for those fonts.  For example, 'Noto Sans Devanagari UI' and
   'Noto Sans Devanagari' support the same languages (e.g. have the same cmap)
   but have different wws family names and different name rules (names for the
-  UI variant use very short abbreviations)."""
+  UI variant use very short abbreviations).
+  CJK font naming does reflect 'mono' so we add it back to the id."""
   id = noto_font_to_family_id(notofont)
+  if notofont.is_cjk and notofont.is_mono:
+    id += '-mono'
   if notofont.is_UI:
     id += '-ui'
   if notofont.is_display:
