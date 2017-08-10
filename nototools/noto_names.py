@@ -299,8 +299,34 @@ _VERY_SHORT_NAMES = {
     'Display': 'D',
 }
 
-
-# TODO: consider shortening the script name as well
+# Only adjusts scripts whose names are > 10 chars in length.
+# This is keyed off the full name since that's all we have when we
+# need it.  If the name data changes this can break.
+_SHORT_SCRIPTS = {
+  'Anatolian Hieroglyphs': 'AnatoHiero',  # Hluw
+  'Pahawh Hmong': 'PahHmong',  # Hmng
+  'New Tai Lue': 'NewTaiLue',  # Talu
+  'Syloti Nagri': 'SyloNagri',  # Sylo
+  'Imperial Aramaic': 'ImpAramaic',  # Armi
+  'SignWriting': 'SignWrit',  # Sgnw
+  'Warang Citi': 'WarangCiti',  # Wara
+  'Canadian Aboriginal': 'CanAborig',  # Cans
+  'Egyptian Hieroglyphs': 'EgyptHiero',  # Egyp
+  'Mende Kikakui': 'MendKik',  # Mend
+  'Old Persian': 'OldPersian',  # Xpeo
+  'Old North Arabian': 'OldNorArab',  # Narb
+  'Caucasian Albanian': 'CaucAlban',  # Aghb
+  'Meroitic Hieroglyphs': 'MeroHiero',  # Mero
+  'Meroitic Cursive': 'MeroCursiv',  # Merc
+  'Inscriptional Pahlavi': 'InsPahlavi',  # Phli
+  'Old South Arabian': 'OldSouArab',  # Sarb
+  'Psalter Pahlavi': 'PsaPahlavi',  # Phlp
+  'Meetei Mayek': 'MeetMayek',  # Mtei
+  'Sora Sompeng': 'SoraSomp',  # Sora
+  'Inscriptional Parthian': 'InsParthi',  # Prti
+  'Pau Cin Hau': 'PauCinHau',  # Pauc
+  'Old Hungarian': 'OldHung',  # Hung
+}
 
 def _name_style_for_length(parts, limit):
   """Return a value indicating whether to use normal, short, very short, or
@@ -312,10 +338,12 @@ def _name_style_for_length(parts, limit):
   name = ' '.join(parts)
   if len(name) <= limit:
     return 'normal'
-  name = ' '.join(_SHORT_NAMES.get(n, n) for n in parts)
+  # shorten script names
+  short_parts = [_SHORT_SCRIPTS.get(n, n) for n in parts]
+  name = ' '.join(_SHORT_NAMES.get(n, n) for n in short_parts)
   if len(name) <= limit:
     return 'short'
-  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in parts)
+  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in short_parts)
   if len(name) <= limit:
     return 'very short'
   name = name.replace(' ', '')
@@ -328,9 +356,11 @@ def _name_with_style(parts, name_style):
   """Return a name from parts, using the limit key to determine the style."""
   if name_style == 'normal':
     return ' '.join(parts)
+  # preemtively shorten script names
+  short_parts = [_SHORT_SCRIPTS.get(n, n) for n in parts]
   if name_style == 'short':
-    return ' '.join(_SHORT_NAMES.get(n, n) for n in parts)
-  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in parts)
+    return ' '.join(_SHORT_NAMES.get(n, n) for n in short_parts)
+  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in short_parts)
   if name_style != 'very short':  # 'extra short'
     name = name.replace(' ', '')
   return name
