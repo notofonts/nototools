@@ -55,9 +55,11 @@ from xml.etree import ElementTree as ET
 
 # Standard values used in Noto fonts.
 
+# Maximum number of characters in the original name field.
+ORIGINAL_FAMILY_LIMIT = 32
+
 # Regex values returned in NameTableData must start with ^ and end with $,
 # since lint uses this to understand the value is a regex.
-
 GOOGLE_COPYRIGHT_RE = r'^Copyright 20\d\d Google Inc. All Rights Reserved\.$'
 
 ADOBE_COPYRIGHT_RE = (
@@ -99,7 +101,8 @@ PHASE_3_FAMILY_NAME_INFO_FILE = '[tools]/nototools/data/family_name_info_p3.xml'
 # to the family and WWS name fields are never populated.
 #
 # If include_regular is true, postscript and full names include the subfamily
-# when it is 'Regular' (CJK behavior).
+# when it is 'Regular' (CJK behavior) for phase 2.  Always included for
+# phase 3.
 FamilyNameInfo = collections.namedtuple(
     'FamilyNameInfo',
     'no_style_linking, use_preferred, include_regular, family_name_style')
@@ -296,8 +299,34 @@ _VERY_SHORT_NAMES = {
     'Display': 'D',
 }
 
-
-# TODO: consider shortening the script name as well
+# Only adjusts scripts whose names are > 10 chars in length.
+# This is keyed off the full name since that's all we have when we
+# need it.  If the name data changes this can break.
+_SHORT_SCRIPTS = {
+  'Anatolian Hieroglyphs': 'AnatoHiero',  # Hluw
+  'Pahawh Hmong': 'PahHmong',  # Hmng
+  'New Tai Lue': 'NewTaiLue',  # Talu
+  'Syloti Nagri': 'SyloNagri',  # Sylo
+  'Imperial Aramaic': 'ImpAramaic',  # Armi
+  'SignWriting': 'SignWrit',  # Sgnw
+  'Warang Citi': 'WarangCiti',  # Wara
+  'Canadian Aboriginal': 'CanAborig',  # Cans
+  'Egyptian Hieroglyphs': 'EgyptHiero',  # Egyp
+  'Mende Kikakui': 'MendKik',  # Mend
+  'Old Persian': 'OldPersian',  # Xpeo
+  'Old North Arabian': 'OldNorArab',  # Narb
+  'Caucasian Albanian': 'CaucAlban',  # Aghb
+  'Meroitic Hieroglyphs': 'MeroHiero',  # Mero
+  'Meroitic Cursive': 'MeroCursiv',  # Merc
+  'Inscriptional Pahlavi': 'InsPahlavi',  # Phli
+  'Old South Arabian': 'OldSouArab',  # Sarb
+  'Psalter Pahlavi': 'PsaPahlavi',  # Phlp
+  'Meetei Mayek': 'MeetMayek',  # Mtei
+  'Sora Sompeng': 'SoraSomp',  # Sora
+  'Inscriptional Parthian': 'InsParthi',  # Prti
+  'Pau Cin Hau': 'PauCinHau',  # Pauc
+  'Old Hungarian': 'OldHung',  # Hung
+}
 
 def _name_style_for_length(parts, limit):
   """Return a value indicating whether to use normal, short, very short, or
@@ -309,10 +338,12 @@ def _name_style_for_length(parts, limit):
   name = ' '.join(parts)
   if len(name) <= limit:
     return 'normal'
-  name = ' '.join(_SHORT_NAMES.get(n, n) for n in parts)
+  # shorten script names
+  short_parts = [_SHORT_SCRIPTS.get(n, n) for n in parts]
+  name = ' '.join(_SHORT_NAMES.get(n, n) for n in short_parts)
   if len(name) <= limit:
     return 'short'
-  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in parts)
+  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in short_parts)
   if len(name) <= limit:
     return 'very short'
   name = name.replace(' ', '')
@@ -325,9 +356,11 @@ def _name_with_style(parts, name_style):
   """Return a name from parts, using the limit key to determine the style."""
   if name_style == 'normal':
     return ' '.join(parts)
+  # preemtively shorten script names
+  short_parts = [_SHORT_SCRIPTS.get(n, n) for n in parts]
   if name_style == 'short':
-    return ' '.join(_SHORT_NAMES.get(n, n) for n in parts)
-  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in parts)
+    return ' '.join(_SHORT_NAMES.get(n, n) for n in short_parts)
+  name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in short_parts)
   if name_style != 'very short':  # 'extra short'
     name = name.replace(' ', '')
   return name
@@ -550,6 +583,9 @@ def name_table_data(noto_font, family_to_name_info, phase):
     print >> sys.stderr, subfamily_parts
     return None
 
+  # for phase 3 we'll now force include_regular
+  include_regular = phase == 3 or info.include_regular
+
   ofn, osfn = _original_names(
       family_parts, subfamily_parts, info.no_style_linking,
       info.family_name_style)
@@ -568,10 +604,10 @@ def name_table_data(noto_font, family_to_name_info, phase):
       original_family=ofn,
       original_subfamily=osfn,
       unique_id='-',
-      full_name=_full_name(family_parts, subfamily_parts, info.include_regular),
+      full_name=_full_name(family_parts, subfamily_parts, include_regular),
       version_re=_version_re(noto_font, phase),
       postscript_name=_postscript_name(
-          family_parts, subfamily_parts, info.include_regular),
+          family_parts, subfamily_parts, include_regular),
       trademark=_trademark(noto_font),
       manufacturer=_manufacturer(noto_font),
       designer=_designer(noto_font, phase),
@@ -612,7 +648,7 @@ def _select_name_style(styles):
   return 'normal'
 
 
-def create_family_to_name_info(notofonts, phase):
+def create_family_to_name_info(notofonts, phase, extra_styles):
   if phase not in [2, 3]:
     raise ValueError('expected phase 2 or 3 but got "%s"' % phase)
 
@@ -627,10 +663,47 @@ def create_family_to_name_info(notofonts, phase):
     # It's been asserted that the family name can't be longer than 32 chars.
     # Assume this is only true for nameID 1 and not nameID 16 or 17.
     family_parts, _ = _original_parts(preferred_family, preferred_subfamily)
-    family_name_style = _name_style_for_length(family_parts, 31)
+    family_name_style = _name_style_for_length(
+        family_parts, ORIGINAL_FAMILY_LIMIT)
     family_to_name_styles[family_id].add(family_name_style)
     if noto_font.is_cjk:
       cjk_families.add(family_id)
+
+  # If extra_styles is true, we assume all wws styles are present.  The
+  # practical import of this is that use_preferred will be true, and the
+  # family name style will be short enough to accommodate the longest
+  # wws style name.  So we just synthesize this and run each font through
+  # one more time with those styles.
+  # For a given wws id the fonts should all be wws variants.  Since we
+  # substitute fixed wws values, any font with the same wws id will do.
+  #
+  # This is a kludge, as it duplicates a lot of the above code.
+  if extra_styles:
+    seen_ids = set()
+    for noto_font in notofonts:
+      if noto_font.is_cjk:
+        # Don't do this for cjk
+        continue
+      family_id = noto_fonts.noto_font_to_wws_family_id(noto_font)
+      if family_id in seen_ids:
+        continue
+      seen_ids.add(family_id)
+      preferred_family, _ = _preferred_parts(noto_font)
+      preferred_subfamily = filter(None, [
+          'Mono' if noto_font.is_mono else None,
+          'UI' if noto_font.is_UI else None,
+          'Display' if noto_font.is_display else None,
+          'ExtraCondensed',  # longest width name
+          'ExtraLight', # longest weight name
+          'Italic'])  # longest slope name
+      _, subfamily_parts = _wws_parts(preferred_family, preferred_subfamily)
+      family_to_parts[family_id].update(subfamily_parts)
+      family_parts, _ = _original_parts(preferred_family, preferred_subfamily)
+      family_name_style = _name_style_for_length(
+          family_parts, ORIGINAL_FAMILY_LIMIT)
+      family_to_name_styles[family_id].add(family_name_style)
+
+
   result = {}
   for family_id, part_set in family_to_parts.iteritems():
     # Even through CJK mono fonts are in their own families and have only
@@ -639,8 +712,9 @@ def create_family_to_name_info(notofonts, phase):
     family_is_cjk = family_id in cjk_families
     no_style_linking = phase == 2 and family_is_cjk
     use_preferred = no_style_linking or bool(part_set - _ORIGINAL_PARTS)
-    # Keep 'Regular' in the postscript/full name only for CJK.
-    include_regular = family_is_cjk
+    # Keep 'Regular' in the postscript/full name only for CJK in phase 2,
+    # or always if phase 3.
+    include_regular = phase == 3 or family_is_cjk
     name_style = 'normal' if phase == 2 else _select_name_style(
         family_to_name_styles[family_id])
     result[family_id] = FamilyNameInfo(
@@ -765,8 +839,8 @@ def _dump_name_data(name_data):
   for attr in NameTableData._fields:
     value = getattr(name_data, attr)
     if value:
-      if attr == 'original_family' and len(value) > 31:
-        print '## family too long'
+      if attr == 'original_family' and len(value) > ORIGINAL_FAMILY_LIMIT:
+        print '## family too long (%2d): %s' % (len(value), value)
         err = True
       print '  %20s: %s' % (attr, value)
     else:
@@ -793,19 +867,19 @@ def _dump(fonts, info_file, phase):
   _dump_family_names(fonts, family_to_name_info, phase)
 
 
-def _write(fonts, info_file, phase):
+def _write(fonts, info_file, phase, extra_styles):
   """Build family name info from font_paths and write to info_file.
   Write to stdout if info_file is None."""
-  family_to_name_info =  create_family_to_name_info(fonts, phase)
+  family_to_name_info =  create_family_to_name_info(fonts, phase, extra_styles)
   if info_file:
     write_family_name_info_file(family_to_name_info, info_file, pretty=True)
   else:
     print write_family_name_info(family_to_name_info, pretty=True)
 
 
-def _test(fonts, phase):
+def _test(fonts, phase, extra_styles):
   """Build name info from font_paths and dump the names for them."""
-  family_to_name_info = create_family_to_name_info(fonts, phase)
+  family_to_name_info = create_family_to_name_info(fonts, phase, extra_styles)
   print write_family_name_info(family_to_name_info, pretty=True)
   _dump_family_names(fonts, family_to_name_info, phase)
 
@@ -866,7 +940,8 @@ def main():
       epilog=HELP, formatter_class=argparse.RawDescriptionHelpFormatter)
   parser.add_argument(
       '-i', '--info_file', metavar='fname',
-      help='name of xml family info file, overrides name based on phase')
+      help='name of xml family info file, overrides name based on phase, '
+      'use \'-\' to write to stdout')
   parser.add_argument(
       '-p', '--phase', metavar = 'phase', type=int,
       help='determine info file name by phase (2 or 3)')
@@ -876,6 +951,9 @@ def main():
   parser.add_argument(
       '-f', '--files', metavar='fname', help='fonts to examine, prefix with'
       '\'@\' to read list from file', nargs='+')
+  parser.add_argument(
+      '-x', '--extra_styles', help='assume all wws styles for write/test',
+      action='store_true')
   parser.add_argument(
       'cmd', metavar='cmd', help='operation to perform (%s)' % ', '.join(CMDS),
       choices=CMDS)
@@ -913,12 +991,13 @@ def main():
     if not args.phase:
       print 'Must specify phase when generating info.'
       return
-    _write(fonts, args.info_file, args.phase)
+    out = None if args.info_file == '-' else args.info_file
+    _write(fonts, out, args.phase, args.extra_styles)
   elif args.cmd == 'test':
-    _test(fonts, args.phase)
+    _test(fonts, args.phase, args.extra_styles)
   elif args.cmd == 'info':
     _info(fonts)
 
 
 if __name__ == "__main__":
-    main()
+  main()
