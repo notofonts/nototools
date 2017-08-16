@@ -15,7 +15,7 @@ NotoSerifDisplay
 NotoSansSymbols
 -- R --
 NotoSansSymbols2
-NotoMath
+NotoSansMath
 -- TRBH --
 NotoSansThai
 NotoSansThaiUI
@@ -47,14 +47,15 @@ NotoSerifArmenian
 NotoSansMyanmar
 NotoSansMyanmarUI
 NotoSerifMyanmar
-NotoSansKhmerNew  # mignt not use New
-NotoSansKhmerNewUI  # might not use New
-NotoSerifKhmerNew  # might not use New
+NotoSansKhmer
+NotoSansKhmerUI
+NotoSerifKhmer
 NotoSansSinhala
+NotoSansSinhalaUI
 NotoSerifSinhala
-NotoSansLaoNew  # might not use New
-NotoSansLaoNewUI # might not use New
-NotoSerifLaoNew  # might not use New
+NotoSansLao
+NotoSansLaoUI
+NotoSerifLao
 NotoSansTelugu
 NotoSansTeluguUI
 NotoSerifTelugu
@@ -91,7 +92,7 @@ NotoSansThaana
 NotoSerifThaana
 NotoSansTibetan
 NotoSerifTibetan
-NotoSansChamNew  # might not use New
+NotoSansCham
 NotoSansSyriacEastern
 NotoSansSyriacWestern
 NotoSansSyriacEstrangela  # Estrangelo on spreadsheet?
@@ -99,6 +100,7 @@ NotoSansCanadianAboriginal  # CanadianSyllabics on spreadsheet?
 NotoSansCherokee
 -- R --
 NotoSansAdlam
+NotoSansAdlamUnjoined
 NotoSansChakma
 NotoSansMarchen
 NotoSansMendeKikakui
@@ -201,17 +203,17 @@ NotoSansUgaritic
 NotoSansVai
 NotoSansYi
 # NotoSansZanabazarSquare (not in Unicode 9)
--- RB/R/RI --
-Arimo
-Tinos
 
 #extras
+-- RB/R/RI --
+Arimo
 Cousine
+Tinos
 -- R --
 NotoEmoji
 NotoColorEmoji
 -- LB --
-NotoMono
+NotoSansMono
 
 # CJK
 -- TRBH --
@@ -227,21 +229,23 @@ noto-cjk/NotoSansKR
 noto-cjk/NotoSansJP
 noto-cjk/NotoSansSC
 noto-cjk/NotoSansTC
+noto-cjk/NotoSerifCJKjp
+noto-cjk/NotoSerifCJKkr
+noto-cjk/NotoSerifCJKsc
+noto-cjk/NotoSerifCJKtc
+noto-cjk/NotoSerifMonoCJKjp
+noto-cjk/NotoSerifMonoCJKkr
+noto-cjk/NotoSerifMonoCJKsc
+noto-cjk/NotoSerifMonoCJKtc
+noto-cjk/NotoSerifKR
+noto-cjk/NotoSerifJP
+noto-cjk/NotoSerifSC
+noto-cjk/NotoSerifTC
 
 # legacy fonts
 -- RB --
 NotoKufiArabic
 NotoNaskhArabic
 NotoNaskhArabicUI
-
-# legacy names since we haven't decided on naming yet
--- TRBH --
-NotoSansCham
--- TRBH/CR --
-NotoSansKhmer
-NotoSansKhmerUI
-NotoSerifKhmer
-NotoSansLao
-NotoSansLaoUI
-NotoSerifLao
+NotoMono
 

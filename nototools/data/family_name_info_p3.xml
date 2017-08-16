@@ -1,204 +1,215 @@
 <?xml version='1.0' encoding='utf8'?>
-<family_name_data date="2016-12-14">
-  <info family="arimo-lgc" />
-  <info family="cousine-lgc" />
-  <info family="emoji-zsye" />
-  <info family="emoji-zsye-color" />
-  <info family="kufi-arab" />
-  <info family="mono-mono" use_preferred="t" />
-  <info family="naskh-arab" />
-  <info family="naskh-arab-ui" />
-  <info family="nastaliq-aran" />
-  <info family="sans-adlm" />
-  <info family="sans-adlm-unjoined" />
-  <info family="sans-aghb" />
-  <info family="sans-ahom" />
-  <info family="sans-arab" family_name_style="short" use_preferred="t" />
-  <info family="sans-arab-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-armi" />
-  <info family="sans-armn" family_name_style="very short" use_preferred="t" />
-  <info family="sans-avst" />
-  <info family="sans-bali" />
-  <info family="sans-bamu" />
-  <info family="sans-bass" />
-  <info family="sans-batk" />
-  <info family="sans-beng" family_name_style="short" use_preferred="t" />
-  <info family="sans-beng-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-bhks" />
-  <info family="sans-brah" />
-  <info family="sans-bugi" />
-  <info family="sans-buhd" />
-  <info family="sans-cakm" />
-  <info family="sans-cans" family_name_style="extra short" use_preferred="t" />
-  <info family="sans-cari" />
-  <info family="sans-cham" use_preferred="t" />
-  <info family="sans-cham-new" use_preferred="t" />
-  <info family="sans-cher" use_preferred="t" />
+<family_name_data date="2017-08-16">
+  <info family="arimo-lgc" include_regular="t" use_preferred="t" />
+  <info family="cousine-lgc" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="emoji-zsye" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="emoji-zsye-color" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="kufi-arab" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="mono-mono" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="naskh-arab" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="naskh-arab-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="nastaliq-aran" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-adlm" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-adlm-unjoined" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-aghb" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-ahom" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-arab" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-arab-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-armi" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-armn" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-avst" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-bali" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-bamu" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-bass" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-batk" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-beng" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-beng-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-bhks" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-brah" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-bugi" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-buhd" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-cakm" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-cans" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-cari" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-cham" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-cher" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-cjk-jp" include_regular="t" use_preferred="t" />
   <info family="sans-cjk-kr" include_regular="t" use_preferred="t" />
   <info family="sans-cjk-sc" include_regular="t" use_preferred="t" />
   <info family="sans-cjk-tc" include_regular="t" use_preferred="t" />
-  <info family="sans-copt" />
-  <info family="sans-cprt" />
-  <info family="sans-deva" family_name_style="very short" use_preferred="t" />
-  <info family="sans-deva-ui" family_name_style="extra short" use_preferred="t" />
-  <info family="sans-dsrt" />
-  <info family="sans-dupl" />
-  <info family="sans-egyp" />
-  <info family="sans-elba" />
-  <info family="sans-ethi" family_name_style="very short" use_preferred="t" />
-  <info family="sans-geor" family_name_style="very short" use_preferred="t" />
-  <info family="sans-glag" />
-  <info family="sans-goth" />
-  <info family="sans-gran" />
-  <info family="sans-gujr" family_name_style="very short" use_preferred="t" />
-  <info family="sans-gujr-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-guru" family_name_style="very short" use_preferred="t" />
-  <info family="sans-guru-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-hano" />
+  <info family="sans-copt" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-cprt" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-deva" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-deva-ui" family_name_style="extra short" include_regular="t" use_preferred="t" />
+  <info family="sans-dsrt" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-dupl" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-egyp" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-elba" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-ethi" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-geor" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-glag" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-goth" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-gran" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-gujr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-gujr-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-guru" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-guru-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-hano" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-hans" include_regular="t" use_preferred="t" />
+  <info family="sans-hans-mono" include_regular="t" use_preferred="t" />
   <info family="sans-hant" include_regular="t" use_preferred="t" />
-  <info family="sans-hatr" />
-  <info family="sans-hebr" family_name_style="short" use_preferred="t" />
-  <info family="sans-hebr-new" family_name_style="very short" use_preferred="t" />
-  <info family="sans-hluw" />
-  <info family="sans-hmng" />
-  <info family="sans-hung" />
-  <info family="sans-ital" />
-  <info family="sans-java" />
+  <info family="sans-hant-mono" include_regular="t" use_preferred="t" />
+  <info family="sans-hatr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-hebr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-hebr-new" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-hluw" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-hmng" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-hung" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-ital" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-java" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-jpan" include_regular="t" use_preferred="t" />
-  <info family="sans-kali" />
-  <info family="sans-khar" />
-  <info family="sans-khmr" family_name_style="short" use_preferred="t" />
-  <info family="sans-khmr-new" family_name_style="very short" use_preferred="t" />
-  <info family="sans-khmr-new-ui" family_name_style="extra short" use_preferred="t" />
-  <info family="sans-khmr-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-khoj" />
-  <info family="sans-knda" family_name_style="short" use_preferred="t" />
-  <info family="sans-knda-ui" family_name_style="very short" use_preferred="t" />
+  <info family="sans-jpan-mono" include_regular="t" use_preferred="t" />
+  <info family="sans-kali" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-khar" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-khmr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-khmr-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-khoj" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-knda" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-knda-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-kore" include_regular="t" use_preferred="t" />
-  <info family="sans-kthi" />
-  <info family="sans-lana" />
-  <info family="sans-laoo" family_name_style="short" use_preferred="t" />
-  <info family="sans-laoo-new" family_name_style="short" use_preferred="t" />
-  <info family="sans-laoo-new-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-laoo-ui" family_name_style="short" use_preferred="t" />
-  <info family="sans-lepc" />
-  <info family="sans-lgc" family_name_style="short" use_preferred="t" />
-  <info family="sans-lgc-display" family_name_style="short" use_preferred="t" />
-  <info family="sans-lgc-ui" family_name_style="short" use_preferred="t" />
-  <info family="sans-limb" />
-  <info family="sans-lina" />
-  <info family="sans-linb" />
-  <info family="sans-lisu" />
-  <info family="sans-lyci" />
-  <info family="sans-lydi" />
-  <info family="sans-mahj" />
-  <info family="sans-mand" />
-  <info family="sans-mani" />
-  <info family="sans-marc" />
-  <info family="sans-mend" />
-  <info family="sans-merc" />
-  <info family="sans-mero" />
-  <info family="sans-mlym" family_name_style="very short" use_preferred="t" />
-  <info family="sans-mlym-ui" family_name_style="extra short" use_preferred="t" />
-  <info family="sans-modi" />
-  <info family="sans-mong" />
-  <info family="sans-mroo" />
-  <info family="sans-mtei" />
-  <info family="sans-mult" />
-  <info family="sans-mymr" family_name_style="short" use_preferred="t" />
-  <info family="sans-mymr-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-narb" />
-  <info family="sans-nbat" />
-  <info family="sans-newa" />
-  <info family="sans-nkoo" />
-  <info family="sans-ogam" />
-  <info family="sans-olck" />
-  <info family="sans-orkh" />
-  <info family="sans-orya" use_preferred="t" />
-  <info family="sans-orya-ui" use_preferred="t" />
-  <info family="sans-osge" />
-  <info family="sans-osma" />
-  <info family="sans-palm" />
-  <info family="sans-pauc" />
-  <info family="sans-perm" />
-  <info family="sans-phag" />
-  <info family="sans-phli" />
-  <info family="sans-phlp" />
-  <info family="sans-phnx" />
-  <info family="sans-plrd" />
-  <info family="sans-prti" family_name_style="extra short" />
-  <info family="sans-rjng" />
-  <info family="sans-runr" />
-  <info family="sans-samr" />
-  <info family="sans-sarb" />
-  <info family="sans-saur" />
-  <info family="sans-sgnw" />
-  <info family="sans-shaw" />
-  <info family="sans-shrd" />
-  <info family="sans-sidd" />
-  <info family="sans-sind" />
-  <info family="sans-sinh" family_name_style="short" use_preferred="t" />
-  <info family="sans-sora" />
-  <info family="sans-sund" />
-  <info family="sans-sylo" />
-  <info family="sans-sym2" />
-  <info family="sans-syrc-eastern" family_name_style="short" use_preferred="t" />
-  <info family="sans-syrc-estrangela" family_name_style="extra short" use_preferred="t" />
-  <info family="sans-syrc-western" family_name_style="short" use_preferred="t" />
-  <info family="sans-tagb" />
-  <info family="sans-takr" />
-  <info family="sans-tale" />
-  <info family="sans-talu" />
-  <info family="sans-taml" family_name_style="short" use_preferred="t" />
-  <info family="sans-taml-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-tang" />
-  <info family="sans-tavt" />
-  <info family="sans-telu" family_name_style="short" use_preferred="t" />
-  <info family="sans-telu-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-tfng" />
-  <info family="sans-tglg" />
-  <info family="sans-thaa" use_preferred="t" />
-  <info family="sans-thai" use_preferred="t" />
-  <info family="sans-thai-new" family_name_style="very short" use_preferred="t" />
-  <info family="sans-thai-new-ui" family_name_style="very short" use_preferred="t" />
-  <info family="sans-thai-ui" use_preferred="t" />
-  <info family="sans-tibt" use_preferred="t" />
-  <info family="sans-tirh" />
-  <info family="sans-ugar" />
-  <info family="sans-vaii" />
-  <info family="sans-wara" />
-  <info family="sans-xpeo" />
-  <info family="sans-xsux" />
-  <info family="sans-yiii" />
-  <info family="sans-zsym" use_preferred="t" />
-  <info family="serif-arab" family_name_style="short" use_preferred="t" />
-  <info family="serif-armn" family_name_style="very short" use_preferred="t" />
-  <info family="serif-beng" family_name_style="very short" use_preferred="t" />
-  <info family="serif-deva" family_name_style="very short" use_preferred="t" />
-  <info family="serif-ethi" use_preferred="t" />
-  <info family="serif-geor" family_name_style="very short" use_preferred="t" />
-  <info family="serif-gujr" use_preferred="t" />
-  <info family="serif-guru" use_preferred="t" />
-  <info family="serif-hebr" family_name_style="short" use_preferred="t" />
-  <info family="serif-khmr" family_name_style="short" use_preferred="t" />
-  <info family="serif-khmr-new" family_name_style="very short" use_preferred="t" />
-  <info family="serif-knda" use_preferred="t" />
-  <info family="serif-laoo" family_name_style="short" use_preferred="t" />
-  <info family="serif-laoo-new" family_name_style="very short" use_preferred="t" />
-  <info family="serif-lgc" family_name_style="short" use_preferred="t" />
-  <info family="serif-lgc-display" family_name_style="short" use_preferred="t" />
-  <info family="serif-mlym" use_preferred="t" />
-  <info family="serif-mymr" family_name_style="very short" use_preferred="t" />
-  <info family="serif-orya" use_preferred="t" />
-  <info family="serif-sinh" family_name_style="very short" use_preferred="t" />
-  <info family="serif-taml" family_name_style="short" use_preferred="t" />
-  <info family="serif-taml-slanted" family_name_style="extra short" use_preferred="t" />
-  <info family="serif-telu" family_name_style="short" use_preferred="t" />
-  <info family="serif-thaa" use_preferred="t" />
-  <info family="serif-thai" family_name_style="short" use_preferred="t" />
-  <info family="serif-tibt" use_preferred="t" />
-  <info family="tinos-lgc" />
-  <info family="zmth" />
+  <info family="sans-kore-mono" include_regular="t" use_preferred="t" />
+  <info family="sans-kthi" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lana" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-laoo" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-laoo-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lepc" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lgc" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lgc-display" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lgc-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-limb" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lina" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-linb" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lisu" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lyci" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-lydi" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mahj" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mand" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mani" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-marc" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mend" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-merc" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-mero" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-mlym" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-mlym-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-modi" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mong" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-mono" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mroo" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mtei" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-mult" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mymr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-mymr-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-narb" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-nbat" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-newa" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-nkoo" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-ogam" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-olck" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-orkh" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-orya" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-orya-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-osge" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-osma" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-palm" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-pauc" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-perm" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-phag" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-phli" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-phlp" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-phnx" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-plrd" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-prti" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-rjng" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-runr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-samr" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-sarb" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-saur" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-sgnw" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-shaw" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-shrd" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-sidd" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-sind" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-sinh" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-sinh-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-sora" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-sund" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-sylo" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-sym2" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-syrc-eastern" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-syrc-estrangela" family_name_style="extra short" include_regular="t" use_preferred="t" />
+  <info family="sans-syrc-western" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-tagb" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-takr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tale" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-talu" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-taml" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-taml-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tang" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tavt" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-telu" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-telu-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tglg" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-thaa" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-thai" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-thai-new" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-thai-new-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-thai-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tibt" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tirh" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-ugar" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-vaii" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-wara" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-xpeo" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-xsux" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-yiii" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-zmth" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-zsym" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-arab" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-armn" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-beng" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-cjk-jp" include_regular="t" use_preferred="t" />
+  <info family="serif-cjk-kr" include_regular="t" use_preferred="t" />
+  <info family="serif-cjk-sc" include_regular="t" use_preferred="t" />
+  <info family="serif-cjk-tc" include_regular="t" use_preferred="t" />
+  <info family="serif-deva" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-ethi" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-geor" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-gujr" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-guru" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-hans" include_regular="t" use_preferred="t" />
+  <info family="serif-hans-mono" include_regular="t" use_preferred="t" />
+  <info family="serif-hant" include_regular="t" use_preferred="t" />
+  <info family="serif-hant-mono" include_regular="t" use_preferred="t" />
+  <info family="serif-hebr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-jpan" include_regular="t" use_preferred="t" />
+  <info family="serif-jpan-mono" include_regular="t" use_preferred="t" />
+  <info family="serif-khmr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-knda" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-kore" include_regular="t" use_preferred="t" />
+  <info family="serif-kore-mono" include_regular="t" use_preferred="t" />
+  <info family="serif-laoo" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-lgc" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-lgc-display" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-mlym" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-mymr" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-orya" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-sinh" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-taml" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-taml-slanted" family_name_style="extra short" include_regular="t" use_preferred="t" />
+  <info family="serif-telu" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-thaa" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-thai" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-tibt" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="tinos-lgc" include_regular="t" use_preferred="t" />
 </family_name_data>
