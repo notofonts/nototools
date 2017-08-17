@@ -398,6 +398,10 @@ def script_code(script_name):
     return _folded_script_name_to_code.get(folded_script_name, 'Zzzz')
 
 
+# We use some standard script codes that are not assigned to a codepoint
+# by unicode, e.g. Zsym.  The data based off Scripts.txt doesn't contain
+# these so we add them here.  There are also a few names with punctuation
+# that we special-case
 _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
     'Aran': 'Nastaliq', # not assigned
     'Nkoo': 'N\'Ko',

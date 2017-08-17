@@ -63,10 +63,7 @@ def convert_to_four_letter(script_name):
     return ODD_SCRIPTS[script_name]
   script_code = unicode_data.script_code(script_name)
   if script_code == 'Zzzz':
-    if len(script_name) != 4:
-      raise ValueError('no script for %s' % script_name)
-    print >> sys.stderr, 'defaulting script for %s' % script_name
-    script_code = script_name
+    raise ValueError('no script for %s' % script_name)
   return script_code
 
 
@@ -219,7 +216,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     pass
   elif script == 'Symbols2':
     script = 'SYM2'
-  else:
+  elif script not in ['MUSE', 'Zsye']:  # assigned above
     try:
       script = convert_to_four_letter(script)
     except ValueError:
