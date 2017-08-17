@@ -63,10 +63,7 @@ def convert_to_four_letter(script_name):
     return ODD_SCRIPTS[script_name]
   script_code = unicode_data.script_code(script_name)
   if script_code == 'Zzzz':
-    if len(script_name) != 4:
-      raise ValueError('no script for %s' % script_name)
-    print >> sys.stderr, 'defaulting script for %s' % script_name
-    script_code = script_name
+    raise ValueError('no script for %s' % script_name)
   return script_code
 
 
@@ -140,7 +137,7 @@ WEIGHTS = {
 _FONT_NAME_REGEX = (
     # family should be prepended - this is so Roboto can be used with unittests
     # that use this regex to parse.
-    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
+    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji|Music)?'
     '(Mono(?:space)?)?'
     '(.*?)'
     '(Eastern|Estrangela|Western|Slanted|New|Unjoined)?'
@@ -188,6 +185,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     if style == 'ColorEmoji':
       style = 'Emoji'
       variant = 'color'
+  if style and 'Music' in style:
+    script = 'MUSE'
 
   is_mono = mono == 'Mono'
 
@@ -217,7 +216,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     pass
   elif script == 'Symbols2':
     script = 'SYM2'
-  else:
+  elif script not in ['MUSE', 'Zsye']:  # assigned above
     try:
       script = convert_to_four_letter(script)
     except ValueError:
@@ -287,6 +286,8 @@ def script_key_to_scripts(script_key):
     # TODO: Mono doesn't actually support all of Latn, we need a better way
     # to deal with pseudo-script codes like this one.
     return frozenset(['Latn'])
+  elif script_key == 'MUSE':
+    return frozenset(['Zsym'])
   else:
     return lang_data.script_includes(script_key)
 
@@ -304,6 +305,8 @@ def script_key_to_primary_script(script_key):
     raise ValueError('!do not know scripts for HST script key')
   if script_key == 'MONO':
     return 'Latn'
+  if script_key == 'MUSE':
+    return 'Zsym'
   if script_key not in lang_data.scripts():
     raise ValueError('!not a script key: %s' % script_key)
   return script_key
@@ -365,6 +368,7 @@ _special_wws_names = {
     'emoji-zsye-color': ['Noto', 'Color', 'Emoji'],
     'kufi-arab': ['Noto', 'Kufi', 'Arabic'],
     'mono-mono': ['Noto', 'Mono'],
+    'music-muse': ['Noto', 'Music'],
     'naskh-arab': ['Noto', 'Naskh', 'Arabic'],
     'naskh-arab-ui': ['Noto', 'Naskh', 'Arabic', 'UI'],
     'nastaliq-aran': ['Noto', 'Nastaliq', 'Urdu'],
