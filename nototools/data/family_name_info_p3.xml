@@ -1,11 +1,12 @@
 <?xml version='1.0' encoding='utf8'?>
-<family_name_data date="2017-08-16">
+<family_name_data date="2017-08-17">
   <info family="arimo-lgc" include_regular="t" use_preferred="t" />
   <info family="cousine-lgc" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="emoji-zsye" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="emoji-zsye-color" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="kufi-arab" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="mono-mono" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="music-muse" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="naskh-arab" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="naskh-arab-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="nastaliq-aran" family_name_style="short" include_regular="t" use_preferred="t" />

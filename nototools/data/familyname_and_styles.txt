@@ -212,6 +212,7 @@ Tinos
 -- R --
 NotoEmoji
 NotoColorEmoji
+NotoMusic
 -- LB --
 NotoSansMono
 
