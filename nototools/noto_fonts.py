@@ -140,7 +140,7 @@ WEIGHTS = {
 _FONT_NAME_REGEX = (
     # family should be prepended - this is so Roboto can be used with unittests
     # that use this regex to parse.
-    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji)?'
+    '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji|Music)?'
     '(Mono(?:space)?)?'
     '(.*?)'
     '(Eastern|Estrangela|Western|Slanted|New|Unjoined)?'
@@ -188,6 +188,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     if style == 'ColorEmoji':
       style = 'Emoji'
       variant = 'color'
+  if style and 'Music' in style:
+    script = 'MUSE'
 
   is_mono = mono == 'Mono'
 
@@ -287,6 +289,8 @@ def script_key_to_scripts(script_key):
     # TODO: Mono doesn't actually support all of Latn, we need a better way
     # to deal with pseudo-script codes like this one.
     return frozenset(['Latn'])
+  elif script_key == 'MUSE':
+    return frozenset(['Zsym'])
   else:
     return lang_data.script_includes(script_key)
 
@@ -304,6 +308,8 @@ def script_key_to_primary_script(script_key):
     raise ValueError('!do not know scripts for HST script key')
   if script_key == 'MONO':
     return 'Latn'
+  if script_key == 'MUSE':
+    return 'Zsym'
   if script_key not in lang_data.scripts():
     raise ValueError('!not a script key: %s' % script_key)
   return script_key
@@ -365,6 +371,7 @@ _special_wws_names = {
     'emoji-zsye-color': ['Noto', 'Color', 'Emoji'],
     'kufi-arab': ['Noto', 'Kufi', 'Arabic'],
     'mono-mono': ['Noto', 'Mono'],
+    'music-muse': ['Noto', 'Music'],
     'naskh-arab': ['Noto', 'Naskh', 'Arabic'],
     'naskh-arab-ui': ['Noto', 'Naskh', 'Arabic', 'UI'],
     'nastaliq-aran': ['Noto', 'Nastaliq', 'Urdu'],
