@@ -294,6 +294,7 @@ def _build_block_to_primary_script():
       'CJK Symbols and Punctuation': 'CJK',
       'Enclosed CJK Letters and Months': 'CJK',
       'CJK Compatibility': 'CJK',
+      'Common Indic Number Forms': 'Deva',
       'Alphabetic Presentation Forms': None,
       'Halfwidth and Fullwidth Forms': 'CJK',
       'Kana Supplement': 'CJK',
@@ -842,10 +843,10 @@ def _assign_complex_script_extra(cmap_ops):
   # Removes Hang, Jungshik reports Behdad says it's not needed for Hang.
   hb_complex_scripts = """
     Arab Aran Bali Batk Beng Brah Bugi Buhd Cakm Cham Deva Dupl Egyp Gran
-    Gujr Guru Hano Hebr Hmng Java Kali Khar Khmr Khoj Knda Kthi Lana
-    Laoo Lepc Limb Mahj Mand Mani Mlym Modi Mong Mtei Mymr Nkoo Orya Phag
-    Phlp Rjng Saur Shrd Sidd Sind Sinh Sund Sylo Syrc Tagb Takr Tale Talu
-    Taml Tavt Telu Tfng Tglg Thai Tibt Tirh
+    Gujr Guru Hano Hebr Hmng Java Kali Khar Khmr Khoj Knda Kthi Lana Laoo
+    Lepc Limb Mahj Mand Mani Mlym Modi Mong Mtei Mymr Nkoo Orya Phag Phlp
+    Rjng Saur Shrd Sidd Sind Sinh Sund Sylo Syrc Tagb Takr Tale Talu Taml
+    Tavt Telu Tfng Tglg Thai Tibt Tirh
     """.split()
   hb_extra = tool_utils.parse_int_ranges("""
       200c  # ZWNJ
