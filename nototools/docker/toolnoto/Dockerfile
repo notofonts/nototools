@@ -1,6 +1,6 @@
 # Build image for noto repos.
 
-FROM notobase:latest
+FROM toolbase:latest
 COPY *.sh /tmp/
 RUN /tmp/notosetup.sh
 RUN /tmp/initfccache.sh
