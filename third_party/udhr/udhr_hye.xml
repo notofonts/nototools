@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='hye' xml:lang='hy' key='hye' n='Armenian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='hye' xml:lang='hy' key='hye' n='Armenian' dir='ltr' iso15924='Armn' xmlns="http://www.unhchr.ch/udhr">
   <title>ՄԱՐԴՈՒ ԻՐԱՎՈՒՆՔՆԵՐԻ ՀԱՄԸՆԴՀԱՆՈՒՐ ՀՌՉԱԿԱԳԻՐ</title>
   <note>
     <para>ՄԻԱՎՈՐՎԱԾ ԱԶԳԵՐԻ ԿԱԶՄԱԿԵՐՊՈՒԹՅՈՒՆ</para>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ell' xml:lang='el-polyton' key='ell_polytonic' n='Greek (polytonic)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ell' xml:lang='el-polyton' key='ell_polytonic' n='Greek (polytonic)' dir='ltr' iso15924='Grek' xmlns="http://www.unhchr.ch/udhr">
    <title>ΟΙΚΟΥΜΕΝΙΚΗ ΔΙΑΚΗΡΥΞΗ ΓΙΑ ΤΑ ΑΝΘΡΩΠΙΝΑ ΔΙΚΑΙΩΜΑΤΑ</title>
    <note>
       <para>10 ΔΕΚΕΜΒΡΙΟΥ 1948</para>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='vie' xml:lang='vi' key='vie' n='Vietnamese' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='vie' xml:lang='vi' key='vie' n='Vietnamese' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Tuyên ngôn toàn thế giới về nhân quyền của Liên Hợp Quốc</title>
    <note>
       <para>Được Đại hội đồng Liên Hợp Quốc thông qua và công bố theo Nghị quyết số 217 (III), ngày 10 tháng 12 năm 1948.</para>

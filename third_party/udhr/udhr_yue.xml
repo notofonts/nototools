@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="yue" xml:lang="yue" key="yue" n="Chinese, Yue" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="yue" xml:lang="yue" key="yue" n="Chinese, Yue" dir='ltr' iso15924='Hani' xmlns="http://www.unhchr.ch/udhr">
    <title>世界人权宣言</title>
    <preamble>
       <title>序言</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='swh' xml:lang='sw' key='swh' n='Swahili' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='swh' xml:lang='sw' key='swh' n='Swahili' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <note>
     <para>Katika Disemba 10, 1948, Baraza kuu la Umoja wa Mataifa lilikubali na kutangaza Taarifa ya Ulimwengu juu ya Haki za Binadamu. Maelezo kamili ya Taarifa hiyo yamepigwa chapa katika kurasa zifuatazo. Baada ya kutangaza taarifa hii ya maana Baraza Kuu lilizisihi nchi zote zilizo Wanachama wa Umoja wa Mataifa zitangaze na "zifanye ienezwe ionyeshwe, isomwe na ielezwe mashuleni na katika vyuo vinginevyo bila kujali siasa ya nchi yo yote."</para>
   </note>

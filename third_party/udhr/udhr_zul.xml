@@ -6,7 +6,7 @@
 replaced U+002D - HYPHEN-MINUS by U+2010 ‐ HYPHEN
 -->
 
-<udhr iso639-3='zul' xml:lang='zu' key='zul' n='Zulu' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='zul' xml:lang='zu' key='zul' n='Zulu' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>UMBHALO OGCWELE WOGUNYAZO LWAMALUNGELO OLUNTU JIKELELE</title>
   <preamble>
     <title>Isandulelo</title>

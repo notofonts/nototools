@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="mai" xml:lang="mai" key="mai" n="Maithili" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="mai" xml:lang="mai" key="mai" n="Maithili" dir='ltr' iso15924='Deva' xmlns="http://www.unhchr.ch/udhr">
   <title>&#x0938;&#x093E;&#x0930;&#x094D;&#x0935;&#x092D;&#x094C;&#x092E; &#x092E;&#x093E;&#x0928;&#x0935;&#x093E;&#x0927;&#x093F;&#x0915;&#x093E;&#x0930; &#x0918;&#x094B;&#x0937;&#x0923;&#x093E;</title>
 
   <note>

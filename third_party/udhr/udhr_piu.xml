@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="piu" xml:lang="piu" key="piu" n="Pintupi-Luritja" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="piu" xml:lang="piu" key="piu" n="Pintupi-Luritja" dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Yara Tina Ngaatjanya Yananguku Tjukarurrulpayi Liipula Nyinanytjaku Mingarrtjuwiya</title>
    <preamble>
       <title>Ngaatja Yurrunpa Riitarripayi</title>

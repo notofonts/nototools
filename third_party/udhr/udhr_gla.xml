@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='gla' xml:lang='gd' key='gla' n='Gaelic, Scottish' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='gla' xml:lang='gd' key='gla' n='Gaelic, Scottish' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <note>
       <para>Teacs Ughdarrasail na Iomlanachd</para>
       <para>DUTHCHANNAN AONAICHTE</para>

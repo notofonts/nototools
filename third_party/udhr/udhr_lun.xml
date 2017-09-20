@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lun' xml:lang='lun' key='lun' n='Lunda' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lun' xml:lang='lun' key='lun' n='Lunda' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>KUDITEJA CHA KAYI KEJIMA HA NSHIMBI JA WUNTU</title>
   <preamble>
     <title>PREAMBLE</title>

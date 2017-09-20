@@ -6,6 +6,8 @@ udhr =
   element udhr {
     attribute xml:lang { text },
     attribute iso639-3 { text },
+    attribute iso15924 { text },
+    attribute dir { "ltr" | "rtl" },
     attribute key { text },
     attribute language { text },
 

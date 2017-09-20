@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='oci' xml:lang='oc' key='prv' n='Occitan' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='oci' xml:lang='oc' key='prv' n='Occitan' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>Declaracioun universalo di dre de l'ome</title>
 
   <article number="1">

@@ -2,18 +2,18 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lin' xml:lang='ln' key='lin' n='Lingala' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lin' xml:lang='ln' key='lin' n='Lingala' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>Lisakoli ya molongo ya makoki ya moto</title>
   <preamble>
     <title>Maloba ya yambo</title>
-    <para>Na botalaka ‘te kondima limemya ya bato nyonso ya molongo pe makoki ma bango oyo ezali ndenge moko pe bakoki kopimela moto te ezali tina ya bonsomi, bosembo pe kimpa kati ya molongo. Na botalaka ‘te komona pamba pe koboya kotosa esengeli ya moto ebatelama na bokonzi ya bosembo po te, na sima yango, moto akoma na botombiki esongo na minyokoli te,</para>
-    <para>Na botalaka ‘te esengeli kolendisa boyokani na kati ya bikolo,</para>
-    <para>Na botalaka ‘te na kati ya Mokanda ya Mibeko ya Lisanga ya Bikolo ya Molongo, bato ya molongo bayebisi lisusu lolenge bandimi maloki ya tina yo moto, limemya pe lokumu ya moto, bokokani ya makoki ya basi pe mibali pe na botalaka ‘te bango bayebisi ‘te bazwi mokano ya kobongisa ezaleli ya moto pe kosala ‘te moto azwa bomoi malamu penza na kati ya bonsomi ya monene penza,</para>
-    <para>Na botalaka ‘te kozala bato nyonso na makanisi ndenge moko po na makoki pe bonsomi yango, ezali na tina monene po ‘te oyo bakani elonga,</para>
+    <para>Na botalaka ’te kondima limemya ya bato nyonso ya molongo pe makoki ma bango oyo ezali ndenge moko pe bakoki kopimela moto te ezali tina ya bonsomi, bosembo pe kimpa kati ya molongo. Na botalaka ’te komona pamba pe koboya kotosa esengeli ya moto ebatelama na bokonzi ya bosembo po te, na sima yango, moto akoma na botombiki esongo na minyokoli te,</para>
+    <para>Na botalaka ’te esengeli kolendisa boyokani na kati ya bikolo,</para>
+    <para>Na botalaka ’te na kati ya Mokanda ya Mibeko ya Lisanga ya Bikolo ya Molongo, bato ya molongo bayebisi lisusu lolenge bandimi maloki ya tina yo moto, limemya pe lokumu ya moto, bokokani ya makoki ya basi pe mibali pe na botalaka ’te bango bayebisi ’te bazwi mokano ya kobongisa ezaleli ya moto pe kosala ’te moto azwa bomoi malamu penza na kati ya bonsomi ya monene penza,</para>
+    <para>Na botalaka ’te kozala bato nyonso na makanisi ndenge moko po na makoki pe bonsomi yango, ezali na tina monene po ’te oyo bakani elonga,</para>
     <para>LIKITA MONENE</para>
     <para>ezali koyebisa</para>
     <para>LISAKOLI YA MOLONGO OYO YA MAKOKI YA MOTO</para>
-    <para>lokola eloko oyo bato pe bikolo nyonso balingi babwa, po te bato pe mangomba nyonso, na bobatelaka tango nyonso Lisakoli yango na moteme, basala makasi na boteyi pe bokolisi bwanya, po ‘te makoki pe bonsomi yango etosama pe basala ‘te bandima pe basalela yango na bosolo penza na molongo mobimba, ezala na kati ya bato ya Bikolo ya Lisanga bango moko to na kati ya ekolo pe molongo mobimba.</para>
+    <para>lokola eloko oyo bato pe bikolo nyonso balingi babwa, po te bato pe mangomba nyonso, na bobatelaka tango nyonso Lisakoli yango na moteme, basala makasi na boteyi pe bokolisi bwanya, po ’te makoki pe bonsomi yango etosama pe basala ’te bandima pe basalela yango na bosolo penza na molongo mobimba, ezala na kati ya bato ya Bikolo ya Lisanga bango moko to na kati ya ekolo pe molongo mobimba.</para>
   </preamble>
   <article number="1">
     <title>ETENI YA yambo (1)</title>
@@ -38,7 +38,7 @@
   </article>
   <article number="6">
     <title>ETENI YA 6</title>
-    <para>Moto nyonso azali na likoki ‘te bayeba makoki na ye bipai nyonso.</para>
+    <para>Moto nyonso azali na likoki ’te bayeba makoki na ye bipai nyonso.</para>
   </article>
   <article number="7">
     <title>ETENI YA 7</title>
@@ -54,7 +54,7 @@
   </article>
   <article number="10">
     <title>ETENI YA 10</title>
-    <para>Moto nyonso azali na likoki ‘te likambo na ye lokola ya bato nyonso, essambisama na bosembo pe na miso ya bato nyonso na esambiselo ya somi pe ya epai moko te, oyo ekozwa mikano engebene na makoki pe masenginia ye to engebene na bosolo ya likambo ye afundami.</para>
+    <para>Moto nyonso azali na likoki ’te likambo na ye lokola ya bato nyonso, essambisama na bosembo pe na miso ya bato nyonso na esambiselo ya somi pe ya epai moko te, oyo ekozwa mikano engebene na makoki pe masenginia ye to engebene na bosolo ya likambo ye afundami.</para>
   </article>
   <article number="11">
     <title>ETENI YA 11</title>
@@ -158,7 +158,7 @@
 	<para>Moto nyonso azali na likoki, lokola baninga nyonso ya kosala misala ya Leta.</para>
       </listitem>
       <listitem>
-	<para>Bolingi yango esengeli komonana na maponi ya sembo oyo esengeli kosalama mbala na mbala, na liponeli ya bato nyonso pe na boponi ya Lingomba to na ndenge mosusu ekokani na yango pe ekosala ‘te bato bapona na bonsomi nyonso.</para>
+	<para>Bolingi yango esengeli komonana na maponi ya sembo oyo esengeli kosalama mbala na mbala, na liponeli ya bato nyonso pe na boponi ya Lingomba to na ndenge mosusu ekokani na yango pe ekosala ’te bato bapona na bonsomi nyonso.</para>
       </listitem>
     </orderedlist>
   </article>
@@ -191,7 +191,7 @@
     <title>ETENI YA 25</title>
     <orderedlist>
       <listitem>
-	<para>Moto nyonso azali na likoki ya kobikela na ndenge elongobani po ‘te azwa bokolongonu, bozala malamu ya ye pe ya libota na ye epusi na makambo etali kolia, kolata, kovanda, kosalisa nzoto pe kosungama na ndenge esengeli; ye azali na likoki ya kosalisama na tango ya bosemele, bokono, bosele, bozenge, bobange to na tango mosusu ye akozanga mosolo ya kobikela na sima ya makambo esalami na bolinga na ye te.</para>
+	<para>Moto nyonso azali na likoki ya kobikela na ndenge elongobani po ’te azwa bokolongonu, bozala malamu ya ye pe ya libota na ye epusi na makambo etali kolia, kolata, kovanda, kosalisa nzoto pe kosungama na ndenge esengeli; ye azali na likoki ya kosalisama na tango ya bosemele, bokono, bosele, bozenge, bobange to na tango mosusu ye akozanga mosolo ya kobikela na sima ya makambo esalami na bolinga na ye te.</para>
       </listitem>
       <listitem>
 	<para>Bomama pe bomwana ezali na likoki ya kosungama na ndenge elongobani. Mwana nyonso abotama kati ya makwela to na libanda asengeli kobatelama to ndenge moko.</para>
@@ -219,13 +219,13 @@
 	<para>Moto nyonso azali na likoki ya kotia maboko ndenge alingi na misala ya bokolisi bwanyaya lingomba, kopesela na nkoti, pe kotia maboko na botomboli zebi pe bolamu ya yango.</para>
       </listitem>
       <listitem>
-	<para>Moto nyonso azali na likoki ‘te matomba ya misala ya ye ya zebi, ya bokomi pe ya nkoti ebatelama.</para>
+	<para>Moto nyonso azali na likoki ’te matomba ya misala ya ye ya zebi, ya bokomi pe ya nkoti ebatelama.</para>
       </listitem>
     </orderedlist>
   </article>
   <article number="28">
     <title>ETENI YA 28</title>
-    <para>Moto nyonso azali na likoki ‘te kati ya bato pe bikolo, nyonso ebonga po te makoki pe bonsomi oyo ekomami kati ya Lisakoli oyo elonga.</para>
+    <para>Moto nyonso azali na likoki ’te kati ya bato pe bikolo, nyonso ebonga po te makoki pe bonsomi oyo ekomami kati ya Lisakoli oyo elonga.</para>
   </article>
   <article number="29">
     <title>ETENI YA 29</title>
@@ -234,7 +234,7 @@
 	<para>Moto azali na mikumba epai ya lingomba oyo ekopesa ye eposa ya bokolisi bomoto na ye na ndenge elongobani.</para>
       </listitem>
       <listitem>
-	<para>Moto nyonso, na botalaka makoki pe bonsomi na ye, asengeli kosala se mikumba oyo eyebani na mobeko se po ‘te bayeba pe bakumisa maloki pe bonsomi ya baninga, pe po na kotosa mibeko ya sembo ya ezalela kinya ya bato pe bozali malamu kati ya lingomba ya boyangeli lisanga.</para>
+	<para>Moto nyonso, na botalaka makoki pe bonsomi na ye, asengeli kosala se mikumba oyo eyebani na mobeko se po ’te bayeba pe bakumisa maloki pe bonsomi ya baninga, pe po na kotosa mibeko ya sembo ya ezalela kinya ya bato pe bozali malamu kati ya lingomba ya boyangeli lisanga.</para>
       </listitem>
       <listitem>
 	<para>Makoki pe bonsomi yango ekoki, ata moke te, kozala esongo na masengi ya Lisanga ya Bikolo ya Molongo.</para>

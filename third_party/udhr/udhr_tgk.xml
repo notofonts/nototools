@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='tgk' xml:lang='tg' key='tgk' n='Tajiki' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='tgk' xml:lang='tg' key='tgk' n='Tajiki' dir='ltr' iso15924='Cyrl' xmlns="http://www.unhchr.ch/udhr">
   <title>Эъломияи Умимии Ҳуқуқи Башар</title>
   <preamble>
     <title>Пешгуфтор</title>

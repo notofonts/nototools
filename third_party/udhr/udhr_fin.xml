@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='fin' xml:lang='fi' key='fin' n='Finnish' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='fin' xml:lang='fi' key='fin' n='Finnish' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <note>
       <para>Yhdistyneiden kansakuntien kolmas yleiskokous hyväksyi ja julkisti ihmisoikeuksien yleismaailmallisen julistuksen joulukuun 10. päivänä 1948. Julistuksen hyväksymisen puolesta äänesti 48 maata. Mikään maa ei äänestänyt vastaan. Kahdeksan maata pidättyi äänestämästä.</para>
       <para>Välittömästi tämän historiallisen tapahtuman jälkeen yleiskokous kehotti kaikkia jäsenmaita julkaisemaan julistuksen tekstin. Niitä pyydettiin "levittämään ja tekemään sitä tunnetuksi, lukemaan ja selittämään sitä ennen kaikkea kouluissa ja muissa oppilaitoksissa eri maiden ja alueiden poliittisista oloista riippumatta".</para>

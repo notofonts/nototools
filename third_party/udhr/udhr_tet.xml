@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='tet' xml:lang='tet' key='tet' n='Tetun' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='tet' xml:lang='tet' key='tet' n='Tetun' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>Deklarasaun Mundu Nia Ba Direitus Ema Nia</title>
   <preamble>
     <title>Preambulu</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='slk' xml:lang='sk' key='slk' n='Slovak' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='slk' xml:lang='sk' key='slk' n='Slovak' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>VŠOBECNÁ DEKLARÁCIA LUDSKÝCH PRÁV</title>
    <preamble>
       <title>Úvod</title>

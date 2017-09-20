@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='guj' xml:lang='gu' key='guj' n='Gujarati' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='guj' xml:lang='gu' key='guj' n='Gujarati' dir='ltr' iso15924='Gujr' xmlns="http://www.unhchr.ch/udhr">
    <title>માનવ અધિકારોની વિશ્વવ્યાપી ઘોષણા</title>
    <preamble>
       <title>પ્રારુતાવિક</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ilo' xml:lang='ilo' key='ilo' n='Ilocano' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ilo' xml:lang='ilo' key='ilo' n='Ilocano' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>NAILUBONGAN A PANAKAIPAKDAAR DAGITI KALINTEGAN TI TAO</title>
    <preamble>
       <title>[Preamble]</title>

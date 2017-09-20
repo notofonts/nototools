@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lin' xml:lang='ln' key='lin_tones' n='Lingala (tones)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lin' xml:lang='ln' key='lin_tones' n='Lingala (tones)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>LISAKOLI YA MOLƆ́NGƆ́ YA MAKOKÍ YA MOTO</title>
   <preamble>
     <title>MALOBA YA YAMBO</title>

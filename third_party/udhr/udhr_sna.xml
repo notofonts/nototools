@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='sna' xml:lang='sn' key='sna' n='Shona' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='sna' xml:lang='sn' key='sna' n='Shona' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>KURUDZIRO YEKUCHENGETEDZVA KWEKODZERO DZEVANHU PASI POSE</title>
   <preamble>
     <title>ZARURO</title>

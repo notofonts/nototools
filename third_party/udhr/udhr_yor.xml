@@ -12,7 +12,7 @@ there is one occurrence of <U+0074 t LATIN SMALL LETTER T, U+0329 ◌̩ COMBININ
 which should probably be a simple <t>.
 -->
    
-<udhr iso639-3='yor' xml:lang='yo' key='yor' n='Yoruba' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='yor' xml:lang='yo' key='yor' n='Yoruba' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>ÌKÉDE KÁRÍAYÉ FÚN È̩TÓ̩ O̩MO̩NÌYÀN</title>
   <preamble>
     <title>Ò̩RÒ̩ ÀKÓ̩SO̩</title>

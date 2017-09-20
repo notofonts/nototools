@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='arb' xml:lang='ar' key='arb' n='Arabic, Standard' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='arb' xml:lang='ar' key='arb' n='Arabic, Standard' dir='rtl' iso15924='Arab' xmlns="http://www.unhchr.ch/udhr">
    <title>الإعلان العالمي لحقوق الإنسان</title>
    <note>
       <para>اعتُمد بموجب قرار الجمعية العامة 217 ألف (د-3) المؤرخ في 10 كانون الأول / ديسمبر 1948.</para>
