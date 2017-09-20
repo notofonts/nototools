@@ -4,7 +4,11 @@ set -e
 mkdir -p /app/pkgs
 
 # gtk2 for pango, ragel for autogen, gperf for fontconfig, python-lxml for fc build
-apt-get update && apt-get install -y python-gtk2 ragel gperf python-lxml
+# qt5-default for qtmake and to default to use qt5, for ttfautohint
+# (installing qt5-qmake and then export QT_SELECT=qt5 didn't work:
+#   qmake: could not find a Qt installation of 'qt5'
+# so perhaps qt5-qmake does not pull in qt5 dependencies automatically)
+apt-get update && apt-get install -y python-gtk2 ragel gperf python-lxml qt5-default
 
 # install a newer version of git
 GIT="git-2.12.2"
@@ -32,6 +36,20 @@ cd harfbuzz
 # git checkout 1.4.6
 ./autogen.sh
 make
+make install
+
+/sbin/ldconfig /usr/local/lib
+
+# get ttfautohint for font swatting
+# requires harfbuzz >= 1.3.0, so install after installing harfbuzz
+cd /app/pkgs
+AUTOHINT="1.7"
+wget https://sourceforge.net/projects/freetype/files/ttfautohint/${AUTOHINT}/ttfautohint-${AUTOHINT}.tar.gz -O - | tar -xz
+cd "ttfautohint-${AUTOHINT}"
+
+./configure
+make
+make check
 make install
 
 # behdad's cairo has the patch for color emoji
@@ -82,4 +100,3 @@ cd py2cairo
 # the image for debugging?
 
 echo "DONE"
-
