@@ -63,7 +63,7 @@ def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
     globexp = path.join(srcdir, 'Noto*%s-*.ttf' % sn)
     fonts = glob.glob(globexp)
     if not fonts:
-      raise ValueError('could not match ' + globexp)
+      continue
     fonts = [path.basename(f) for f in fonts]
     for font_name in fonts:
       lgc_font_name = font_name.replace(sn, '')
