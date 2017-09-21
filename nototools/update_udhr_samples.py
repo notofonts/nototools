@@ -627,7 +627,8 @@ def check_bcp_to_sample(bcp_to_sample):
       print ' ', e
 
 
-def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo):
+def update_samples(
+    sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_stage):
   """Create samples in sample_dir based on the bcp to c_a_s map.  Stage
   if sample_dir is in the repo.  If sample_dir is in the repo, don't
   overwrite samples whose most recent log entry does not start with
@@ -635,14 +636,15 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo):
 
   tool_utils.check_dir_exists(udhr_dir)
 
-  if (in_repo and os.path.isdir(sample_dir) and
+  if (in_repo and not no_stage and os.path.isdir(sample_dir) and
       not tool_utils.git_is_clean(sample_dir)):
     raise ValueError('Please clean %s.' % sample_dir)
 
   if in_repo:
     repo, subdir = os.path.split(sample_dir)
     tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
-    print 'only allowing overwrite of:\n  %s' % '\n  '.join(sorted(tool_samples))
+    print 'allowing overwrite of %d files:\n  %s' % (
+        len(tool_samples), ', '.join(sorted(tool_samples)))
 
   comments = [
     '# Attributions for sample excerpts:',
@@ -673,7 +675,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo):
   with open(os.path.join(sample_dir, 'attributions.txt'), 'w') as f:
     f.write(attrib_data)
 
-  if in_repo:
+  if in_repo and not no_stage:
     tool_utils.git_add_all(sample_dir)
 
   date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -681,7 +683,8 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo):
   noto_ix = udhr_dir.find('nototools')
   src = udhr_dir if noto_ix == -1 else udhr_dir[noto_ix:]
 
-  # prefix of this sample commit message indicates that these were tool-generated
+  # prefix of this sample commit message indicates that these were
+  # tool-generated
   print 'Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date)
 
 
@@ -947,7 +950,7 @@ def main():
       in_repo = args.sample_dir == tool_utils.resolve_path(samples)
       update_samples(
           args.sample_dir, args.udhr_dir, bcp_to_code_attrib_sample,
-          in_repo and not args.no_stage)
+          in_repo, args.no_stage)
 
     if args.mapping:
       print_bcp_to_code_attrib(bcp_to_code_attrib)
