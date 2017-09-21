@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='fra' xml:lang='fr' key='fra' n='French' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='fra' xml:lang='fr' key='fra' n='French' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Déclaration universelle des droits de l’homme</title>
    <preamble>
       <title>Préambule</title>

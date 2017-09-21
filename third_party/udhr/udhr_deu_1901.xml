@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='deu' xml:lang='de-1901' key='deu_1901' n='German, Standard (1901)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='deu' xml:lang='de-1901' key='deu_1901' n='German, Standard (1901)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Die Allgemeine Erklärung der Menschenrechte</title>
    <note>
       <para>Resolution 217 A (III) vom 10.12.1948</para>

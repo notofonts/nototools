@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="oki" xml:lang="oki" key="oki" n="Okiek" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="oki" xml:lang="oki" key="oki" n="Okiek" dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>IMANDAP KIPKOSOBEI EN NGWONDUINI</title>
    <preamble>
       <title>Yatet</title>

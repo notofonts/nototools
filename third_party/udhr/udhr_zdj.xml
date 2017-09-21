@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="zdj" xml:lang="zdj" key="zdj" n="Comorian, Ngazidja" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="zdj" xml:lang="zdj" key="zdj" n="Comorian, Ngazidja" dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>ANZIMIYO LA KILEMWENGU UHSU ZE HAKI ZAKI BINADAMU</title>
    <preamble>
       <title>Mukadima</title>

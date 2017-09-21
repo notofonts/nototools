@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ltz' xml:lang='lb' key='ltz' n='Luxembourgeois' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ltz' xml:lang='lb' key='ltz' n='Luxembourgeois' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>UNIVERSAL - DEKLARATIOUN VUN DE MËNSCHERECHTER</title>
    <preamble>
       <title>PRÄAMBEL</title>

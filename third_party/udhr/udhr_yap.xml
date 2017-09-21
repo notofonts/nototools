@@ -7,7 +7,7 @@ replaced U+002D - HYPHEN-MINUS by U+2010 ‐ HYPHEN
 replaced U+2019 ’ RIGHT SINGLE QUOTATION MARK by U+02BC ʼ MODIFIER LETTER APOSTROPHE
 -->
 
-<udhr iso639-3='yap' xml:lang='yap' key='yap' n='Yapese' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='yap' xml:lang='yap' key='yap' n='Yapese' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>MATTʼAWEN GUBIN E GIDII NI NGAN NANG</title>
   <preamble>
     <title>MORNGAAGEN</title>

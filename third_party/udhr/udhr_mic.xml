@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='mic' xml:lang='mic' key='mic' n='Micmac' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='mic' xml:lang='mic' key='mic' n='Micmac' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Mtul’katlku Wjit Koqwajo’taqann Mimajulnu’k Wejkuaqml’tlj</title>
    <preamble>
       <title>Preamble</title>

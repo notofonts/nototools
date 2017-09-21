@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lad' xml:lang='lad' key='lad' n='Ladino' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lad' xml:lang='lad' key='lad' n='Ladino' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>Deklarasion Universal de Derechos Umanos</title>
   <preamble>
     <title>Prefasio</title>

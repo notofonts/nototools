@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='jpn' xml:lang='ja' key='jpn' n='Japanese' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='jpn' xml:lang='ja' key='jpn' n='Japanese' dir='ltr' iso15924='Jpan' xmlns="http://www.unhchr.ch/udhr">
    <title>『世界人権宣言』</title>
    <note>
       <para>（1948.12.10 第３回国連総会採択）</para>

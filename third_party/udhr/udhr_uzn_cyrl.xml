@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='uzn' xml:lang='uzn-Cyrl' key='uzn_cyrl' n='Uzbek, Northern (Cyrillic)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='uzn' xml:lang='uzn-Cyrl' key='uzn_cyrl' n='Uzbek, Northern (Cyrillic)' dir='ltr' iso15924='Cyrl' xmlns="http://www.unhchr.ch/udhr">
    <title>ИНСОН ҲУҚУҚЛАРИ УМУМЖАҲОН ДЕКЛАРАЦИЯСИ</title>
   <note>
     <para>1948 йил, 10 декабрда Бирлашган Миллатлар Ташкилоти Бош Ассамблеясининг 217 A (III) кўрсатмаси орқали қабул қилинган ва эълон қилинган.</para>

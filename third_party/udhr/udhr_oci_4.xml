@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='oci' xml:lang='oc' key='oci_4' n='Occitan (Francoprovençal, Valais)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='oci' xml:lang='oc' key='oci_4' n='Occitan (Francoprovençal, Valais)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Dèclarachion di drouê dè l’ómó por tui lè pa-i dou moundo.</title>
    <note>
       <para>Document traduit en patois d’Hérémence par Alphonse Dayer avec la collaboration de Narcisse Seppey.</para>

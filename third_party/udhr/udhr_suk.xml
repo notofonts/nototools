@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='suk' xml:lang='suk' key='suk' n='Sukuma' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='suk' xml:lang='suk' key='suk' n='Sukuma' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>ILAKA LYA MAHANGA LYA SEKGE YA BAMUNHU</title>
   <preamble>
     <title>MIHAYO YA GUNHONGA</title>

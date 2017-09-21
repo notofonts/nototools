@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='azj' xml:lang='az-Latn' key='azj_latn' n='Azerbaijani, North (Latin)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='azj' xml:lang='az-Latn' key='azj_latn' n='Azerbaijani, North (Latin)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>İNSAN HÜQUQLARI HAQQINDA ÜMUMİ BƏYANNAMƏ</title>
   <preamble>
     <title>PREAMBULA</title>

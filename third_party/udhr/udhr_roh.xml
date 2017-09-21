@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='roh' xml:lang='rm' key='roh' n='Romansch' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='roh' xml:lang='rm' key='roh' n='Romansch' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Decleranza universala dals drets da l'uman</title>
    <preamble>
       <title>Pream</title>

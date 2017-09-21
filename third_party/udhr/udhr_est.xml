@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='est' xml:lang='et' key='est' n='Estonian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='est' xml:lang='et' key='est' n='Estonian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Inimõiguste ülddeklaratsioon</title>
    <preamble>
       <title>Preambula</title>

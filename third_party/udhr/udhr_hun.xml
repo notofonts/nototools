@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='hun' xml:lang='hu' key='hun' n='Hungarian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='hun' xml:lang='hu' key='hun' n='Hungarian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Az Emberi Jogok Egyetemes Nyilatkozata</title>
    <preamble>
       <title>Bevezető</title>

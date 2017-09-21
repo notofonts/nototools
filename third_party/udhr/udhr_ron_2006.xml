@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ron' xml:lang='ro' key='ron_2006' n='Romanian (2006)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ron' xml:lang='ro' key='ron_2006' n='Romanian (2006)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>DECLARAȚIA UNIVERSALĂ A DREPTURILOR OMULUI</title>
    <preamble>
       <title>Preambul</title>

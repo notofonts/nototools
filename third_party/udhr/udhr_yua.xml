@@ -7,7 +7,7 @@ replaced U+002D - HYPHEN-MINUS by U+2010 ‐ HYPHEN
 replaced U+0027 ʼ APOSTROPHE by U+02BC ʼ MODIFIER LETTER APOSTROPHE
 -->
 
-<udhr iso639-3='yua' xml:lang='yua' key='yua' n='Maya, Yucatán' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='yua' xml:lang='yua' key='yua' n='Maya, Yucatán' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>U DZAʼABAL KʼAJÓOLTBIL U NOJ AʼALMAJ TʼAANIL U NAJMAL WÍINIKOʼOB</title>
   <preamble>
     <title>[Preamble]</title>

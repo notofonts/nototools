@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='mah' xml:lang='mh' key='mah' n='Marshallese' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='mah' xml:lang='mh' key='mah' n='Marshallese' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>NAN IN KWALOK EO AN LAL IN KIN MARON KO AN ARMIJ</title>
   <preamble>
     <title>Kin kwaloki</title>

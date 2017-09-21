@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ind' xml:lang='id' key='ind' n='Indonesian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ind' xml:lang='id' key='ind' n='Indonesian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Pernyataan Umum tentang Hak-Hak Asasi Manusia</title>
    <preamble>
       <title>Mukadimah</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='kin' xml:lang='rw' key='kin' n='Rwanda' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='kin' xml:lang='rw' key='kin' n='Rwanda' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <note>
     <para>Taliki ya cumi y'ukwa desembri mu mwaka wa 1948, niwo munsi Ikoraniro rusange rya ONU ryemeje likanamenyesha Itangazo ryo kwamamaza hose ibyerekeye agaciro ka Muntu. Ikoraniro rusange ryasabye ibihugu byose bili muli l'ONU gukora uko bishoboye kugira ngo iryo Tangazo lizatangirwe ku mugaragaro, ryamamare hose kandi lisobanurwe, cyane cyane mu mashuli, ali amato ali ayisumbuye, mu bihugu byose, ibyigenga n'ibigitegekwa.</para>
   </note>

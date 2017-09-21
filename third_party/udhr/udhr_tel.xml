@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="tel" xml:lang="te" key="tel" n="Telugu" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="tel" xml:lang="te" key="tel" n="Telugu" dir='ltr' iso15924='Telu' xmlns="http://www.unhchr.ch/udhr">
    <title>మానవస్వత్వముల సార్వలౌకిక ప్రకటన</title>
    <preamble>
       <title>ప్రస్తావన</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='smo' xml:lang='sm' key='smo' n='Samoan' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='smo' xml:lang='sm' key='smo' n='Samoan' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>OFISA O LE KOMESINA SILI O MALO AUFAATASI MO AIA TATAU A TAGATA SOIFUA</title>
   <note>
     <para>O aia tatau a tagata soifua uma mo tagata uma</para>

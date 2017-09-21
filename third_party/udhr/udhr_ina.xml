@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ina' xml:lang='ia' key='ina' n='Interlingua' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ina' xml:lang='ia' key='ina' n='Interlingua' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>DECLARATION UNIVERSAL DEL DERECTOS HUMAN</title>
    <preamble>
       <title>PREAMBULO</title>

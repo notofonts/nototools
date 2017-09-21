@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ceb' xml:lang='ceb' key='ceb' n='Cebuano' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ceb' xml:lang='ceb' key='ceb' n='Cebuano' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>MALUKPANONG DEKLARASYON SA TAWHANONG MGA KATUNGOD</title>
    <preamble>
       <title>[Preamble]</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='bis' xml:lang='bi' key='bis' n='Bislama' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='bis' xml:lang='bi' key='bis' n='Bislama' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Deklereisen Blong Raet Blong Evri Man Mo Woman Raon Wol</title>
    <preamble>
       <title>FESTOK</title>

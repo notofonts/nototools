@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='wln' xml:lang='wa' key='wln' n='Walloon' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='wln' xml:lang='wa' key='wln' n='Walloon' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>DÉCLARÅCION UNIVERSÈLE DÈS DREÛTS D'L'OME</title>
    <preamble>
       <title>[Preamble]</title>

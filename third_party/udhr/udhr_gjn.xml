@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='gjn' xml:lang='gjn' key='gjn' n='Gonja' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='gjn' xml:lang='gjn' key='gjn' n='Gonja' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>DURNYAŊ KIKƐ BE KEYILI KPRA TA LAŊƐ DIMEDI KIKƐ BE KUMU SO BE ASHYEŊ NƐ MOBE KASHINTEŊ AKPA</title>
    <preamble>
       <title>ASHEŊFƐSO</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ibb' xml:lang='ibb' key='ibb' n='Ibibio' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ibb' xml:lang='ibb' key='ibb' n='Ibibio' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Edisuan Etop Mbana Mme Unen Owo Ke Ofuri Ekondo</title>
    <note>
       <para>Translated into Efik-Ibibio by Eno Blankson Ikpe</para>

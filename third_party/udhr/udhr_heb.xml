@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='heb' xml:lang='he' key='heb' n='Hebrew' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='heb' xml:lang='he' key='heb' n='Hebrew' dir='rtl' iso15924='Hebr' xmlns="http://www.unhchr.ch/udhr">
    <title>הכרזה לכל באי עולם בדבר זכויות האדם</title>
    <preamble>
       <para>הואיל והכרה בכבוד הטבעי אשר לכל בני משפהת האדם ובזכויותיהם השוות והבלתי נפקעות הוא יסוד החופש, הצדק והשלום בעולם.</para>

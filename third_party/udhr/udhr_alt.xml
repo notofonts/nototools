@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='alt' xml:lang='alt' key='alt' n='Altai, Southern' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='alt' xml:lang='alt' key='alt' n='Altai, Southern' dir='ltr' iso15924='Cyrl' xmlns="http://www.unhchr.ch/udhr">
   <title>Кижиниҥ тап‐эриктериниҥ Текши  Декларациязы</title>
   <note>
     <para>Генеральный Ассамблея 1948 јылдыҥ јаҥар айыныҥ 10‐чы кӱнинде јараткан</para>
@@ -78,7 +78,7 @@
          </listitem>
       </orderedlist>
    </article>
-   <article number="15">
+   <article number="14">
       <title>14‐чи тизим</title>
       <orderedlist>
          <listitem>

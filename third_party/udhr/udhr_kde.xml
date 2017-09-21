@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='kde' xml:lang='kde' key='kde' n='Makonde' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='kde' xml:lang='kde' key='kde' n='Makonde' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>LILOVE LYA VILAMBO LYA WASA WA VAN</title>
   <preamble>
     <title>Pachinjililo</title>

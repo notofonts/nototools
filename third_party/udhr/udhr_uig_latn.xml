@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='uig' xml:lang='ug-Latn' key='uig_latn' n='Uyghur (Latin)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='uig' xml:lang='ug-Latn' key='uig_latn' n='Uyghur (Latin)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>dunya kishilik hoquqi xitabnamisi</title>
    <preamble>
       <title>söz béshi</title>

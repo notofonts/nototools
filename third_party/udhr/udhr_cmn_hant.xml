@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='cmn' xml:lang='zh-Hant' key='cmn_hant' n='Chinese, Mandarin (Traditional)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='cmn' xml:lang='zh-Hant' key='cmn_hant' n='Chinese, Mandarin (Traditional)' dir='ltr' iso15924='Hant' xmlns="http://www.unhchr.ch/udhr">
   <title>世界人權宣言</title>
   <note>
     <para>聯合國大會一九四八年十二月十日第 217A (III) 號痩議通過並宣布</para>

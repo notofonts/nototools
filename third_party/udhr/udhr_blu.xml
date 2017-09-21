@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='hnj' xml:lang='hnj' key='blu' n='Hmong Njua' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='hnj' xml:lang='hnj' key='blu' n='Hmong Njua' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <note>
       <para>Nyaob hnob 10, lob 12 hlit, xongt 1948, dif 217 A (III) haof yix yif tlout dluat.</para>
    </note>

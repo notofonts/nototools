@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='spa' xml:lang='es' key='spa' n='Spanish' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='spa' xml:lang='es' key='spa' n='Spanish' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Declaración Universal de Derechos Humanos</title>
    <note>
       <para>Adoptada y proclamada por la Asamblea General en su resolución 217 A (III), de 10 de diciembre de 1948</para>

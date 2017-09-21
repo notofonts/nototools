@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lit' xml:lang='lt' key='lit' n='Lithuanian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lit' xml:lang='lt' key='lit' n='Lithuanian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>VISUOTINĖ ŽMOGAUS TEISIŲ DEKLARACIJA</title>
    <preamble>
       <title>PREAMBULĖ</title>

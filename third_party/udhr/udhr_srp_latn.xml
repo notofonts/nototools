@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='srp' xml:lang='sr-Latn' key='srp_latn' n='Serbian (Latin)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='srp' xml:lang='sr-Latn' key='srp_latn' n='Serbian (Latin)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>OPŠTA DEKLARACIJA O PRAVIMA ČOVEKA</title>
   <preamble>
     <title>UVOD</title>

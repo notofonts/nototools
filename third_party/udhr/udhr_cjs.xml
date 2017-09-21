@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='cjs' xml:lang='cjs' key='cjs' n='Shor' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='cjs' xml:lang='cjs' key='cjs' n='Shor' dir='ltr' iso15924='Cyrl' xmlns="http://www.unhchr.ch/udhr">
    <title>Кижини тоолағанынаң ужун декларациязы</title>
    <note>
       <para>1948 чылда улуғ қырлаш айдынъ 10 кӱнӱнде Генеральный Ассамблей, 217 A(III) кижини тоолағанының ужун декларациязын ал-кел, резолюцияба аны угъустылар.</para>
@@ -137,11 +137,11 @@
       <title>Статьязы 18</title>
       <para>Парчын кижи ноода ужун саназа, анаң ужун саназын, қайдығ да қудайға  пӱдерге саназа, аға пӱтсин, чағысқа да, кемме пирге, қожа да, кижилердиң кӧзӱнче да, кижиге кӧрдӱрбен да позуның чозағын тутсын.</para>
    </article>
-   <article number="25">
+   <article number="19">
       <title>Статьязы 19</title>
       <para>Парчын кижи ноо ла санарға саназа, аны саназын, ноо ла айдарға саназа, аны айтсын, ноо ла тилерге, табарға саназа, аны тапсын, кем да аны қайдығ черде да тоқтатпазын.</para>
    </article>
-   <article number="25">
+   <article number="20">
       <title>Статьязы 20</title>
       <orderedlist>
          <listitem>
@@ -170,7 +170,7 @@
       <title>Статьязы 22</title>
       <para>Парчын кижи, қалық аразында чӧрӱуп, чақшы чадарға, қатчы поларға, пай поларға керек небелерин алзын.</para>
    </article>
-   <article number="25">
+   <article number="23">
       <title>Статьязы 23</title>
       <orderedlist>
          <listitem>
