@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10741 $"/>
-		<generation date="$Date: 2014-08-07 11:24:47 -0700 (Thu, 07 Aug 2014) $"/>
+		<version number="$Revision: 13133 $"/>
 		<language type="ca"/>
 		<territory type="ES"/>
 		<variant type="VALENCIA"/>
@@ -80,10 +80,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Thai" draft="unconfirmed">tailandés</script>
 		</scripts>
 		<types>
-			<type type="big5han" key="collation" draft="unconfirmed">ordre del xinés tradicional - Big5</type>
-			<type type="chinese" key="calendar" draft="unconfirmed">calendari xinés</type>
-			<type type="gb2312han" key="collation" draft="unconfirmed">ordre del xinés simplificat - GB2312</type>
-			<type type="japanese" key="calendar" draft="unconfirmed">calendari japonés</type>
+			<type key="calendar" type="chinese" draft="unconfirmed">calendari xinés</type>
+			<type key="calendar" type="japanese" draft="unconfirmed">calendari japonés</type>
+			<type key="collation" type="big5han" draft="unconfirmed">ordre del xinés tradicional - Big5</type>
+			<type key="collation" type="gb2312han" draft="unconfirmed">ordre del xinés simplificat - GB2312</type>
 		</types>
 	</localeDisplayNames>
 	<numbers>
@@ -281,4 +281,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</currencies>
 	</numbers>
 </ldml>
-

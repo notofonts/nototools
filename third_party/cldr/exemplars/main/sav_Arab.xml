@@ -6,8 +6,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11072 $"/>
-		<generation date="$Date: 2014-12-04 15:58:51 -0800 (Thu, 04 Dec 2014) $"/>
+		<version number="$Revision: 11914 $"/>
 		<language type="sav"/>
 		<script type="Arab"/>
 	</identity>

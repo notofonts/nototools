@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="en"/>
 		<script type="Dsrt"/>
 	</identity>
@@ -257,7 +257,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AI">𐐈𐑍𐑀𐐶𐐮𐑊𐐲</territory>
 			<territory type="AL">𐐈𐑊𐐺𐐩𐑌𐐨𐐲</territory>
 			<territory type="AM">𐐂𐑉𐑋𐐨𐑌𐐨𐐲</territory>
-			<territory type="AN">𐐤𐐯𐑄𐐲𐑉𐑊𐐲𐑌𐐼𐑆 𐐈𐑌𐐻𐐮𐑊𐐨𐑆</territory>
 			<territory type="AO">𐐈𐑌𐑀𐐬𐑊𐐲</territory>
 			<territory type="AQ">𐐈𐑌𐐻𐐪𐑉𐐿𐐻𐐮𐐿𐐲</territory>
 			<territory type="AR">𐐂𐑉𐐾𐐲𐑌𐐻𐐨𐑌𐐲</territory>
@@ -667,6 +666,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</quarters>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am">𐐈𐐣</dayPeriod>
+							<dayPeriod type="am" alt="variant">𐐰𐑋</dayPeriod>
+							<dayPeriod type="pm">𐐑𐐣</dayPeriod>
+							<dayPeriod type="pm" alt="variant">𐐹𐑋</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am">𐐈𐐣</dayPeriod>
 							<dayPeriod type="am" alt="variant">𐐰𐑋</dayPeriod>
@@ -735,14 +740,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<gmtFormat>𐐘𐐣𐐓 {0}</gmtFormat>
 			<gmtZeroFormat>𐐘𐐣𐐓</gmtZeroFormat>
 			<regionFormat>{0} 𐐓𐐴𐑋</regionFormat>
+			<zone type="Pacific/Johnston">
+				<exemplarCity>𐐖𐐪𐑌𐑅𐐻𐐲𐑌</exemplarCity>
+			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>𐐊𐑌𐑌𐐬𐑌</exemplarCity>
 			</zone>
 			<zone type="Pacific/Midway">
 				<exemplarCity>𐐣𐐮𐐼𐐶𐐩</exemplarCity>
-			</zone>
-			<zone type="Pacific/Johnston">
-				<exemplarCity>𐐖𐐪𐑌𐑅𐐻𐐲𐑌</exemplarCity>
 			</zone>
 			<zone type="Pacific/Wake">
 				<exemplarCity>𐐎𐐩𐐿</exemplarCity>
@@ -892,6 +897,18 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</numbers>
 	<units>
 		<unitLength type="long">
+			<unit type="duration-year">
+				<unitPattern count="one">{0} 𐐷𐐮𐑉</unitPattern>
+				<unitPattern count="other">{0} 𐐷𐐮𐑉𐑆</unitPattern>
+			</unit>
+			<unit type="duration-month">
+				<unitPattern count="one">{0} 𐑋𐐲𐑌𐑃𐑅</unitPattern>
+				<unitPattern count="other">{0} 𐑋𐐲𐑌𐑃</unitPattern>
+			</unit>
+			<unit type="duration-week">
+				<unitPattern count="one">{0} 𐐶𐐨𐐿</unitPattern>
+				<unitPattern count="other">{0} 𐐶𐐨𐐿𐑅</unitPattern>
+			</unit>
 			<unit type="duration-day">
 				<unitPattern count="one">{0} 𐐼𐐩</unitPattern>
 				<unitPattern count="other">{0} 𐐼𐐩𐑆</unitPattern>
@@ -904,21 +921,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one">{0} 𐑋𐐮𐑌𐐲𐐻</unitPattern>
 				<unitPattern count="other">{0} 𐑋𐐮𐑌𐐲𐐻𐑅</unitPattern>
 			</unit>
-			<unit type="duration-month">
-				<unitPattern count="one">{0} 𐑋𐐲𐑌𐑃𐑅</unitPattern>
-				<unitPattern count="other">{0} 𐑋𐐲𐑌𐑃</unitPattern>
-			</unit>
 			<unit type="duration-second">
 				<unitPattern count="one">{0} 𐑅𐐯𐐿𐐲𐑌𐐼</unitPattern>
 				<unitPattern count="other">{0} 𐑅𐐯𐐿𐐲𐑌𐐼𐑆</unitPattern>
-			</unit>
-			<unit type="duration-week">
-				<unitPattern count="one">{0} 𐐶𐐨𐐿</unitPattern>
-				<unitPattern count="other">{0} 𐐶𐐨𐐿𐑅</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<unitPattern count="one">{0} 𐐷𐐮𐑉</unitPattern>
-				<unitPattern count="other">{0} 𐐷𐐮𐑉𐑆</unitPattern>
 			</unit>
 		</unitLength>
 	</units>

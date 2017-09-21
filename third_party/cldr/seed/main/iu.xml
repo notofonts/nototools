@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="iu"/>
 	</identity>
 	<localeDisplayNames>
@@ -26,31 +26,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 	<dates>
 		<calendars>
 			<calendar type="generic">
-				<days>
-					<dayContext type="format">
-						<dayWidth type="wide">
-							<day type="sun" draft="unconfirmed">ᓈᑦᑏᖑᔭᖅ</day>
-							<day type="mon" draft="unconfirmed">ᓇᒡᒐᔾᔭᐅ</day>
-							<day type="tue" draft="unconfirmed">ᓇᒡᒐᔾᔭᐅᓕᖅᑭ</day>
-							<day type="wed" draft="unconfirmed">ᐱᖓᑦᓯᖅ</day>
-							<day type="thu" draft="unconfirmed">ᓯᑕᒻᒥᖅ</day>
-							<day type="fri" draft="unconfirmed">ᑕᓪᓕᒻᒥᐅᑦ</day>
-							<day type="sat" draft="unconfirmed">ᓈᑦᓰᖑᔭᓛᕐᓂᐊᖅ</day>
-						</dayWidth>
-					</dayContext>
-				</days>
-				<dayPeriods>
-					<dayPeriodContext type="format">
-						<dayPeriodWidth type="narrow">
-							<dayPeriod type="am" draft="unconfirmed">am</dayPeriod>
-							<dayPeriod type="pm" draft="unconfirmed">pm</dayPeriod>
-						</dayPeriodWidth>
-						<dayPeriodWidth type="wide">
-							<dayPeriod type="am" draft="unconfirmed">am</dayPeriod>
-							<dayPeriod type="pm" draft="unconfirmed">pm</dayPeriod>
-						</dayPeriodWidth>
-					</dayPeriodContext>
-				</dayPeriods>
 				<dateFormats>
 					<dateFormatLength type="full">
 						<dateFormat>
@@ -157,6 +132,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</days>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am" draft="unconfirmed">am</dayPeriod>
+							<dayPeriod type="pm" draft="unconfirmed">pm</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="narrow">
 							<dayPeriod type="am" draft="unconfirmed">am</dayPeriod>
 							<dayPeriod type="pm" draft="unconfirmed">pm</dayPeriod>

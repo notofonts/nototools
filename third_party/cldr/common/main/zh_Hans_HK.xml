@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11323 $"/>
-		<generation date="$Date: 2015-02-26 13:25:28 -0800 (Thu, 26 Feb 2015) $"/>
+		<version number="$Revision: 13706 $"/>
 		<language type="zh"/>
 		<script type="Hans"/>
 		<territory type="HK"/>
 	</identity>
-	<localeDisplayNames>
-		<types>
-			<type type="dictionary" key="collation" draft="contributed">字典排序</type>
-			<type type="phonebook" key="collation" draft="contributed">电话簿排序</type>
-			<type type="reformed" key="collation" draft="contributed">改良排序</type>
-			<type type="traditional" key="collation" draft="contributed">传统排序</type>
-		</types>
-	</localeDisplayNames>
 	<dates>
 		<calendars>
 			<calendar type="buddhist">
@@ -67,7 +59,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateTimeFormats>
 					<availableFormats>
 						<dateFormatItem id="HHmm" draft="contributed">HH:mm</dateFormatItem>
-						<dateFormatItem id="M" draft="contributed">L</dateFormatItem>
 						<dateFormatItem id="Md" draft="contributed">d/M</dateFormatItem>
 						<dateFormatItem id="MEd" draft="contributed">E, d/M</dateFormatItem>
 						<dateFormatItem id="MMM" draft="contributed">M月</dateFormatItem>
@@ -87,9 +78,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 						</intervalFormatItem>
 						<intervalFormatItem id="Hv">
 							<greatestDifference id="H" draft="contributed">vHH–HH</greatestDifference>
-						</intervalFormatItem>
-						<intervalFormatItem id="MMM">
-							<greatestDifference id="M" draft="contributed">M月至M月</greatestDifference>
 						</intervalFormatItem>
 						<intervalFormatItem id="yM">
 							<greatestDifference id="M" draft="contributed">y年M月至y年M月</greatestDifference>
@@ -231,18 +219,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</decimalFormatLength>
 		</decimalFormats>
 		<currencyFormats numberSystem="latn">
-			<currencyFormatLength>
-				<currencyFormat type="standard">
-					<pattern draft="contributed">¤#,##0.00</pattern>
-				</currencyFormat>
-			</currencyFormatLength>
 			<unitPattern count="other" draft="contributed">{0} {1}</unitPattern>
 		</currencyFormats>
 		<currencies>
-			<currency type="AWG">
-				<displayName draft="contributed">阿鲁巴弗罗林</displayName>
-				<displayName count="other" draft="contributed">阿鲁巴弗罗林</displayName>
-			</currency>
 			<currency type="CNY">
 				<symbol draft="contributed">CN¥</symbol>
 			</currency>
@@ -251,7 +230,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other" draft="contributed">开曼群岛元</displayName>
 			</currency>
 			<currency type="NIO">
-				<displayName>尼加拉瓜科多巴</displayName>
 				<displayName count="other">尼加拉瓜科多巴</displayName>
 			</currency>
 			<currency type="XAG">
@@ -264,12 +242,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<compoundUnit type="per">
 				<compoundUnitPattern draft="contributed">{0}/{1}</compoundUnitPattern>
 			</compoundUnit>
-			<unit type="duration-second">
-				<unitPattern count="other" draft="contributed">{0}秒</unitPattern>
-			</unit>
-			<unit type="proportion-karat">
+			<unit type="concentr-karat">
 				<displayName draft="unconfirmed">开</displayName>
 				<unitPattern count="other" draft="unconfirmed">{0}开</unitPattern>
+			</unit>
+			<unit type="duration-second">
+				<unitPattern count="other" draft="contributed">{0}秒</unitPattern>
 			</unit>
 			<unit type="temperature-kelvin">
 				<displayName draft="contributed">开氏度</displayName>
@@ -280,19 +258,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="acceleration-g-force">
 				<unitPattern count="other" draft="unconfirmed">{0}G力</unitPattern>
 			</unit>
-			<unit type="length-light-year">
-				<unitPattern count="other" draft="unconfirmed">{0}光年</unitPattern>
-			</unit>
-			<unit type="length-meter">
-				<unitPattern count="other" draft="unconfirmed">{0}米</unitPattern>
-			</unit>
-			<unit type="length-picometer">
-				<unitPattern count="other" draft="unconfirmed">{0}皮米</unitPattern>
-			</unit>
-			<unit type="length-yard">
-				<unitPattern count="other" draft="unconfirmed">{0}码</unitPattern>
-			</unit>
-			<unit type="proportion-karat">
+			<unit type="concentr-karat">
 				<displayName draft="unconfirmed">开</displayName>
 				<unitPattern count="other" draft="unconfirmed">{0}开</unitPattern>
 			</unit>
@@ -302,6 +268,15 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</unit>
 		</unitLength>
 		<unitLength type="narrow">
+			<unit type="length-picometer">
+				<unitPattern count="other" draft="unconfirmed">{0}皮米</unitPattern>
+			</unit>
+			<unit type="length-mile">
+				<unitPattern count="other" draft="unconfirmed">{0}英里</unitPattern>
+			</unit>
+			<unit type="length-yard">
+				<unitPattern count="other" draft="unconfirmed">{0}码</unitPattern>
+			</unit>
 			<unit type="length-foot">
 				<unitPattern count="other" draft="unconfirmed">{0}英尺</unitPattern>
 			</unit>
@@ -311,19 +286,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="length-light-year">
 				<unitPattern count="other" draft="unconfirmed">{0}光年</unitPattern>
 			</unit>
-			<unit type="length-mile">
-				<unitPattern count="other" draft="unconfirmed">{0}英里</unitPattern>
-			</unit>
-			<unit type="length-picometer">
-				<unitPattern count="other" draft="unconfirmed">{0}皮米</unitPattern>
-			</unit>
-			<unit type="length-yard">
-				<unitPattern count="other" draft="unconfirmed">{0}码</unitPattern>
-			</unit>
-			<unit type="temperature-celsius">
-				<unitPattern count="other" draft="contributed">{0}°C</unitPattern>
-			</unit>
 		</unitLength>
 	</units>
 </ldml>
-

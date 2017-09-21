@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11294 $"/>
-		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
+		<version number="$Revision: 13701 $"/>
 		<language type="ks"/>
 	</identity>
 	<localeDisplayNames>
@@ -613,7 +613,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AI">انگوئیلا</territory>
 			<territory type="AL">اٮ۪لبانِیا</territory>
 			<territory type="AM">اَرمانِیا</territory>
-			<territory type="AN">نَیدَرلینٛڑٕس اٮ۪نٹَیلٕس</territory>
 			<territory type="AO">انگولا</territory>
 			<territory type="AQ">اینٹارٹِکا</territory>
 			<territory type="AR">أرجَنٹینا</territory>
@@ -883,19 +882,19 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<key type="currency">ضَرب</key>
 		</keys>
 		<types>
-			<type type="big5han" key="collation">رٮ۪وٲتی چیٖنی تِرتیٖب</type>
-			<type type="buddhist" key="calendar">بُدَن ہُنٛد کیلنڑَر</type>
-			<type type="chinese" key="calendar">چیٖنی کیلَنڑَر</type>
-			<type type="gregorian" key="calendar">گرگوریَن کیلنڑَر</type>
-			<type type="hebrew" key="calendar">ہِبرِو کیلنڑَر</type>
-			<type type="islamic" key="calendar">اِسلٲمی کیلنڑَر</type>
-			<type type="islamic-civil" key="calendar">اِسلٲمی اِجتمٲیی کیلنڑَر</type>
-			<type type="japanese" key="calendar">جاپٲنۍ کیلنڑَر</type>
-			<type type="phonebook" key="collation">فون بُک تَرتیٖب</type>
-			<type type="pinyin" key="collation">آسان بَناونہٕ آمُت چیٖنی پیٖنیَن تَرتیٖب</type>
-			<type type="roc" key="calendar">جموٗریٲتی چیٖنی کیلَنڑَر</type>
-			<type type="stroke" key="collation">رٮ۪وٲتی چیٖنی سٹروک تَرتیٖب</type>
-			<type type="traditional" key="collation">رٮ۪وٲتی تَرتیٖب</type>
+			<type key="calendar" type="buddhist">بُدَن ہُنٛد کیلنڑَر</type>
+			<type key="calendar" type="chinese">چیٖنی کیلَنڑَر</type>
+			<type key="calendar" type="gregorian">گرگوریَن کیلنڑَر</type>
+			<type key="calendar" type="hebrew">ہِبرِو کیلنڑَر</type>
+			<type key="calendar" type="islamic">اِسلٲمی کیلنڑَر</type>
+			<type key="calendar" type="islamic-civil">اِسلٲمی اِجتمٲیی کیلنڑَر</type>
+			<type key="calendar" type="japanese">جاپٲنۍ کیلنڑَر</type>
+			<type key="calendar" type="roc">جموٗریٲتی چیٖنی کیلَنڑَر</type>
+			<type key="collation" type="big5han">رٮ۪وٲتی چیٖنی تِرتیٖب</type>
+			<type key="collation" type="phonebook">فون بُک تَرتیٖب</type>
+			<type key="collation" type="pinyin">آسان بَناونہٕ آمُت چیٖنی پیٖنیَن تَرتیٖب</type>
+			<type key="collation" type="stroke">رٮ۪وٲتی چیٖنی سٹروک تَرتیٖب</type>
+			<type key="collation" type="traditional">رٮ۪وٲتی تَرتیٖب</type>
 		</types>
 		<measurementSystemNames>
 			<measurementSystemName type="metric">میٖٹرِک</measurementSystemName>
@@ -915,6 +914,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 	<characters>
 		<exemplarCharacters>[\u06EA\u06ED \u064E \u064F \u0650 \u0654 \u0655 \u0656 \u0657 \u065A \u065B ء آ أ ٲ ؤ ا ٮ ب پ ت ث ٹ ج چ ح خ د ذ ڈ ر ز ڑ ژ س ش ص ض ط ظ ع غ ف ق ک گ ل م ن ں ھ ہ و ۄ ی ۍ ے]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[\u200E\u200F]</exemplarCharacters>
+		<exemplarCharacters type="numbers">[\u200E \- , . % ‰ + 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
 	</characters>
 	<dates>
 		<calendars>
@@ -964,7 +964,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateTimeFormatLength>
 					<availableFormats>
 						<dateFormatItem id="d">d</dateFormatItem>
-						<dateFormatItem id="GGGGyMMMMEEEEdd">EEEE,dd MMMM GGGGy</dateFormatItem>
 						<dateFormatItem id="Gy">Gy</dateFormatItem>
 						<dateFormatItem id="GyMMM">MMM Gy</dateFormatItem>
 						<dateFormatItem id="GyMMMd">MMM d, Gy</dateFormatItem>
@@ -1155,7 +1154,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateTimeFormatLength>
 					<availableFormats>
 						<dateFormatItem id="d">d</dateFormatItem>
-						<dateFormatItem id="GGGGyMMMMEEEEdd">EEEE,dd MMMM GGGGy</dateFormatItem>
 						<dateFormatItem id="Gy">Gy</dateFormatItem>
 						<dateFormatItem id="GyMMM">MMM Gy</dateFormatItem>
 						<dateFormatItem id="GyMMMd">MMM d, Gy</dateFormatItem>
@@ -1245,6 +1243,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<timeZoneNames>
 			<hourFormat>+HH:mm;-HH:mm</hourFormat>
 			<gmtFormat>GMT{0}</gmtFormat>
+			<zone type="Pacific/Honolulu">
+				<exemplarCity>ہونولو لو</exemplarCity>
+			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>غٲر زان</exemplarCity>
 			</zone>
@@ -2235,9 +2236,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<zone type="Pacific/Midway">
 				<exemplarCity>مِڈویے</exemplarCity>
 			</zone>
-			<zone type="Pacific/Johnston">
-				<exemplarCity>جانسٹَن</exemplarCity>
-			</zone>
 			<zone type="Pacific/Wake">
 				<exemplarCity>ویک</exemplarCity>
 			</zone>
@@ -2247,8 +2245,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<zone type="America/Nome">
 				<exemplarCity>نوم</exemplarCity>
 			</zone>
-			<zone type="Pacific/Honolulu">
-				<exemplarCity>ہونولو لو</exemplarCity>
+			<zone type="Pacific/Johnston">
+				<exemplarCity>جانسٹَن</exemplarCity>
 			</zone>
 			<zone type="America/Anchorage">
 				<exemplarCity>اَنکوراج</exemplarCity>
@@ -3297,7 +3295,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<minusSign>‎-</minusSign> <!-- includes LRM before sign (002D) -->
 			<exponential>E</exponential>
 			<perMille>‰</perMille>
-			<infinity>?</infinity>
+			<infinity>∞</infinity>
 			<nan>NaN</nan>
 		</symbols>
 		<decimalFormats numberSystem="latn">
@@ -3325,6 +3323,34 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<currencyFormatLength>
 				<currencyFormat type="standard">
 					<pattern>¤ #,##,##0.00</pattern>
+				</currencyFormat>
+			</currencyFormatLength>
+			<currencyFormatLength type="short">
+				<currencyFormat type="standard">
+					<pattern type="1000" count="one" draft="provisional">¤ 0K</pattern>
+					<pattern type="1000" count="other" draft="provisional">¤ 0K</pattern>
+					<pattern type="10000" count="one" draft="provisional">¤ 00K</pattern>
+					<pattern type="10000" count="other" draft="provisional">¤ 00K</pattern>
+					<pattern type="100000" count="one" draft="provisional">¤ 000K</pattern>
+					<pattern type="100000" count="other" draft="provisional">¤ 000K</pattern>
+					<pattern type="1000000" count="one" draft="provisional">¤ 0M</pattern>
+					<pattern type="1000000" count="other" draft="provisional">¤ 0M</pattern>
+					<pattern type="10000000" count="one" draft="provisional">¤ 00M</pattern>
+					<pattern type="10000000" count="other" draft="provisional">¤ 00M</pattern>
+					<pattern type="100000000" count="one" draft="provisional">¤ 000M</pattern>
+					<pattern type="100000000" count="other" draft="provisional">¤ 000M</pattern>
+					<pattern type="1000000000" count="one" draft="provisional">¤ 0G</pattern>
+					<pattern type="1000000000" count="other" draft="provisional">¤ 0G</pattern>
+					<pattern type="10000000000" count="one" draft="provisional">¤ 00G</pattern>
+					<pattern type="10000000000" count="other" draft="provisional">¤ 00G</pattern>
+					<pattern type="100000000000" count="one" draft="provisional">¤ 000G</pattern>
+					<pattern type="100000000000" count="other" draft="provisional">¤ 000G</pattern>
+					<pattern type="1000000000000" count="one" draft="provisional">¤ 0T</pattern>
+					<pattern type="1000000000000" count="other" draft="provisional">¤ 0T</pattern>
+					<pattern type="10000000000000" count="one" draft="provisional">¤ 00T</pattern>
+					<pattern type="10000000000000" count="other" draft="provisional">¤ 00T</pattern>
+					<pattern type="100000000000000" count="one" draft="provisional">¤ 000T</pattern>
+					<pattern type="100000000000000" count="other" draft="provisional">¤ 000T</pattern>
 				</currencyFormat>
 			</currencyFormatLength>
 		</currencyFormats>
@@ -3443,8 +3469,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<currency type="BYB">
 				<displayName>بِلیروشِیَن نِو رِبٕل</displayName>
 			</currency>
-			<currency type="BYR">
+			<currency type="BYN">
 				<displayName>بِلیروشِیَن رِبٕل</displayName>
+			</currency>
+			<currency type="BYR">
+				<displayName>بِلیروشِیَن رِبٕل (۲۰۰۰–۲۰۱۶)</displayName>
 			</currency>
 			<currency type="BZD">
 				<displayName>بِلِزی ڈالر</displayName>
@@ -3807,10 +3836,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>پٔریوٗوِیَن اِنٛٹی</displayName>
 			</currency>
 			<currency type="PEN">
-				<displayName>پٔریوٗوِیَن نیوٗاوز سولٕز</displayName>
+				<displayName>پٔریوٗوِیَن سولٕز</displayName>
 			</currency>
 			<currency type="PES">
-				<displayName>پٔریوٗوِیَن سول</displayName>
+				<displayName>پٔریوٗوِیَن سول (۱۸۶۳–۱۹۶۵)</displayName>
 			</currency>
 			<currency type="PGK">
 				<displayName>نیوٗ پیپُعا گِنِیَن کیٖنا</displayName>
@@ -4086,6 +4115,21 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</numbers>
 	<units>
 		<unitLength type="long">
+			<unit type="duration-year">
+				<displayName draft="provisional">ؤری</displayName>
+				<unitPattern count="one">{0} ؤری</unitPattern>
+				<unitPattern count="other">{0} ؤری</unitPattern>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="provisional">ریٚتھ</displayName>
+				<unitPattern count="one">{0} ریٚتھ</unitPattern>
+				<unitPattern count="other">{0} ریٚتھ</unitPattern>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="provisional">ہَفتہٕ</displayName>
+				<unitPattern count="one">{0} ہَفتہٕ</unitPattern>
+				<unitPattern count="other">{0} ہَفتہٕ</unitPattern>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="provisional">دۄہ</displayName>
 				<unitPattern count="one">{0} دۄہ</unitPattern>
@@ -4101,28 +4145,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one">{0} مِنَٹ</unitPattern>
 				<unitPattern count="other">{0} مِنَٹ</unitPattern>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="provisional">ریٚتھ</displayName>
-				<unitPattern count="one">{0} ریٚتھ</unitPattern>
-				<unitPattern count="other">{0} ریٚتھ</unitPattern>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="provisional">سیٚکَنٛڈ</displayName>
 				<unitPattern count="one">{0} سیٚکَنٛڈ</unitPattern>
 				<unitPattern count="other">{0} سیٚکَنٛڈ</unitPattern>
 			</unit>
-			<unit type="duration-week">
-				<displayName draft="provisional">ہَفتہٕ</displayName>
-				<unitPattern count="one">{0} ہَفتہٕ</unitPattern>
-				<unitPattern count="other">{0} ہَفتہٕ</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="provisional">ؤری</displayName>
-				<unitPattern count="one">{0} ؤری</unitPattern>
-				<unitPattern count="other">{0} ؤری</unitPattern>
-			</unit>
 		</unitLength>
 		<unitLength type="short">
+			<unit type="duration-year">
+				<displayName draft="provisional">ؤری</displayName>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="provisional">ریٚتھ</displayName>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="provisional">ہَفتہٕ</displayName>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="provisional">دۄہ</displayName>
 			</unit>
@@ -4132,17 +4170,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-minute">
 				<displayName draft="provisional">مِنَٹ</displayName>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="provisional">ریٚتھ</displayName>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="provisional">سیٚکَنٛڈ</displayName>
-			</unit>
-			<unit type="duration-week">
-				<displayName draft="provisional">ہَفتہٕ</displayName>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="provisional">ؤری</displayName>
 			</unit>
 		</unitLength>
 	</units>
@@ -4153,4 +4182,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</messages>
 	</posix>
 </ldml>
-

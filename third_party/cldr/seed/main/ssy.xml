@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11339 $"/>
-		<generation date="$Date: 2015-03-02 13:29:55 -0800 (Mon, 02 Mar 2015) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="ssy"/>
 	</identity>
 	<localeDisplayNames>
@@ -24,9 +24,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</territories>
 	</localeDisplayNames>
 	<characters>
-		<exemplarCharacters>[a b t s e c k x i d q r f g o l m n u w h y]</exemplarCharacters>
+		<exemplarCharacters>[a b c d e f g h i k l m n o q r s t u w x y]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[j p v z]</exemplarCharacters>
-		<exemplarCharacters type="index">[A B T S E C K X I D Q R F G O L M N U W H Y]</exemplarCharacters>
+		<exemplarCharacters type="index">[A B C D E F G H I K L M N O Q R S T U W X Y]</exemplarCharacters>
 	</characters>
 	<dates>
 		<calendars>
@@ -138,6 +138,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</days>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am" draft="unconfirmed">saaku</dayPeriod>
+							<dayPeriod type="pm" draft="unconfirmed">carra</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am" draft="unconfirmed">saaku</dayPeriod>
 							<dayPeriod type="pm" draft="unconfirmed">carra</dayPeriod>
@@ -145,9 +149,13 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dayPeriodContext>
 				</dayPeriods>
 				<eras>
-					<eraAbbr>
+					<eraNames>
 						<era type="0" draft="unconfirmed">Yaasuusuk Duma</era>
 						<era type="1" draft="unconfirmed">Yaasuusuk Wadir</era>
+					</eraNames>
+					<eraAbbr>
+						<era type="0" draft="unconfirmed">YD</era>
+						<era type="1" draft="unconfirmed">YW</era>
 					</eraAbbr>
 				</eras>
 				<dateFormats>

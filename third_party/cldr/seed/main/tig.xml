@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11275 $"/>
-		<generation date="$Date: 2015-02-19 12:56:49 -0800 (Thu, 19 Feb 2015) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="tig"/>
 	</identity>
 	<localeDisplayNames>
@@ -162,7 +162,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AE" draft="unconfirmed">የተባበሩት አረብ ኤምሬትስ</territory>
 			<territory type="AL" draft="unconfirmed">አልባኒያ</territory>
 			<territory type="AM" draft="unconfirmed">አርሜኒያ</territory>
-			<territory type="AN" draft="unconfirmed">ኔዘርላንድስ አንቲልስ</territory>
 			<territory type="AR" draft="unconfirmed">አርጀንቲና</territory>
 			<territory type="AT" draft="unconfirmed">ኦስትሪያ</territory>
 			<territory type="AU" draft="unconfirmed">አውስትሬሊያ</territory>
@@ -403,6 +402,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</days>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am" draft="unconfirmed">ቀደም ሰርምዕል</dayPeriod>
+							<dayPeriod type="pm" draft="unconfirmed">ሓቆ ስርምዕል</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am" draft="unconfirmed">ቀደም ሰርምዕል</dayPeriod>
 							<dayPeriod type="pm" draft="unconfirmed">ሓቆ ስርምዕል</dayPeriod>
