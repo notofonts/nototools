@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10753 $"/>
-		<generation date="$Date: 2014-08-11 09:10:03 -0700 (Mon, 11 Aug 2014) $"/>
+		<version number="$Revision: 13701 $"/>
 		<language type="ksh"/>
 	</identity>
 	<localeDisplayNames>
@@ -20,18 +20,24 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="aa" draft="contributed">Afahresch</language>
 			<language type="ab" draft="contributed">Abchahsesch</language>
 			<language type="ace" draft="contributed">Aschenehsesch</language>
+			<language type="ada">Adangmesch</language>
+			<language type="ady">Adygehjsch</language>
 			<language type="ae" draft="contributed">Avästahnesch</language>
 			<language type="aeb" draft="contributed">Tonehsesch Arahbesch</language>
 			<language type="af" draft="contributed">Afrikaans</language>
-			<language type="afh" draft="contributed">Afrehihlesch</language>
+			<language type="afh">Afrehihlesch</language>
+			<language type="agq">Aghehmesch</language>
+			<language type="ain">Aijnu</language>
 			<language type="ak" draft="contributed">Akahnesch</language>
 			<language type="akk" draft="contributed">Akahdesch</language>
 			<language type="ale" draft="contributed">Ale’uhtesch</language>
 			<language type="am" draft="contributed">Amhahresch</language>
 			<language type="an" draft="contributed">Arrajonehsesch</language>
 			<language type="ang" draft="contributed">Ahl Änglesch</language>
+			<language type="anp">Anjikahnesch</language>
 			<language type="ar" draft="contributed">Arahbesch</language>
 			<language type="ar_001" draft="contributed">Schtandatt Arahbesch</language>
+			<language type="arp">Arrappaho</language>
 			<language type="arq" draft="contributed">Aljehresch Arahbesch</language>
 			<language type="ary" draft="contributed">Marokahnesch Arahbesch</language>
 			<language type="arz" draft="contributed">Äjiptesch Arahbesch</language>
@@ -40,29 +46,46 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="ase" draft="contributed">Amärrekahnesche Blendeschprohch</language>
 			<language type="ast" draft="contributed">Astuhrejahnesch</language>
 			<language type="av" draft="contributed">Avahresch</language>
+			<language type="awa">Awahdesch</language>
 			<language type="ay" draft="contributed">Aimahresch</language>
 			<language type="az" draft="contributed">Asserbaidschahnesch</language>
-			<language type="azb" draft="contributed">Södasserbaidschahnesch</language>
+			<language type="az" alt="short">Asehresch</language>
+			<language type="az_Arab" draft="contributed">Södasserbaidschahnesch</language>
 			<language type="ba" draft="contributed">Baschkihresch</language>
 			<language type="bal" draft="contributed">Beluhtschesch</language>
 			<language type="ban" draft="contributed">Balinehsesch</language>
 			<language type="bar" draft="contributed">Bairesch</language>
+			<language type="bas">Basaa-Schprohche</language>
 			<language type="be" draft="contributed">Wiißrußesch</language>
-			<language type="bem" draft="contributed">Bemba</language>
+			<language type="bem">Bemba</language>
 			<language type="bez" draft="contributed">Bena</language>
-			<language type="bg" draft="contributed">Bulljaaresch</language>
+			<language type="bg">Bulljahresch</language>
+			<language type="bho">Bhohdschpuresch</language>
+			<language type="bi">Bislahmesch</language>
+			<language type="bin">Edo</language>
 			<language type="bm" draft="contributed">Bambara</language>
-			<language type="bn" draft="contributed">Bängjaalesch</language>
+			<language type="bn">Bängjahlesch</language>
 			<language type="bo" draft="contributed">Tibehtesch</language>
 			<language type="bpy" draft="contributed">Bischnuprejahnesch</language>
 			<language type="br" draft="contributed">Bettohnesch</language>
-			<language type="bra" draft="contributed">Brajesch</language>
+			<language type="bra">Brahjesch</language>
 			<language type="brh" draft="contributed">Brahuijesch</language>
 			<language type="brx" draft="contributed">Boddo</language>
 			<language type="bs" draft="contributed">Boßnesch</language>
 			<language type="bua" draft="contributed">Burejahtesch</language>
 			<language type="bug" draft="contributed">Bujinehsesch</language>
+			<language type="byn">Bilihnesch</language>
 			<language type="ca" draft="contributed">Kattalahnesch</language>
+			<language type="ce">Tschätschehnesch</language>
+			<language type="ceb">Zebuwahnesch</language>
+			<language type="cgg">Kihja-Schprohch</language>
+			<language type="ch">Chamorru</language>
+			<language type="chk">Trukehsesch</language>
+			<language type="chm">Mahresch</language>
+			<language type="cho">Tschoktoh</language>
+			<language type="chr">Tschärrokeh</language>
+			<language type="chy">Tschäjänn</language>
+			<language type="ckb">Zäntrahl-Kurrdesch</language>
 			<language type="co" draft="contributed">Korsesch</language>
 			<language type="cop" draft="contributed">Koptesch</language>
 			<language type="cs" draft="contributed">Tschäschesch</language>
@@ -71,108 +94,186 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="cv" draft="contributed">Tschowaschesch</language>
 			<language type="cy" draft="contributed">Wallihsesch</language>
 			<language type="da" draft="contributed">Dähnesch</language>
+			<language type="dak">Dakohtesch</language>
+			<language type="dar">Darjihnesch</language>
+			<language type="dav">Dawedahnesch</language>
 			<language type="de" draft="contributed">Deutsch</language>
-			<language type="de_AT" draft="contributed">Deutsch uß Ößterich</language>
+			<language type="de_AT">Deutsch uß Öhßterich</language>
 			<language type="de_CH" draft="contributed">Deutsch uß de Schweijz</language>
+			<language type="dgr">Dohjribesch</language>
+			<language type="dje">Djerma</language>
 			<language type="dsb" draft="contributed">Niddersorbesch</language>
+			<language type="dua">Du’ala</language>
 			<language type="dum" draft="contributed">Meddelnehderlängsch</language>
 			<language type="dv" draft="contributed">Divehjesch</language>
+			<language type="dyo">Jola-Fonyisch</language>
 			<language type="dz" draft="contributed">Butahnesch</language>
 			<language type="dzg" draft="contributed">Dassajahnesch</language>
-			<language type="ebu" draft="contributed">Embu</language>
+			<language type="ebu">Kîembu</language>
 			<language type="ee" draft="contributed">Ewe</language>
-			<language type="efi" draft="contributed">Efik</language>
+			<language type="efi">Äffiksch</language>
 			<language type="egl" draft="contributed">Emilijahnesch</language>
 			<language type="egy" draft="contributed">Ahl Äjiptesch</language>
+			<language type="eka">Ekajukesch</language>
 			<language type="el" draft="contributed">Jrihschesch</language>
 			<language type="en" draft="contributed">Änglesch</language>
-			<language type="en_AU" draft="contributed">Änglesch uß Außtraalije</language>
+			<language type="en_AU">Änglesch uß Außtrahlije</language>
 			<language type="en_CA" draft="contributed">Änglesch uß Kanada</language>
-			<language type="en_GB" draft="contributed">Änglesch uß Jruußbrettannije</language>
-			<language type="en_GB" alt="short" draft="contributed">Brittesch Änglesch</language>
-			<language type="en_US" draft="contributed">Amärrekaanesch Änglesch</language>
-			<language type="en_US" alt="short" draft="contributed">Amärrekaanesch Änglesch</language>
+			<language type="en_GB">Änglesch uß Jruhßbrettannije</language>
+			<language type="en_GB" alt="short">Brettesch Änglesch</language>
+			<language type="en_US">Amärrekahnesch Änglesch</language>
+			<language type="en_US" alt="short">Änglesch uß de USA</language>
 			<language type="enm" draft="contributed">Meddelänglesch</language>
 			<language type="eo" draft="contributed">Esperanto</language>
 			<language type="es" draft="contributed">Schpahnesch</language>
-			<language type="es_419" draft="contributed">Schpaanesch uß Latting-Ammärrika</language>
+			<language type="es_419">Schpahnesch uß Latting-Ammärrika</language>
 			<language type="es_ES" draft="contributed">Schpahnesch en Schpahneje</language>
 			<language type="es_MX" draft="contributed">Schpahnesch en Mäxikoh</language>
-			<language type="esu" draft="contributed">Zätrahl-Jupik</language>
+			<language type="esu">Zäntrahl-Juppik</language>
 			<language type="et" draft="contributed">Äßnesch</language>
 			<language type="eu" draft="contributed">Baskesch</language>
+			<language type="ewo">Ewonndo</language>
 			<language type="fa" draft="contributed">Pärsesch</language>
+			<language type="ff">Fulfulde</language>
 			<language type="fi" draft="contributed">Finnesch</language>
-			<language type="fil" draft="contributed">fil</language>
-			<language type="fj" draft="contributed">Fidschesch</language>
-			<language type="fo" draft="contributed">Färröeresch</language>
-			<language type="fr" draft="contributed">Franzüüsesch</language>
-			<language type="fr_CA" draft="contributed">Franzüüsesch uß Kanada</language>
-			<language type="fr_CH" draft="contributed">Franzüüsesch uß de Schweijz</language>
-			<language type="fy" draft="contributed">Wäßfriisesch</language>
-			<language type="ga" draft="contributed">Ieresch</language>
-			<language type="gl" draft="contributed">Jalliizesch</language>
-			<language type="gn" draft="contributed">Juwaraanesch</language>
+			<language type="fil">Fillipihnesch</language>
+			<language type="fj">Fihdschesch</language>
+			<language type="fo">Färröhresch</language>
+			<language type="fon">Fohnesch</language>
+			<language type="fr">Franzühsesch</language>
+			<language type="fr_CA">Franzühsesch uß Kanada</language>
+			<language type="fr_CH">Franzühsesch uß de Schweijz</language>
+			<language type="fur">Frijauhlesch</language>
+			<language type="fy">Wäßfrihsesch</language>
+			<language type="ga">Ihresch</language>
+			<language type="gaa">Jah</language>
+			<language type="gez">Ji’is-Ahl-Ättejohpesch</language>
+			<language type="gil">Jillbättehsesch</language>
+			<language type="gl">Jallihzesch</language>
+			<language type="gn">Juwarahnesch</language>
+			<language type="gor">Jorontalohsch</language>
 			<language type="gsw" draft="contributed">Schwitzerdütsch</language>
 			<language type="gu" draft="contributed">Gutscharatesch</language>
+			<language type="gv">Mangx</language>
 			<language type="ha" draft="contributed">Haußa</language>
-			<language type="haw" draft="contributed">Hauajaanesch</language>
-			<language type="he" draft="contributed">Hebräjesch</language>
-			<language type="hi" draft="contributed">Hindi</language>
+			<language type="haw">Hauajahnesch</language>
+			<language type="he">Hebrähjesch</language>
+			<language type="hi">Hinndi</language>
+			<language type="hil">Hiligaynon</language>
+			<language type="hmn">Hmong</language>
 			<language type="hr" draft="contributed">Krowatesch</language>
-			<language type="ht" draft="contributed">Ha’iitesch</language>
-			<language type="hu" draft="contributed">Unjarresch</language>
-			<language type="hy" draft="contributed">Armeenesch</language>
-			<language type="id" draft="contributed">Indoneesesch</language>
+			<language type="hsb">Bovversorrbesch</language>
+			<language type="ht">Ha’iihtesch</language>
+			<language type="hu">Unnjarresch</language>
+			<language type="hup">Hupa</language>
+			<language type="hy">Armehnesch</language>
+			<language type="hz">Herrehro</language>
+			<language type="ia">de Interlingua</language>
+			<language type="iba">Ibahnesch</language>
+			<language type="ibb">Ibibio</language>
+			<language type="id">Indonehsesch</language>
 			<language type="ig" draft="contributed">Igbo</language>
+			<language type="ilo">Ilokahnesch</language>
 			<language type="inh" draft="contributed">Engjuschesch</language>
-			<language type="io" draft="contributed">Ido</language>
-			<language type="is" draft="contributed">Ißländesch</language>
-			<language type="it" draft="contributed">Etalljänesch</language>
+			<language type="io">Ihdo</language>
+			<language type="is">Ißlänndesch</language>
+			<language type="it">Etalljähnesch</language>
 			<language type="iu" draft="contributed">Inuktitut</language>
 			<language type="izh" draft="contributed">Ingjrijahnesch</language>
-			<language type="ja" draft="contributed">Japaanesch</language>
+			<language type="ja">Japahnesch</language>
 			<language type="jam" draft="contributed">Jamaikahnesch-Änglesch</language>
 			<language type="jbo" draft="contributed">Lodschbahn</language>
+			<language type="jgo">Njomba</language>
 			<language type="jpr" draft="contributed">Jühdesch-Pärsesch</language>
-			<language type="jut" draft="contributed">Jütesch</language>
+			<language type="jut">Jüttesch</language>
 			<language type="jv" draft="contributed">Javahnesch</language>
 			<language type="ka" draft="contributed">Je’orjesch</language>
+			<language type="kab">Kabyhlesch</language>
+			<language type="kam">Kamba vun Kehnija</language>
+			<language type="kbd">Kabadihnesch</language>
+			<language type="kde">Chimakonde</language>
 			<language type="kea" draft="contributed">Kapvärdesch</language>
-			<language type="kk" draft="contributed">Kassakesch</language>
+			<language type="kfo">Koro vun de Älfebeijnköß</language>
+			<language type="kha">Khasi</language>
+			<language type="khq">Kojra Tschihni</language>
+			<language type="ki">Rekohjo</language>
+			<language type="kj">Oschivambo</language>
+			<language type="kk">Kassakkesch</language>
+			<language type="kkj">Kako</language>
+			<language type="kl">Jröhnländesch</language>
+			<language type="kln">Kaländjihnesch</language>
 			<language type="km" draft="contributed">Khmer</language>
+			<language type="kmb">Kimbundu</language>
 			<language type="kn" draft="contributed">Kannada</language>
 			<language type="ko" draft="contributed">Korrejaanesch</language>
-			<language type="ks" draft="contributed">Kaschmieresch</language>
+			<language type="kok">Kon’kahnesch</language>
+			<language type="kpe">Kpäle</language>
+			<language type="kr">Kanuhresch</language>
+			<language type="krc">Karatschaj-Balkahresch-Törkesch</language>
+			<language type="krl">Karehlesch</language>
+			<language type="kru">Korochesch</language>
+			<language type="ks">Kaschmihresch</language>
+			<language type="ksf">Bafijahnesch</language>
 			<language type="ksh" draft="contributed">Kölsch</language>
-			<language type="ku" draft="contributed">Kurdesch</language>
+			<language type="ku">Kurrdesch</language>
+			<language type="kum">Kumykesch</language>
+			<language type="kv">Kohmesch</language>
+			<language type="kw">Kornesch</language>
 			<language type="ky" draft="contributed">Kirjihsesch</language>
 			<language type="la" draft="contributed">Lateijnesch</language>
+			<language type="lad">Ladihnesch</language>
+			<language type="lag">Lango</language>
 			<language type="lah" draft="contributed">de Landa-Schprooche</language>
 			<language type="lb" draft="contributed">Luxemborjesch</language>
+			<language type="lez">Lesjesch</language>
+			<language type="lg">Lugannda</language>
+			<language type="li">Lemburjesch</language>
+			<language type="lkt">Lakota</language>
 			<language type="ln" draft="contributed">Lingjalla</language>
 			<language type="lo" draft="contributed">Lahootesch</language>
+			<language type="loz">Silohzi</language>
+			<language type="lrc">Nood-Luhresch</language>
 			<language type="lt" draft="contributed">Littouesch</language>
-			<language type="luy" draft="contributed">Luyjanesch</language>
+			<language type="lu">Kiluba</language>
+			<language type="lua">Tschiluba</language>
+			<language type="lun">Schilunnda</language>
+			<language type="luo">Luo</language>
+			<language type="luy">Luhjesch</language>
 			<language type="lv" draft="contributed">Lättesch</language>
+			<language type="mdf">Mokschah</language>
 			<language type="mg" draft="contributed">Madajaßkesch</language>
-			<language type="mi" draft="contributed">Maahori</language>
-			<language type="mk" draft="contributed">Mazedoonesch</language>
+			<language type="mh">Maschallehsesch</language>
+			<language type="mi">Ma’ohresch</language>
+			<language type="mk">Mazedohnesch</language>
 			<language type="ml" draft="contributed">Mallajalam</language>
-			<language type="mn" draft="contributed">Mongjolesch</language>
-			<language type="mr" draft="contributed">Marraatesch</language>
+			<language type="mn">Mongjohlesch</language>
+			<language type="mni">Meitei-Manipuhresch</language>
+			<language type="mr">Marrahtesch</language>
 			<language type="ms" draft="contributed">Mallaijesch</language>
-			<language type="mt" draft="contributed">Malteesesch</language>
-			<language type="mul" draft="contributed">-ongerscheidlijje Schprooche-</language>
-			<language type="my" draft="contributed">Burmessesch</language>
-			<language type="nb" draft="contributed">Norrweejesch Bokmål</language>
+			<language type="mt">Maltehsesch</language>
+			<language type="mua">Mundang</language>
+			<language type="mul">-ongerscheidlijje Schprohche-</language>
+			<language type="mus">Krihk</language>
+			<language type="mwl">Mirandehsesch</language>
+			<language type="my">Burmehsesch</language>
+			<language type="myv">Ärsjahnesch</language>
+			<language type="na">Nauruhesch</language>
+			<language type="nap">Napolletahnesch</language>
+			<language type="nb">Norrwehjesch Bokmål</language>
 			<language type="nd" draft="contributed">Nood-Ndebele</language>
-			<language type="ne" draft="contributed">Nepallessesch</language>
+			<language type="nds_NL">Nehdersaksesch en de Nederläng</language>
+			<language type="ne">Nepallehsesch</language>
+			<language type="new">Newahresch</language>
+			<language type="ng">Ndongjahnesch</language>
 			<language type="nl" draft="contributed">Holländesch</language>
-			<language type="nl_BE" draft="contributed">Flämesch</language>
-			<language type="nn" draft="contributed">Neu-Norrweejesch</language>
-			<language type="no" draft="contributed">Norrweejesch</language>
-			<language type="nso" draft="contributed">Nood-Sooto</language>
+			<language type="nl_BE">Flähmesch</language>
+			<language type="nmg">Gyele</language>
+			<language type="nn">Neu Norrwehjesch</language>
+			<language type="nnh">Njijembohn</language>
+			<language type="no">Norrwehjesch</language>
+			<language type="nog">Nojal</language>
+			<language type="nso">Nood-Sohto</language>
+			<language type="nv">Navvacho</language>
 			<language type="ny" draft="contributed">Schi-Schewa</language>
 			<language type="or" draft="contributed">Oriija</language>
 			<language type="os" draft="contributed">Oßeetesch</language>
@@ -183,64 +284,88 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="pt_BR" draft="contributed">Brasilljaanesch Pochtojesesch</language>
 			<language type="pt_PT" draft="contributed">Pochtojesesch uß Pochtojall</language>
 			<language type="qu" draft="contributed">Kättschowa</language>
+			<language type="quc">K’ische’</language>
 			<language type="rm" draft="contributed">Rätoromaanesch</language>
 			<language type="rn" draft="contributed">K-Rundesch</language>
 			<language type="ro" draft="contributed">Rumänesch</language>
 			<language type="rof" draft="contributed">Kirombo</language>
 			<language type="ru" draft="contributed">Rußßesch</language>
+			<language type="rup">Arromahnesch</language>
 			<language type="rw" draft="contributed">Kinja-Ruandesch</language>
 			<language type="sa" draft="contributed">Sanskrit</language>
 			<language type="sah" draft="contributed">Jackutesch</language>
+			<language type="sba">Njambaij</language>
 			<language type="sd" draft="contributed">Sinndi</language>
 			<language type="se" draft="contributed">Nood-Lappländesch</language>
+			<language type="ses">Kojraboro Senni</language>
 			<language type="sg" draft="contributed">Sangjo</language>
 			<language type="sh" draft="contributed">Särbokowatesch</language>
+			<language type="shi">Taschelhittesch</language>
 			<language type="si" draft="contributed">Singjaleesesch</language>
 			<language type="sk" draft="contributed">ẞlovakesch</language>
 			<language type="sl" draft="contributed">ẞloveenesch</language>
 			<language type="sm" draft="contributed">Sammohanesch</language>
+			<language type="smj">Lule-Läppländesch</language>
+			<language type="smn">Inahri Lappländesch</language>
 			<language type="sn" draft="contributed">Schi-Schona</language>
-			<language type="so" draft="contributed">Somaalesch</language>
-			<language type="sq" draft="contributed">Albaanesch</language>
+			<language type="so">Somahlesch</language>
+			<language type="sq">Albahnesch</language>
 			<language type="sr" draft="contributed">Särbesch</language>
 			<language type="ss" draft="contributed">Si-Swatesch</language>
 			<language type="st" draft="contributed">Söd-Sooto</language>
-			<language type="su" draft="contributed">Sindaneesesch</language>
-			<language type="sv" draft="contributed">Schweedesch</language>
-			<language type="sw" draft="contributed">Suaheelesch</language>
-			<language type="swb" draft="contributed">Kommooresch</language>
-			<language type="ta" draft="contributed">Tamiilesch</language>
-			<language type="te" draft="contributed">Telluuju</language>
+			<language type="su">Sindanehsesch</language>
+			<language type="sv">Schwehdesch</language>
+			<language type="sw">Suahehlesch</language>
+			<language type="swb">Kommohresch</language>
+			<language type="syr">Sührejakkesch</language>
+			<language type="ta">Tamihlesch</language>
+			<language type="te">Telluhju</language>
 			<language type="tet" draft="contributed">Tetumsch</language>
-			<language type="tg" draft="contributed">Tadschiikesch</language>
+			<language type="tg">Tadschihkesch</language>
 			<language type="th" draft="contributed">Tailändesch</language>
-			<language type="ti" draft="contributed">Tijrenejaanesch</language>
-			<language type="tk" draft="contributed">Törkmeenesch</language>
-			<language type="tl" draft="contributed">Tagalog</language>
-			<language type="tn" draft="contributed">Se-Zwaanesch</language>
-			<language type="to" draft="contributed">Tongjaanesch</language>
-			<language type="tpi" draft="contributed">Took Pisin</language>
+			<language type="ti">Tijrenejahnesch</language>
+			<language type="tig">Tigre</language>
+			<language type="tk">Törkmehnesch</language>
+			<language type="tl">Tajalloch</language>
+			<language type="tlh">Klingjohnesch</language>
+			<language type="tn">Se-Zwahnesch</language>
+			<language type="to">Tongjahnesch</language>
+			<language type="tpi">Tok Pisin</language>
 			<language type="tr" draft="contributed">Törkesch</language>
-			<language type="ts" draft="contributed">Xi-Zongjanesch</language>
-			<language type="tt" draft="contributed">Tattaaresch</language>
-			<language type="ty" draft="contributed">Tahitesch</language>
-			<language type="ug" draft="contributed">Uj’juuersch</language>
+			<language type="ts">Xi-Zongjahnesch</language>
+			<language type="tt">Tattahresch</language>
+			<language type="twq">Tasawaq</language>
+			<language type="ty">Tahihtesch</language>
+			<language type="tyv">Tuvinijahnesch</language>
+			<language type="tzm">Tamasicht ussem meddlere Atlas</language>
+			<language type="udm">Udmuchtesch</language>
+			<language type="ug">Uj’juhresch</language>
 			<language type="uk" draft="contributed">Ukrainesch</language>
+			<language type="umb">Umbundesch</language>
 			<language type="und" draft="contributed">-onbikannte-Schprooch-</language>
 			<language type="ur" draft="contributed">Urdu/Hindi</language>
-			<language type="uz" draft="contributed">Ußbeekesch</language>
+			<language type="uz">Ußbehkesch</language>
 			<language type="ve" draft="contributed">Wenda</language>
-			<language type="vi" draft="contributed">Vijätnammeesesch</language>
+			<language type="vi">Vijätnammehsesch</language>
+			<language type="vo">Volapük</language>
+			<language type="wa">Walohnesch</language>
 			<language type="wae" draft="contributed">Walserdütsch</language>
+			<language type="wal">Welahmo</language>
+			<language type="war">Waray-Waray</language>
 			<language type="wo" draft="contributed">Woloff</language>
-			<language type="xh" draft="contributed">Isi-Khoosa</language>
-			<language type="yo" draft="contributed">Joruuba</language>
-			<language type="yue" draft="contributed">Kanton-Schineesesch</language>
-			<language type="zh" draft="contributed">Schineesesch</language>
-			<language type="zh_Hans" draft="contributed">Schineesesch en de eijfacher Schreff</language>
-			<language type="zh_Hant" draft="contributed">Schineesesch en de tradizjonälle Schreff</language>
-			<language type="zu" draft="contributed">Suulu</language>
+			<language type="xal">Kalmükkesch</language>
+			<language type="xh">Isi-Khohsa</language>
+			<language type="ybb">Jämmbah</language>
+			<language type="yi">Jiddesch</language>
+			<language type="yo">Joruhba</language>
+			<language type="yue">Kanton-Schinehsesch</language>
+			<language type="zh">Schinehsesch (Mandarin)</language>
+			<language type="zh_Hans">Schinehsesch (eijfache Schreff)</language>
+			<language type="zh_Hant">Schinehsesch (tradizjonälle Schreff)</language>
+			<language type="zu">Suhlu</language>
+			<language type="zun">Suhñi</language>
 			<language type="zxx" draft="contributed">kein Schprooch</language>
+			<language type="zza">Sahsajesch</language>
 		</languages>
 		<scripts>
 			<script type="Arab" draft="contributed">arraabesche Schreff</script>
@@ -272,7 +397,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Latn" draft="contributed">lateinesche Schreff</script>
 			<script type="Mlym" draft="contributed">indesche Malajalam-Schreff</script>
 			<script type="Mong" draft="contributed">mongjoolesche Schreff</script>
-			<script type="Mymr" draft="contributed">birmaanesche Schreff</script>
+			<script type="Mymr">birmahnesche Schreff</script>
 			<script type="Orya" draft="contributed">indesche Orija-Schreff</script>
 			<script type="Sinh" draft="contributed">singjaleesesche Schreff</script>
 			<script type="Taml" draft="contributed">tamiilesche Schreff</script>
@@ -289,25 +414,25 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="001" draft="contributed">de Ääd</territory>
 			<territory type="002" draft="contributed">Affrika</territory>
 			<territory type="003" draft="contributed">Nood-Amärrika</territory>
-			<territory type="005" draft="contributed">Söd-Amärrika</territory>
-			<territory type="009" draft="contributed">Ozejaanije</territory>
+			<territory type="005">Söhd-Amärrika</territory>
+			<territory type="009">Ozejahneje</territory>
 			<territory type="011" draft="contributed">Wäß-Affrika</territory>
 			<territory type="013" draft="contributed">Meddelammärrika</territory>
 			<territory type="014" draft="contributed">Oß-Affrika</territory>
 			<territory type="015" draft="contributed">Nood-Affrika</territory>
 			<territory type="017" draft="contributed">Meddel-Affrika</territory>
-			<territory type="018" draft="contributed">Söd-Affrika</territory>
+			<territory type="018">Söhd-Affrika</territory>
 			<territory type="019" draft="contributed">Ammärrika</territory>
 			<territory type="021" draft="contributed">der Norde vun Amärrika</territory>
 			<territory type="029" draft="contributed">de Karribik</territory>
 			<territory type="030" draft="contributed">Oß-Aasije</territory>
-			<territory type="034" draft="contributed">Söd-Aasije</territory>
-			<territory type="035" draft="contributed">Söd-Oß-Aasije</territory>
-			<territory type="039" draft="contributed">Söd-Europpa</territory>
-			<territory type="053" draft="contributed">de Rejjohn öm Austraalije</territory>
-			<territory type="054" draft="contributed">Mellaneesije</territory>
-			<territory type="057" draft="contributed">de Rejohn vun Mikroneeseje</territory>
-			<territory type="061" draft="contributed">Polineesije</territory>
+			<territory type="034">Söhd-Aasije</territory>
+			<territory type="035">Söhd-Oß-Aasije</territory>
+			<territory type="039">Söhd-Europpa</territory>
+			<territory type="053">de Rejjohn öm Austrahlije</territory>
+			<territory type="054">Mellanehsije</territory>
+			<territory type="057">de Rejohn vun Mikronehseje</territory>
+			<territory type="061">Polinehsije</territory>
 			<territory type="142" draft="contributed">Aasije</territory>
 			<territory type="143" draft="contributed">Meddelaasije</territory>
 			<territory type="145" draft="contributed">Wäß-Aasije</territory>
@@ -324,7 +449,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AI" draft="contributed">Anggwilla</territory>
 			<territory type="AL" draft="contributed">Albaanije</territory>
 			<territory type="AM" draft="contributed">Arrmeenije</territory>
-			<territory type="AN" draft="contributed">de Nederlängsche Antille</territory>
 			<territory type="AO" draft="contributed">Angjoola</territory>
 			<territory type="AQ" draft="contributed">der Södpol</territory>
 			<territory type="AR" draft="contributed">Ajjentiinije</territory>
@@ -372,7 +496,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="CO" draft="contributed">Kolumbije</territory>
 			<territory type="CP" draft="contributed">de Klipperton-Ensel</territory>
 			<territory type="CR" draft="contributed">Kostarika</territory>
-			<territory type="CU" draft="contributed">Kuba</territory>
+			<territory type="CU">Kuhba</territory>
 			<territory type="CV" draft="contributed">de kapvärdesche Enselle</territory>
 			<territory type="CW" draft="contributed">Curaçao</territory>
 			<territory type="CX" draft="contributed">de Weihnaachs-Ensel</territory>
@@ -393,7 +517,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="ER" draft="contributed">Äritreja</territory>
 			<territory type="ES" draft="contributed">Schpaanije</territory>
 			<territory type="ET" draft="contributed">Ättijoopije</territory>
-			<territory type="EU" draft="contributed">de Europäjesche Unijon</territory>
+			<territory type="EU">de Europähjesche Unijon</territory>
 			<territory type="FI" draft="contributed">Finnland</territory>
 			<territory type="FJ" draft="contributed">de Fidschi-Endelle</territory>
 			<territory type="FK" draft="contributed">de Falkland-Enselle</territory>
@@ -404,7 +528,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GA" draft="contributed">Jabuhn</territory>
 			<territory type="GB" draft="contributed">Jruußbrettannije</territory>
 			<territory type="GB" alt="short" draft="contributed">Jruußbrettannije</territory>
-			<territory type="GD" draft="contributed">Jrenaada</territory>
+			<territory type="GD">Jrenahda</territory>
 			<territory type="GE" draft="contributed">Jeorrjije</territory>
 			<territory type="GF" draft="contributed">Franzüüsesch Jujaana</territory>
 			<territory type="GG" draft="contributed">Jöönsei</territory>
@@ -417,7 +541,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="GQ" draft="contributed">Äquatorial Jineeja</territory>
 			<territory type="GR" draft="contributed">Jriescheland</territory>
 			<territory type="GS" draft="contributed">Söd-Jeorjie un de södlijje Botteramms-Enselle</territory>
-			<territory type="GT" draft="contributed">Juwatemaala</territory>
+			<territory type="GT">Juwatemahla</territory>
 			<territory type="GU" draft="contributed">Juham</territory>
 			<territory type="GW" draft="contributed">Jinneha_Bißau</territory>
 			<territory type="GY" draft="contributed">Jujaana</territory>
@@ -495,7 +619,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="NE" draft="contributed">Nijer</territory>
 			<territory type="NF" draft="contributed">de Noofok-Ensel</territory>
 			<territory type="NG" draft="contributed">Nikaraagua</territory>
-			<territory type="NI" draft="contributed">Nikaraaguwa</territory>
+			<territory type="NI">Nikarahguwa</territory>
 			<territory type="NL" draft="contributed">de Nederläng</territory>
 			<territory type="NO" draft="contributed">Norrweeje</territory>
 			<territory type="NP" draft="contributed">Nepall</territory>
@@ -518,7 +642,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="PW" draft="contributed">Pallau</territory>
 			<territory type="PY" draft="contributed">Parraguwai</territory>
 			<territory type="QA" draft="contributed">Kataa</territory>
-			<territory type="QO" draft="contributed">Ozejaanije ußerhallef</territory>
+			<territory type="QO">Ozejahnije ußerhallef</territory>
 			<territory type="RE" draft="contributed">Rehunjohn</territory>
 			<territory type="RO" draft="contributed">Romäänije</territory>
 			<territory type="RS" draft="contributed">Särbije</territory>
@@ -541,7 +665,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="SR" draft="contributed">Sürinamm</territory>
 			<territory type="SS" draft="contributed">Södsudahn</territory>
 			<territory type="ST" draft="contributed">Zint Tommeh un Printschipe</territory>
-			<territory type="SV" draft="contributed">Äl Slavadoor</territory>
+			<territory type="SV">Äl Slavadohr</territory>
 			<territory type="SX" draft="contributed">Zint Maarten</territory>
 			<territory type="SY" draft="contributed">Sürije</territory>
 			<territory type="SZ" draft="contributed">ẞwaasiland</territory>
@@ -558,7 +682,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="TN" draft="contributed">Tuneesije</territory>
 			<territory type="TO" draft="contributed">Tongga</territory>
 			<territory type="TR" draft="contributed">de Törkei</territory>
-			<territory type="TT" draft="contributed">Trinidad un Tobääjo</territory>
+			<territory type="TT">Trinidad un Tobähjo</territory>
 			<territory type="TV" draft="contributed">Tuvalu</territory>
 			<territory type="TW" draft="contributed">Taiwan</territory>
 			<territory type="TZ" draft="contributed">Tansanija</territory>
@@ -584,7 +708,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="ZA">de Republik Södaffrika</territory>
 			<territory type="ZM" draft="contributed">Sambija</territory>
 			<territory type="ZW" draft="contributed">Simbabwe</territory>
-			<territory type="ZZ" draft="contributed">- Jääjend onbikannt -</territory>
+			<territory type="ZZ">- Jähjend onbikannt -</territory>
 		</territories>
 		<variants>
 			<variant type="1901" draft="contributed">Schriefwiiß vun 1901 aff</variant>
@@ -631,66 +755,67 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<key type="numbers" draft="contributed">de Nummere</key>
 		</keys>
 		<types>
-			<type type="arab" key="numbers" draft="contributed">araabesche un indesche Zeffere</type>
-			<type type="arabext" key="numbers" draft="contributed">ußjedehnt araabesche un indesche Zeffere</type>
-			<type type="armn" key="numbers" draft="contributed">armeenesche Zahle</type>
-			<type type="armnlow" key="numbers" draft="contributed">klein jeschrevve armeenesche Zahle</type>
-			<type type="beng" key="numbers" draft="contributed">bängjaalesche Zeffere</type>
-			<type type="big5han" key="collation" draft="contributed">zoteert nohm tradizjonäll schineesesch Big5</type>
-			<type type="buddhist" key="calendar" draft="contributed">buddistesche Kaländer</type>
-			<type type="chinese" key="calendar" draft="contributed">schineesesche Kaländer</type>
-			<type type="coptic" key="calendar" draft="contributed">kopttesche Kaländer</type>
-			<type type="deva" key="numbers" draft="contributed">Devanagari-Zeffere</type>
-			<type type="dictionary" key="collation" draft="contributed">zoteert wi em Wööterbooch</type>
-			<type type="ducet" key="collation" draft="contributed">standattmääßesch zoteert nohm Unicode</type>
-			<type type="ethi" key="numbers" draft="contributed">ätejoopesche Zahle</type>
-			<type type="ethiopic" key="calendar" draft="contributed">ätejoopesche Kaländer</type>
-			<type type="ethiopic-amete-alem" key="calendar" draft="contributed">ätejoopesche Amete Alem Kaländer</type>
-			<type type="fullwide" key="numbers" draft="contributed">janz breede Zeffere</type>
-			<type type="gb2312han" key="collation" draft="contributed">zoteert nohm eijfacher schineesesch GB2312</type>
-			<type type="geor" key="numbers" draft="contributed">jeorjeesche Zahle</type>
-			<type type="gregorian" key="calendar" draft="contributed">jrejorejaanesche Kaländer</type>
-			<type type="grek" key="numbers" draft="contributed">jriischesche Zahle</type>
-			<type type="greklow" key="numbers" draft="contributed">klein jeschrevve jriischesche Zahle</type>
-			<type type="gujr" key="numbers" draft="contributed">Jujarati-Zeffere</type>
-			<type type="guru" key="numbers" draft="contributed">Jurmukhi-Zeffere</type>
-			<type type="hanidec" key="numbers" draft="contributed">schineesesche Zehnerzahle</type>
-			<type type="hans" key="numbers" draft="contributed">eijfache schineesesche Zahle</type>
-			<type type="hansfin" key="numbers" draft="contributed">eijfache schineesesche Finanzzahle</type>
-			<type type="hant" key="numbers" draft="contributed">tradizjonälle schineesesche Zahle</type>
-			<type type="hantfin" key="numbers" draft="contributed">tradizjonälle schineesesche Finanzzahle</type>
-			<type type="hebr" key="numbers" draft="contributed">hebräjesche Zahle</type>
-			<type type="hebrew" key="calendar" draft="contributed">jüdesche Kaländer</type>
-			<type type="indian" key="calendar" draft="contributed">indesche Nazjonahl-Kaländer</type>
-			<type type="islamic" key="calendar" draft="contributed">ißlaamesche Kaländer</type>
-			<type type="islamic-civil" key="calendar" draft="contributed">wältlesche islaamesche Kaländer</type>
-			<type type="japanese" key="calendar" draft="contributed">japaanesche Kaländer</type>
-			<type type="jpan" key="numbers" draft="contributed">japanesche Zahle</type>
-			<type type="jpanfin" key="numbers" draft="contributed">japaanesche Finazzahle</type>
-			<type type="khmr" key="numbers" draft="contributed">Khmer-Zeffere</type>
-			<type type="knda" key="numbers" draft="contributed">Kannada-Zeffere</type>
-			<type type="laoo" key="numbers" draft="contributed">laootesche Zeffere</type>
-			<type type="latn" key="numbers" draft="contributed">wäßlejje Zeffere</type>
-			<type type="mlym" key="numbers" draft="contributed">Malayalam-Zeffere</type>
-			<type type="mong" key="numbers" draft="contributed">mongjoolesche Zeffere</type>
-			<type type="mymr" key="numbers" draft="contributed">Myanmar-Zeffere</type>
-			<type type="orya" key="numbers" draft="contributed">Oriya-Zeffere</type>
-			<type type="persian" key="calendar" draft="contributed">pärsesche Kaländer</type>
-			<type type="phonebook" key="collation" draft="contributed">zoteert wi em Tollefoonbooch</type>
-			<type type="pinyin" key="collation" draft="contributed">zoteert noh de Pinjin Ömschreff vum Schineesesch</type>
-			<type type="roc" key="calendar" draft="contributed">rotschineesesche Kaländer</type>
-			<type type="roman" key="numbers" draft="contributed">römesche Zahle</type>
-			<type type="romanlow" key="numbers" draft="contributed">klein jeschrevve römesche Zahle</type>
-			<type type="search" key="collation" draft="contributed">Söhke</type>
-			<type type="standard" key="collation" draft="contributed">Schtandatt</type>
-			<type type="stroke" key="collation" draft="contributed">zoteert noh de Stresche vum tradizjonäll schineesesch</type>
-			<type type="taml" key="numbers" draft="contributed">tradizjonälle tamilesche Zahle</type>
-			<type type="tamldec" key="numbers" draft="contributed">tamiilesche Zeffere</type>
-			<type type="telu" key="numbers" draft="contributed">Teluju-Zeffere</type>
-			<type type="thai" key="numbers" draft="contributed">thailändesche Zeffere</type>
-			<type type="tibt" key="numbers" draft="contributed">tibetaanesche Zeffere</type>
-			<type type="traditional" key="collation" draft="contributed">tradizjonäll zoteert</type>
-			<type type="unihan" key="collation" draft="contributed">zoteert noh de Radikaale un Stresche vum Schineesesch</type>
+			<type key="calendar" type="buddhist" draft="contributed">buddistesche Kaländer</type>
+			<type key="calendar" type="chinese">schinehsesche Kalännder</type>
+			<type key="calendar" type="coptic" draft="contributed">kopttesche Kaländer</type>
+			<type key="calendar" type="dangi">Dangikalännder</type>
+			<type key="calendar" type="ethiopic">ätejohpesche Kalännder</type>
+			<type key="calendar" type="ethiopic-amete-alem" draft="contributed">ätejoopesche Amete Alem Kaländer</type>
+			<type key="calendar" type="gregorian">jrejorejahnesche Kalännder</type>
+			<type key="calendar" type="hebrew">jühdesche Kalännder</type>
+			<type key="calendar" type="indian" draft="contributed">indesche Nazjonahl-Kaländer</type>
+			<type key="calendar" type="islamic" draft="contributed">ißlaamesche Kaländer</type>
+			<type key="calendar" type="islamic-civil" draft="contributed">wältlesche islaamesche Kaländer</type>
+			<type key="calendar" type="japanese" draft="contributed">japaanesche Kaländer</type>
+			<type key="calendar" type="persian" draft="contributed">pärsesche Kaländer</type>
+			<type key="calendar" type="roc" draft="contributed">rotschineesesche Kaländer</type>
+			<type key="collation" type="big5han" draft="contributed">zoteert nohm tradizjonäll schineesesch Big5</type>
+			<type key="collation" type="dictionary">zotehrt wi em Wööterbohch</type>
+			<type key="collation" type="ducet">standattmähßesch zotehrt nohm Unicode</type>
+			<type key="collation" type="gb2312han" draft="contributed">zoteert nohm eijfacher schineesesch GB2312</type>
+			<type key="collation" type="phonebook" draft="contributed">zoteert wi em Tollefoonbooch</type>
+			<type key="collation" type="pinyin" draft="contributed">zoteert noh de Pinjin Ömschreff vum Schineesesch</type>
+			<type key="collation" type="search" draft="contributed">Söhke</type>
+			<type key="collation" type="standard" draft="contributed">Schtandatt</type>
+			<type key="collation" type="stroke" draft="contributed">zoteert noh de Stresche vum tradizjonäll schineesesch</type>
+			<type key="collation" type="traditional" draft="contributed">tradizjonäll zoteert</type>
+			<type key="collation" type="unihan" draft="contributed">zoteert noh de Radikaale un Stresche vum Schineesesch</type>
+			<type key="numbers" type="arab" draft="contributed">araabesche un indesche Zeffere</type>
+			<type key="numbers" type="arabext" draft="contributed">ußjedehnt araabesche un indesche Zeffere</type>
+			<type key="numbers" type="armn" draft="contributed">armeenesche Zahle</type>
+			<type key="numbers" type="armnlow" draft="contributed">klein jeschrevve armeenesche Zahle</type>
+			<type key="numbers" type="beng" draft="contributed">bängjaalesche Zeffere</type>
+			<type key="numbers" type="deva" draft="contributed">Devanagari-Zeffere</type>
+			<type key="numbers" type="ethi" draft="contributed">ätejoopesche Zahle</type>
+			<type key="numbers" type="fullwide" draft="contributed">janz breede Zeffere</type>
+			<type key="numbers" type="geor" draft="contributed">jeorjeesche Zahle</type>
+			<type key="numbers" type="grek" draft="contributed">jriischesche Zahle</type>
+			<type key="numbers" type="greklow" draft="contributed">klein jeschrevve jriischesche Zahle</type>
+			<type key="numbers" type="gujr" draft="contributed">Jujarati-Zeffere</type>
+			<type key="numbers" type="guru" draft="contributed">Jurmukhi-Zeffere</type>
+			<type key="numbers" type="hanidec" draft="contributed">schineesesche Zehnerzahle</type>
+			<type key="numbers" type="hans" draft="contributed">eijfache schineesesche Zahle</type>
+			<type key="numbers" type="hansfin" draft="contributed">eijfache schineesesche Finanzzahle</type>
+			<type key="numbers" type="hant" draft="contributed">tradizjonälle schineesesche Zahle</type>
+			<type key="numbers" type="hantfin" draft="contributed">tradizjonälle schineesesche Finanzzahle</type>
+			<type key="numbers" type="hebr" draft="contributed">hebräjesche Zahle</type>
+			<type key="numbers" type="jpan" draft="contributed">japanesche Zahle</type>
+			<type key="numbers" type="jpanfin" draft="contributed">japaanesche Finazzahle</type>
+			<type key="numbers" type="khmr" draft="contributed">Khmer-Zeffere</type>
+			<type key="numbers" type="knda" draft="contributed">Kannada-Zeffere</type>
+			<type key="numbers" type="laoo" draft="contributed">laootesche Zeffere</type>
+			<type key="numbers" type="latn" draft="contributed">wäßlejje Zeffere</type>
+			<type key="numbers" type="mlym" draft="contributed">Malayalam-Zeffere</type>
+			<type key="numbers" type="mong" draft="contributed">mongjoolesche Zeffere</type>
+			<type key="numbers" type="mymr" draft="contributed">Myanmar-Zeffere</type>
+			<type key="numbers" type="orya" draft="contributed">Oriya-Zeffere</type>
+			<type key="numbers" type="roman" draft="contributed">römesche Zahle</type>
+			<type key="numbers" type="romanlow" draft="contributed">klein jeschrevve römesche Zahle</type>
+			<type key="numbers" type="taml" draft="contributed">tradizjonälle tamilesche Zahle</type>
+			<type key="numbers" type="tamldec" draft="contributed">tamiilesche Zeffere</type>
+			<type key="numbers" type="telu" draft="contributed">Teluju-Zeffere</type>
+			<type key="numbers" type="thai" draft="contributed">thailändesche Zeffere</type>
+			<type key="numbers" type="tibt" draft="contributed">tibetaanesche Zeffere</type>
 		</types>
 		<measurementSystemNames>
 			<measurementSystemName type="metric" draft="contributed">SI</measurementSystemName>
@@ -698,16 +823,17 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<measurementSystemName type="US" draft="contributed">ammärekaanesch</measurementSystemName>
 		</measurementSystemNames>
 		<codePatterns>
-			<codePattern type="language" draft="contributed">de Schprooch afjekööz met „{0}“</codePattern>
+			<codePattern type="language">de Schprohch afjekööz met „{0}“</codePattern>
 			<codePattern type="script" draft="contributed">de Schreff afjekööz met „{0}“</codePattern>
-			<codePattern type="territory" draft="contributed">de Jääjend afjekööz met „{0}“</codePattern>
+			<codePattern type="territory">de Jähjend afjekööz met „{0}“</codePattern>
 		</codePatterns>
 	</localeDisplayNames>
 	<characters>
 		<exemplarCharacters>[a å ä æ b c d e ë ė f g h i j k l m n o ö œ p q r s ß t u ů ü v w x y z]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[á à ă â ã ā ç é è ĕ ê ē ğ í ì ĭ î ï ī ĳ ı ł ñ ó ò ŏ ô ø ō ú ù ŭ û ū ÿ]</exemplarCharacters>
 		<exemplarCharacters type="index">[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]</exemplarCharacters>
-		<exemplarCharacters type="punctuation">[_ ‐ – — ⸗ , ; \: ! ? . … ' ‘ ‚ &quot; “ „ ( ) \[ \] \{ \} § @ * / \&amp; # % † ‡ ° &lt; = &gt; ~ \$]</exemplarCharacters>
+		<exemplarCharacters type="numbers">[  , % ‰ + − 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
+		<exemplarCharacters type="punctuation">[_ ‐ – — ⸗ , ; \: ! ? . … ' ‘ ‚ &quot; “ „ ( ) \[ \] \{ \} § @ * / \&amp; # % † ‡ ° &lt; = &gt; ~]</exemplarCharacters>
 	</characters>
 	<delimiters>
 		<quotationStart draft="contributed">„</quotationStart>
@@ -825,7 +951,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<month type="2" draft="contributed">Fäb</month>
 							<month type="3" draft="contributed">Mäz</month>
 							<month type="4" draft="contributed">Apr</month>
-							<month type="5" draft="contributed">Mäi</month>
+							<month type="5" draft="contributed">Mai</month>
 							<month type="6" draft="contributed">Jun</month>
 							<month type="7" draft="contributed">Jul</month>
 							<month type="8" draft="contributed">Ouj</month>
@@ -839,12 +965,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<month type="2" draft="contributed">Fäbrowa</month>
 							<month type="3" draft="contributed">Määz</month>
 							<month type="4" draft="contributed">Aprell</month>
-							<month type="5" draft="contributed">Mäi</month>
+							<month type="5" draft="contributed">Mai</month>
 							<month type="6" draft="contributed">Juuni</month>
 							<month type="7" draft="contributed">Juuli</month>
 							<month type="8" draft="contributed">Oujoß</month>
 							<month type="9" draft="contributed">Septämber</month>
-							<month type="10" draft="contributed">Oktoober</month>
+							<month type="10" draft="contributed">Oktohber</month>
 							<month type="11" draft="contributed">Novämber</month>
 							<month type="12" draft="contributed">Dezämber</month>
 						</monthWidth>
@@ -855,7 +981,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<month type="2" draft="contributed">Fäb.</month>
 							<month type="3" draft="contributed">Mäz.</month>
 							<month type="4" draft="contributed">Apr.</month>
-							<month type="5" draft="contributed">Mäi</month>
+							<month type="5" draft="contributed">Mai</month>
 							<month type="6" draft="contributed">Jun.</month>
 							<month type="7" draft="contributed">Jul.</month>
 							<month type="8" draft="contributed">Ouj.</month>
@@ -872,7 +998,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<month type="5" draft="contributed">M</month>
 							<month type="6" draft="contributed">J</month>
 							<month type="7" draft="contributed">J</month>
-							<month type="8" draft="contributed">A</month>
+							<month type="8" draft="contributed">O</month>
 							<month type="9" draft="contributed">S</month>
 							<month type="10" draft="contributed">O</month>
 							<month type="11" draft="contributed">N</month>
@@ -902,7 +1028,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 						</dayWidth>
 						<dayWidth type="wide">
 							<day type="sun" draft="contributed">Sunndaach</day>
-							<day type="mon" draft="contributed">Moondaach</day>
+							<day type="mon" draft="contributed">Mohndaach</day>
 							<day type="tue" draft="contributed">Dinnsdaach</day>
 							<day type="wed" draft="contributed">Metwoch</day>
 							<day type="thu" draft="contributed">Dunnersdaach</day>
@@ -939,19 +1065,39 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<quarter type="3" draft="contributed">3.Q.</quarter>
 							<quarter type="4" draft="contributed">4.Q.</quarter>
 						</quarterWidth>
+						<quarterWidth type="narrow">
+							<quarter type="1">1</quarter>
+							<quarter type="2">2</quarter>
+							<quarter type="3">3</quarter>
+							<quarter type="4">4</quarter>
+						</quarterWidth>
 						<quarterWidth type="wide">
-							<quarter type="1" draft="contributed">1. Quattaal</quarter>
-							<quarter type="2" draft="contributed">2. Quattaal</quarter>
-							<quarter type="3" draft="contributed">3. Quattaal</quarter>
-							<quarter type="4" draft="contributed">4. Quattaal</quarter>
+							<quarter type="1">1. Quattahl</quarter>
+							<quarter type="2">2. Quattahl</quarter>
+							<quarter type="3">3. Quattahl</quarter>
+							<quarter type="4">4. Quattahl</quarter>
+						</quarterWidth>
+					</quarterContext>
+					<quarterContext type="stand-alone">
+						<quarterWidth type="narrow">
+							<quarter type="1">1Q</quarter>
+							<quarter type="2">2Q</quarter>
+							<quarter type="3">3Q</quarter>
+							<quarter type="4">4Q</quarter>
+						</quarterWidth>
+						<quarterWidth type="wide">
+							<quarter type="1">1. Quattahl</quarter>
+							<quarter type="2">2. Quattahl</quarter>
+							<quarter type="3">3. Quattahl</quarter>
+							<quarter type="4">4. Quattahl</quarter>
 						</quarterWidth>
 					</quarterContext>
 				</quarters>
 				<dayPeriods>
 					<dayPeriodContext type="format">
 						<dayPeriodWidth type="abbreviated">
-							<dayPeriod type="am" draft="contributed">v.m.</dayPeriod>
-							<dayPeriod type="pm" draft="contributed">n.m.</dayPeriod>
+							<dayPeriod type="am">v.M.</dayPeriod>
+							<dayPeriod type="pm">n.M.</dayPeriod>
 						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am" draft="contributed">Uhr vörmiddaachs</dayPeriod>
@@ -960,23 +1106,23 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dayPeriodContext>
 					<dayPeriodContext type="stand-alone">
 						<dayPeriodWidth type="wide">
-							<dayPeriod type="am" draft="contributed">Vormittag</dayPeriod>
-							<dayPeriod type="pm" draft="contributed">Nachmittag</dayPeriod>
+							<dayPeriod type="am">Vörmeddaach</dayPeriod>
+							<dayPeriod type="pm">Nommendaach</dayPeriod>
 						</dayPeriodWidth>
 					</dayPeriodContext>
 				</dayPeriods>
 				<eras>
 					<eraNames>
-						<era type="0" draft="contributed">vür Chrestus</era>
-						<era type="0" alt="variant" draft="contributed">vür der gewöhnlichen Zeitrechnung</era>
-						<era type="1" draft="contributed">noh Chrestus</era>
-						<era type="1" alt="variant" draft="contributed">der gewöhnlichen Zeitrechnung</era>
+						<era type="0">vür Krestos</era>
+						<era type="0" alt="variant">vür de jewöhnlejje Ziggrääschnong</era>
+						<era type="1">noh Krestos</era>
+						<era type="1" alt="variant">en de jewöhnlejje Ziggrääschnong</era>
 					</eraNames>
 					<eraAbbr>
 						<era type="0" draft="contributed">v. Chr.</era>
-						<era type="0" alt="variant" draft="contributed">v. d. Z.</era>
+						<era type="0" alt="variant">v. Kr.</era>
 						<era type="1" draft="contributed">n. Chr.</era>
-						<era type="1" alt="variant" draft="contributed">d. Z.</era>
+						<era type="1" alt="variant">n. K.</era>
 					</eraAbbr>
 					<eraNarrow>
 						<era type="0" draft="contributed">vC</era>
@@ -1085,6 +1231,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<greatestDifference id="M" draft="contributed">MMM–MMM y</greatestDifference>
 							<greatestDifference id="y" draft="contributed">MMM. y – MMM. y</greatestDifference>
 						</intervalFormatItem>
+						<intervalFormatItem id="yMMMd">
+							<greatestDifference id="d">d.–d. MMMM y</greatestDifference>
+							<greatestDifference id="M">y MMM d – MMM d</greatestDifference>
+						</intervalFormatItem>
 						<intervalFormatItem id="yMMMEd">
 							<greatestDifference id="d" draft="contributed">E y-MM-dd – E y-MM-dd</greatestDifference>
 							<greatestDifference id="M" draft="contributed">E y-MM-dd – E y-MM-dd</greatestDifference>
@@ -1100,13 +1250,38 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</calendars>
 		<fields>
 			<field type="era">
-				<displayName draft="contributed">Era</displayName>
+				<displayName>Ähra</displayName>
 			</field>
 			<field type="year">
 				<displayName draft="contributed">Johr</displayName>
-				<relative type="-1" draft="contributed">läz Johr</relative>
-				<relative type="0" draft="contributed">diese Johr</relative>
-				<relative type="1" draft="contributed">nächste Johr</relative>
+				<relative type="-1">läz Johr</relative>
+				<relative type="0">diß Johr</relative>
+				<relative type="1">näx Johr</relative>
+				<relativeTime type="future">
+					<relativeTimePattern count="zero">en keinem Johr</relativeTimePattern>
+					<relativeTimePattern count="one">en {0} Johr</relativeTimePattern>
+					<relativeTimePattern count="other">en {0} Johre</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="zero">vör keijnem Johr</relativeTimePattern>
+					<relativeTimePattern count="one">vör {0} Johr</relativeTimePattern>
+					<relativeTimePattern count="other">vör {0} Johre</relativeTimePattern>
+				</relativeTime>
+			</field>
+			<field type="year-short">
+				<displayName>J.</displayName>
+			</field>
+			<field type="year-narrow">
+				<displayName>J.</displayName>
+			</field>
+			<field type="quarter">
+				<displayName>Quattahl</displayName>
+			</field>
+			<field type="quarter-short">
+				<displayName>Q.</displayName>
+			</field>
+			<field type="quarter-narrow">
+				<displayName>Q.</displayName>
 			</field>
 			<field type="month">
 				<displayName draft="contributed">Mohnd</displayName>
@@ -1114,11 +1289,23 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<relative type="0" draft="contributed">diese Mohnd</relative>
 				<relative type="1" draft="contributed">nächste Mohnd</relative>
 			</field>
+			<field type="month-short">
+				<displayName>Mohnd</displayName>
+			</field>
+			<field type="month-narrow">
+				<displayName>M.</displayName>
+			</field>
 			<field type="week">
 				<displayName draft="contributed">Woch</displayName>
 				<relative type="-1" draft="contributed">läz Woch</relative>
 				<relative type="0" draft="contributed">di Woch</relative>
 				<relative type="1" draft="contributed">nächste Woche</relative>
+			</field>
+			<field type="week-short">
+				<displayName>W.</displayName>
+			</field>
+			<field type="week-narrow">
+				<displayName>W.</displayName>
 			</field>
 			<field type="day">
 				<displayName draft="contributed">Daach</displayName>
@@ -1127,6 +1314,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<relative type="0" draft="contributed">hück</relative>
 				<relative type="1" draft="contributed">morje</relative>
 				<relative type="2" draft="contributed">övvermorje</relative>
+			</field>
+			<field type="day-short">
+				<displayName>D.</displayName>
+			</field>
+			<field type="day-narrow">
+				<displayName>D.</displayName>
 			</field>
 			<field type="weekday">
 				<displayName draft="contributed">Wochedaach</displayName>
@@ -1172,11 +1365,29 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<field type="hour">
 				<displayName draft="contributed">Schtund</displayName>
 			</field>
+			<field type="hour-short">
+				<displayName>Std.</displayName>
+			</field>
+			<field type="hour-narrow">
+				<displayName>S.</displayName>
+			</field>
 			<field type="minute">
 				<displayName draft="contributed">Menutt</displayName>
 			</field>
+			<field type="minute-short">
+				<displayName>min.</displayName>
+			</field>
+			<field type="minute-narrow">
+				<displayName>m.</displayName>
+			</field>
 			<field type="second">
 				<displayName draft="contributed">Sekond</displayName>
+			</field>
+			<field type="second-short">
+				<displayName>sek.</displayName>
+			</field>
+			<field type="second-narrow">
+				<displayName>s.</displayName>
 			</field>
 			<field type="zone">
 				<displayName draft="contributed">Zickzohn</displayName>
@@ -1189,6 +1400,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<regionFormat type="daylight" draft="contributed">Summerzick vun {0}</regionFormat>
 			<regionFormat type="standard" draft="contributed">Schtandattzick vun {0}</regionFormat>
 			<fallbackFormat draft="contributed">{1} ({0})</fallbackFormat>
+			<zone type="Pacific/Honolulu">
+				<exemplarCity draft="contributed">Honululu</exemplarCity>
+			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity draft="contributed">- weße mer nit -</exemplarCity>
 			</zone>
@@ -1415,9 +1629,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<zone type="Europe/Zaporozhye">
 				<exemplarCity draft="contributed">Saporischschja</exemplarCity>
 			</zone>
-			<zone type="Pacific/Honolulu">
-				<exemplarCity draft="contributed">Honululu</exemplarCity>
-			</zone>
 			<zone type="America/Yakutat">
 				<exemplarCity draft="contributed">Jakutat</exemplarCity>
 			</zone>
@@ -1571,6 +1782,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</timeZoneNames>
 	</dates>
 	<numbers>
+		<defaultNumberingSystem draft="contributed">latn</defaultNumberingSystem>
+		<otherNumberingSystems>
+			<native draft="contributed">latn</native>
+		</otherNumberingSystems>
 		<symbols numberSystem="latn">
 			<decimal draft="contributed">,</decimal>
 			<group draft="contributed"> </group>
@@ -1690,6 +1905,46 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<pattern draft="contributed">#,##0.00 ¤</pattern>
 				</currencyFormat>
 			</currencyFormatLength>
+			<currencyFormatLength type="short">
+				<currencyFormat type="standard">
+					<pattern type="1000" count="zero" draft="provisional">0 tsd ¤</pattern>
+					<pattern type="1000" count="one" draft="provisional">0 tsd ¤</pattern>
+					<pattern type="1000" count="other" draft="provisional">0 tsd ¤</pattern>
+					<pattern type="10000" count="zero" draft="provisional">00 tsd ¤</pattern>
+					<pattern type="10000" count="one" draft="provisional">00 tsd ¤</pattern>
+					<pattern type="10000" count="other" draft="provisional">00 tsd ¤</pattern>
+					<pattern type="100000" count="zero" draft="provisional">000 tsd ¤</pattern>
+					<pattern type="100000" count="one" draft="provisional">000 tsd ¤</pattern>
+					<pattern type="100000" count="other" draft="provisional">000 tsd ¤</pattern>
+					<pattern type="1000000" count="zero" draft="provisional">0 Mio ¤</pattern>
+					<pattern type="1000000" count="one" draft="provisional">0 Mio ¤</pattern>
+					<pattern type="1000000" count="other" draft="provisional">0 Mio ¤</pattern>
+					<pattern type="10000000" count="zero" draft="provisional">00 Mio ¤</pattern>
+					<pattern type="10000000" count="one" draft="provisional">00 Mio ¤</pattern>
+					<pattern type="10000000" count="other" draft="provisional">00 Mio ¤</pattern>
+					<pattern type="100000000" count="zero" draft="provisional">000 Mio ¤</pattern>
+					<pattern type="100000000" count="one" draft="provisional">000 Mio ¤</pattern>
+					<pattern type="100000000" count="other" draft="provisional">000 Mio ¤</pattern>
+					<pattern type="1000000000" count="zero" draft="provisional">0 Mrd ¤</pattern>
+					<pattern type="1000000000" count="one" draft="provisional">0 Mrd ¤</pattern>
+					<pattern type="1000000000" count="other" draft="provisional">0 Mrd ¤</pattern>
+					<pattern type="10000000000" count="zero" draft="provisional">00 Mrd ¤</pattern>
+					<pattern type="10000000000" count="one" draft="provisional">00 Mrd ¤</pattern>
+					<pattern type="10000000000" count="other" draft="provisional">00 Mrd ¤</pattern>
+					<pattern type="100000000000" count="zero" draft="provisional">000 Mrd ¤</pattern>
+					<pattern type="100000000000" count="one" draft="provisional">000 Mrd ¤</pattern>
+					<pattern type="100000000000" count="other" draft="provisional">000 Mrd ¤</pattern>
+					<pattern type="1000000000000" count="zero" draft="provisional">0 Bio ¤</pattern>
+					<pattern type="1000000000000" count="one" draft="provisional">0 Bio ¤</pattern>
+					<pattern type="1000000000000" count="other" draft="provisional">0 Bio ¤</pattern>
+					<pattern type="10000000000000" count="zero" draft="provisional">00 Bio ¤</pattern>
+					<pattern type="10000000000000" count="one" draft="provisional">00 Bio ¤</pattern>
+					<pattern type="10000000000000" count="other" draft="provisional">00 Bio ¤</pattern>
+					<pattern type="100000000000000" count="zero" draft="provisional">000 Bio ¤</pattern>
+					<pattern type="100000000000000" count="one" draft="provisional">000 Bio ¤</pattern>
+					<pattern type="100000000000000" count="other" draft="provisional">000 Bio ¤</pattern>
+				</currencyFormat>
+			</currencyFormatLength>
 			<unitPattern count="zero" draft="contributed">{0} {1}</unitPattern>
 			<unitPattern count="one" draft="contributed">{0} {1}</unitPattern>
 			<unitPattern count="other" draft="contributed">{0} {1}</unitPattern>
@@ -1782,8 +2037,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<currency type="BWP">
 				<displayName draft="contributed">Pula us Bozwaana</displayName>
 			</currency>
-			<currency type="BYR">
+			<currency type="BYN">
 				<displayName draft="contributed">wiißrußesche Rubel</displayName>
+			</currency>
+			<currency type="BYR">
+				<displayName draft="contributed">wiißrußesche Rubel (2000–2016)</displayName>
 			</currency>
 			<currency type="BZD">
 				<displayName draft="contributed">belizjaanesche Dollaa</displayName>
@@ -2101,7 +2359,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="other">pannameesesche Balboa</displayName>
 			</currency>
 			<currency type="PEN">
-				<displayName draft="contributed">perruaanesche Nuevo Sol</displayName>
+				<displayName draft="contributed">perruaanesche Sol</displayName>
 			</currency>
 			<currency type="PGK">
 				<displayName draft="contributed">papua neujinejaanesche Kina</displayName>
@@ -2341,6 +2599,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0}-fache Erdbeschleunigung</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}-fache Erdbeschleunigung</unitPattern>
 			</unit>
+			<unit type="angle-degree">
+				<displayName draft="contributed">Graad</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Graad</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Graad</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Graad</unitPattern>
+			</unit>
 			<unit type="angle-arc-minute">
 				<displayName draft="contributed">Winkelmenutte</displayName>
 				<unitPattern count="zero" draft="contributed">{0} Winkelmenutte</unitPattern>
@@ -2353,35 +2617,17 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} Winkelsekunde</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Winkelsekunde</unitPattern>
 			</unit>
-			<unit type="angle-degree">
-				<displayName draft="contributed">Graad</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Graad</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Graad</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Graad</unitPattern>
-			</unit>
-			<unit type="area-acre">
-				<displayName draft="contributed">angloamerikanischen Acre</displayName>
-				<unitPattern count="zero" draft="contributed">{0} angloamerikanischen Acre</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} angloamerikanische Acre</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} angloamerikanischen Acre</unitPattern>
+			<unit type="area-square-kilometer">
+				<displayName draft="contributed">Quadratkilometer</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Quadratkilometer</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Quadratkilometer</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Quadratkilometer</unitPattern>
 			</unit>
 			<unit type="area-hectare">
 				<displayName draft="contributed">hektar</displayName>
 				<unitPattern count="zero" draft="contributed">{0} hektar</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} hektar</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} hektar</unitPattern>
-			</unit>
-			<unit type="area-square-foot">
-				<displayName draft="contributed">Quadratvoss</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Quadratvoss</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Quadratvoss</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Quadratvoss</unitPattern>
-			</unit>
-			<unit type="area-square-kilometer">
-				<displayName draft="contributed">Quadratkilometer</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Quadratkilometer</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Quadratkilometer</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Quadratkilometer</unitPattern>
 			</unit>
 			<unit type="area-square-meter">
 				<displayName draft="contributed">Quadratmeter</displayName>
@@ -2395,17 +2641,66 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} englische Quadratmeile</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} englischen Quadratmeilen</unitPattern>
 			</unit>
+			<unit type="area-acre">
+				<displayName draft="contributed">angloamerikanischen Acre</displayName>
+				<unitPattern count="zero" draft="contributed">{0} angloamerikanischen Acre</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} angloamerikanische Acre</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} angloamerikanischen Acre</unitPattern>
+			</unit>
+			<unit type="area-square-foot">
+				<displayName draft="contributed">Quadratvoss</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Quadratvoss</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Quadratvoss</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Quadratvoss</unitPattern>
+			</unit>
+			<unit type="duration-year">
+				<displayName draft="contributed">Johre</displayName>
+				<unitPattern count="zero">{0} Johre</unitPattern>
+				<unitPattern count="one">{0} Johre</unitPattern>
+				<unitPattern count="other">{0} Johre</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Johre</perUnitPattern>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="contributed">Mohnde</displayName>
+				<unitPattern count="zero">{0} Mohnde</unitPattern>
+				<unitPattern count="one">{0} Mohnde</unitPattern>
+				<unitPattern count="other">{0} Mohnde</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Mohnde</perUnitPattern>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="contributed">Woche</displayName>
+				<unitPattern count="zero">{0} Woche</unitPattern>
+				<unitPattern count="one">{0} Woche</unitPattern>
+				<unitPattern count="other">{0} Woche</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Woche</perUnitPattern>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="contributed">Dääsch</displayName>
 				<unitPattern count="zero">{0} Dääsch</unitPattern>
 				<unitPattern count="one">{0} Dääsch</unitPattern>
 				<unitPattern count="other">{0} Dääsch</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Dääsch</perUnitPattern>
 			</unit>
 			<unit type="duration-hour">
 				<displayName draft="contributed">Schtunde</displayName>
 				<unitPattern count="zero">{0} Schtunde</unitPattern>
 				<unitPattern count="one">{0} Schtunde</unitPattern>
 				<unitPattern count="other">{0} Schtunde</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Schtunde</perUnitPattern>
+			</unit>
+			<unit type="duration-minute">
+				<displayName draft="contributed">Menutte</displayName>
+				<unitPattern count="zero">{0} Menutte</unitPattern>
+				<unitPattern count="one">{0} Menutte</unitPattern>
+				<unitPattern count="other">{0} Menutte</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Menutte</perUnitPattern>
+			</unit>
+			<unit type="duration-second">
+				<displayName draft="contributed">Sekunde</displayName>
+				<unitPattern count="zero">{0} Sekunde</unitPattern>
+				<unitPattern count="one">{0} Sekunde</unitPattern>
+				<unitPattern count="other">{0} Sekunde</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Sekunde</perUnitPattern>
 			</unit>
 			<unit type="duration-millisecond">
 				<displayName draft="contributed">Millisekunde</displayName>
@@ -2413,59 +2708,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} Millisekunde</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Millisekunde</unitPattern>
 			</unit>
-			<unit type="duration-minute">
-				<displayName draft="contributed">Menutte</displayName>
-				<unitPattern count="zero">{0} Menutte</unitPattern>
-				<unitPattern count="one">{0} Menutte</unitPattern>
-				<unitPattern count="other">{0} Menutte</unitPattern>
-			</unit>
-			<unit type="duration-month">
-				<displayName draft="contributed">Mohnde</displayName>
-				<unitPattern count="zero">{0} Mohnde</unitPattern>
-				<unitPattern count="one">{0} Mohnde</unitPattern>
-				<unitPattern count="other">{0} Mohnde</unitPattern>
-			</unit>
-			<unit type="duration-second">
-				<displayName draft="contributed">Sekunde</displayName>
-				<unitPattern count="zero">{0} Sekunde</unitPattern>
-				<unitPattern count="one">{0} Sekunde</unitPattern>
-				<unitPattern count="other">{0} Sekunde</unitPattern>
-			</unit>
-			<unit type="duration-week">
-				<displayName draft="contributed">Woche</displayName>
-				<unitPattern count="zero">{0} Woche</unitPattern>
-				<unitPattern count="one">{0} Woche</unitPattern>
-				<unitPattern count="other">{0} Woche</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="contributed">Johre</displayName>
-				<unitPattern count="zero">{0} Johre</unitPattern>
-				<unitPattern count="one">{0} Johre</unitPattern>
-				<unitPattern count="other">{0} Johre</unitPattern>
-			</unit>
-			<unit type="length-centimeter">
-				<displayName draft="contributed">Zentimeter</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Zentimeter</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Zentimeter</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Zentimeter</unitPattern>
-			</unit>
-			<unit type="length-foot">
-				<displayName draft="contributed">Voss</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Voss</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Voss</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Voss</unitPattern>
-			</unit>
-			<unit type="length-inch">
-				<displayName draft="contributed">Dumm</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Dumm</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Dumm</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Dumm</unitPattern>
-			</unit>
 			<unit type="length-kilometer">
 				<displayName draft="contributed">Kilometer</displayName>
 				<unitPattern count="zero" draft="contributed">{0} Kilometer</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} Kilometer</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Kilometer</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Kilometer</perUnitPattern>
 			</unit>
 			<unit type="length-meter">
 				<displayName draft="contributed">Meter</displayName>
@@ -2473,11 +2721,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} Meter</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Meter</unitPattern>
 			</unit>
-			<unit type="length-mile">
-				<displayName draft="contributed">englischen Meilen</displayName>
-				<unitPattern count="zero" draft="contributed">{0} englischen Meilen</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} englische Meile</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} englischen Meilen</unitPattern>
+			<unit type="length-centimeter">
+				<displayName draft="contributed">Zentimeter</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Zentimeter</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Zentimeter</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Zentimeter</unitPattern>
 			</unit>
 			<unit type="length-millimeter">
 				<displayName draft="contributed">Millimeter</displayName>
@@ -2491,11 +2739,23 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} Pikometer</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Pikometer</unitPattern>
 			</unit>
-			<unit type="mass-gram">
-				<displayName draft="contributed">Gramm</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Gramm</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Gramm</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Gramm</unitPattern>
+			<unit type="length-mile">
+				<displayName draft="contributed">englischen Meilen</displayName>
+				<unitPattern count="zero" draft="contributed">{0} englischen Meilen</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} englische Meile</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} englischen Meilen</unitPattern>
+			</unit>
+			<unit type="length-foot">
+				<displayName draft="contributed">Voss</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Voss</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Voss</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Voss</unitPattern>
+			</unit>
+			<unit type="length-inch">
+				<displayName draft="contributed">Dumm</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Dumm</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Dumm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Dumm</unitPattern>
 			</unit>
 			<unit type="mass-kilogram">
 				<displayName draft="contributed">Kilogramm</displayName>
@@ -2503,11 +2763,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} Kilogramm</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Kilogramm</unitPattern>
 			</unit>
-			<unit type="mass-ounce">
-				<displayName draft="contributed">Unzen</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Unzen</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Unze</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Unzen</unitPattern>
+			<unit type="mass-gram">
+				<displayName draft="contributed">Gramm</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Gramm</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Gramm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Gramm</unitPattern>
 			</unit>
 			<unit type="mass-pound">
 				<displayName draft="contributed">Pfund</displayName>
@@ -2515,11 +2775,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} Pfund</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Pfund</unitPattern>
 			</unit>
-			<unit type="power-horsepower">
-				<displayName draft="contributed">Pferdestärken</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Pferdestärken</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Pferdestärke</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Pferdestärken</unitPattern>
+			<unit type="mass-ounce">
+				<displayName draft="contributed">Unzen</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Unzen</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Unze</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Unzen</unitPattern>
 			</unit>
 			<unit type="power-kilowatt">
 				<displayName draft="contributed">Kilowatt</displayName>
@@ -2532,6 +2792,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="zero" draft="contributed">{0} Watt</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} Watt</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Watt</unitPattern>
+			</unit>
+			<unit type="power-horsepower">
+				<displayName draft="contributed">Pferdestärken</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Pferdestärken</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Pferdestärke</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Pferdestärken</unitPattern>
 			</unit>
 			<unit type="pressure-hectopascal">
 				<displayName draft="contributed">Hektopascal</displayName>
@@ -2610,6 +2876,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} G</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} G</unitPattern>
 			</unit>
+			<unit type="angle-degree">
+				<displayName draft="contributed">Graad</displayName>
+				<unitPattern count="zero" draft="contributed">{0}°</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}°</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}°</unitPattern>
+			</unit>
 			<unit type="angle-arc-minute">
 				<displayName draft="contributed">Winkelmenutte</displayName>
 				<unitPattern count="zero" draft="contributed">{0}′</unitPattern>
@@ -2622,35 +2894,17 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0}″</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}″</unitPattern>
 			</unit>
-			<unit type="angle-degree">
-				<displayName draft="contributed">Graad</displayName>
-				<unitPattern count="zero" draft="contributed">{0}°</unitPattern>
-				<unitPattern count="one" draft="contributed">{0}°</unitPattern>
-				<unitPattern count="other" draft="contributed">{0}°</unitPattern>
-			</unit>
-			<unit type="area-acre">
-				<displayName draft="contributed">angloamerikanischen Acre</displayName>
-				<unitPattern count="zero">{0} ac</unitPattern>
-				<unitPattern count="one">{0} ac</unitPattern>
-				<unitPattern count="other">{0} ac</unitPattern>
+			<unit type="area-square-kilometer">
+				<displayName draft="contributed">Quadratkilometer</displayName>
+				<unitPattern count="zero" draft="contributed">{0} km²</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} km²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} km²</unitPattern>
 			</unit>
 			<unit type="area-hectare">
 				<displayName draft="contributed">hektar</displayName>
 				<unitPattern count="zero" draft="contributed">{0} ha</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} ha</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} ha</unitPattern>
-			</unit>
-			<unit type="area-square-foot">
-				<displayName draft="contributed">Quadratvoss</displayName>
-				<unitPattern count="zero">{0} ft²</unitPattern>
-				<unitPattern count="one">{0} ft²</unitPattern>
-				<unitPattern count="other">{0} ft²</unitPattern>
-			</unit>
-			<unit type="area-square-kilometer">
-				<displayName draft="contributed">Quadratkilometer</displayName>
-				<unitPattern count="zero" draft="contributed">{0} km²</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} km²</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} km²</unitPattern>
 			</unit>
 			<unit type="area-square-meter">
 				<displayName draft="contributed">Quadratmeter</displayName>
@@ -2664,17 +2918,67 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one">{0} mi²</unitPattern>
 				<unitPattern count="other">{0} mi²</unitPattern>
 			</unit>
+			<unit type="area-acre">
+				<displayName draft="contributed">angloamerikanischen Acre</displayName>
+				<unitPattern count="zero">{0} ac</unitPattern>
+				<unitPattern count="one">{0} ac</unitPattern>
+				<unitPattern count="other">{0} ac</unitPattern>
+			</unit>
+			<unit type="area-square-foot">
+				<displayName draft="contributed">Quadratvoss</displayName>
+				<unitPattern count="zero">{0} ft²</unitPattern>
+				<unitPattern count="one">{0} ft²</unitPattern>
+				<unitPattern count="other">{0} ft²</unitPattern>
+			</unit>
+			<unit type="duration-century">
+				<unitPattern count="zero" draft="unconfirmed">{0} Jrh</unitPattern>
+				<unitPattern count="one" draft="unconfirmed">{0} Jrh</unitPattern>
+				<unitPattern count="other" draft="unconfirmed">{0} Jrh</unitPattern>
+			</unit>
+			<unit type="duration-year">
+				<displayName draft="contributed">Johre</displayName>
+				<unitPattern count="zero" draft="unconfirmed">{0} Jr</unitPattern>
+				<unitPattern count="one" draft="unconfirmed">{0} Jr</unitPattern>
+				<unitPattern count="other" draft="unconfirmed">{0} Jr</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0}/Jr</perUnitPattern>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="contributed">Mohnde</displayName>
+				<unitPattern count="zero" draft="unconfirmed">{0} Mohn</unitPattern>
+				<unitPattern count="one" draft="unconfirmed">{0} Mohn</unitPattern>
+				<unitPattern count="other" draft="unconfirmed">{0} Mohn</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0}/Mohn</perUnitPattern>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="contributed">Woche</displayName>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="contributed">Dääsch</displayName>
 				<unitPattern count="zero">{0} d</unitPattern>
 				<unitPattern count="one">{0} d</unitPattern>
 				<unitPattern count="other">{0} d</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0}/d</perUnitPattern>
 			</unit>
 			<unit type="duration-hour">
 				<displayName draft="contributed">Schtunde</displayName>
 				<unitPattern count="zero" draft="contributed">{0} h</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} h</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} h</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0} pro Schtunde</perUnitPattern>
+			</unit>
+			<unit type="duration-minute">
+				<displayName draft="contributed">Menutte</displayName>
+				<unitPattern count="zero" draft="contributed">{0} min</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} min</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} min</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0}/min</perUnitPattern>
+			</unit>
+			<unit type="duration-second">
+				<displayName draft="contributed">Sekunde</displayName>
+				<unitPattern count="zero" draft="contributed">{0} s</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} s</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} s</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0}/s</perUnitPattern>
 			</unit>
 			<unit type="duration-millisecond">
 				<displayName draft="contributed">Millisekunde</displayName>
@@ -2682,50 +2986,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} ms</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} ms</unitPattern>
 			</unit>
-			<unit type="duration-minute">
-				<displayName draft="contributed">Menutte</displayName>
-				<unitPattern count="zero" draft="contributed">{0} min</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} min</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} min</unitPattern>
-			</unit>
-			<unit type="duration-month">
-				<displayName draft="contributed">Mohnde</displayName>
-			</unit>
-			<unit type="duration-second">
-				<displayName draft="contributed">Sekunde</displayName>
-				<unitPattern count="zero" draft="contributed">{0} s</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} s</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} s</unitPattern>
-			</unit>
-			<unit type="duration-week">
-				<displayName draft="contributed">Woche</displayName>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="contributed">Johre</displayName>
-			</unit>
-			<unit type="length-centimeter">
-				<displayName draft="contributed">Zentimeter</displayName>
-				<unitPattern count="zero" draft="contributed">{0} cm</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} cm</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} cm</unitPattern>
-			</unit>
-			<unit type="length-foot">
-				<displayName draft="contributed">Voss</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Voss</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Voss</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Voss</unitPattern>
-			</unit>
-			<unit type="length-inch">
-				<displayName draft="contributed">Dumm</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Dumm</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Dumm</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Dumm</unitPattern>
-			</unit>
 			<unit type="length-kilometer">
 				<displayName draft="contributed">Kilometer</displayName>
 				<unitPattern count="zero" draft="contributed">{0} km</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} km</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} km</unitPattern>
+				<perUnitPattern draft="unconfirmed">{0}/km</perUnitPattern>
 			</unit>
 			<unit type="length-meter">
 				<displayName draft="contributed">Meter</displayName>
@@ -2733,11 +2999,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} m</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} m</unitPattern>
 			</unit>
-			<unit type="length-mile">
-				<displayName draft="contributed">englischen Meilen</displayName>
-				<unitPattern count="zero">{0} mi</unitPattern>
-				<unitPattern count="one">{0} mi</unitPattern>
-				<unitPattern count="other">{0} mi</unitPattern>
+			<unit type="length-centimeter">
+				<displayName draft="contributed">Zentimeter</displayName>
+				<unitPattern count="zero" draft="contributed">{0} cm</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} cm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} cm</unitPattern>
 			</unit>
 			<unit type="length-millimeter">
 				<displayName draft="contributed">Millimeter</displayName>
@@ -2751,11 +3017,23 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} pm</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} pm</unitPattern>
 			</unit>
-			<unit type="mass-gram">
-				<displayName draft="contributed">Gramm</displayName>
-				<unitPattern count="zero" draft="contributed">{0} g</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} g</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} g</unitPattern>
+			<unit type="length-mile">
+				<displayName draft="contributed">englischen Meilen</displayName>
+				<unitPattern count="zero">{0} mi</unitPattern>
+				<unitPattern count="one">{0} mi</unitPattern>
+				<unitPattern count="other">{0} mi</unitPattern>
+			</unit>
+			<unit type="length-foot">
+				<displayName draft="contributed">Voss</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Voss</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Voss</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Voss</unitPattern>
+			</unit>
+			<unit type="length-inch">
+				<displayName draft="contributed">Dumm</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Dumm</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Dumm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Dumm</unitPattern>
 			</unit>
 			<unit type="mass-kilogram">
 				<displayName draft="contributed">Kilogramm</displayName>
@@ -2763,11 +3041,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} kg</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} kg</unitPattern>
 			</unit>
-			<unit type="mass-ounce">
-				<displayName draft="contributed">Unzen</displayName>
-				<unitPattern count="zero" draft="contributed">{0} Unzen</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Unze</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Unzen</unitPattern>
+			<unit type="mass-gram">
+				<displayName draft="contributed">Gramm</displayName>
+				<unitPattern count="zero" draft="contributed">{0} g</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} g</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} g</unitPattern>
 			</unit>
 			<unit type="mass-pound">
 				<displayName draft="contributed">Pfund</displayName>
@@ -2775,11 +3053,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0} Pfund</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Pfund</unitPattern>
 			</unit>
-			<unit type="power-horsepower">
-				<displayName draft="contributed">Pferdestärken</displayName>
-				<unitPattern count="zero" draft="contributed">{0} PS</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} PS</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} PS</unitPattern>
+			<unit type="mass-ounce">
+				<displayName draft="contributed">Unzen</displayName>
+				<unitPattern count="zero" draft="contributed">{0} Unzen</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Unze</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Unzen</unitPattern>
 			</unit>
 			<unit type="power-kilowatt">
 				<displayName draft="contributed">Kilowatt</displayName>
@@ -2792,6 +3070,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="zero" draft="contributed">{0} W</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} W</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} W</unitPattern>
+			</unit>
+			<unit type="power-horsepower">
+				<displayName draft="contributed">Pferdestärken</displayName>
+				<unitPattern count="zero" draft="contributed">{0} PS</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} PS</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} PS</unitPattern>
 			</unit>
 			<unit type="pressure-hectopascal">
 				<displayName draft="contributed">Hektopascal</displayName>
@@ -2869,6 +3153,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0}G</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}G</unitPattern>
 			</unit>
+			<unit type="angle-degree">
+				<unitPattern count="zero" draft="contributed">{0}°</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}°</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}°</unitPattern>
+			</unit>
 			<unit type="angle-arc-minute">
 				<unitPattern count="zero" draft="contributed">{0}′</unitPattern>
 				<unitPattern count="one" draft="contributed">{0}′</unitPattern>
@@ -2879,30 +3168,15 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0}″</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}″</unitPattern>
 			</unit>
-			<unit type="angle-degree">
-				<unitPattern count="zero" draft="contributed">{0}°</unitPattern>
-				<unitPattern count="one" draft="contributed">{0}°</unitPattern>
-				<unitPattern count="other" draft="contributed">{0}°</unitPattern>
-			</unit>
-			<unit type="area-acre">
-				<unitPattern count="zero">{0} ac</unitPattern>
-				<unitPattern count="one">{0} ac</unitPattern>
-				<unitPattern count="other">{0} ac</unitPattern>
+			<unit type="area-square-kilometer">
+				<unitPattern count="zero" draft="contributed">{0}km²</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}km²</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}km²</unitPattern>
 			</unit>
 			<unit type="area-hectare">
 				<unitPattern count="zero" draft="contributed">{0}ha</unitPattern>
 				<unitPattern count="one" draft="contributed">{0}ha</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}ha</unitPattern>
-			</unit>
-			<unit type="area-square-foot">
-				<unitPattern count="zero">{0} ft²</unitPattern>
-				<unitPattern count="one">{0} ft²</unitPattern>
-				<unitPattern count="other">{0} ft²</unitPattern>
-			</unit>
-			<unit type="area-square-kilometer">
-				<unitPattern count="zero" draft="contributed">{0}km²</unitPattern>
-				<unitPattern count="one" draft="contributed">{0}km²</unitPattern>
-				<unitPattern count="other" draft="contributed">{0}km²</unitPattern>
 			</unit>
 			<unit type="area-square-meter">
 				<unitPattern count="zero" draft="contributed">{0}m²</unitPattern>
@@ -2914,6 +3188,26 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one">{0} mi²</unitPattern>
 				<unitPattern count="other">{0} mi²</unitPattern>
 			</unit>
+			<unit type="area-acre">
+				<unitPattern count="zero">{0} ac</unitPattern>
+				<unitPattern count="one">{0} ac</unitPattern>
+				<unitPattern count="other">{0} ac</unitPattern>
+			</unit>
+			<unit type="area-square-foot">
+				<unitPattern count="zero">{0} ft²</unitPattern>
+				<unitPattern count="one">{0} ft²</unitPattern>
+				<unitPattern count="other">{0} ft²</unitPattern>
+			</unit>
+			<unit type="duration-year">
+				<unitPattern count="zero" draft="unconfirmed">{0} Jr</unitPattern>
+				<unitPattern count="one" draft="unconfirmed">{0} Jr</unitPattern>
+				<unitPattern count="other" draft="unconfirmed">{0} Jr</unitPattern>
+			</unit>
+			<unit type="duration-month">
+				<unitPattern count="zero" draft="unconfirmed">{0} Mohn</unitPattern>
+				<unitPattern count="one" draft="unconfirmed">{0} Mohn</unitPattern>
+				<unitPattern count="other" draft="unconfirmed">{0} Mohn</unitPattern>
+			</unit>
 			<unit type="duration-day">
 				<unitPattern count="zero">{0}d</unitPattern>
 				<unitPattern count="one">{0}d</unitPattern>
@@ -2923,11 +3217,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="zero" draft="contributed">{0}h</unitPattern>
 				<unitPattern count="one" draft="contributed">{0}h</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}h</unitPattern>
-			</unit>
-			<unit type="duration-millisecond">
-				<unitPattern count="zero" draft="contributed">{0}ms</unitPattern>
-				<unitPattern count="one" draft="contributed">{0}ms</unitPattern>
-				<unitPattern count="other" draft="contributed">{0}ms</unitPattern>
 			</unit>
 			<unit type="duration-minute">
 				<unitPattern count="zero" draft="contributed">{0}m</unitPattern>
@@ -2939,20 +3228,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0}s</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}s</unitPattern>
 			</unit>
-			<unit type="length-centimeter">
-				<unitPattern count="zero" draft="contributed">{0}cm</unitPattern>
-				<unitPattern count="one" draft="contributed">{0}cm</unitPattern>
-				<unitPattern count="other" draft="contributed">{0}cm</unitPattern>
-			</unit>
-			<unit type="length-foot">
-				<unitPattern count="zero" draft="contributed">{0} Voss</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Voss</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Voss</unitPattern>
-			</unit>
-			<unit type="length-inch">
-				<unitPattern count="zero" draft="contributed">{0} Dumm</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Dumm</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Dumm</unitPattern>
+			<unit type="duration-millisecond">
+				<unitPattern count="zero" draft="contributed">{0}ms</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}ms</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}ms</unitPattern>
 			</unit>
 			<unit type="length-kilometer">
 				<unitPattern count="zero" draft="contributed">{0}km</unitPattern>
@@ -2964,10 +3243,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0}m</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}m</unitPattern>
 			</unit>
-			<unit type="length-mile">
-				<unitPattern count="zero">{0} mi</unitPattern>
-				<unitPattern count="one">{0} mi</unitPattern>
-				<unitPattern count="other">{0} mi</unitPattern>
+			<unit type="length-centimeter">
+				<unitPattern count="zero" draft="contributed">{0}cm</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}cm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}cm</unitPattern>
 			</unit>
 			<unit type="length-millimeter">
 				<unitPattern count="zero" draft="contributed">{0}mm</unitPattern>
@@ -2979,30 +3258,40 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one" draft="contributed">{0}pm</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}pm</unitPattern>
 			</unit>
-			<unit type="mass-gram">
-				<unitPattern count="zero" draft="contributed">{0}g</unitPattern>
-				<unitPattern count="one" draft="contributed">{0}g</unitPattern>
-				<unitPattern count="other" draft="contributed">{0}g</unitPattern>
+			<unit type="length-mile">
+				<unitPattern count="zero">{0} mi</unitPattern>
+				<unitPattern count="one">{0} mi</unitPattern>
+				<unitPattern count="other">{0} mi</unitPattern>
+			</unit>
+			<unit type="length-foot">
+				<unitPattern count="zero" draft="contributed">{0} Voss</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Voss</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Voss</unitPattern>
+			</unit>
+			<unit type="length-inch">
+				<unitPattern count="zero" draft="contributed">{0} Dumm</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Dumm</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Dumm</unitPattern>
 			</unit>
 			<unit type="mass-kilogram">
 				<unitPattern count="zero" draft="contributed">{0}kg</unitPattern>
 				<unitPattern count="one" draft="contributed">{0}kg</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}kg</unitPattern>
 			</unit>
-			<unit type="mass-ounce">
-				<unitPattern count="zero" draft="contributed">{0} Unzen</unitPattern>
-				<unitPattern count="one" draft="contributed">{0} Unze</unitPattern>
-				<unitPattern count="other" draft="contributed">{0} Unzen</unitPattern>
+			<unit type="mass-gram">
+				<unitPattern count="zero" draft="contributed">{0}g</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}g</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}g</unitPattern>
 			</unit>
 			<unit type="mass-pound">
 				<unitPattern count="zero" draft="contributed">{0} Pfund</unitPattern>
 				<unitPattern count="one" draft="contributed">{0} Pfund</unitPattern>
 				<unitPattern count="other" draft="contributed">{0} Pfund</unitPattern>
 			</unit>
-			<unit type="power-horsepower">
-				<unitPattern count="zero" draft="contributed">{0}PS</unitPattern>
-				<unitPattern count="one" draft="contributed">{0}PS</unitPattern>
-				<unitPattern count="other" draft="contributed">{0}PS</unitPattern>
+			<unit type="mass-ounce">
+				<unitPattern count="zero" draft="contributed">{0} Unzen</unitPattern>
+				<unitPattern count="one" draft="contributed">{0} Unze</unitPattern>
+				<unitPattern count="other" draft="contributed">{0} Unzen</unitPattern>
 			</unit>
 			<unit type="power-kilowatt">
 				<unitPattern count="zero" draft="contributed">{0}kW</unitPattern>
@@ -3013,6 +3302,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="zero" draft="contributed">{0}W</unitPattern>
 				<unitPattern count="one" draft="contributed">{0}W</unitPattern>
 				<unitPattern count="other" draft="contributed">{0}W</unitPattern>
+			</unit>
+			<unit type="power-horsepower">
+				<unitPattern count="zero" draft="contributed">{0}PS</unitPattern>
+				<unitPattern count="one" draft="contributed">{0}PS</unitPattern>
+				<unitPattern count="other" draft="contributed">{0}PS</unitPattern>
 			</unit>
 			<unit type="pressure-hectopascal">
 				<unitPattern count="zero" draft="contributed">{0}hPa</unitPattern>
@@ -3113,4 +3407,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</messages>
 	</posix>
 </ldml>
-

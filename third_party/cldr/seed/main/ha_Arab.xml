@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="ha"/>
 		<script type="Arab"/>
 	</identity>
@@ -22,38 +22,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</characters>
 	<dates>
 		<calendars>
-			<calendar type="generic">
-				<days>
-					<dayContext type="format">
-						<dayWidth type="abbreviated">
-							<day type="sun" draft="unconfirmed">لَح</day>
-							<day type="mon" draft="unconfirmed">لِت</day>
-							<day type="tue" draft="unconfirmed">تَل</day>
-							<day type="wed" draft="unconfirmed">لَر</day>
-							<day type="thu" draft="unconfirmed">أَلْح</day>
-							<day type="fri" draft="unconfirmed">جُم</day>
-							<day type="sat" draft="unconfirmed">أَسَ</day>
-						</dayWidth>
-						<dayWidth type="wide">
-							<day type="sun" draft="unconfirmed">لَحَدِ</day>
-							<day type="mon" draft="unconfirmed">لِتِنِنْ</day>
-							<day type="tue" draft="unconfirmed">تَلَتَ</day>
-							<day type="wed" draft="unconfirmed">لَرَبَ</day>
-							<day type="thu" draft="unconfirmed">أَلْحَمِسْ</day>
-							<day type="fri" draft="unconfirmed">جُمَعَ</day>
-							<day type="sat" draft="unconfirmed">أَسَبَرْ</day>
-						</dayWidth>
-					</dayContext>
-				</days>
-				<dayPeriods>
-					<dayPeriodContext type="format">
-						<dayPeriodWidth type="wide">
-							<dayPeriod type="am" draft="unconfirmed">A.M.</dayPeriod>
-							<dayPeriod type="pm" draft="unconfirmed">P.M.</dayPeriod>
-						</dayPeriodWidth>
-					</dayPeriodContext>
-				</dayPeriods>
-			</calendar>
 			<calendar type="gregorian">
 				<months>
 					<monthContext type="format">
@@ -111,6 +79,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</days>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am" draft="unconfirmed">A.M.</dayPeriod>
+							<dayPeriod type="pm" draft="unconfirmed">P.M.</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am" draft="unconfirmed">A.M.</dayPeriod>
 							<dayPeriod type="pm" draft="unconfirmed">P.M.</dayPeriod>
@@ -137,6 +109,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<currencies>
 			<currency type="NGN">
 				<displayName draft="unconfirmed">نَيْرَ</displayName>
+				<symbol>₦</symbol>
 			</currency>
 		</currencies>
 	</numbers>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11093 $"/>
-		<generation date="$Date: 2015-01-02 19:36:02 -0800 (Fri, 02 Jan 2015) $"/>
+		<version number="$Revision: 13701 $"/>
 		<language type="fur"/>
 	</identity>
 	<localeDisplayNames>
@@ -303,7 +303,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AI" draft="contributed">Anguilla</territory>
 			<territory type="AL" draft="contributed">Albanie</territory>
 			<territory type="AM" draft="contributed">Armenie</territory>
-			<territory type="AN" draft="contributed">Antilis olandesis</territory>
 			<territory type="AO" draft="contributed">Angola</territory>
 			<territory type="AQ" draft="contributed">Antartic</territory>
 			<territory type="AR" draft="contributed">Argjentine</territory>
@@ -580,24 +579,24 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<key type="currency" draft="contributed">monede</key>
 		</keys>
 		<types>
-			<type type="big5han" key="collation" draft="contributed">ordin cinês tradizionâl - Big5</type>
-			<type type="buddhist" key="calendar" draft="contributed">calendari budist</type>
-			<type type="chinese" key="calendar" draft="contributed">calendari cinês</type>
-			<type type="ducet" key="collation" draft="contributed">ordenament predeterminât Unicode</type>
-			<type type="gb2312han" key="collation" draft="contributed">ordin cinês semplificât - GB2312</type>
-			<type type="gregorian" key="calendar" draft="contributed">calendari gregorian</type>
-			<type type="hebrew" key="calendar" draft="contributed">calendari ebreu</type>
-			<type type="indian" key="calendar" draft="contributed">calendari nazionâl indian</type>
-			<type type="islamic" key="calendar" draft="contributed">calendari islamic</type>
-			<type type="islamic-civil" key="calendar" draft="contributed">calendari islamic civîl</type>
-			<type type="japanese" key="calendar" draft="contributed">calendari gjaponês</type>
-			<type type="latn" key="numbers" draft="contributed">numars ocidentâi</type>
-			<type type="phonebook" key="collation" draft="contributed">ordin elenc telefonic</type>
-			<type type="pinyin" key="collation" draft="contributed">ordin pinyin</type>
-			<type type="roc" key="calendar" draft="contributed">calendari de Republiche di Cine</type>
-			<type type="search" key="collation" draft="contributed">ricercje par fins gjenerâi</type>
-			<type type="stroke" key="collation" draft="contributed">ordin segns</type>
-			<type type="traditional" key="collation" draft="contributed">ordin tradizionâl</type>
+			<type key="calendar" type="buddhist" draft="contributed">calendari budist</type>
+			<type key="calendar" type="chinese" draft="contributed">calendari cinês</type>
+			<type key="calendar" type="gregorian" draft="contributed">calendari gregorian</type>
+			<type key="calendar" type="hebrew" draft="contributed">calendari ebreu</type>
+			<type key="calendar" type="indian" draft="contributed">calendari nazionâl indian</type>
+			<type key="calendar" type="islamic" draft="contributed">calendari islamic</type>
+			<type key="calendar" type="islamic-civil" draft="contributed">calendari islamic civîl</type>
+			<type key="calendar" type="japanese" draft="contributed">calendari gjaponês</type>
+			<type key="calendar" type="roc" draft="contributed">calendari de Republiche di Cine</type>
+			<type key="collation" type="big5han" draft="contributed">ordin cinês tradizionâl - Big5</type>
+			<type key="collation" type="ducet" draft="contributed">ordenament predeterminât Unicode</type>
+			<type key="collation" type="gb2312han" draft="contributed">ordin cinês semplificât - GB2312</type>
+			<type key="collation" type="phonebook" draft="contributed">ordin elenc telefonic</type>
+			<type key="collation" type="pinyin" draft="contributed">ordin pinyin</type>
+			<type key="collation" type="search" draft="contributed">ricercje par fins gjenerâi</type>
+			<type key="collation" type="stroke" draft="contributed">ordin segns</type>
+			<type key="collation" type="traditional" draft="contributed">ordin tradizionâl</type>
+			<type key="numbers" type="latn" draft="contributed">numars ocidentâi</type>
 		</types>
 		<measurementSystemNames>
 			<measurementSystemName type="metric" draft="contributed">metric</measurementSystemName>
@@ -614,6 +613,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters>[a à â b c ç d e è ê f g h i ì î j k l m n o ò ô p q r s t u ù û v w x y z]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[å č é ë ğ ï ñ ó š ü]</exemplarCharacters>
 		<exemplarCharacters type="index" draft="contributed">[A B C Ç D E F G H I J K L M N O P Q R S T U V W X Y Z]</exemplarCharacters>
+		<exemplarCharacters type="numbers">[\- , . % ‰ + 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
 	</characters>
 	<delimiters>
 		<quotationStart draft="contributed">‘</quotationStart>
@@ -956,6 +956,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</quarters>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am" draft="contributed">a.</dayPeriod>
+							<dayPeriod type="pm" draft="contributed">p.</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am" draft="contributed">a.</dayPeriod>
 							<dayPeriod type="pm" draft="contributed">p.</dayPeriod>
@@ -1366,6 +1370,34 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<pattern draft="contributed">¤ #,##0.00</pattern>
 				</currencyFormat>
 			</currencyFormatLength>
+			<currencyFormatLength type="short">
+				<currencyFormat type="standard">
+					<pattern type="1000" count="one" draft="provisional">¤ 0K</pattern>
+					<pattern type="1000" count="other" draft="provisional">¤ 0K</pattern>
+					<pattern type="10000" count="one" draft="provisional">¤ 00K</pattern>
+					<pattern type="10000" count="other" draft="provisional">¤ 00K</pattern>
+					<pattern type="100000" count="one" draft="provisional">¤ 000K</pattern>
+					<pattern type="100000" count="other" draft="provisional">¤ 000K</pattern>
+					<pattern type="1000000" count="one" draft="provisional">¤ 0M</pattern>
+					<pattern type="1000000" count="other" draft="provisional">¤ 0M</pattern>
+					<pattern type="10000000" count="one" draft="provisional">¤ 00M</pattern>
+					<pattern type="10000000" count="other" draft="provisional">¤ 00M</pattern>
+					<pattern type="100000000" count="one" draft="provisional">¤ 000M</pattern>
+					<pattern type="100000000" count="other" draft="provisional">¤ 000M</pattern>
+					<pattern type="1000000000" count="one" draft="provisional">¤ 0G</pattern>
+					<pattern type="1000000000" count="other" draft="provisional">¤ 0G</pattern>
+					<pattern type="10000000000" count="one" draft="provisional">¤ 00G</pattern>
+					<pattern type="10000000000" count="other" draft="provisional">¤ 00G</pattern>
+					<pattern type="100000000000" count="one" draft="provisional">¤ 000G</pattern>
+					<pattern type="100000000000" count="other" draft="provisional">¤ 000G</pattern>
+					<pattern type="1000000000000" count="one" draft="provisional">¤ 0T</pattern>
+					<pattern type="1000000000000" count="other" draft="provisional">¤ 0T</pattern>
+					<pattern type="10000000000000" count="one" draft="provisional">¤ 00T</pattern>
+					<pattern type="10000000000000" count="other" draft="provisional">¤ 00T</pattern>
+					<pattern type="100000000000000" count="one" draft="provisional">¤ 000T</pattern>
+					<pattern type="100000000000000" count="other" draft="provisional">¤ 000T</pattern>
+				</currencyFormat>
+			</currencyFormatLength>
 			<unitPattern count="one" draft="contributed">{0} {1}</unitPattern>
 			<unitPattern count="other" draft="contributed">{0} {1}</unitPattern>
 		</currencyFormats>
@@ -1398,8 +1430,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName count="one" draft="contributed">real brasilian</displayName>
 				<displayName count="other" draft="contributed">real brasilians</displayName>
 			</currency>
-			<currency type="BYR">
+			<currency type="BYN">
 				<displayName draft="contributed">Rubli bielorùs</displayName>
+			</currency>
+			<currency type="BYR">
+				<displayName draft="contributed">Rubli bielorùs (2000–2016)</displayName>
 			</currency>
 			<currency type="CAD">
 				<displayName draft="contributed">dolar canadês</displayName>
@@ -1622,6 +1657,21 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</numbers>
 	<units>
 		<unitLength type="long">
+			<unit type="duration-year">
+				<displayName draft="contributed">agns</displayName>
+				<unitPattern count="one">{0} an</unitPattern>
+				<unitPattern count="other">{0} agns</unitPattern>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="contributed">mês</displayName>
+				<unitPattern count="one">{0} mês</unitPattern>
+				<unitPattern count="other">{0} mês</unitPattern>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="contributed">setemanis</displayName>
+				<unitPattern count="one">{0} setemane</unitPattern>
+				<unitPattern count="other">{0} setemanis</unitPattern>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="contributed">zornadis</displayName>
 				<unitPattern count="one">{0} zornade</unitPattern>
@@ -1637,28 +1687,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one">{0} minût</unitPattern>
 				<unitPattern count="other">{0} minûts</unitPattern>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="contributed">mês</displayName>
-				<unitPattern count="one">{0} mês</unitPattern>
-				<unitPattern count="other">{0} mês</unitPattern>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="contributed">seconts</displayName>
 				<unitPattern count="one">{0} secont</unitPattern>
 				<unitPattern count="other">{0} seconts</unitPattern>
 			</unit>
-			<unit type="duration-week">
-				<displayName draft="contributed">setemanis</displayName>
-				<unitPattern count="one">{0} setemane</unitPattern>
-				<unitPattern count="other">{0} setemanis</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="contributed">agns</displayName>
-				<unitPattern count="one">{0} an</unitPattern>
-				<unitPattern count="other">{0} agns</unitPattern>
-			</unit>
 		</unitLength>
 		<unitLength type="short">
+			<unit type="duration-year">
+				<displayName draft="contributed">agns</displayName>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="contributed">mês</displayName>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="contributed">setemanis</displayName>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="contributed">zornadis</displayName>
 			</unit>
@@ -1668,17 +1712,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-minute">
 				<displayName draft="contributed">minûts</displayName>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="contributed">mês</displayName>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="contributed">seconts</displayName>
-			</unit>
-			<unit type="duration-week">
-				<displayName draft="contributed">setemanis</displayName>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="contributed">agns</displayName>
 			</unit>
 		</unitLength>
 	</units>
@@ -1695,4 +1730,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</messages>
 	</posix>
 </ldml>
-

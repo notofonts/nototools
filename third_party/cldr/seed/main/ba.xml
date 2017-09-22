@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="ba"/>
 	</identity>
 	<layout>
@@ -17,7 +17,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</orientation>
 	</layout>
 	<characters>
-		<exemplarCharacters>[а б в г ғ д ҙ е ё ж з и й к ҡ л м н ң о ө п р с ҫ т у ү ф х һ ц ч ш щ ъ ы ь э ә ю я]</exemplarCharacters>
-		<exemplarCharacters type="index">[А Б В Г Ғ Д Ҙ Е Ё Ж З И Й К Ҡ Л М Н Ң О Ө П Р С Ҫ Т У Ү Ф Х Һ Ц Ч Ш Щ Ъ Ы Ь Э Ә Ю Я]</exemplarCharacters>
+		<exemplarCharacters>[а ә б в г ғ д ҙ е ё ж з и й к ҡ л м н ң о ө п р с ҫ т у ү ф х һ ц ч ш щ ъ ы ь э ю я]</exemplarCharacters>
+		<exemplarCharacters type="index">[А Ә Б В Г Ғ Д Ҙ Е Ё Ж З И Й К Ҡ Л М Н Ң О Ө П Р С Ҫ Т У Ү Ф Х Һ Ц Ч Ш Щ Ъ Ы Ь Э Ю Я]</exemplarCharacters>
 	</characters>
 </ldml>

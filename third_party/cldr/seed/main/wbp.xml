@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11296 $"/>
-		<generation date="$Date: 2015-02-23 23:31:36 -0800 (Mon, 23 Feb 2015) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="wbp"/>
 	</identity>
 	<localeDisplayNames>
 		<languages>
-			<language type="wbp">Warlpiri</language>
 			<language type="en">Yinkirliji</language>
+			<language type="wbp">Warlpiri</language>
 		</languages>
 	</localeDisplayNames>
 	<layout>
@@ -28,4 +28,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters type="index" draft="unconfirmed">[J K L {LY} M N {NG} {NY} P R {RD} {RL} {RN} {RR} {RT} T W Y]</exemplarCharacters>
 	</characters>
 </ldml>
-

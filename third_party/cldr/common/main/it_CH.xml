@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11171 $"/>
-		<generation date="$Date: 2015-02-10 09:03:58 -0800 (Tue, 10 Feb 2015) $"/>
+		<version number="$Revision: 13706 $"/>
 		<language type="it"/>
 		<territory type="CH"/>
 	</identity>
+	<characters>
+		<exemplarCharacters type="numbers">[\- . ’ % ‰ + 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
+	</characters>
 	<delimiters>
 		<alternateQuotationStart draft="unconfirmed">‹</alternateQuotationStart>
 		<alternateQuotationEnd draft="unconfirmed">›</alternateQuotationEnd>
@@ -31,7 +34,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 					</dateFormatLength>
 					<dateFormatLength type="medium">
 						<dateFormat>
-							<pattern>d-MMM-y G</pattern>
+							<pattern>d MMM y G</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="short">
@@ -100,11 +103,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<pattern>EEEE, d MMMM y</pattern>
 						</dateFormat>
 					</dateFormatLength>
-					<dateFormatLength type="medium">
-						<dateFormat>
-							<pattern>d-MMM-y</pattern>
-						</dateFormat>
-					</dateFormatLength>
 					<dateFormatLength type="short">
 						<dateFormat>
 							<pattern>dd.MM.yy</pattern>
@@ -169,7 +167,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 	<numbers>
 		<symbols numberSystem="latn">
 			<decimal>.</decimal>
-			<group>'</group>
+			<group>’</group>
 		</symbols>
 		<currencyFormats numberSystem="latn">
 			<currencyFormatLength>
@@ -180,4 +178,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</currencyFormats>
 	</numbers>
 </ldml>
-

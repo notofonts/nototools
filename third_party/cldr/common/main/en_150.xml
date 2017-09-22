@@ -1,88 +1,66 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11150 $"/>
-		<generation date="$Date: 2015-01-23 14:43:31 -0800 (Fri, 23 Jan 2015) $"/>
+		<version number="$Revision: 13706 $"/>
 		<language type="en"/>
 		<territory type="150"/>
 	</identity>
 	<dates>
 		<calendars>
-			<calendar type="generic">
-				<dateFormats>
-					<dateFormatLength type="medium">
-						<dateFormat>
-							<pattern>dd MMM y G</pattern>
-						</dateFormat>
-					</dateFormatLength>
-				</dateFormats>
-				<dateTimeFormats>
-					<availableFormats>
-						<dateFormatItem id="Md">d/M</dateFormatItem>
-						<dateFormatItem id="MEd">E, d/M</dateFormatItem>
-						<dateFormatItem id="yyyyMd">d/M/y G</dateFormatItem>
-						<dateFormatItem id="yyyyMEd">E, d/M/y G</dateFormatItem>
-					</availableFormats>
-					<intervalFormats>
-						<intervalFormatItem id="yM">
-							<greatestDifference id="M" draft="unconfirmed">MM/y – MM/y G</greatestDifference>
-							<greatestDifference id="y" draft="unconfirmed">MM/y – MM/y G</greatestDifference>
-						</intervalFormatItem>
-						<intervalFormatItem id="yMd">
-							<greatestDifference id="d" draft="unconfirmed">dd/MM/y – dd/MM/y G</greatestDifference>
-							<greatestDifference id="M" draft="unconfirmed">dd/MM/y – dd/MM/y G</greatestDifference>
-							<greatestDifference id="y" draft="unconfirmed">dd/MM/y – dd/MM/y G</greatestDifference>
-						</intervalFormatItem>
-						<intervalFormatItem id="yMEd">
-							<greatestDifference id="d" draft="unconfirmed">E dd/MM/y – E dd/MM/y G</greatestDifference>
-							<greatestDifference id="M" draft="unconfirmed">E dd/MM/y – E dd/MM/y G</greatestDifference>
-							<greatestDifference id="y" draft="unconfirmed">E dd/MM/y – E dd/MM/y G</greatestDifference>
-						</intervalFormatItem>
-					</intervalFormats>
-				</dateTimeFormats>
-			</calendar>
 			<calendar type="gregorian">
-				<dateFormats>
-					<dateFormatLength type="medium">
-						<dateFormat>
-							<pattern>dd MMM y</pattern>
-						</dateFormat>
-					</dateFormatLength>
-					<dateFormatLength type="short">
-						<dateFormat>
-							<pattern>dd/MM/yy</pattern>
-						</dateFormat>
-					</dateFormatLength>
-				</dateFormats>
 				<timeFormats>
 					<timeFormatLength type="full">
 						<timeFormat>
-							<pattern>HH 'h' mm 'min' ss 's' zzzz</pattern>
+							<pattern>HH:mm:ss zzzz</pattern>
+						</timeFormat>
+					</timeFormatLength>
+					<timeFormatLength type="long">
+						<timeFormat>
+							<pattern>HH:mm:ss z</pattern>
+						</timeFormat>
+					</timeFormatLength>
+					<timeFormatLength type="medium">
+						<timeFormat>
+							<pattern>HH:mm:ss</pattern>
+						</timeFormat>
+					</timeFormatLength>
+					<timeFormatLength type="short">
+						<timeFormat>
+							<pattern>HH:mm</pattern>
 						</timeFormat>
 					</timeFormatLength>
 				</timeFormats>
-				<dateTimeFormats>
-					<availableFormats>
-						<dateFormatItem id="Md">d/M</dateFormatItem>
-						<dateFormatItem id="MEd">E, d/M</dateFormatItem>
-						<dateFormatItem id="yMd">d/M/y</dateFormatItem>
-						<dateFormatItem id="yMEd">E, d/M/y</dateFormatItem>
-					</availableFormats>
-					<intervalFormats>
-						<intervalFormatItem id="yMEd">
-							<greatestDifference id="d" draft="unconfirmed">E dd/MM/y – E dd/MM/y</greatestDifference>
-							<greatestDifference id="M" draft="unconfirmed">E dd/MM/y – E dd/MM/y</greatestDifference>
-							<greatestDifference id="y" draft="unconfirmed">E dd/MM/y – E dd/MM/y</greatestDifference>
-						</intervalFormatItem>
-					</intervalFormats>
-				</dateTimeFormats>
 			</calendar>
 		</calendars>
+		<timeZoneNames>
+			<metazone type="Europe_Central">
+				<short>
+					<generic>CET</generic>
+					<standard>CET</standard>
+					<daylight>CEST</daylight>
+				</short>
+			</metazone>
+			<metazone type="Europe_Eastern">
+				<short>
+					<generic>EET</generic>
+					<standard>EET</standard>
+					<daylight>EEST</daylight>
+				</short>
+			</metazone>
+			<metazone type="Europe_Western">
+				<short>
+					<generic>WET</generic>
+					<standard>WET</standard>
+					<daylight>WEST</daylight>
+				</short>
+			</metazone>
+		</timeZoneNames>
 	</dates>
 	<numbers>
 		<symbols numberSystem="latn">
@@ -94,8 +72,15 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<currencyFormat type="standard">
 					<pattern>#,##0.00 ¤</pattern>
 				</currencyFormat>
+				<currencyFormat type="accounting">
+					<pattern>#,##0.00 ¤</pattern>
+				</currencyFormat>
 			</currencyFormatLength>
 		</currencyFormats>
+		<currencies>
+			<currency type="EUR">
+				<pattern>¤#,##0.00</pattern>
+			</currency>
+		</currencies>
 	</numbers>
 </ldml>
-

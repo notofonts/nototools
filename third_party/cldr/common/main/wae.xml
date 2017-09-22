@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11093 $"/>
-		<generation date="$Date: 2015-01-02 19:36:02 -0800 (Fri, 02 Jan 2015) $"/>
+		<version number="$Revision: 13701 $"/>
 		<language type="wae"/>
 	</identity>
 	<localeDisplayNames>
@@ -230,7 +230,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AI" draft="contributed">Anguilla</territory>
 			<territory type="AL" draft="contributed">Albanie</territory>
 			<territory type="AM" draft="contributed">Armenie</territory>
-			<territory type="AN" draft="contributed">Holändiši Antillä</territory>
 			<territory type="AO" draft="contributed">Angola</territory>
 			<territory type="AQ" draft="contributed">Antarktis</territory>
 			<territory type="AR" draft="contributed">Argentinie</territory>
@@ -487,10 +486,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="ZZ" draft="contributed">Unbekannti Regio</territory>
 		</territories>
 		<types>
-			<type type="ducet" key="collation" draft="contributed">Standard Unicode Sortierreiefolg</type>
-			<type type="gregorian" key="calendar" draft="contributed">Gregorianišä Kaländer</type>
-			<type type="latn" key="numbers" draft="contributed">Arabiši Zálä</type>
-			<type type="search" key="collation" draft="contributed">Allgmeini Süeč</type>
+			<type key="calendar" type="gregorian" draft="contributed">Gregorianišä Kaländer</type>
+			<type key="collation" type="ducet" draft="contributed">Standard Unicode Sortierreiefolg</type>
+			<type key="collation" type="search" draft="contributed">Allgmeini Süeč</type>
+			<type key="numbers" type="latn" draft="contributed">Arabiši Zálä</type>
 		</types>
 		<measurementSystemNames>
 			<measurementSystemName type="metric" draft="contributed">Metriš</measurementSystemName>
@@ -507,6 +506,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters>[a á ä ã b c č d e é f g h i í j k l m n o ó ö õ p q r s š t u ú ü ũ v w x y z]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[à ă â å ā æ ç è ĕ ê ë ē ì ĭ î ï ī ñ ò ŏ ô ø ō œ ß ù ŭ û ū ÿ]</exemplarCharacters>
 		<exemplarCharacters type="index">[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]</exemplarCharacters>
+		<exemplarCharacters type="numbers">[\- , ’ % ‰ + 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
 	</characters>
 	<delimiters>
 		<quotationStart draft="contributed">«</quotationStart>
@@ -1238,6 +1238,34 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<group draft="contributed">’</group>
 		</symbols>
 		<currencyFormats numberSystem="latn">
+			<currencyFormatLength type="short">
+				<currencyFormat type="standard">
+					<pattern type="1000" count="one" draft="provisional">¤ 0K</pattern>
+					<pattern type="1000" count="other" draft="provisional">¤ 0K</pattern>
+					<pattern type="10000" count="one" draft="provisional">¤ 00K</pattern>
+					<pattern type="10000" count="other" draft="provisional">¤ 00K</pattern>
+					<pattern type="100000" count="one" draft="provisional">¤ 000K</pattern>
+					<pattern type="100000" count="other" draft="provisional">¤ 000K</pattern>
+					<pattern type="1000000" count="one" draft="provisional">¤ 0M</pattern>
+					<pattern type="1000000" count="other" draft="provisional">¤ 0M</pattern>
+					<pattern type="10000000" count="one" draft="provisional">¤ 00M</pattern>
+					<pattern type="10000000" count="other" draft="provisional">¤ 00M</pattern>
+					<pattern type="100000000" count="one" draft="provisional">¤ 000M</pattern>
+					<pattern type="100000000" count="other" draft="provisional">¤ 000M</pattern>
+					<pattern type="1000000000" count="one" draft="provisional">¤ 0G</pattern>
+					<pattern type="1000000000" count="other" draft="provisional">¤ 0G</pattern>
+					<pattern type="10000000000" count="one" draft="provisional">¤ 00G</pattern>
+					<pattern type="10000000000" count="other" draft="provisional">¤ 00G</pattern>
+					<pattern type="100000000000" count="one" draft="provisional">¤ 000G</pattern>
+					<pattern type="100000000000" count="other" draft="provisional">¤ 000G</pattern>
+					<pattern type="1000000000000" count="one" draft="provisional">¤ 0T</pattern>
+					<pattern type="1000000000000" count="other" draft="provisional">¤ 0T</pattern>
+					<pattern type="10000000000000" count="one" draft="provisional">¤ 00T</pattern>
+					<pattern type="10000000000000" count="other" draft="provisional">¤ 00T</pattern>
+					<pattern type="100000000000000" count="one" draft="provisional">¤ 000T</pattern>
+					<pattern type="100000000000000" count="other" draft="provisional">¤ 000T</pattern>
+				</currencyFormat>
+			</currencyFormatLength>
 			<unitPattern count="one" draft="contributed">{0} {1}</unitPattern>
 			<unitPattern count="other" draft="contributed">{0} {1}</unitPattern>
 		</currencyFormats>
@@ -1277,7 +1305,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName draft="contributed">Rubel</displayName>
 				<displayName count="one" draft="contributed">Rubel</displayName>
 				<displayName count="other" draft="contributed">Rubel</displayName>
-				<symbol draft="contributed">руб</symbol>
 			</currency>
 			<currency type="USD">
 				<displayName draft="contributed">Dollar</displayName>
@@ -1294,6 +1321,21 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</numbers>
 	<units>
 		<unitLength type="long">
+			<unit type="duration-year">
+				<displayName draft="contributed">jár</displayName>
+				<unitPattern count="one">{0} jár</unitPattern>
+				<unitPattern count="other">{0} jár</unitPattern>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="contributed">mánet</displayName>
+				<unitPattern count="one">{0} mánet</unitPattern>
+				<unitPattern count="other">{0} mánet</unitPattern>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="contributed">wučä</displayName>
+				<unitPattern count="one">{0} wuča</unitPattern>
+				<unitPattern count="other">{0} wučä</unitPattern>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="contributed">täg</displayName>
 				<unitPattern count="one">{0} täg</unitPattern>
@@ -1309,28 +1351,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one">{0} minüta</unitPattern>
 				<unitPattern count="other">{0} minüte</unitPattern>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="contributed">mánet</displayName>
-				<unitPattern count="one">{0} mánet</unitPattern>
-				<unitPattern count="other">{0} mánet</unitPattern>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="contributed">sekunde</displayName>
 				<unitPattern count="one">{0} sekund</unitPattern>
 				<unitPattern count="other">{0} sekunde</unitPattern>
 			</unit>
-			<unit type="duration-week">
-				<displayName draft="contributed">wučä</displayName>
-				<unitPattern count="one">{0} wuča</unitPattern>
-				<unitPattern count="other">{0} wučä</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="contributed">jár</displayName>
-				<unitPattern count="one">{0} jár</unitPattern>
-				<unitPattern count="other">{0} jár</unitPattern>
-			</unit>
 		</unitLength>
 		<unitLength type="short">
+			<unit type="duration-year">
+				<displayName draft="contributed">jár</displayName>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="contributed">mánet</displayName>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="contributed">wučä</displayName>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="contributed">täg</displayName>
 			</unit>
@@ -1340,17 +1376,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-minute">
 				<displayName draft="contributed">minüte</displayName>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="contributed">mánet</displayName>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="contributed">sekunde</displayName>
-			</unit>
-			<unit type="duration-week">
-				<displayName draft="contributed">wučä</displayName>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="contributed">jár</displayName>
 			</unit>
 		</unitLength>
 	</units>
@@ -1367,4 +1394,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</messages>
 	</posix>
 </ldml>
-
