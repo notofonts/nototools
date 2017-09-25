@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -33,8 +33,8 @@ import urllib
 import xml.etree.ElementTree as ET
 import zipfile
 
-import notoconfig
-import tool_utils
+from nototools import cldr_data
+from nototools import tool_utils
 
 DIR_URL = 'http://unicode.org/udhr/d'
 UDHR_XML_ZIP_NAME = 'udhr_xml.zip'
@@ -76,7 +76,7 @@ def update_udhr(udhr_dir, fetch_dir, in_repo):
 
 def parse_index(src_dir):
   """Parse the index.xml file in src_dir and return a map from bcp to a set of
-  file codes.
+  file codes, and a map from file code to ohchr code.
 
   Skip files at stages 1 (missing) or 2 (not started). Stage 3 files have
   article 1, which is what we want.  Stage 4 and 5 are ok, the vast majority are
@@ -102,6 +102,21 @@ def parse_index(src_dir):
       print 'no bcp for %s' % code
       continue
 
+    script = e.attrib.get('iso15924')
+    if script:
+      # the bcp codes are minimized, and include scripts only if they are
+      # not the default (for some version of default), however they will
+      # include variants.
+      # if the script code is not present in the bcp code, patch it in
+      # after the lang.
+      script = '-' + script
+      if bcp.find(script) == -1:
+        ix = bcp.find('-')
+        if ix == -1:
+          bcp += script
+        else:
+          bcp = bcp[:ix] + script + bcp[ix:]
+
     ohchr = e.attrib.get('ohchr')
 
     bcp_to_codes[bcp].add(code)
@@ -113,75 +128,201 @@ def parse_index(src_dir):
   return bcp_to_codes, code_to_ohchr
 
 
-# These handle cases in which (as of March 25, 2015) the unicode udhr data
-# has multiple files with the same bcp47 code.
+# These handle cases in which the unicode udhr data has multiple files with the
+# same bcp47 code.
+#
 # In some cases, we pick just the one code to use, more or less arbitrarily.
-# In other cases, we generate different bcp47 codes for the different files,
-# by adding a region or variant tag to the code.
+# In other cases, we use multiple codes by adding a region or variant tag to the
+# shared bcp47 code.
+#
+# This map contains all the bcp47 codes that we expect udhr assigns to multple
+# files.  For each file we either assign a code, or None if we don't use that
+# file.
+#
+# Possible errors are:
+# 1) udhr has multiple files for a code, but we don't list the code.
+# 2) udhr has multiple files for a code, but we have a different set of files
+#    (in which case we might have ones they don't have, and they might have ones
+#     we don't have)
+# 3) udhr has a single file for a code, but we list the code
+#
+# We also need to make sure we don't assign a new code that udhr already uses.
+
 BCP_FIXES = {
-  'acu': 'acu', # drop acu_1
-  'ak': [('ak-asante', 'aka_asante'), ('ak-fante', 'aka_fante')],
-  'cjk': [('cjk', 'cjk'), ('cjk-AO', 'cjk_AO')],
-  'ht': [('ht-popular', 'hat_popular'), ('ht-kreyol', 'hat_kreyol')],
-  'hus': 'hus', # drop hva, hsf
-  'kg': [('kg', 'kng'), ('kg-AO', 'kng_AO')],
-  'la': 'lat', # drop lat_1
-  'ln': 'lin_tones', # drop lin
-  'ny': [('ny-chinyanj', 'nya_chinyanja'), ('ny-chechewa', 'nya_chechewa')], # max 8 chars
-  'oc': 'lnc', # drop auv
-  'ro': 'ron_2006', # drop 1993, 1953
-  'rom': 'rmn', # drop rmn_1
-  'th': 'tha' # drop tha2
+  'acu-Latn': {
+      'acu': 'acu-Latn',
+      'acu_1': None,
+  },
+  'ak': {
+      'ak_asante': 'ak',
+      'ak_fante': 'ak-fante',
+  },
+  'chr-Cher': {
+      'chr_cased': 'chr-Cher-cased',
+      'chr_uppercase': 'chr-Cher-monocase',
+  },
+  'cjk-Latn': {
+      'cjk': 'cjk-Latn',
+      'cjk_AO': 'cjk-Latn-AO',
+  },
+  'ht-Latn': {
+      'hat_popular': 'ht-Latn-popular',
+      'hat_kreyol': 'ht-Latn-kreyol',
+  },
+  'hus-Latn': {
+      'hus': 'hus-Latn',
+      'hva': None,
+      'hsf': None,
+  },
+  'kg-Latn': {
+      'kng': 'kg-Latn',
+      'kng_AO': 'kg-Latn-AO',
+  },
+  'kmb-Latn': {
+      '009': None,
+      'kmb': 'kmb-Latn',
+  },
+  'la-Latn': {
+      'lat': 'la-Latn',
+      'lat_1': None,
+  },
+  'ln-Latn': {
+      'lin_tones': 'ln-Latn',
+      'lin': None,
+  },
+  'ny-Latn': {
+      'nya_chinyanja': 'ny-Latn-chinyan',  # max 8 chars in bcp47
+      'nya_chechewa': 'ny-Latn-chechewa',
+  },
+  'oc-Latn': {
+      'lnc': 'oc-Latn',
+      'auv': None,
+      'oci_1': None,
+      'oci_2': None,
+      'oci_3': None,
+      'oci_4': None,
+      'prv': None,
+  },
+  'pov-Latn': {
+      '008': None,
+      'pov': 'pov-Latn',
+  },
+  'ro-Latn': {
+      'ron_2006': 'ro-Latn',
+      'ron_1993': None,
+      'ron_1953': None,
+  },
+  'rom-Latn': {
+      'rmn': 'rom-Latn',
+      'rmn_1': None,
+  },
+  'th-Thai': {
+      'tha': 'th-Thai',
+      'tha2': None,
+  },
+  'ts-Latn': {
+      'tso_MZ': 'ts-Latn-MZ',
+      'tso_ZW': 'ts-Latn-ZW',
+  },
+  'umb-Latn': {
+      '011': None,
+      'umb': 'umb-Latn',
+  },
+  'ur-Arab': {
+      'urd': 'ur-Arab',
+      'urd_2': None,
+  },
+
   }
 
 def fix_index(bcp_to_codes):
-  """Take a mapping from bcp to a set of file codes, and
+  """Take a mapping from bcp47 to a set of file codes, and
   select the mappings we want using a whitelist.  We return
-  a mapping from one bcp47 code to one file code."""
+  a mapping from one bcp47 code to one file code.
+
+  We use this opportunity to validate the whitelist, and if there are
+  any errors, we fail once we're finished."""
+  errors = []
   used_fixes = set()
   result = {}
-  for k, v in bcp_to_codes.iteritems():
-    if k == 'und':
-      print 'skip und'
-    elif len(v) == 1:
-      result[k] = next(iter(v))
-      if k in BCP_FIXES:
-        print 'skip fix for %s, defined as %s but fixes has %s' % (
-            k, result[k], BCP_FIXES[k])
-    elif not k in BCP_FIXES:
-      print 'No fix for %s (%s)' % (k, v)
-    else:
-      used_fixes.add(k)
-      fix = BCP_FIXES[k]
-      if isinstance(fix, basestring):
-        print 'for %s (%s) select %s' % (k, ', '.join(v), fix)
-        result[k] = fix
-      else:
-        fixes = []
-        for newk, newv in fix:
-          fixes.append('%s=%s' % (newk, newv))
-          result[newk] = newv
-        print 'for %s (%s) select %s' % (k, ', '.join(v), ', '.join(fixes))
+  for k in sorted(bcp_to_codes):
+    if k == 'und' or k.startswith('und-'):
+      # we don't handle undefined languages
+      continue
 
-  unused_fixes = []
-  for k in sorted(BCP_FIXES):
-    if not k in used_fixes:
-      unused_fixes.append(k)
-  if unused_fixes:
-    print 'unused fixes: %s' % ', '.join(unused_fixes)
+    v = bcp_to_codes[k]
+    if len(v) == 1:
+      udhr_code = next(iter(v))
+      if k in result:
+        errors.append('%s: udhr assigns %s but we already applied %' % (
+            k, udhr_code, result[k]))
+        continue
+
+      if k in BCP_FIXES:
+        errors.append(
+            '%s: udhr assigns %s but we have fixes %s' % (
+                k, result[k], ', '.join(BCP_FIXES[k].keys)))
+        continue
+
+      # normal case here
+      result[k] = next(iter(v))
+      continue
+
+    if k not in BCP_FIXES:
+      errors.append(
+          '%s: no fixes for udhr multiple codes %s' % (
+              k, ', '.join(sorted(v))))
+      continue
+
+    fixes = BCP_FIXES[k]
+    fixes_keys = set(fixes.keys());
+    unused_fixes = fixes_keys - v
+    unknown_codes = v - fixes_keys
+    if unused_fixes:
+      errors.append(
+          '%s: unused fixes %s' % (
+              k, ', '.join(sorted(unused_fixes))))
+    if unknown_codes:
+      errors.append(
+          '%s: unknown codes %s' % (
+              k, ', '.join(sorted(unknown_codes))))
+    if unused_fixes or unknown_codes:
+      continue
+
+    # apply all of our fixes
+    for code, new_bcp in sorted(fixes.items()):
+      if not new_bcp:
+        continue
+
+      if new_bcp in result:
+        errors.append(
+            '%s: fix defines %s as %s but already assigned %s' % (
+                k, code, new_bcp, result[new_bcp]))
+        continue
+
+      # normal fix
+      result[new_bcp] = code
+
+  if errors:
+    print 'fix_index had %d errors:' % len(errors)
+    for e in errors:
+      print ' ', e
+    raise Exception('correct the fixes whitelist')
 
   return result
 
 
-# The likely script data doesn't always match the samples, so we override it here.
-# Probably should always get the samples first and apply the script later, but for
-# now we just check after the fact.
+# The likely script data doesn't always match the samples, so we override it
+# here.  Probably should always get the samples first and apply the script
+# later, but for now we just check after the fact.
+
 CODE_TO_BCP = {
   'evn': 'evn-Cyrl',
   'ojb': 'oj-Cans'}
 
 def add_likely_scripts(bcp_to_code):
-  """Add script subtags where they are not present in the bcp code."""
+  """Add script subtags where they are not present in the bcp code.  If
+  we don't know the script"""
   result= {}
   for bcp, code in bcp_to_code.iteritems():
     if code in CODE_TO_BCP:
@@ -227,44 +368,59 @@ def filter_bcp_to_code(bcp_to_code):
 # Pick a default sample to use when only lang and script are provided.
 OPTION_MAP = {
     'ak-Latn': 'ak-Latn-asante',
+    'chr-Cher': 'chr-Cher-cased',
     'de-Latn': 'de-Latn-1996',
     'el-Grek': 'el-Grek-monoton',
     'ha-Latn': 'ha-Latn-NG',
     'ht-Latn': 'ht-Latn-kreyol',
     'ny-Latn': 'ny-Latn-chechewa',
-    'pt-Latn': 'pt-Latn-BR'
+    'pt-Latn': 'pt-Latn-BR',
+    'ts-Latn': 'ts-Latn-MZ',  # arbitrarily select Mozambque
+    'tw-Latn': 'tw-Latn-akuapem',  # 'prestige' dialect according to wikipedia
 }
 
-def add_default_lang_script(bcp_to_code):
-  """When we query this data, typically we have only language and script.  Some of
-  the bcp codes have variants or regions as well.  Select one of these to be the
-  default when we have only language and script."""
+def add_default_lang_script(bcp_to_code_attrib_sample):
+  """When we query this data, typically we have only language and
+  script.  Some of the bcp codes have variants or regions as well, and in
+  particular sometimes none of these has just a language and script.
+  Select one of these to be used for that, and update the map."""
 
+  errors = []
   options = collections.defaultdict(set)
   long_keys = {}
-  for key in bcp_to_code:
+  for key in bcp_to_code_attrib_sample:
     tags = key.split('-')
     if len(tags) > 2:
       long_keys[key] = tags
+
   for key in sorted(long_keys):
     tags = long_keys[key]
     lang_scr = tags[0] + '-' + tags[1]
-    if lang_scr in bcp_to_code:
-      print 'have default for long tag %s: %s' % (key, bcp_to_code[lang_scr])
-    else:
-      options[lang_scr].add(key)
+    options[lang_scr].add(key)
+
+  for lang_scr in sorted(options):
+    if lang_scr in bcp_to_code_attrib_sample:
+      print '%s exists with variants %s' % (
+          lang_scr, ', '.join(sorted(options[lang_scr])))
+      del options[lang_scr]
+
   for lang_scr in sorted(options):
     print '%s options: %s' % (lang_scr, options[lang_scr])
     if not lang_scr in OPTION_MAP:
-      print 'missing from option map: %s' % lang_scr
+      errors.append('%s missing from option map' % lang_scr)
     elif not OPTION_MAP[lang_scr] in options[lang_scr]:
-      print 'selected option for %s (%s) not available' % (
-          lang_scr, OPTION_MAP[lang_scr])
+      errors.append('%s selected option for %s not available' % (
+          lang_scr, OPTION_MAP[lang_scr]))
     else:
-      value = bcp_to_code[OPTION_MAP[lang_scr]]
-      print 'adding %s for %s' % (value, lang_scr)
-      bcp_to_code[lang_scr] = value
-  return bcp_to_code
+      alias = OPTION_MAP[lang_scr]
+      print 'adding %s (from %s)' % (lang_scr, alias)
+      bcp_to_code_attrib_sample[lang_scr] = bcp_to_code_attrib_sample[alias]
+
+  if errors:
+    print 'add_default_lang_script encountered %d errors:' % len(errors)
+    for e in errors:
+      print ' ', e
+    raise Exception('oops')
 
 
 def get_code_to_attrib(src_dir):
@@ -280,33 +436,58 @@ def get_code_to_attrib(src_dir):
   return code_to_attrib
 
 
-def get_bcp_to_code_attrib(src_dir, ohchr_dir):
-  """Get the final bcp-to-code mapping."""
-  bcp_to_code, code_to_ohchr = parse_index(src_dir)
-  bcp_to_code = filter_bcp_to_code(add_likely_scripts(fix_index(bcp_to_code)))
-  bcp_to_code = add_default_lang_script(bcp_to_code)
+def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
+  """Return a mapping from bcp47 to code (for debugging), attribution, and
+  sample.  The process is:
+  1) parse the index.xml file to determine a mapping from bcp47 to code.
+     the bcp47 code has at least lang and script, and perhaps region/variant.
+     Multiple codes might share the same bcp47 code.
+  2) Use a whitelist to fix cases where a bcp47 code maps to multiple codes,
+     either by selecting one code, or assigning a separate bcp47 value
+     to other codes.
+  3) Load samples for each bcp47 code using article 1 from the file
+     identified by the code.  If there is no article 1, skip that bcp47 code.
+  4) Do more checking on the samples to make sure they look legit and
+     in particular contain only the scripts we expect them to have based
+     on the script code in the bcp47 code.
+  5) Add an attribution based on the code and the attributions file.
+  6) Find cases where all the bcp47's sharing a lang and script have
+     regions and/or variants, and select one of these to assign to
+     the lang_script bcp47 code."""
+
+  bcp_to_codes, code_to_ohchr = parse_index(src_dir)
+  bcp_to_code = fix_index(bcp_to_codes)
+  bcp_to_sample = get_bcp_to_sample(src_dir, bcp_to_code)
+  check_bcp_to_sample(bcp_to_sample)
 
   code_to_attrib = get_code_to_attrib(ohchr_dir)
 
-  bcp_to_code_attrib = {}
-  for bcp, code in bcp_to_code.iteritems():
+  bcp_to_code_attrib_sample = {}
+  for bcp in bcp_to_sample:
+    code = bcp_to_code[bcp]
     ohchr = code_to_ohchr.get(code)
     attr = code_to_attrib.get(ohchr)
     if not attr:
       attr = 'none'
       print '%s (%s) not in ohchr attribution data' % (code, ohchr)
-    bcp_to_code_attrib[bcp] = (code, attr)
+    sample = bcp_to_sample[bcp]
+    bcp_to_code_attrib_sample[bcp] = (code, attr, sample)
 
-  return bcp_to_code_attrib
+  add_default_lang_script(bcp_to_code_attrib_sample)
+
+  return bcp_to_code_attrib_sample
 
 
-def print_bcp_to_code_attrib(bcp_to_code):
-  print 'index size: %s' % len(bcp_to_code)
-  for bcp, (code, attrib) in sorted(bcp_to_code.iteritems()):
-    print '%s: %s, %s' % (bcp, code, attrib)
+def print_bcp_to_code_attrib_sample(bcp_to_code_attrib_sample):
+  print 'index size: %s' % len(bcp_to_code_attrib_sample)
+  for bcp, (code, attrib, sample) in sorted(
+      bcp_to_code_attrib_sample.iteritems()):
+    print '%s: %s, %s\n  "%s"' % (bcp, code, attrib, sample)
 
 
 def extract_para(src_path):
+  """Extract the text of article 1 from the sample, or None if we can't find
+  it."""
   tree = ET.parse(src_path)
   root = tree.getroot()
   ns = {'udhr': 'http://www.unhchr.ch/udhr'}
@@ -316,7 +497,8 @@ def extract_para(src_path):
     # the 'number' attribute is written with the Cyrillic e!
     article = root.find(u'udhr:article[@numb\u0435r="1"]', ns)
   if article is not None:
-    return ('\n'.join([para.text for para in article.findall('udhr:para', ns)])).strip() + '\n'
+    text = '\n'.join([para.text for para in article.findall('udhr:para', ns)])
+    return text.strip() + '\n'
   return None
 
 
@@ -338,21 +520,131 @@ def fix_sample(sample, bcp):
   return new_sample
 
 
-def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
-  """Create samples in sample_dir from the sources in udhr_dir,
-  based on the bcp_to_code mapping.  Stage if sample_dir is in the
-  repo.  If sample_dir is in the repo, don't overwrite samples whose
-  most recent log entry does not start with 'Updated by tool'"""
+def get_sample_for_code(udhr_dir, code):
+  """Get a sample named for code."""
+  src_file = 'udhr_%s.xml' % code
+  src_path = os.path.join(udhr_dir, src_file)
+  sample = extract_para(src_path)
+  if not sample:
+    print 'unable to get sample from %s' % src_file
+    return None
+  return sample
+
+
+def get_bcp_to_sample(src_dir, bcp_to_code):
+  """Return a map from bcp to sample, for codes that have a sample."""
+  bcp_to_sample = {}
+  for bcp in sorted(bcp_to_code):
+    code = bcp_to_code[bcp]
+    sample = get_sample_for_code(src_dir, code)
+    if not sample:
+      print 'bcp %s: no sample found (code %s)' % (bcp, code)
+    else:
+      bcp_to_sample[bcp] = sample
+  return bcp_to_sample
+
+
+bcp_script_re = re.compile(r'^(?:[A-Z][a-z]{3}|\d{3})$')
+def get_bcp_script(bcp):
+  """Return the script portion of the bcp tag if it exists, or None."""
+  parts = bcp.split('-');
+  if len(parts) == 1:
+    return None
+  return parts[1] if bcp_script_re.match(parts[1]) else None
+
+
+def check_bcp_sample(bcp, sample):
+  """Return error msg if fails, or 'OK'."""
+
+  def info_str(script_data):
+    v = {data[0]: script for script, data in script_data.items()}
+    return ', '.join(
+        '%2d: %s' % tup for tup in sorted(v.items(), reverse=True))
+
+  def info_data(bad_scripts, script_data):
+    errs = []
+    for s in sorted(bad_scripts):
+      count, chars = script_data[s]
+      errs.append('%s (%d) %s' % (
+          s, count, ','.join('%04x (%s)' % (ord(cp), cp) for cp in sorted(chars))))
+    return '; '.join(errs)
+
+  script_data = get_script_histogram(sample)
+
+  if len(sample) < 5:
+    return 'bcp %s: sample too short (%d): %s' % (
+        bcp, len(sample), info_str(script_data))
+
+  script = get_bcp_script(bcp) # can include non-unicode scripts like Jpan
+  if not script:
+    # formerly we were going to generate a script based on the sample if we
+    # didn't alredy have one, but at the moment all the samples include a script
+    # in index.xml.
+    raise Exception('no script for %s' % bcp)
+
+  required, accepted = accept_scripts(script) # unicode scripts
+  allowed = set(['Zyyy']) # common is ok
+  if required:
+    allowed |= required
+  if accepted:
+    allowed |= accepted
+
+  if required:
+    if required & frozenset(script_data.keys()) != required:
+      return 'bcp %s: required script %s but had (%s)' % (
+          bcp, ', '.join(sorted(required)), info_str(script_data))
+  elif not accepted:
+    # my problem
+    raise Exception('Script %s has neither required nor accepted' % script)
+
+  disallowed = set(script_data.keys()) - allowed
+  if disallowed:
+    return 'bcp %s: script(s) {%s} not in allowed {%s}, %s' % (
+        bcp, ', '.join(sorted(disallowed)), ', '.join(sorted(allowed)),
+        info_data(disallowed, script_data))
+
+  # ok, the sample passes.
+  return 'OK'
+
+
+def check_bcp_to_sample(bcp_to_sample):
+  """For each bcp/sample pair, check the sample script histogram.  If
+  anything looks funny (mismatching scripts, bcp script doesn't match
+  histogram), delete the mapping, and if there are any rejects, at the
+  end report them."""
+
+  errors = []
+  for bcp in sorted(bcp_to_sample):
+    sample = bcp_to_sample[bcp]
+    result = check_bcp_sample(bcp, sample)
+    if result != 'OK':
+      errors.append(result)
+      del bcp_to_sample[bcp]
+
+  if errors:
+    print 'found %d errors in samples' % len(errors)
+    for e in errors:
+      print ' ', e
+
+
+def update_samples(
+    sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_stage):
+  """Create samples in sample_dir based on the bcp to c_a_s map.  Stage
+  if sample_dir is in the repo.  If sample_dir is in the repo, don't
+  overwrite samples whose most recent log entry does not start with
+  'Updated by tool'."""
 
   tool_utils.check_dir_exists(udhr_dir)
 
-  if in_repo and os.path.isdir(sample_dir) and not tool_utils.git_is_clean(sample_dir):
+  if (in_repo and not no_stage and os.path.isdir(sample_dir) and
+      not tool_utils.git_is_clean(sample_dir)):
     raise ValueError('Please clean %s.' % sample_dir)
 
   if in_repo:
     repo, subdir = os.path.split(sample_dir)
     tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
-    print 'only allowing overwrite of:\n  %s' % '\n  '.join(sorted(tool_samples))
+    print 'allowing overwrite of %d files:\n  %s' % (
+        len(tool_samples), ', '.join(sorted(tool_samples)))
 
   comments = [
     '# Attributions for sample excerpts:',
@@ -364,35 +656,26 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   sample_attrib_list = []
   sample_dir = tool_utils.ensure_dir_exists(sample_dir)
   count = 0
-  for bcp, (code, attrib) in bcp_to_code_attrib.iteritems():
-    text = None
-    src_file = 'udhr_%s.xml' % code
+  for bcp, (code, attrib, sample) in bcp_to_code_attrib_sample.iteritems():
     dst_file = '%s_udhr.txt' % bcp
-    src_path = os.path.join(udhr_dir, src_file)
     dst_path = os.path.join(sample_dir, dst_file)
-    sample = extract_para(src_path)
-    if not sample:
-      print 'unable to get sample from %s' % src_file
-      return
     if in_repo and os.path.isfile(dst_path) and dst_file not in tool_samples:
       print 'Not overwriting modified file %s' % dst_file
     else:
-      sample = fix_sample(sample, bcp)
       with codecs.open(dst_path, 'w', 'utf8') as f:
         f.write(sample)
-      print 'created sample %s from %s' % (dst_file, src_file)
       count += 1
     sample_attrib_list.append('%s: %s' % (dst_file, attrib))
   print 'Created %d samples' % count
 
-  # Some existing samples that we don't overwrite are not in bcp_to_code_attrib,
-  # so they're not listed.  Readers of the attributions.txt file will need to
-  # default these to 'none'.
+  # Some existing samples that we don't overwrite are not in
+  # bcp_to_code_attrib_sample, so they're not listed.  Readers of the
+  # attributions.txt file will need to default these to 'none'.
   attrib_data = '\n'.join(comments + sorted(sample_attrib_list)) + '\n'
   with open(os.path.join(sample_dir, 'attributions.txt'), 'w') as f:
     f.write(attrib_data)
 
-  if in_repo:
+  if in_repo and not no_stage:
     tool_utils.git_add_all(sample_dir)
 
   date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -400,7 +683,8 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib, in_repo):
   noto_ix = udhr_dir.find('nototools')
   src = udhr_dir if noto_ix == -1 else udhr_dir[noto_ix:]
 
-  # prefix of this sample commit message indicates that these were tool-generated
+  # prefix of this sample commit message indicates that these were
+  # tool-generated
   print 'Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date)
 
 
@@ -423,6 +707,26 @@ def get_scripts(text):
   return scripts, zyyy_chars
 
 
+def get_script_histogram(utext):
+  """Return a map from script to character count + chars, excluding some common
+  whitespace, and inherited characters.  utext is a unicode string."""
+  exclusions = {0x00, 0x0A, 0x0D, 0x20, 0xA0, 0xFEFF}
+  result = {}
+  for cp in utext:
+    if ord(cp) in exclusions:
+      continue
+    script = unicode_data.script(cp)
+    if script == 'Zinh':
+      continue
+    if script not in result:
+      result[script] = [1, set([cp])]
+    else:
+      r = result[script]
+      r[0] += 1
+      r[1].add(cp)
+  return result
+
+
 # required, allowed sets
 SCRIPT_MAP = {
     'Kore':(None, frozenset(['Hang'])),
@@ -443,13 +747,13 @@ def test_sample_scripts(sample_dir):
   errors = 0
   for filename in os.listdir(sample_dir):
     filepath = os.path.join(sample_dir, filename)
-    if not (os.path.isfile(filepath) and filename.endswith('.txt')):
+    if not (os.path.isfile(filepath) and filename.endswith('_udhr.txt')):
       continue
     tested += 1
     with open(filepath, 'rb') as f:
       textbytes = f.read()
       scripts, zyyy = get_scripts(textbytes)
-      bcp = filename[:-len('.txt')] # trim off extension
+      bcp = filename[:-len('_udhr.txt')] # trim off extension
       expected_script = bcp.split('-')[1]
       required, allowed = accept_scripts(expected_script)
       if required and required - scripts:
@@ -464,7 +768,8 @@ def test_sample_scripts(sample_dir):
         if required:
           remainder -= required
         if remainder:
-          allowed_name = ', '.join(sorted([s for s in allowed]))
+          allowed_name = '<none>' if not allowed else ', '.join(
+              sorted([s for s in allowed]))
           scripts_name = ', '.join(sorted([s for s in scripts]))
           print '%s allows %s but contains %s' % (filename, allowed_name, scripts_name)
           errors += 1
@@ -638,18 +943,21 @@ def main():
 
     if args.update_sample or args.mapping:
       ohchr_dir = tool_utils.resolve_path('[tools]/third_party/ohchr')
-      bcp_to_code_attrib = get_bcp_to_code_attrib(args.udhr_dir, ohchr_dir)
+      bcp_to_code_attrib_sample = get_bcp_to_code_attrib_sample(
+          args.udhr_dir, ohchr_dir)
 
     if args.update_sample:
       in_repo = args.sample_dir == tool_utils.resolve_path(samples)
-      update_samples(args.sample_dir, args.udhr_dir, bcp_to_code_attrib,
-                     in_repo and not args.no_stage)
+      update_samples(
+          args.sample_dir, args.udhr_dir, bcp_to_code_attrib_sample,
+          in_repo, args.no_stage)
 
     if args.mapping:
       print_bcp_to_code_attrib(bcp_to_code_attrib)
 
     if args.base_sample_dir:
-      compare_samples(args.base_sample_dir, args.sample_dir, opts=args.compare_opts)
+      compare_samples(
+          args.base_sample_dir, args.sample_dir, opts=args.compare_opts)
 
     if args.test_script:
       test_sample_scripts(args.sample_dir)

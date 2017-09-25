@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lue' xml:lang='lue' key='lue' n='Luvale' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lue' xml:lang='lue' key='lue' n='Luvale' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>KUZANGA CHA KAYE HALUSESA LWA MUTU</title>
   <preamble>
     <title>KUPUTUKA</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='pon' xml:lang='pon' key='pon' n='Pohnpeian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='pon' xml:lang='pon' key='pon' n='Pohnpeian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>POASON PWUNG EN KAWEID TOHN WEIN SAMPA KAROS</title>
   <preamble>
     <title>[Preamble]</title>

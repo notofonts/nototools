@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='que' xml:lang='qu' key='qud' n='Quechua (Unified Quichua, old Hispanic orthography)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='que' xml:lang='qu' key='qud' n='Quechua (Unified Quichua, old Hispanic orthography)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>TUCUY RUNACUNAPAC HATUM RIMAY</title>
   <preamble>
     <title>CALLARI</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='aii' xml:lang='aii' key='aii' n='Assyrian Neo-Aramaic' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='aii' xml:lang='aii' key='aii' n='Assyrian Neo-Aramaic' dir='rtl' iso15924='Syrc' xmlns="http://www.unhchr.ch/udhr">
    <title>&#x0712;&#x0718;&#x0715;&#x0729;&#x0710; &#x072C;&#x071D;&#x0712;&#x0742;&#x0720;&#x071D;&#x0710; &#x0720;&#x0726;&#x0718;&#x072C; &#x0719;&#x0715;&#x0729;&#x0710; &#x0710;&#x0722;&#x072B;&#x071D;&#x0710;</title>
    <preamble>
       <title>&#x0725;&#x0718;&#x072C;&#x0715;&#x0710;</title>

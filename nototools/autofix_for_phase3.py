@@ -51,7 +51,7 @@ def _check_version(version):
 
 
 _version_info_re = re.compile(
-    r'GOOG;noto-fonts:(\d{4})(\d{2})(\d{2}):([0-9a-f]{12})')
+    r'GOOG;noto-(?:fonts(?:-alpha)?|source):(\d{4})(\d{2})(\d{2}):([0-9a-f]{12})')
 
 def _check_version_info(version_info):
   """ensure version info looks reasonable, for example:
@@ -84,14 +84,24 @@ def _get_version_info(fonts):
   """If fonts are all from noto-fonts, use information from the current
   state of the repo to build a version string.  Otherwise return None."""
 
-  prefix = tool_utils.resolve_path('[fonts]')
-  if not all(tool_utils.resolve_path(f).startswith(prefix) for f in fonts):
-    return None
-  return _get_fonts_repo_version_info()
+  # add '/' to distinguish between noto-fonts/ and noto-fonts-alpha/
+  for repo_tag in ['[fonts]', '[fonts_alpha]', '[source]']:
+    prefix = tool_utils.resolve_path(repo_tag) + '/'
+    print 'trying prefix "%s"' % prefix
+    if all(tool_utils.resolve_path(f).startswith(prefix) for f in fonts):
+      return _get_fonts_repo_version_info(repo_tag)
+    # else report the first failure
+    for f in fonts:
+      if not tool_utils.resolve_path(f).startswith(prefix):
+        print '# failed at "%s"' % tool_utils.resolve_path(f)
+        break
+
+  print 'no prefix succeeded'
+  return None
 
 
-def _get_fonts_repo_version_info():
-  prefix = tool_utils.resolve_path('[fonts]')
+def _get_fonts_repo_version_info(repo_tag):
+  prefix = tool_utils.resolve_path(repo_tag)
 
   commit, date, commit_msg = tool_utils.git_head_commit(prefix)
 
@@ -106,7 +116,10 @@ def _get_fonts_repo_version_info():
   if not m:
     raise Exception('could not match "%s" with "%s"' % (date, date_re.pattern))
   ymd = ''.join(m.groups())
-  return 'GOOG;noto-fonts:%s:%s' % (ymd, commit[:12])
+
+  # hack tag to get the formal repo name.  strip enclosing brackets...
+  repo_name = 'noto-' + repo_tag[1:-1].replace('_', '-')
+  return 'GOOG;%s:%s:%s' % (repo_name, ymd, commit[:12])
 
 
 def _check_autohint(script):
@@ -115,22 +128,52 @@ def _check_autohint(script):
     raise Exception('not a hintable script: "%s"' % script)
 
 
-def autofix_fonts(
-    font_names, dstdir, release_dir, version, version_info, autohint, dry_run):
-  dstdir = tool_utils.ensure_dir_exists(dstdir)
+def _expand_font_names(font_names, result=None):
+  """font names can include names of files containing a list of names, open
+  those recursively and add to the set."""
+  def strip_comment(line):
+    ix = line.find('#')
+    if ix != -1:
+      line = line[:ix]
+    return line.strip()
 
-  font_names.sort()
-  print 'Processing\n  %s' % '\n  '.join(font_names)
-  print 'Dest dir: %s' % dstdir
+  if result is None:
+    result = set()
+  for n in font_names:
+    if not n.startswith('@'):
+      result.add(n)
+    else:
+      filename = n[1:]
+      with open(filename, 'r') as f:
+        new_names = f.readlines()
+      new_names = [strip_comment(n) for n in new_names]
+      new_names = [n for n in new_names if n]
+      _expand_font_names(new_names, result)
+  return result
+
+def autofix_fonts(
+    font_names, src_root, dst_dir, release_dir, version, version_info, autohint,
+    dry_run):
+  dst_dir = tool_utils.resolve_path(dst_dir)
+  dst_dir = tool_utils.ensure_dir_exists(dst_dir)
+
+  font_names = sorted(_expand_font_names(font_names))
+  print 'Processing %d fonts\n  %s' % (
+      len(font_names), '\n  '.join(font_names[:5]) + '...')
+
+  src_root = tool_utils.resolve_path(src_root)
+  print 'Src root: %s' % src_root
+  print 'Dest dir: %s' % dst_dir
 
   if release_dir is None:
-    reldir = None
+    rel_dir = None
   else:
-    reldir = tool_utils.resolve_path(release_dir)
-    if not path.isdir(reldir):
-      raise Exception('release dir "%s" does not exist' % reldir)
+    rel_dir = tool_utils.resolve_path(release_dir)
+    if not path.isdir(rel_dir):
+      raise Exception('release dir "%s" does not exist' % rel_dir)
 
-  if version_info is None or version_info == '[fonts]':
+  if (version_info is None or version_info == '[fonts]' or
+      version_info == '[fonts_alpha]'):
     if version_info is None:
       version_info = _get_version_info(font_names)
     else:
@@ -148,7 +191,8 @@ def autofix_fonts(
   if dry_run:
     print '*** dry run %s***' % ('(autohint) ' if autohint else '')
   for f in font_names:
-    fix_font(f, dstdir, reldir, version, version_info, autohint, dry_run)
+    f = path.join(src_root, f)
+    fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run)
 
 
 _version_re = re.compile(r'Version (\d+\.\d{2,3})')
@@ -229,8 +273,11 @@ def get_new_version(font, relfont, nversion):
     r_mm[1] += 1
     return _mm_to_version_str(r_mm)
 
-  if mm[0] > 2 or (mm[0] == 2 and mm[1] > 0):
+  if mm[0] > 2:
     raise Exception('existing version too high "%s"' % version)
+
+  if nversion == 'keep':
+    return version
 
   return '2.000'
 
@@ -278,7 +325,17 @@ def autohint_font(src, dst, script, dry_run):
     return
 
   hinted_dir = tool_utils.ensure_dir_exists(path.dirname(dst))
-  subprocess.check_call(args)
+  try:
+    subprocess.check_call(args)
+  except Exception as e:
+    print '### failed to autohint %s' % src
+    # we failed to autohint, let's continue anyway
+    # however autohint will have left an empty file there, remove it.
+    try:
+      os.remove(dst)
+    except:
+      pass
+
 
   print 'wrote autohinted %s using %s' % (dst, code)
 
@@ -291,31 +348,37 @@ def _alert(val_name, cur_val, new_val):
   print  tmpl % (val_name, cur_val, new_val)
 
 
-def _alert_and_check(val_name, cur_val, new_val, max_diff):
-  _alert(val_name, cur_val, new_val)
-  if abs(cur_val - new_val) > max_diff:
+def _alert_and_check(val_name, cur_val, expected_val, max_diff):
+  """if max_diff >= 0, curval must be <= expected_val + maxdiff,
+  else curval must be >= expected_val + maxdiff"""
+  _alert(val_name, cur_val, expected_val)
+  if max_diff >= 0:
+    err = cur_val > expected_val + max_diff
+  else:
+    err = cur_val < expected_val + max_diff
+  if err:
     raise Exception(
-        'unexpectedly large different in expected and actual %s' % val_name)
+        'bad difference in expected and actual %s' % val_name)
 
 
-def _get_release_fontpath(f, reldir):
-  """If reldir is not None, look for a font under 'hinted' or 'unhinted'
+def _get_release_fontpath(f, rel_dir):
+  """If rel_dir is not None, look for a font under 'hinted' or 'unhinted'
   depending on which of these is in the path f.  If neither is in f,
-  look under reldir, and then reldir/unhinted.  If a match is found,
+  look under rel_dir, and then rel_dir/unhinted.  If a match is found,
   return the path."""
 
-  if reldir is None:
+  if rel_dir is None:
     return None
 
   hh = True
   bn = path.basename(f)
   if '/hinted/' in f:
-    fp = path.join(reldir, 'hinted', bn)
+    fp = path.join(rel_dir, 'hinted', bn)
   elif '/unhinted/' in f:
-    fp = path.join(reldir, 'unhinted', bn)
+    fp = path.join(rel_dir, 'unhinted', bn)
   else:
     hh = False
-    fp = path.join(reldir, bn)
+    fp = path.join(rel_dir, bn)
 
   if path.isfile(fp):
     return fp
@@ -323,20 +386,20 @@ def _get_release_fontpath(f, reldir):
   if hh:
     return None
 
-  fp = path.join(reldir, 'unhinted', bn)
+  fp = path.join(rel_dir, 'unhinted', bn)
   return fp if path.isfile(fp) else None
 
 
-def _get_release_font(f, reldir):
-  fp = _get_release_fontpath(f, reldir)
+def _get_release_font(f, rel_dir):
+  fp = _get_release_fontpath(f, rel_dir)
   return None if fp is None else ttLib.TTFont(fp)
 
 
-def fix_font(f, dstdir, reldir, version, version_info, autohint, dry_run):
+def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
   print '\n-----\nfont:', f
   font = ttLib.TTFont(f)
 
-  relfont = _get_release_font(f, reldir)
+  relfont = _get_release_font(f, rel_dir)
   expected_font_revision = get_new_version(font, relfont, version)
   if expected_font_revision != None:
     font_revision = font_data.printable_font_revision(font, 3)
@@ -353,7 +416,7 @@ def fix_font(f, dstdir, reldir, version, version_info, autohint, dry_run):
       _alert('version string', font_version, expected_version)
       font_data.set_name_record(font, NAME_ID, expected_version)
 
-  expected_upem = 2048
+  expected_upem = 1000
   upem = font['head'].unitsPerEm
   if upem != expected_upem:
     print 'expected %d upem but got %d upem' % (expected_upem, upem)
@@ -377,15 +440,15 @@ def fix_font(f, dstdir, reldir, version, version_info, autohint, dry_run):
       font['OS/2'].usWinAscent = expected_ascent
 
     if font_descent != expected_descent:
-      _alert_and_check('descent', font_descent, expected_descent, 2)
+      _alert_and_check('descent', font_descent, expected_descent, -2)
       font['hhea'].descent = expected_descent
       font['OS/2'].sTypoDescender = expected_descent
       font['OS/2'].usWinDescent = -expected_descent
 
-  tool_utils.ensure_dir_exists(path.join(dstdir, 'unhinted'))
+  tool_utils.ensure_dir_exists(path.join(dst_dir, 'unhinted'))
 
   fname = path.basename(f)
-  udst = path.join(dstdir, 'unhinted', fname)
+  udst = path.join(dst_dir, 'unhinted', fname)
   if dry_run:
     print 'dry run would write:\n  "%s"' % udst
   else:
@@ -393,7 +456,7 @@ def fix_font(f, dstdir, reldir, version, version_info, autohint, dry_run):
     print 'wrote %s' % udst
 
   if autohint:
-    hdst = path.join(dstdir, 'hinted', fname)
+    hdst = path.join(dst_dir, 'hinted', fname)
     autohint_font(udst, hdst, autohint, dry_run)
 
 
@@ -406,7 +469,11 @@ def main():
       '-r', '--release_dir', help='directory containing release fonts (opt '
       ' [fonts])', metavar='dir', nargs='?', const='[fonts]')
   parser.add_argument(
-      '-f', '--fonts', help='paths of fonts to swat', metavar='font', nargs='+')
+      '-f', '--fonts', help='paths of fonts to swat (to fetch from a file'
+      'use "@filename")', metavar='font', nargs='+')
+  parser.add_argument(
+      '-s', '--src_root', help='common root of all paths of fonts',
+      default='')
   parser.add_argument(
       '-i', '--version_info', help='version info string (opt [fonts] to use '
       'fonts info)', metavar='str', nargs='?', const='[fonts]')
@@ -422,7 +489,7 @@ def main():
   args = parser.parse_args()
 
   autofix_fonts(
-      args.fonts, args.dest_dir, args.release_dir, args.version,
+      args.fonts, args.src_root, args.dest_dir, args.release_dir, args.version,
       args.version_info, args.autohint, args.dry_run)
 
 

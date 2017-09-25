@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lij' xml:lang='lij' key='lij' n='Ligurian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lij' xml:lang='lij' key='lij' n='Ligurian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>DICIARAÇION UNIVERSALE DI DRITI DE PERSONN-E</title>
    <preamble>
       <title>Preanbolo</title>

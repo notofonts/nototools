@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='mlt' xml:lang='mt' key='mlt' n='Maltese' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='mlt' xml:lang='mt' key='mlt' n='Maltese' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>L-ISTQARRIJA UNIVERSALI DWAR IL-JEDDIJIET TAL-BNIEDEM</title>
    <note>
        <para>Kwalunkwe referenza għall-maskil, f’din l-Istqarrija qed tirreferi wkoll għall-femminil.</para>

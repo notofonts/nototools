@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lat' xml:lang='la' key='lat_1' n='Latin (1)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lat' xml:lang='la' key='lat_1' n='Latin (1)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>UNIVERSALIS DE JURE HOMINUM DECLARATIO</title>
    <note>
       <para>quae, decreto CCXVII A (III), a Communi Conventu probata et edicta est, Anno Domini MCMIIL, a.d.IV Idus Decembres.</para>

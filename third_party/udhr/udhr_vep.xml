@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='vep' xml:lang='vep' key='vep' n='Veps' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='vep' xml:lang='vep' key='vep' n='Veps' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Mehen oiktuziden ühthine deklaracii</title>
    <preamble>
       <title>Preambul</title>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='mxi' xml:lang='mxi' key='mxi' n='Mozarabic' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='mxi' xml:lang='mxi' key='mxi' n='Mozarabic' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Declaratione Universale de les Dretos Humanos</title>
    <preamble>
       <title>PREÀMBOLO</title>

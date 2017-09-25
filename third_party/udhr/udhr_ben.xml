@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ben' xml:lang='bn' key='ben' n='Bengali' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ben' xml:lang='bn' key='ben' n='Bengali' dir='ltr' iso15924='Beng' xmlns="http://www.unhchr.ch/udhr">
    <title>মানবাধিকারের সার্বজনীন ঘোষণাপত্র</title>
 
   <preamble>

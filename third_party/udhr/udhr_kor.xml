@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='kor' xml:lang='ko' key='kor' n='Korean' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='kor' xml:lang='ko' key='kor' n='Korean' dir='ltr' iso15924='Hang' xmlns="http://www.unhchr.ch/udhr">
    <title>세 계 인 권 선 언</title>
    <preamble>
       <title>전 문</title>

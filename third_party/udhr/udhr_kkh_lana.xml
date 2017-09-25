@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="kkh" xml:lang="kkh-Lana" key="kkh_lana" n="Khün" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="kkh" xml:lang="kkh-Lana" key="kkh_lana" n="Khün" dir='ltr' iso15924='Lana' xmlns="http://www.unhchr.ch/udhr">
    <title>ᨠᨲᩥᨠᩣᩅᩤ᩵ᨯ᩠ᩅ᩠ᨿᩢᨾᨶᩩᩔᨩᩣ᩠ᨲ</title>
    <preamble>
       <title>ᨣᩴᩣᨷᩕᩣᩁ᩠ᨾᩫ</title>

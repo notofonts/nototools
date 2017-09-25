@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='nld' xml:lang='nl' key='nld' n='Dutch' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='nld' xml:lang='nl' key='nld' n='Dutch' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>UNIVERSELE VERKLARING VAN DE RECHTEN VAN DE MENS</title>
    <preamble>
       <title>Preambule</title>

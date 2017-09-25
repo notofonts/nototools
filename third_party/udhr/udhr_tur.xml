@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='tur' xml:lang='tr' key='tur' n='Turkish' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='tur' xml:lang='tr' key='tur' n='Turkish' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>İnsan hakları evrensel beyannamesi</title>
    <preamble>
       <title>Önsöz</title>

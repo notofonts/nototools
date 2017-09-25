@@ -254,15 +254,30 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
   fixes, but do want to be able to regenerate the samples if we get new source
   data.
   """
+  files_not_under_version_control = [];
+  protected_files = []
   tool_generated_files = []
-  for f in os.listdir(path.join(repo, subdir)):
+  for f in sorted(os.listdir(path.join(repo, subdir))):
     relpath = path.join(subdir, f)
     lastlog_str = git_file_lastlog(repo, relpath)
     if not lastlog_str:
-      raise ValueError('file %s in %s not under version control' % (f, subdir))
+      files_not_under_version_control.append(f)
+      continue
     commit, date, author, title = lastlog_str.split('\t')
     if title.startswith(commit_title_prefix):
       tool_generated_files.append(f)
+    else:
+      protected_files.append(f)
+
+  if files_not_under_version_control:
+    print >> sys.stderr, '%d files were not under version control:\n  %s' % (
+        len(files_not_under_version_control),
+        ', '.join(files_not_under_version_control))
+
+  if protected_files:
+    print >> sys.stderr, '%d files protected:\n  %s' % (
+        len(protected_files), ', '.join(protected_files))
+
   return tool_generated_files
 
 

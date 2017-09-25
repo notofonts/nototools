@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='mkd' xml:lang='mk' key='mkd' n='Macedonian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='mkd' xml:lang='mk' key='mkd' n='Macedonian' dir='ltr' iso15924='Cyrl' xmlns="http://www.unhchr.ch/udhr">
    <title>УНИВЕРЗАЛНА ДЕКЛАРАЦИЈА ЗА ЧОВЕКОВИТЕ ПРАВА</title>
    <note>
       <para>Усвоена и објавена во Резолуцијата 217 A(III), од 10 декември 1948 година, на Генералното собрание</para>

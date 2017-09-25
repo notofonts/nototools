@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='loz' xml:lang='loz' key='loz' n='Lozi' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='loz' xml:lang='loz' key='loz' n='Lozi' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>TUMELELANO YE TUNA YA SWANELO YA MUTU</title>
   <preamble>
     <title>MAKALELO</title>

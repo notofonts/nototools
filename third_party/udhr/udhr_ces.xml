@@ -2,14 +2,14 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='ces' xml:lang='cs' key='ces' n='Czech' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='ces' xml:lang='cs' key='ces' n='Czech' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>VŠEOBECNÁ DEKLARACE LIDSKÝCH PRÁV</title>
    <preamble>
       <title>Úvod</title>
       <para>U vědomí toho,</para>
       <para>že uznání přirozené důstojnosti a rovných a nezcizitelných práv členů lidské rodiny je základem svobody, spravedlnosti a míru ve světě,</para>
-      <para>že zneuznání lidských práv a pohrdání jimi vedlo k barbarským činům, urážejícím svědomí lidstva, a že vybudování světa, ve kterém lidé, zbavení strachu a nouze, se budou těšiti svobodě projevu a přesvĕdčení, bylo prohlášeno za nejvyšší cíl lidu,</para>
-      <para>že je nutné, aby lidská práva byla chráněna zákonem, nemá-li být človĕk donucen uchylovat se, když vše ostatní selhalo, k odboji proti tyranii a útlaku,</para>
+      <para>že zneuznání lidských práv a pohrdání jimi vedlo k barbarským činům, urážejícím svědomí lidstva, a že vybudování světa, ve kterém lidé, zbavení strachu a nouze, se budou těšiti svobodě projevu a přesvědčení, bylo prohlášeno za nejvyšší cíl lidu,</para>
+      <para>že je nutné, aby lidská práva byla chráněna zákonem, nemá-li být člověk donucen uchylovat se, když vše ostatní selhalo, k odboji proti tyranii a útlaku,</para>
       <para>že je nutné podporovat rozvoj přátelských vztahu mezi národy,</para>
       <para>že lid Spojených národů zdůraznil v Chartě znovu svou víru v základní lidská práva, v důstojnost a hodnotu lidské osobnosti, v rovná práva mužů i žen a že se rozhodl podporovat sociální pokrok a vytvořit lepší životní podmínky ve větší svobodě,</para>
       <para>že členské státy převzaly závazek zajistit ve spolupráci s Organizací spojených národů všeobecné uznávání a zachovávání lidských práv a základních svobod a</para>
@@ -90,7 +90,7 @@
       <title>Článek 14</title>
       <orderedlist>
          <listitem>
-            <para>Každý má právo vyhledat si před pronásledováním útočištĕ v jiných zemích a požívat tam azylu.</para>
+            <para>Každý má právo vyhledat si před pronásledováním útočiště v jiných zemích a požívat tam azylu.</para>
          </listitem>
          <listitem>
             <para>Toto právo nelze uplatnit v případě stíhání skutečně odůvodněného nepolitickými zločiny nebo činy, které jsou v rozporu s cíli a zásadami Spojených národů.</para>
@@ -168,7 +168,7 @@
    </article>
    <article number="22">
       <title>Článek 22</title>
-      <para>Každý človĕk má jako člen společnosti právo na sociální zabezpečení a nárok na to, aby mu byla národním úsilím i mezinárodní součinností a v souladu s organizací a s prostředky příslušného státu zajištěna hospodářská, sociální a kulturní práva, nezbytná k jeho důstojnosti a k svobodnému rozvoji jeho osobnosti.</para>
+      <para>Každý člověk má jako člen společnosti právo na sociální zabezpečení a nárok na to, aby mu byla národním úsilím i mezinárodní součinností a v souladu s organizací a s prostředky příslušného státu zajištěna hospodářská, sociální a kulturní práva, nezbytná k jeho důstojnosti a k svobodnému rozvoji jeho osobnosti.</para>
    </article>
    <article number="23">
       <title>Článek 23</title>

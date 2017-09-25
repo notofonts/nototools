@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='epo' xml:lang='eo' key='epo' n='Esperanto' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='epo' xml:lang='eo' key='epo' n='Esperanto' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Universala Deklaracio de Homaj Rajtoj</title>
    <note>
       <para>Adoptita kaj proklamita de Rezolucio 217 A (III) de la Ĝenerala Asembleo, 10an de decembro 1948</para>

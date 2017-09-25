@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='kri' xml:lang='kri' key='kri' n='Krio' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='kri' xml:lang='kri' key='kri' n='Krio' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <note>
     <para>Tɛnki Tɛnki</para>
     <para>Wi de tɛl tɛnk to Yunaytɛd Neshɔn Ay Kɔmishɔna fɔ Yuman Rayt fɔ we dɛm pe fɔ dis wok ya.</para>

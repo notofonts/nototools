@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='san' xml:lang='sa' key='san' n='Sanskrit' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='san' xml:lang='sa' key='san' n='Sanskrit' dir='ltr' iso15924='Deva' xmlns="http://www.unhchr.ch/udhr">
    <note>
       <para>मानवाधिकाराणां जागत-अभिघोषणाया: पंचाशत्तमा वर्षपूर्ति:।</para>
       <para>1948-1998</para>

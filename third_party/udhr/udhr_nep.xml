@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='nep' xml:lang='ne' key='nep' n='Nepali' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='npi' xml:lang='npi' key='nep' n='Nepali' dir='ltr' iso15924='Deva' xmlns="http://www.unhchr.ch/udhr">
    <title>मानव अधिकारको विश्वव्यापी घोषणा</title>
 
    <preamble>

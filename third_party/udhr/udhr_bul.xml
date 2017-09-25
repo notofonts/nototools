@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='bul' xml:lang='bg' key='bul' n='Bulgarian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='bul' xml:lang='bg' key='bul' n='Bulgarian' dir='ltr' iso15924='Cyrl' xmlns="http://www.unhchr.ch/udhr">
    <title>ВСЕОБЩА ДЕКЛАРАЦИЯ ЗА ПРАВАТА НА ЧОВЕКА</title>
    <preamble>
       <title>ПРЕАМБЮЛ</title>

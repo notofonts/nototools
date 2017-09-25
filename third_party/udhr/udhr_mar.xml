@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='mar' xml:lang='mr' key='mar' n='Marathi' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='mar' xml:lang='mr' key='mar' n='Marathi' dir='ltr' iso15924='Deva' xmlns="http://www.unhchr.ch/udhr">
    <title>मानवी अधिकाराचा जागतिक जाहीरनामा</title>
    <preamble>
       <title>भूमिका</title>

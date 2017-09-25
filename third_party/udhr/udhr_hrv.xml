@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='hrv' xml:lang='hr' key='hrv' n='Croatian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='hrv' xml:lang='hr' key='hrv' n='Croatian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
 <title>OPĆA DEKLARACIJA O PRAVIMA ĆOVJEKA</title>
 <preamble>
 <title>UVOD</title>
