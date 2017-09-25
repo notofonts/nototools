@@ -32,9 +32,11 @@ _SCRIPT_KEY_NAMES = [
 
 def get_script_for_name(script_name):
   starred = False
+  added = False
   if script_name[-1] == '*':
     starred = True
     script_name = script_name[:-1]
+    added = True
   if script_name in ['LGC', 'MONO', 'MUSIC', 'SYM2']:
     return script_name, starred
 
@@ -56,6 +58,10 @@ def get_script_to_cmaps(csvdata):
   # illegal to mark codepoints as ok for fallback if the header is not
   # so marked, but ok to mark the header as checked with no codepoints
   # ok for fallback.
+  # Plus ('+') marks additions by MTI above what we'd requested because
+  # they've found a requirement.  We flag these and add them to our
+  # requirements.  We're not set up to preserve these and changing that
+  # would be difficult at this point, so we just note the addition.
 
   """This returns a map from 'script' to a tuple of cmap, xcmap where
   xcmap is None if the header has not been checked, and contains the
@@ -70,7 +76,8 @@ def get_script_to_cmaps(csvdata):
       continue
     rowdata = r.split(',')
     if not header:
-      header, starred = zip(*[get_script_for_name(name) for name in rowdata])
+      header, starred = zip(
+          *[get_script_for_name(name) for name in rowdata])
       ncols = len(header)
       data = [set() for _ in range(ncols)]
       xdata = [(set() if star else None) for star in starred]
@@ -86,6 +93,9 @@ def get_script_to_cmaps(csvdata):
       try:
         if v[-1] == '*':
           xdata[i].add(int(v[:-1], 16))
+        elif v[-1] == '+':
+          print '> %s added %s' % (header[i], v[:-1])
+          data[i].add(int(v[:-1], 16))
         else:
           data[i].add(int(v, 16))
       except:

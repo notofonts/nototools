@@ -1268,6 +1268,14 @@ _SCRIPT_REQUIRED = [
    """
    From Core specification and
    http://std.dkuug.dk/JTC1/SC2/WG2/docs/n2636.pdf
+
+   0323 referenced in the following according to Kamal:
+   http://ucbclassics.dreamhosters.com/djm/coptic.html
+
+   0361 and 1DCD resolve bug #748 according to MTI.  We
+   originally intended to remove them since we didn't have
+   a reference for their use.  We still don't, but they
+   were re-added because of the bug.
    """,
    # Data
    """
@@ -1285,7 +1293,9 @@ _SCRIPT_REQUIRED = [
    0305  # COMBINING OVERLINE
    0307  # COMBINING DOT ABOVE
    0308  # COMBINING DIAERESIS
+   0323  # COMBINING DOT BELOW
    033F  # COMBINING DOUBLE OVERLINE
+   0361  # COMBINING DOUBLE INVERTED BREVE
    # Greek and Coptic
    0374  # GREEK NUMERAL SIGN
    0375  # GREEK LOWER NUMERAL SIGN
@@ -2661,6 +2671,13 @@ def _assign_script_required(cmap_ops):
     cmap_ops.phase('assign script required for ' + script)
     cmap_ops.add_all(extra, script)
 
+  # Because of a miscommunication the Coptic EPACT numbers, which had
+  # been assigned to SYM2, were added to the Coptic font as well because
+  # they were listed in a bug from two years ago.  So we'll now add them to
+  # Coptic as well, just so we know they're supposed to be there.
+  epact = tool_utils.parse_int_ranges('102e0-102fb')
+  cmap_ops.add_all(epact, 'Copt')
+
 
 def _assign_script_special_chars(cmap_ops):
   """Assign special characters listed in opentype_data."""
@@ -2686,7 +2703,6 @@ def _assign_legacy_phase2(cmap_ops):
   # and so on.
   exclude_script_ranges = {
     'Cham': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
-    'Copt': '0323 0361 1dcd 25cc',
     'Deva': '00AF', # Jelle says this was encoded by accident, should be 00AD
     'Kthi': '0030-0039',
     'Khmr': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
