@@ -574,6 +574,34 @@ def get_css_generic_family(family):
 def css_weight(weight_string):
     return noto_fonts.WEIGHTS[weight_string]
 
+_STRETCH_CSS_NAMES = {
+    'Normal': 'normal',
+    'Condensed': 'condensed',
+    'SemiCondensed': 'semi-condensed',
+    'ExtraCondensed': 'extra-condensed',
+}
+
+def css_stretch(stretch_string):
+  if not stretch_string:
+    return ''
+  # fail if we don't recognize the name
+  return _STRETCH_CSS_NAMES[stretch_string]
+
+
+_STRETCH_ABBREVIATIONS = {
+    'Normal': '',
+    'Condensed': 'cond',
+    'SemiCondensed': 'semcond',
+    'ExtraCondensed': 'excond',
+}
+
+def stretch_filename(stretch_string):
+  """Portion of image output file corresponding to stretch value. We
+  abbreviate."""
+  if not stretch_string or stretch_string == 'normal':
+    return ''
+  # fail if we don't recognize the name
+  return '_' + _STRETCH_ABBREVIATIONS[stretch_string]
 
 def css_style(style_value):
     if style_value is None:
@@ -985,6 +1013,7 @@ class WebGen(object):
 
     self.write_json(meta_obj, 'meta')
 
+
   def build_family_images(
       self, family, lang_scr, sample_text, attrib, sample_key):
     family_id = family.family_id
@@ -994,6 +1023,8 @@ class WebGen(object):
     for font in displayed_members:
       weight = css_weight(font.weight)
       style = css_style(font.slope)
+      stretch = css_stretch(font.width) # empty for normal
+      stretch_seg = stretch_filename(font.width)
       if font.variant == 'color':
         imgtype = 'png'
         fsize = 36
@@ -1002,8 +1033,8 @@ class WebGen(object):
         imgtype = 'svg'
         fsize = 20
         lspc = 32
-      image_file_name = '%s_%s_%d_%s.%s' % (
-          family_id, lang_scr, weight, style, imgtype)
+      image_file_name = '%s_%s%s_%d_%s.%s' % (
+          family_id, lang_scr, stretch_seg, weight, style, imgtype)
       if is_cjk and family.name.find('Serif') < 0:
         # The sans and serif cjk's are named differently, and it confuses
         # fontconfig.  Sans includes 'Regular' and 'Bold' in the standard
@@ -1032,7 +1063,8 @@ class WebGen(object):
           font_size=int(fsize * (72.0/96.0)),
           line_spacing=int(lspc * (72.0/96.0)),
           weight=weight,
-          style=style)
+          style=style,
+          stretch=stretch)
 
   def build_images(self, family_id_to_lang_scr_to_sample_key,
                    families, family_id_to_default_lang_scr,
@@ -1047,7 +1079,7 @@ class WebGen(object):
       # languages is the same, so we have to generate all the samples and
       # name them based on the language.  But most of the samples with the
       # same font and text will be the same, because the fonts generally
-      # only customize for a few language tags.
+      # only customize for a few language tags.  Sad!
       for lang_scr, sample_key in sorted(lang_scr_to_sample_key.iteritems()):
         sample_text, attrib, _ = sample_key_to_info[sample_key]
         self.build_family_images(

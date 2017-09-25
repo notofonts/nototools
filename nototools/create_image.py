@@ -93,7 +93,8 @@ class DrawParams:
     def __init__(self, family='Noto Sans',
                  language=None, rtl=False, vertical=False,
                  width=1370, font_size=32, line_spacing=50,
-                 weight=pango.WEIGHT_NORMAL, style=pango.STYLE_NORMAL):
+                 weight=pango.WEIGHT_NORMAL, style=pango.STYLE_NORMAL,
+                 stretch=pango.STRETCH_NORMAL):
         self.family = family
         self.language = language
         self.rtl = rtl
@@ -103,9 +104,20 @@ class DrawParams:
         self.line_spacing = line_spacing
         self.weight = weight
         self.style = style
+        self.stretch = stretch
 
     def __repr__(self):
         return str(self.__dict__)
+
+
+def make_drawparams(**kwargs):
+  """Create a DrawParams from kwargs, but converting weight, style, and stretch
+  from values from string to the pango value types if needed."""
+  dp = DrawParams(**kwargs)
+  dp.weight = _get_weight(kwargs.get('weight', 'normal'))
+  dp.style = _get_style(kwargs.get('style', 'normal'))
+  dp.stretch = _get_stretch(kwargs.get('stretch', 'normal'))
+  return dp
 
 
 def draw_on_surface(surface, text, params):
@@ -169,6 +181,7 @@ def draw_on_surface(surface, text, params):
     font.set_size(params.font_size * pango.SCALE)
     font.set_style(params.style)
     font.set_weight(params.weight)
+    font.set_stretch(params.stretch)
 
     layout.set_font_description(font)
     layout.set_alignment(alignment)
@@ -200,11 +213,12 @@ def create_svg(text, output_path, **kwargs):
 
     setup_fonts_conf()
 
-    params = DrawParams(**kwargs);
+    params = make_drawparams(**kwargs);
     temp_surface = cairo.SVGSurface(None, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
-    real_surface = cairo.SVGSurface(output_path, params.width, calculated_height)
+    real_surface = cairo.SVGSurface(
+        output_path, params.width, calculated_height)
     print 'writing', output_path
     draw_on_surface(real_surface, text, params)
     real_surface.flush()
@@ -216,7 +230,7 @@ def create_png(text, output_path, **kwargs):
 
     setup_fonts_conf()
 
-    params = DrawParams(**kwargs)
+    params = make_drawparams(**kwargs);
     temp_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
@@ -258,6 +272,15 @@ def test():
          language='sr-Cyrl')
     test('und-Adlm_chars.txt', 'und-adlm.png', family='Noto Sans',
          rtl=True)
+    """
+    test('en-Latn_udhr.txt', 'en_latn_udhr.svg', family='Noto Sans')
+    test('en-Latn_udhr.txt', 'en_latn_udhr_semcond.svg', family='Noto Sans',
+         stretch='semi-condensed')
+    test('en-Latn_udhr.txt', 'en_latn_udhr_cond.svg', family='Noto Sans',
+         stretch='condensed')
+    test('en-Latn_udhr.txt', 'en_latn_udhr_extcond.svg', family='Noto Sans',
+         stretch=pango.STRETCH_EXTRA_CONDENSED)
+    """
 
     # test('en-Latn_udhr.txt', 'en_latn_rtl.png', family='Noto Sans', rtl=True)
     # bidi_txt = u'First ضميرً Second'
@@ -273,15 +296,18 @@ _weight_map = {
     'heavy': pango.WEIGHT_HEAVY
   }
 
-
 def _get_weight(weight_name):
   if not weight_name:
     return pango.WEIGHT_NORMAL
-  weight = _weight_map.get(weight_name)
-  if weight:
-    return weight
-  raise ValueError('could not recognize weight \'%s\'\naccepted values are %s' %
-                  ( weight_name, ', '.join(sorted(_weight_map.keys()))))
+  if isinstance(weight_name, pango.Weight) or isinstance(weight_name, int):
+    return weight_name
+  if not isinstance(weight_name, basestring):
+    raise ValueError('unexpected weight name type (%s)', type(weight_name))
+  if weight_name not in _weight_map:
+    raise ValueError(
+        'could not recognize weight \'%s\'\naccepted values are %s' % (
+            weight_name, ', '.join(sorted(_weight_map.keys()))))
+  return _weight_map.get(weight_name)
 
 
 _italic_map = {
@@ -293,22 +319,54 @@ _italic_map = {
 def _get_style(style_name):
   if not style_name:
     return pango.STYLE_NORMAL
-  style = _italic_map.get(style_name)
-  if style:
-    return style
-  raise ValueError('could not recognize style \'%s\'\naccepted values are %s' %
-                   (style_name, ', '.join(sorted(_italic_map.keys()))))
+  if isinstance(style_name, pango.Style):
+    return style_name
+  if not isinstance(style_name, basestring):
+    raise ValueError('unexpected style name type (%s)', type(style_name))
+  if style_name not in _italic_map:
+    raise ValueError(
+        'could not recognize style \'%s\'\naccepted values are %s' % (
+            style_name, ', '.join(sorted(_italic_map.keys()))))
+  return _italic_map.get(style_name)
 
 
-def render_codes(file_name, code_list, font_name, weight_name, style_name,
-                 font_size, lang, ext):
-    text = u''.join([unichr(int(s, 16)) for s in code_list])
-    render_text(file_name, text, font_name, weight_name, style_name, font_size,
-                lang, ext)
+_stretch_map = {
+    'ultra-condensed': pango.STRETCH_ULTRA_CONDENSED,
+    'extra-condensed': pango.STRETCH_EXTRA_CONDENSED,
+    'condensed': pango.STRETCH_CONDENSED,
+    'semi-condensed': pango.STRETCH_SEMI_CONDENSED,
+    'normal': pango.STRETCH_NORMAL,
+    'semi-expanded': pango.STRETCH_SEMI_EXPANDED,
+    'expanded': pango.STRETCH_EXPANDED,
+    'extra-expanded': pango.STRETCH_EXTRA_EXPANDED,
+    'ultra-expanded': pango.STRETCH_ULTRA_EXPANDED,
+}
+
+def _get_stretch(stretch_name):
+  if not stretch_name:
+    return pango.STRETCH_NORMAL
+  if isinstance(stretch_name, pango.Stretch):
+    return stretch_name
+  if not isinstance(stretch_name, basestring):
+    raise ValueError('unexpected stretch name type (%s)', type(stretch_name))
+  if stretch_name not in _stretch_map:
+    raise ValueError(
+        'could not recognize stretch \'%s\'\naccepted values are %s' % (
+            stretch_name, ', '.join(sorted(_stretch_map.keys()))))
+  return _stretch_map.get(stretch_name)
 
 
-def render_text(file_name, text, font_name, weight_name, style_name, font_size,
-                lang, ext):
+def render_codes(
+    file_name, code_list, font_name, weight_name, style_name, stretch_name,
+    font_size, lang, ext):
+  text = u''.join([unichr(int(s, 16)) for s in code_list])
+  render_text(
+      file_name, text, font_name, weight_name, style_name, stretch_name,
+      font_size, lang, ext)
+
+
+def render_text(file_name, text, font_name, weight_name, style_name,
+                stretch_name, font_size, lang, ext):
     font = font_name or 'Noto Sans'
     font_size = font_size or 32
     if not file_name:
@@ -318,33 +376,50 @@ def render_text(file_name, text, font_name, weight_name, style_name, font_size,
         name_strs.append(weight_name)
       if style_name:
         name_strs.append(style_name)
+      if stretch_name:
+        name_strs.append(stretch_name)
       name_strs.append(str(font_size))
       if lang:
         name_strs.append(lang)
       file_name = '_'.join(name_strs) + '.' + ext
 
-    weight = _get_weight(weight_name)
-    style = _get_style(style_name)
-    create_img(text, file_name, family=font, weight=weight, style=style,
-               language=lang, font_size=font_size)
+    create_img(
+        text, file_name, family=font, weight=weight_name, style=style_name,
+        stretch=stretch_name, language=lang, font_size=font_size)
     print 'generated ' + file_name
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test', action='store_true', help='generate test images')
-    parser.add_argument('--codes', metavar='hex', nargs='+',
-                        help='list of hex codepoints to render')
-    parser.add_argument('--text', metavar='str', help='text to render, can include unicode escapes')
-    parser.add_argument('--out', metavar='name', help='name of output file, '
-                        'leave empty to generate a name', default=None)
-    parser.add_argument('-f', '--font', metavar='name', help='name of noto font to use')
-    parser.add_argument('-b', '--bold', metavar='wt', help="pango weight name", default=None)
-    parser.add_argument('-i', '--italic', metavar='it', help="pango style name", default=None)
-    parser.add_argument('-s', '--size', metavar='int', type=int, help='point size (default 32)',
-                        default=32)
-    parser.add_argument('-l', '--lang', metavar='lang', help='language code')
-    parser.add_argument('-t', '--type', metavar='ext', help='svg (default) or png', default='svg')
+    parser.add_argument(
+        '--test', action='store_true', help='generate test images')
+    parser.add_argument(
+        '--codes', metavar='hex', nargs='+',
+        help='list of hex codepoints to render')
+    parser.add_argument(
+        '--text', metavar='str',
+        help='text to render, can include unicode escapes')
+    parser.add_argument(
+        '--out', metavar='name',
+        help='name of output file, leave empty to generate a name',
+        default=None)
+    parser.add_argument(
+        '-f', '--font', metavar='name', help='name of noto font to use')
+    parser.add_argument(
+        '-b', '--bold', metavar='wt', help="pango weight name", default=None)
+    parser.add_argument(
+        '-i', '--italic', metavar='it', help="pango style name", default=None)
+    parser.add_argument(
+        '-st', '--stretch', metavar='st', help="stretch name",
+        default=None)
+    parser.add_argument(
+        '-s', '--size', metavar='int', type=int, help='point size (default 32)',
+        default=32)
+    parser.add_argument(
+        '-l', '--lang', metavar='lang', help='language code')
+    parser.add_argument(
+        '-t', '--type', metavar='ext', help='svg (default) or png',
+        default='svg')
 
     args = parser.parse_args()
     if args.test:
