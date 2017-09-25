@@ -236,7 +236,7 @@ BCP_FIXES = {
   }
 
 def fix_index(bcp_to_codes):
-  """Take a mapping from bcp to a set of file codes, and
+  """Take a mapping from bcp47 to a set of file codes, and
   select the mappings we want using a whitelist.  We return
   a mapping from one bcp47 code to one file code.
 
@@ -417,7 +417,7 @@ def add_default_lang_script(bcp_to_code_attrib_sample):
       bcp_to_code_attrib_sample[lang_scr] = bcp_to_code_attrib_sample[alias]
 
   if errors:
-    print 'add default lang script encountered %d errors:' % len(errors)
+    print 'add_default_lang_script encountered %d errors:' % len(errors)
     for e in errors:
       print ' ', e
     raise Exception('oops')
@@ -437,23 +437,23 @@ def get_code_to_attrib(src_dir):
 
 
 def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
-  """Return a mapping from bcp to code (for debugging), attribution, and
+  """Return a mapping from bcp47 to code (for debugging), attribution, and
   sample.  The process is:
-  1) parse the index.xml file to determine a mapping from bcp to code.
-     the bcp has at least lang and script, and perhaps region/variant.
-     Multiple codes might share the same bcp.
-  2) Use a whitelist to fix cases where a bcp maps to multiple codes,
-     either by selection one code, or assigning a separate bcp value
+  1) parse the index.xml file to determine a mapping from bcp47 to code.
+     the bcp47 code has at least lang and script, and perhaps region/variant.
+     Multiple codes might share the same bcp47 code.
+  2) Use a whitelist to fix cases where a bcp47 code maps to multiple codes,
+     either by selecting one code, or assigning a separate bcp47 value
      to other codes.
-  3) Load samples for each bcp using article 1 from the file identified
-     by the code.  If there is no article 1, skip that bcp.
+  3) Load samples for each bcp47 code using article 1 from the file
+     identified by the code.  If there is no article 1, skip that bcp47 code.
   4) Do more checking on the samples to make sure they look legit and
      in particular contain only the scripts we expect them to have based
-     on the script code in the bcp.
+     on the script code in the bcp47 code.
   5) Add an attribution based on the code and the attributions file.
-  6) Find cases where all the bcp's sharing a lang and script have
+  6) Find cases where all the bcp47's sharing a lang and script have
      regions and/or variants, and select one of these to assign to
-     the lang_script bcp."""
+     the lang_script bcp47 code."""
 
   bcp_to_codes, code_to_ohchr = parse_index(src_dir)
   bcp_to_code = fix_index(bcp_to_codes)
