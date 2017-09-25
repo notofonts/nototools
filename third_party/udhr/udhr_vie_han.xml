@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3="vie" xml:lang="vi-Hani" key="vie_han" n="Vietnamese (Han nom)" xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3="vie" xml:lang="vi-Hani" key="vie_han" n="Vietnamese (Han nom)" dir='ltr' iso15924='Hani' xmlns="http://www.unhchr.ch/udhr">
    <title>宣言全世界𧗱人權𧵑聯合國</title>
    <note>
       <para>得大會同聯合國通過吧公布遶議決數217（III）、𣈜10𣎃12𢆥1948。</para>

@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='lld' xml:lang='lld' key='lld' n='Ladin' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='lld' xml:lang='lld' key='lld' n='Ladin' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Detlaraziun Universala di Dërć dles Porsones</title>
    <note>
       <para>Ressoluziun 217 A (III) dla sentada generala di 10 de dezëmber dl 1948</para>

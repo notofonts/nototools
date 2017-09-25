@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='aka' xml:lang='ak' key='aka_asante' n='Akan (Asante)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='twi' xml:lang='tw-asante' key='aka_asante' n='Twi (Asante)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>ADASAMMA YIEDIE HO ANODISƐM</title>
    <preamble>
       <title>NNIANIMU</title>

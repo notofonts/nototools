@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='war' xml:lang='war' key='war' n='Waray-Waray' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='war' xml:lang='war' key='war' n='Waray-Waray' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>Sangkalibutan Nga Pag-Asoy Bahin Han Kanan Tawo Mga Katungod</title>
   <preamble>
     <title>Pasiuna</title>

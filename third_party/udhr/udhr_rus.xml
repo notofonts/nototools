@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='rus' xml:lang='ru' key='rus' n='Russian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='rus' xml:lang='ru' key='rus' n='Russian' dir='ltr' iso15924='Cyrl' xmlns="http://www.unhchr.ch/udhr">
    <title>Всеобщая декларация прав человека</title>
    <note>
       <para>Принята и провозглашена резолюцией 217 А (III) Генеральной Ассамблеи от 10 декабря 1948 года.</para>

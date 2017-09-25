@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='glg' xml:lang='gl' key='glg' n='Galician' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='glg' xml:lang='gl' key='glg' n='Galician' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Declaración Universal dos Dereitos das Persoas</title>
    <preamble>
       <title>Preámbulo</title>

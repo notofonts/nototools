@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='nbl' xml:lang='nr' key='nbl' n='Ndebele' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='nbl' xml:lang='nr' key='nbl' n='Ndebele' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>AMALUNGELO OMUNTU WONKE EMHLABENI WONKE JIKELELE</title>
   <preamble>
     <title>[Missing: "Preamble"]</title>

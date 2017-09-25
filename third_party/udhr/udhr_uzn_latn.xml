@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='uzn' xml:lang='uzn-Latn' key='uzn_latn' n='Uzbek, Northern (Latin)' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='uzn' xml:lang='uzn-Latn' key='uzn_latn' n='Uzbek, Northern (Latin)' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>INSON HUQUQLARI UMUMJAHON DEKLARATSIYASI</title>
   <note>
     <para>1948 yil, 10 dekabrda Birlashgan Millatlar Tashkiloti Bosh Assambleyasining 217 (III) koʻrsatmasi orqali qabul qilingan va eʼlon qilingan.</para>

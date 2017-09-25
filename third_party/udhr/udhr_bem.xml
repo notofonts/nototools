@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='bem' xml:lang='bem' key='bem' n='Bemba' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='bem' xml:lang='bem' key='bem' n='Bemba' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>IFYASOSELE IFYALO PALWA NSAMBU SHA MUNTU</title>
    <preamble>
       <title>AMASHIWI YAKUBALILAPO</title>

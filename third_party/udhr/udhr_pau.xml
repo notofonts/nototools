@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='pau' xml:lang='pau' key='pau' n='Palauan' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='pau' xml:lang='pau' key='pau' n='Palauan' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
   <title>KLOU EL SUBED RA LLEMALT RAR CHAD</title>
   <preamble>
     <title>URRENGUUL</title>

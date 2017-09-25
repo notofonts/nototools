@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='mal' xml:lang='ml' key='mal' n='Malayalam' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='mal' xml:lang='ml' key='mal' n='Malayalam' dir='ltr' iso15924='Mlym' xmlns="http://www.unhchr.ch/udhr">
   <title>മനുഷ്യാവകാശങ്ങളെക്കുറിക്കുന്ന പൊതുപ്രഖ്യാപനം</title>
   <preamble>
     <title>പീഠിക</title>

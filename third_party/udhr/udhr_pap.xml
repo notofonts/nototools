@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='pap' xml:lang='pap' key='pap' n='Papiamentu' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='pap' xml:lang='pap' key='pap' n='Papiamentu' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>DECLARACION UNIVERSAL DI DERECHO HUMANO</title>
    <note>
       <para></para>

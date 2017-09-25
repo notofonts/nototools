@@ -2,7 +2,7 @@
 
 <!--© The Office of the High Commisioner for Human Rights-->
 
-<udhr iso639-3='slv' xml:lang='sl' key='slv' n='Slovenian' xmlns="http://www.unhchr.ch/udhr">
+<udhr iso639-3='slv' xml:lang='sl' key='slv' n='Slovenian' dir='ltr' iso15924='Latn' xmlns="http://www.unhchr.ch/udhr">
    <title>Splošna deklaracija človekovih pravic</title>
    <preamble>
       <title>Preambula</title>
