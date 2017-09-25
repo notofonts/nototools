@@ -8,7 +8,8 @@ mkdir -p /app/pkgs
 # (installing qt5-qmake and then export QT_SELECT=qt5 didn't work:
 #   qmake: could not find a Qt installation of 'qt5'
 # so perhaps qt5-qmake does not pull in qt5 dependencies automatically)
-apt-get update && apt-get install -y python-gtk2 ragel gperf python-lxml qt5-default
+# udhr tooling uses dos2unix
+apt-get update && apt-get install -y python-gtk2 ragel gperf python-lxml qt5-default dos2unix
 
 # install a newer version of git
 GIT="git-2.12.2"

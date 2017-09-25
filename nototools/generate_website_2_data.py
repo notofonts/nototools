@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -388,8 +388,27 @@ def get_charset_info(charset):
   return ','.join(range_list)
 
 
-def get_sample_from_sample_file(lang_scr_ext):
-  filepath = path.join(SAMPLE_TEXT_DIR, lang_scr_ext + '.txt')
+_sample_names = []
+def get_sample_names_for_lang_scr_typ(lang_scr, typ):
+  """Sample names are of the form 'lang-scr(-var)*typ.txt', return
+  names starting with lang-scr and ending with typ, stripping the extension,
+  and sorted with lang-scr_typ first and the rest in alphabetical order."""
+  global _sample_names
+
+  if not _sample_names:
+    _sample_names = [
+        n[:-4] for n in os.listdir(SAMPLE_TEXT_DIR) if n.endswith('.txt')]
+
+  names = [
+      n for n in _sample_names if n.startswith(lang_scr) and n.endswith(typ)]
+
+  preferred = lang_scr + typ
+  names.sort(key=lambda s: '' if s == preferred else s)
+  return names
+
+
+def get_sample_from_sample_file(lang_scr_typ):
+  filepath = path.join(SAMPLE_TEXT_DIR, lang_scr_typ + '.txt')
   if path.exists(filepath):
     return unicode(open(filepath).read().strip(), 'UTF-8')
   return None
@@ -397,7 +416,7 @@ def get_sample_from_sample_file(lang_scr_ext):
 
 ATTRIBUTION_DATA = {}
 
-def get_attribution(lang_scr_ext):
+def get_attribution(lang_scr_typ):
   if not ATTRIBUTION_DATA:
     attribution_path = path.join(TOOLS_DIR, 'sample_texts', 'attributions.txt')
     with open(attribution_path, 'r') as f:
@@ -410,9 +429,10 @@ def get_attribution(lang_scr_ext):
       ATTRIBUTION_DATA[tag.strip()] = attrib.strip()
     print 'read %d lines of attribution data' % len(ATTRIBUTION_DATA)
   try:
-    return ATTRIBUTION_DATA[lang_scr_ext + '.txt']
+    return ATTRIBUTION_DATA[lang_scr_typ + '.txt']
   except KeyError:
-    print 'no attribution for %s' % lang_scr_ext
+    if not lang_scr_typ.endswith('_chars'):
+      print 'no attribution for %s' % lang_scr_typ
     return 'none'
 
 
@@ -435,38 +455,37 @@ def get_sample_infos(lang_scr):
     none: we have no attribution info on this, does not need attribution
   - source key.
   The list is in order of priority: language texts, udhr samples, exemplars for
-  the language, sample text for the script, exemplars for the script."""
+  the language, sample chars for the script, exemplars for the script."""
 
   assert '-' in lang_scr
 
   sample_infos = []
-  sample_text = get_sample_from_sample_file(lang_scr + '_text')
-  if sample_text is not None:
-    src_key = lang_scr + '_text'
-    attr = get_attribution(src_key)
-    sample_infos.append((sample_text, attr, src_key))
 
-  sample_text = get_sample_from_sample_file(lang_scr + '_udhr')
-  if sample_text is not None:
-    src_key = lang_scr + '_udhr'
-    attr = get_attribution(src_key)
-    sample_infos.append((sample_text, attr, src_key))
+  def add_samples(lang_scr, typ):
+    for src_key in get_sample_names_for_lang_scr_typ(lang_scr, typ):
+      sample_text = get_sample_from_sample_file(src_key)
+      if sample_text is not None:
+        attr = get_attribution(src_key)
+        sample_infos.append((sample_text, attr, src_key))
 
-  lang, script = lang_scr.split('-')
-  if lang != 'und':
+  def add_exemplars(lang_scr):
     exemplar, src_key = cldr_data.get_exemplar_and_source(lang_scr)
     if exemplar is not None:
       sample_infos.append(
           (sample_text_from_exemplar(exemplar), 'none', src_key))
 
-  src_key = 'und-' + script + '_chars'
-  sample_text = get_sample_from_sample_file(src_key)
-  if sample_text is not None:
-    sample_infos.append((sample_text, 'none', src_key))
+  add_samples(lang_scr, '_text')
 
-  exemplar, src_key = cldr_data.get_exemplar_and_source('und-' + script)
-  if exemplar is not None:
-    sample_infos.append((sample_text_from_exemplar(exemplar), 'none', src_key))
+  add_samples(lang_scr, '_udhr')
+
+  lang, script = lang_scr.split('-')
+  if lang != 'und':
+    add_exemplars(lang_scr)
+
+  und_scr = 'und-' + script
+  add_samples(und_scr, '_chars')
+
+  add_exemplars(und_scr)
 
   if not sample_infos:
     print '!No sample info for %s' % lang_scr
@@ -555,6 +574,34 @@ def get_css_generic_family(family):
 def css_weight(weight_string):
     return noto_fonts.WEIGHTS[weight_string]
 
+_STRETCH_CSS_NAMES = {
+    'Normal': 'normal',
+    'Condensed': 'condensed',
+    'SemiCondensed': 'semi-condensed',
+    'ExtraCondensed': 'extra-condensed',
+}
+
+def css_stretch(stretch_string):
+  if not stretch_string:
+    return ''
+  # fail if we don't recognize the name
+  return _STRETCH_CSS_NAMES[stretch_string]
+
+
+_STRETCH_ABBREVIATIONS = {
+    'Normal': '',
+    'Condensed': 'cond',
+    'SemiCondensed': 'semcond',
+    'ExtraCondensed': 'excond',
+}
+
+def stretch_filename(stretch_string):
+  """Portion of image output file corresponding to stretch value. We
+  abbreviate."""
+  if not stretch_string or stretch_string == 'normal':
+    return ''
+  # fail if we don't recognize the name
+  return '_' + _STRETCH_ABBREVIATIONS[stretch_string]
 
 def css_style(style_value):
     if style_value is None:
@@ -966,6 +1013,7 @@ class WebGen(object):
 
     self.write_json(meta_obj, 'meta')
 
+
   def build_family_images(
       self, family, lang_scr, sample_text, attrib, sample_key):
     family_id = family.family_id
@@ -975,6 +1023,8 @@ class WebGen(object):
     for font in displayed_members:
       weight = css_weight(font.weight)
       style = css_style(font.slope)
+      stretch = css_stretch(font.width) # empty for normal
+      stretch_seg = stretch_filename(font.width)
       if font.variant == 'color':
         imgtype = 'png'
         fsize = 36
@@ -983,8 +1033,8 @@ class WebGen(object):
         imgtype = 'svg'
         fsize = 20
         lspc = 32
-      image_file_name = '%s_%s_%d_%s.%s' % (
-          family_id, lang_scr, weight, style, imgtype)
+      image_file_name = '%s_%s%s_%d_%s.%s' % (
+          family_id, lang_scr, stretch_seg, weight, style, imgtype)
       if is_cjk and family.name.find('Serif') < 0:
         # The sans and serif cjk's are named differently, and it confuses
         # fontconfig.  Sans includes 'Regular' and 'Bold' in the standard
@@ -1013,7 +1063,8 @@ class WebGen(object):
           font_size=int(fsize * (72.0/96.0)),
           line_spacing=int(lspc * (72.0/96.0)),
           weight=weight,
-          style=style)
+          style=style,
+          stretch=stretch)
 
   def build_images(self, family_id_to_lang_scr_to_sample_key,
                    families, family_id_to_default_lang_scr,
@@ -1028,7 +1079,7 @@ class WebGen(object):
       # languages is the same, so we have to generate all the samples and
       # name them based on the language.  But most of the samples with the
       # same font and text will be the same, because the fonts generally
-      # only customize for a few language tags.
+      # only customize for a few language tags.  Sad!
       for lang_scr, sample_key in sorted(lang_scr_to_sample_key.iteritems()):
         sample_text, attrib, _ = sample_key_to_info[sample_key]
         self.build_family_images(
