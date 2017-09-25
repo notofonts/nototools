@@ -164,7 +164,7 @@ def _print_detailed(cps, inverted_target=None):
     undefined_start, undefined_end = -1, -1
     extensions = unicode_data.script_extensions(cp) - set([script])
     if extensions:
-      extensions = ' (%s)' % ','.join(sorted(extensions))
+      extensions = ' (script %s)' % ', '.join(sorted(extensions))
     else:
       extensions = ''
     if not inverted_target:
@@ -177,7 +177,7 @@ def _print_detailed(cps, inverted_target=None):
         script_text = ', '.join(scripts[:3]) + '... ' + scripts[-1]
       else:
         script_text = ', '.join(scripts)
-      extra = ' (in %s)' % script_text
+      extra = ' (font %s)' % script_text
     print '    %6s %4s %2s %3s %s%s%s' % (
         '%04x' % cp,
         script,

@@ -2597,12 +2597,18 @@ _SCRIPT_REQUIRED = [
    # Comment
    """
    From core specification.
+   Fullwidth Comma is used in UDHR text for Yi.  Add standard comma
+   so we have a 'halfwidth' form to match.
    """,
    # Data
    """
+   # Latin-1
+   002C  # COMMA
    # CJK Symbols and Punctuation
    3001  # IDEOGRAPHIC COMMA
    3002  # IDEOGRAPHIC FULL STOP
+   # Halfwidth and Fullwidth Forms
+   FF0C  # FULLWIDTH COMMA
    """),
 ]
 
@@ -2672,9 +2678,9 @@ def _assign_script_required(cmap_ops):
     cmap_ops.add_all(extra, script)
 
   # Because of a miscommunication the Coptic EPACT numbers, which had
-  # been assigned to SYM2, were added to the Coptic font as well because
-  # they were listed in a bug from two years ago.  So we'll now add them to
-  # Coptic as well, just so we know they're supposed to be there.
+  # been assigned to SYM2, were also added to the Coptic font because
+  # they were listed in a bug from two years ago.  So we'll now put them
+  # in the Coptic requirements just so we know they're supposed to be there.
   epact = tool_utils.parse_int_ranges('102e0-102fb')
   cmap_ops.add_all(epact, 'Copt')
 
