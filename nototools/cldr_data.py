@@ -97,6 +97,7 @@ def _parse_supplemental_data():
       scripts = set(attribs['scripts'].split(' '))
       _LANG_TO_SCRIPTS[lang].update(scripts)
 
+  langs_missing_likely_subtag_data = []
   for tag in root.iter('territory'):
     territory = tag.get('type')
     for child in tag:
@@ -114,7 +115,18 @@ def _parse_supplemental_data():
         try:
           likely_tuple = _LIKELY_SUBTAGS[key]
         except:
-          likely_tuple = _LIKELY_SUBTAGS[lang]
+          try:
+            likely_tuple = _LIKELY_SUBTAGS[lang]
+          except:
+            # hmmm, language tag for territory not in likely subtags data
+            # filed bug with CLDR, for now patch fixes here
+            if lang in ['bsc', 'mfv', 'snf', 'tnr']:
+              script = 'Latn'
+            elif lang in ['mey']:
+              script = 'Arab'
+            else:
+              langs_missing_likely_subtag_data.append(key)
+              likely_tuple = (lang, script, territory)
         script = likely_tuple[1]
       else:
         script = lang[ix + 1:]
@@ -123,6 +135,14 @@ def _parse_supplemental_data():
       _REGION_TO_LANG_SCRIPTS[territory].add(lang_script)
       _LANG_TO_REGIONS[lang].add(territory)
       _LANG_TO_SCRIPTS[lang].add(script)
+
+  if langs_missing_likely_subtag_data:
+    print 'cldr_data: %d keys not in likely subtags:' % len(
+        langs_missing_likely_subtag_data)
+    for k in sorted(langs_missing_likely_subtag_data):
+      print ' ', k
+    print 'cldr_data: defaulting script to Latn'
+    # raise Exception('oops')
 
   # Use likely subtag data mapping script to lang to extend lang_to_scripts.
   known_scripts = set()
@@ -475,7 +495,10 @@ def _read_character_at(source, pointer):
       while (end_of_hex < len(source)
            and source[end_of_hex].upper() in '0123456789ABCDEF'):
         end_of_hex += 1
-      assert end_of_hex-(pointer+2) in {4, 5, 6}
+      if end_of_hex-(pointer+2) not in {4, 5, 6, 8}:
+        raise Exception(
+            'cldr_data: parse of unicode escape failed at %d: %s' % (
+                pointer, source[pointer:pointer + 10]))
       hex_code = source[pointer+2:end_of_hex]
       return end_of_hex, unichr(int(hex_code, 16))
     else:
@@ -550,7 +573,11 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
       continue
     # TODO(dougfelt): when multiple types are used, append in fixed order
     # and don't rely on order in the xml file?
-    exemplars.extend(unicode_set_string_to_list(tag.text))
+    try:
+      exemplars.extend(unicode_set_string_to_list(tag.text))
+    except Exception as e:
+      print 'failed parse of %s' % cldr_file_path
+      raise e
     break
 
   _exemplar_from_file_cache[cldr_file_path] = exemplars
