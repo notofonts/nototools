@@ -574,6 +574,12 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
     # TODO(dougfelt): when multiple types are used, append in fixed order
     # and don't rely on order in the xml file?
     try:
+      cat = frozenset(['L', 'M', 'N'])
+      def accept(s):
+        return len(s) > 1 or unicode_data.category(s)[0] in cat
+      exemplar_list = [
+          s for s in unicode_set_string_to_list(tag.text)
+          if accept(s)]
       exemplars.extend(unicode_set_string_to_list(tag.text))
     except Exception as e:
       print 'failed parse of %s' % cldr_file_path
@@ -617,7 +623,8 @@ def get_exemplar_and_source(loc_tag):
   while loc_tag != 'root':
     for directory in ['common', 'seed', 'exemplars']:
       exemplar = get_exemplar_from_file(
-        path.join(directory, 'main', loc_tag.replace('-', '_') + '.xml'))
+          path.join(directory, 'main', loc_tag.replace('-', '_') + '.xml'),
+          ['', 'auxiliary'])
       if exemplar:
         return exemplar, loc_tag + '_ex_' + directory
     exemplar = get_exemplar_from_extra_data(loc_tag)
