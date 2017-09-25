@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 11294 $"/>
-		<generation date="$Date: 2015-02-23 14:50:24 -0800 (Mon, 23 Feb 2015) $"/>
+		<version number="$Revision: 13701 $"/>
 		<language type="brx"/>
 	</identity>
 	<localeDisplayNames>
@@ -610,7 +610,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AI">एंगीला</territory>
 			<territory type="AL">अल्बानिया</territory>
 			<territory type="AM">आर्मेनिया</territory>
-			<territory type="AN">नीदरलैंड्स एंटिलीज़</territory>
 			<territory type="AO">अंगोला</territory>
 			<territory type="AQ">अंटार्कटिका</territory>
 			<territory type="AR">अर्जेण्टिना</territory>
@@ -885,20 +884,20 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<key type="currency">मुद्रा</key>
 		</keys>
 		<types>
-			<type type="big5han" key="collation">पारम्पारिक चीनी वर्गीकरण बीग फ़ाईव</type>
-			<type type="buddhist" key="calendar">बौद्ध पंचांग</type>
-			<type type="chinese" key="calendar">चीनी पंचांग</type>
-			<type type="gb2312han" key="collation">सरलीकृत चीनी वर्गीकरण जीबी2312</type>
-			<type type="gregorian" key="calendar">ग्रेगरीअन पंचांग</type>
-			<type type="hebrew" key="calendar">यहुदी पंचांग</type>
-			<type type="islamic" key="calendar">इस्लामी पंचांग</type>
-			<type type="islamic-civil" key="calendar">इस्लामी नागरिक पंचांग</type>
-			<type type="japanese" key="calendar">जापानी पंचांग</type>
-			<type type="phonebook" key="collation">दूरभाष निर्देशिका वर्गीकरण</type>
-			<type type="pinyin" key="collation">पिनयीन वर्गीकरण</type>
-			<type type="roc" key="calendar">चीनी गणतंत्र पंचांग</type>
-			<type type="stroke" key="collation">स्ट्रोक वर्गीकरण</type>
-			<type type="traditional" key="collation">पारम्पारिक वर्गीकरण</type>
+			<type key="calendar" type="buddhist">बौद्ध पंचांग</type>
+			<type key="calendar" type="chinese">चीनी पंचांग</type>
+			<type key="calendar" type="gregorian">ग्रेगरीअन पंचांग</type>
+			<type key="calendar" type="hebrew">यहुदी पंचांग</type>
+			<type key="calendar" type="islamic">इस्लामी पंचांग</type>
+			<type key="calendar" type="islamic-civil">इस्लामी नागरिक पंचांग</type>
+			<type key="calendar" type="japanese">जापानी पंचांग</type>
+			<type key="calendar" type="roc">चीनी गणतंत्र पंचांग</type>
+			<type key="collation" type="big5han">पारम्पारिक चीनी वर्गीकरण बीग फ़ाईव</type>
+			<type key="collation" type="gb2312han">सरलीकृत चीनी वर्गीकरण जीबी2312</type>
+			<type key="collation" type="phonebook">दूरभाष निर्देशिका वर्गीकरण</type>
+			<type key="collation" type="pinyin">पिनयीन वर्गीकरण</type>
+			<type key="collation" type="stroke">स्ट्रोक वर्गीकरण</type>
+			<type key="collation" type="traditional">पारम्पारिक वर्गीकरण</type>
 		</types>
 		<measurementSystemNames>
 			<measurementSystemName type="metric">मिथार खिलमिथार</measurementSystemName>
@@ -913,6 +912,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters>[\u093C \u0901 \u0902 अ आ इ ई उ ऊ ऍ ए ऐ ऑ ओ औ क ख ग घ च छ ज झ ञ ट ठ ड {ड\u093C} ढ ण त थ द ध न प फ ब भ म य र ल ळ व श ष स ह ा ि ी \u0941 \u0942 \u0943 \u0945 \u0947 \u0948 ॉ ो ौ \u094D]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[\u200C\u200D]</exemplarCharacters>
 		<exemplarCharacters type="index">[अ आ इ ई उ ऊ ऍ ए ऐ ऑ ओ औ क ख ग घ च छ ज झ ञ ट ठ ड {ड\u093C} ढ ण त थ द ध न प फ ब भ म य र ल ळ व श ष स ह]</exemplarCharacters>
+		<exemplarCharacters type="numbers">[\- , . % ‰ + 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
 	</characters>
 	<delimiters>
 		<quotationStart>“</quotationStart>
@@ -948,7 +948,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateTimeFormats>
 					<availableFormats>
 						<dateFormatItem id="d">d</dateFormatItem>
-						<dateFormatItem id="GGGGyMMMMEEEEdd">EEEE,dd MMMM GGGGy</dateFormatItem>
+						<dateFormatItem id="Gy">y G</dateFormatItem>
+						<dateFormatItem id="GyMMM">MMM, y G</dateFormatItem>
+						<dateFormatItem id="GyMMMd">MMM d, y G</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">E, MMM d, y G</dateFormatItem>
 						<dateFormatItem id="hm">h:mm a</dateFormatItem>
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
@@ -1052,6 +1055,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</quarters>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am">फुं</dayPeriod>
+							<dayPeriod type="pm">बेलासे</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am">फुं</dayPeriod>
 							<dayPeriod type="pm">बेलासे</dayPeriod>
@@ -1111,7 +1118,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateTimeFormats>
 					<availableFormats>
 						<dateFormatItem id="d">d</dateFormatItem>
-						<dateFormatItem id="GGGGyMMMMEEEEdd">EEEE,dd MMMM GGGGy</dateFormatItem>
+						<dateFormatItem id="Gy">y G</dateFormatItem>
+						<dateFormatItem id="GyMMM">MMM, y G</dateFormatItem>
+						<dateFormatItem id="GyMMMd">MMM d, y G</dateFormatItem>
+						<dateFormatItem id="GyMMMEd">E, MMM d, y G</dateFormatItem>
 						<dateFormatItem id="hm">h:mm a</dateFormatItem>
 						<dateFormatItem id="Hm">HH:mm</dateFormatItem>
 						<dateFormatItem id="Hms">HH:mm:ss</dateFormatItem>
@@ -1195,6 +1205,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</field>
 		</fields>
 		<timeZoneNames>
+			<zone type="Pacific/Honolulu">
+				<exemplarCity>होनोलुलु</exemplarCity>
+			</zone>
 			<zone type="Etc/Unknown">
 				<exemplarCity>अज्ञात</exemplarCity>
 			</zone>
@@ -2191,9 +2204,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<zone type="Pacific/Midway">
 				<exemplarCity>मीडवे</exemplarCity>
 			</zone>
-			<zone type="Pacific/Johnston">
-				<exemplarCity>जौन्स्टन</exemplarCity>
-			</zone>
 			<zone type="Pacific/Wake">
 				<exemplarCity>वाके</exemplarCity>
 			</zone>
@@ -2203,8 +2213,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<zone type="America/Nome">
 				<exemplarCity>नोम</exemplarCity>
 			</zone>
-			<zone type="Pacific/Honolulu">
-				<exemplarCity>होनोलुलु</exemplarCity>
+			<zone type="Pacific/Johnston">
+				<exemplarCity>जौन्स्टन</exemplarCity>
 			</zone>
 			<zone type="America/Anchorage">
 				<exemplarCity>ऐन्करेज</exemplarCity>
@@ -3286,6 +3296,34 @@ For terms of use, see http://www.unicode.org/copyright.html
 					<pattern>¤ #,##,##0.00</pattern>
 				</currencyFormat>
 			</currencyFormatLength>
+			<currencyFormatLength type="short">
+				<currencyFormat type="standard">
+					<pattern type="1000" count="one" draft="provisional">¤ 0K</pattern>
+					<pattern type="1000" count="other" draft="provisional">¤ 0K</pattern>
+					<pattern type="10000" count="one" draft="provisional">¤ 00K</pattern>
+					<pattern type="10000" count="other" draft="provisional">¤ 00K</pattern>
+					<pattern type="100000" count="one" draft="provisional">¤ 000K</pattern>
+					<pattern type="100000" count="other" draft="provisional">¤ 000K</pattern>
+					<pattern type="1000000" count="one" draft="provisional">¤ 0M</pattern>
+					<pattern type="1000000" count="other" draft="provisional">¤ 0M</pattern>
+					<pattern type="10000000" count="one" draft="provisional">¤ 00M</pattern>
+					<pattern type="10000000" count="other" draft="provisional">¤ 00M</pattern>
+					<pattern type="100000000" count="one" draft="provisional">¤ 000M</pattern>
+					<pattern type="100000000" count="other" draft="provisional">¤ 000M</pattern>
+					<pattern type="1000000000" count="one" draft="provisional">¤ 0G</pattern>
+					<pattern type="1000000000" count="other" draft="provisional">¤ 0G</pattern>
+					<pattern type="10000000000" count="one" draft="provisional">¤ 00G</pattern>
+					<pattern type="10000000000" count="other" draft="provisional">¤ 00G</pattern>
+					<pattern type="100000000000" count="one" draft="provisional">¤ 000G</pattern>
+					<pattern type="100000000000" count="other" draft="provisional">¤ 000G</pattern>
+					<pattern type="1000000000000" count="one" draft="provisional">¤ 0T</pattern>
+					<pattern type="1000000000000" count="other" draft="provisional">¤ 0T</pattern>
+					<pattern type="10000000000000" count="one" draft="provisional">¤ 00T</pattern>
+					<pattern type="10000000000000" count="other" draft="provisional">¤ 00T</pattern>
+					<pattern type="100000000000000" count="one" draft="provisional">¤ 000T</pattern>
+					<pattern type="100000000000000" count="other" draft="provisional">¤ 000T</pattern>
+				</currencyFormat>
+			</currencyFormatLength>
 		</currencyFormats>
 		<currencies>
 			<currency type="ADP">
@@ -3295,7 +3333,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>संयुक्त अरब अमीरात का दिर्हाम</displayName>
 			</currency>
 			<currency type="AFA">
-				<displayName>अफ़ग़ानी 1927-2002</displayName>
+				<displayName>अफ़ग़ानी 1927–2002</displayName>
 			</currency>
 			<currency type="AFN">
 				<displayName>अफ़ग़ानी</displayName>
@@ -3426,8 +3464,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<currency type="BYB">
 				<displayName>बेलारुसी नया रूबल (194–1999)</displayName>
 			</currency>
-			<currency type="BYR">
+			<currency type="BYN">
 				<displayName>बेलारुसी रूबल</displayName>
+			</currency>
+			<currency type="BYR">
+				<displayName>बेलारुसी रूबल (2000–2016)</displayName>
 			</currency>
 			<currency type="BZD">
 				<displayName>बेलीज़ डॉलर</displayName>
@@ -3811,10 +3852,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>पेरूवाई ईंटी</displayName>
 			</currency>
 			<currency type="PEN">
-				<displayName>पेरुवाई नया सोल</displayName>
+				<displayName>पेरुवाई सोल</displayName>
 			</currency>
 			<currency type="PES">
-				<displayName>पेरुवाई सोल</displayName>
+				<displayName>पेरुवाई सोल (1863–1965)</displayName>
 			</currency>
 			<currency type="PGK">
 				<displayName>पापुआ न्यु गीनी का कीना</displayName>
@@ -4093,6 +4134,21 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</numbers>
 	<units>
 		<unitLength type="long">
+			<unit type="duration-year">
+				<displayName draft="provisional">साल</displayName>
+				<unitPattern count="one">{0} साल</unitPattern>
+				<unitPattern count="other">{0} साल</unitPattern>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="provisional">महीने</displayName>
+				<unitPattern count="one">{0} महीना</unitPattern>
+				<unitPattern count="other">{0} महीने</unitPattern>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="provisional">सप्ताह</displayName>
+				<unitPattern count="one">{0} सप्ताह</unitPattern>
+				<unitPattern count="other">{0} सप्ताह</unitPattern>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="provisional">सान</displayName>
 				<unitPattern count="one">{0} सान</unitPattern>
@@ -4108,28 +4164,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<unitPattern count="one">{0} मिन.</unitPattern>
 				<unitPattern count="other">{0} मिन.</unitPattern>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="provisional">महीने</displayName>
-				<unitPattern count="one">{0} महीना</unitPattern>
-				<unitPattern count="other">{0} महीने</unitPattern>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="provisional">सेकं.</displayName>
 				<unitPattern count="one">{0} सेकं.</unitPattern>
 				<unitPattern count="other">{0} सेकं.</unitPattern>
 			</unit>
-			<unit type="duration-week">
-				<displayName draft="provisional">सप्ताह</displayName>
-				<unitPattern count="one">{0} सप्ताह</unitPattern>
-				<unitPattern count="other">{0} सप्ताह</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="provisional">साल</displayName>
-				<unitPattern count="one">{0} साल</unitPattern>
-				<unitPattern count="other">{0} साल</unitPattern>
-			</unit>
 		</unitLength>
 		<unitLength type="short">
+			<unit type="duration-year">
+				<displayName draft="provisional">साल</displayName>
+			</unit>
+			<unit type="duration-month">
+				<displayName draft="provisional">महीने</displayName>
+			</unit>
+			<unit type="duration-week">
+				<displayName draft="provisional">सप्ताह</displayName>
+			</unit>
 			<unit type="duration-day">
 				<displayName draft="provisional">सान</displayName>
 			</unit>
@@ -4139,17 +4189,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-minute">
 				<displayName draft="provisional">मिन.</displayName>
 			</unit>
-			<unit type="duration-month">
-				<displayName draft="provisional">महीने</displayName>
-			</unit>
 			<unit type="duration-second">
 				<displayName draft="provisional">सेकं.</displayName>
-			</unit>
-			<unit type="duration-week">
-				<displayName draft="provisional">सप्ताह</displayName>
-			</unit>
-			<unit type="duration-year">
-				<displayName draft="provisional">साल</displayName>
 			</unit>
 		</unitLength>
 	</units>
@@ -4160,4 +4201,3 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</messages>
 	</posix>
 </ldml>
-

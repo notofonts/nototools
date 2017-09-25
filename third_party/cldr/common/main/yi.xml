@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10741 $"/>
-		<generation date="$Date: 2014-08-07 11:24:47 -0700 (Thu, 07 Aug 2014) $"/>
+		<version number="$Revision: 13701 $"/>
 		<language type="yi"/>
 	</identity>
 	<localeDisplayNames>
@@ -27,7 +27,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="arc">אַראַמיש</language>
 			<language type="as">אַסאַמיש</language>
 			<language type="az">אַזערביידזשאַניש</language>
-			<language type="azb">דרום אַזערביידזשאַניש</language>
 			<language type="ban">באַלינעזיש</language>
 			<language type="bar">בײַעריש</language>
 			<language type="be">בעלאַרוסיש</language>
@@ -54,7 +53,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="enm">מיטל ענגליש</language>
 			<language type="eo">עספּעראַנטא</language>
 			<language type="es">שפּאַניש</language>
-			<language type="es_ES">שפּאַניש (ES)</language>
 			<language type="et">עסטיש</language>
 			<language type="eu">באַסקיש</language>
 			<language type="fa">פּערסיש</language>
@@ -151,8 +149,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="sux">סומעריש</language>
 			<language type="sv">שוועדיש</language>
 			<language type="sw">סוואַהיליש</language>
+			<language type="sw_CD">קאנגא־סוואַהיליש</language>
 			<language type="swb">קאמאריש</language>
-			<language type="swc">קאנגא־סוואַהיליש</language>
 			<language type="szl">שלעזיש</language>
 			<language type="ta">טאַמיל</language>
 			<language type="tig">טיגרע</language>
@@ -175,6 +173,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<script type="Cyrl">ציריליש</script>
 			<script type="Deva">דעוואַנאַגאַרי</script>
 			<script type="Grek">גריכיש</script>
+			<script type="Hebr">העברעיש</script>
 			<script type="Latn">גַלחיש</script>
 		</scripts>
 		<territories>
@@ -406,6 +405,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<keys>
 			<key type="numbers">נומערן</key>
 		</keys>
+		<types>
+			<type key="calendar" type="gregorian">גרעגארישער קאַלענדאַר</type>
+		</types>
+		<measurementSystemNames>
+			<measurementSystemName type="metric">מעטריש</measurementSystemName>
+		</measurementSystemNames>
 		<codePatterns>
 			<codePattern type="language">שפראַך: {0}</codePattern>
 			<codePattern type="script">שריפֿט: {0}</codePattern>
@@ -421,13 +426,14 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters>[א {א\u05B7} {א\u05B8} ב {ב\u05BF} ג ד {דזש} ה ו {ו\u05BC} {וו} {וי} ז {זש} ח ט {טש} י {י\u05B4} {יי} {ײ\u05B7} {כ\u05BC} כ ך ל מ ם נ ן ס ע {פ\u05BC} {פ\u05BF} ף צ ץ ק ר ש {ש\u05C2} {ת\u05BC} ת]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary" draft="contributed">[\u200E\u200F]</exemplarCharacters>
 		<exemplarCharacters type="index">[\u05C2 \u05BC \u05BF א ב ג ד ה ו ז ח ט י כ ל מ נ ס ע פ צ ק ר ש ת]</exemplarCharacters>
+		<exemplarCharacters type="numbers">[\- , . % ‰ + 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
 		<exemplarCharacters type="punctuation" draft="contributed">[\- ‐ – — , ; \: ! ? . ׳ ' &quot; ( ) \[ \] / ״ ־]</exemplarCharacters>
 	</characters>
 	<delimiters>
-		<quotationStart draft="contributed">&quot;</quotationStart>
-		<quotationEnd draft="contributed">&quot;</quotationEnd>
-		<alternateQuotationStart draft="contributed">'</alternateQuotationStart>
-		<alternateQuotationEnd draft="contributed">'</alternateQuotationEnd>
+		<quotationStart draft="contributed">”</quotationStart>
+		<quotationEnd draft="contributed">”</quotationEnd>
+		<alternateQuotationStart draft="contributed">’</alternateQuotationStart>
+		<alternateQuotationEnd draft="contributed">’</alternateQuotationEnd>
 	</delimiters>
 	<dates>
 		<calendars>
@@ -457,7 +463,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateTimeFormats>
 					<dateTimeFormatLength type="full">
 						<dateTimeFormat>
-							<pattern draft="provisional">{1} {0}</pattern>
+							<pattern>{1} {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="long">
@@ -648,7 +654,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 							<month type="5">מיי</month>
 							<month type="6">יוני</month>
 							<month type="7">יולי</month>
-							<month type="8">אויגוסט</month>
+							<month type="8">אויג</month>
 							<month type="9">סעפּ</month>
 							<month type="10">אקט</month>
 							<month type="11">נאוו</month>
@@ -732,10 +738,13 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</days>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am">פֿאַרמיטאָג</dayPeriod>
+							<dayPeriod type="pm">נאָכמיטאָג</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
-							<dayPeriod type="am" draft="provisional">פארמיטאג</dayPeriod>
-							<dayPeriod type="noon">האַלבערטאָג</dayPeriod>
-							<dayPeriod type="pm" draft="provisional">נאכמיטאג</dayPeriod>
+							<dayPeriod type="am">פֿאַרמיטאָג</dayPeriod>
+							<dayPeriod type="pm">נאָכמיטאָג</dayPeriod>
 						</dayPeriodWidth>
 					</dayPeriodContext>
 				</dayPeriods>
@@ -786,22 +795,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateTimeFormats>
 					<dateTimeFormatLength type="full">
 						<dateTimeFormat>
-							<pattern draft="provisional">{1} {0}</pattern>
+							<pattern>{1} {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="long">
 						<dateTimeFormat>
-							<pattern draft="provisional">{1} {0}</pattern>
+							<pattern>{1} {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="medium">
 						<dateTimeFormat>
-							<pattern draft="provisional">{1}, {0}</pattern>
+							<pattern>{1}, {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<dateTimeFormatLength type="short">
 						<dateTimeFormat>
-							<pattern draft="provisional">{1}, {0}</pattern>
+							<pattern>{1} {0}</pattern>
 						</dateTimeFormat>
 					</dateTimeFormatLength>
 					<availableFormats>
@@ -826,8 +835,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 						<dateFormatItem id="Md" draft="provisional">d/M</dateFormatItem>
 						<dateFormatItem id="MEd">E, d/M</dateFormatItem>
 						<dateFormatItem id="MMM" draft="provisional">LLL</dateFormatItem>
-						<dateFormatItem id="MMMd" draft="provisional">d בMMM</dateFormatItem>
-						<dateFormatItem id="MMMEd" draft="provisional">E, d בMMM</dateFormatItem>
+						<dateFormatItem id="MMMd">MMM d</dateFormatItem>
+						<dateFormatItem id="MMMEd">MMM d, E</dateFormatItem>
 						<dateFormatItem id="ms">mm:ss</dateFormatItem>
 						<dateFormatItem id="y" draft="provisional">y</dateFormatItem>
 						<dateFormatItem id="yM" draft="provisional">M.y</dateFormatItem>
@@ -1055,12 +1064,12 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<dateFormats>
 					<dateFormatLength type="full">
 						<dateFormat>
-							<pattern numbers="hebr">EEEE, d בMMMM y</pattern>
+							<pattern numbers="hebr">EEEE, d MMMM y</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="long">
 						<dateFormat>
-							<pattern numbers="hebr">d בMMMM y</pattern>
+							<pattern numbers="hebr">d MMMM y</pattern>
 						</dateFormat>
 					</dateFormatLength>
 					<dateFormatLength type="medium">
@@ -1178,8 +1187,11 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</calendar>
 		</calendars>
 		<fields>
+			<field type="era">
+				<displayName>תקופֿה</displayName>
+			</field>
 			<field type="year">
-				<displayName draft="provisional">יאָהר</displayName>
+				<displayName>יאָר</displayName>
 				<relative type="-1">פֿאַראַיאָר</relative>
 				<relative type="0">הײַ יאָר</relative>
 				<relative type="1">איבער א יאָר</relative>
@@ -1215,7 +1227,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</relativeTime>
 			</field>
 			<field type="month">
-				<displayName draft="provisional">מאנאַט</displayName>
+				<displayName>מאנאַט</displayName>
 				<relative type="-1">פֿאַרגאנגענעם חודש</relative>
 				<relative type="0">דעם חודש</relative>
 				<relative type="1">קומענדיקן חודש</relative>
@@ -1252,6 +1264,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</field>
 			<field type="week">
 				<displayName>וואך</displayName>
+				<relative type="-1">last week</relative>
+				<relative type="0">this week</relative>
 				<relative type="1">איבער אַכט טאָג</relative>
 			</field>
 			<field type="week-short">
@@ -1261,9 +1275,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<displayName>וואך</displayName>
 			</field>
 			<field type="day">
-				<displayName draft="provisional">טאג</displayName>
+				<displayName>טאָג</displayName>
 				<relative type="-1">נעכטן</relative>
-				<relative type="0" draft="provisional">היינט</relative>
+				<relative type="0">היינט</relative>
 				<relative type="1">מארגן</relative>
 				<relativeTime type="future">
 					<relativeTimePattern count="one">אין {0} טאָג אַרום</relativeTimePattern>
@@ -1278,9 +1292,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			</field>
 			<field type="weekday">
 				<displayName>טאָג אין דער וואך</displayName>
-			</field>
-			<field type="sun">
-				<relative type="1">קומענדיקן זונטיק</relative>
 			</field>
 			<field type="hour">
 				<displayName>שעה</displayName>
@@ -1315,7 +1326,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</fields>
 		<timeZoneNames>
 			<zone type="Etc/Unknown">
-				<exemplarCity draft="provisional">אומבאַוואוסטע שטאָט</exemplarCity>
+				<exemplarCity>אומבאַוואוסטע שטאָט</exemplarCity>
 			</zone>
 			<zone type="Africa/Abidjan">
 				<exemplarCity>אַבידזשאַן</exemplarCity>
@@ -1352,20 +1363,96 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<infinity draft="contributed">∞</infinity>
 			<nan draft="contributed">NaN</nan>
 		</symbols>
+		<currencyFormats numberSystem="latn">
+			<currencyFormatLength type="short">
+				<currencyFormat type="standard">
+					<pattern type="1000" count="one" draft="provisional">¤ 0K</pattern>
+					<pattern type="1000" count="other" draft="provisional">¤ 0K</pattern>
+					<pattern type="10000" count="one" draft="provisional">¤ 00K</pattern>
+					<pattern type="10000" count="other" draft="provisional">¤ 00K</pattern>
+					<pattern type="100000" count="one" draft="provisional">¤ 000K</pattern>
+					<pattern type="100000" count="other" draft="provisional">¤ 000K</pattern>
+					<pattern type="1000000" count="one" draft="provisional">¤ 0M</pattern>
+					<pattern type="1000000" count="other" draft="provisional">¤ 0M</pattern>
+					<pattern type="10000000" count="one" draft="provisional">¤ 00M</pattern>
+					<pattern type="10000000" count="other" draft="provisional">¤ 00M</pattern>
+					<pattern type="100000000" count="one" draft="provisional">¤ 000M</pattern>
+					<pattern type="100000000" count="other" draft="provisional">¤ 000M</pattern>
+					<pattern type="1000000000" count="one" draft="provisional">¤ 0G</pattern>
+					<pattern type="1000000000" count="other" draft="provisional">¤ 0G</pattern>
+					<pattern type="10000000000" count="one" draft="provisional">¤ 00G</pattern>
+					<pattern type="10000000000" count="other" draft="provisional">¤ 00G</pattern>
+					<pattern type="100000000000" count="one" draft="provisional">¤ 000G</pattern>
+					<pattern type="100000000000" count="other" draft="provisional">¤ 000G</pattern>
+					<pattern type="1000000000000" count="one" draft="provisional">¤ 0T</pattern>
+					<pattern type="1000000000000" count="other" draft="provisional">¤ 0T</pattern>
+					<pattern type="10000000000000" count="one" draft="provisional">¤ 00T</pattern>
+					<pattern type="10000000000000" count="other" draft="provisional">¤ 00T</pattern>
+					<pattern type="100000000000000" count="one" draft="provisional">¤ 000T</pattern>
+					<pattern type="100000000000000" count="other" draft="provisional">¤ 000T</pattern>
+				</currencyFormat>
+			</currencyFormatLength>
+		</currencyFormats>
 		<currencies>
+			<currency type="BRL">
+				<displayName>בראזיל רעאל</displayName>
+				<displayName count="one">בראזיל רעאל</displayName>
+				<displayName count="other">בראזיל רעאלן</displayName>
+			</currency>
 			<currency type="BZD">
 				<displayName>בעליז דאלאַר</displayName>
 			</currency>
 			<currency type="CHF">
 				<displayName>שווייצער פֿראַנק</displayName>
 			</currency>
+			<currency type="CNY">
+				<displayName>כינעזישער יואן</displayName>
+				<displayName count="one">כינעזישער יואן</displayName>
+				<displayName count="other">כינעזישע יואן</displayName>
+			</currency>
 			<currency type="EUR">
 				<displayName>איירא</displayName>
 				<displayName count="one">איירא</displayName>
 				<displayName count="other">איירא</displayName>
+				<symbol draft="contributed">€</symbol>
+				<symbol alt="narrow" draft="contributed">€</symbol>
+			</currency>
+			<currency type="GBP">
+				<displayName>פֿונט שטערלינג</displayName>
+				<displayName count="one">פֿונט שטערלינג</displayName>
+				<displayName count="other">פֿונט שטערלינג</displayName>
+				<symbol draft="contributed">£</symbol>
+				<symbol alt="narrow" draft="contributed">£</symbol>
+			</currency>
+			<currency type="INR">
+				<displayName>אינדישער רופי</displayName>
+				<displayName count="one">אינדישער רופי</displayName>
+				<displayName count="other">אינדישע רופי</displayName>
+				<symbol draft="contributed">₹</symbol>
+				<symbol alt="narrow" draft="contributed">₹</symbol>
+			</currency>
+			<currency type="JPY">
+				<displayName>יאפאנעזישער יען</displayName>
+				<displayName count="one">יאפאנעזישער יען</displayName>
+				<displayName count="other">יאפאנעזישע יען</displayName>
+				<symbol draft="contributed">JP¥</symbol>
+				<symbol alt="narrow" draft="contributed">¥</symbol>
+			</currency>
+			<currency type="RUB">
+				<displayName>רוסישער רובל</displayName>
+				<displayName count="one">רוסישער רובל</displayName>
+				<displayName count="other">רוסישע רובל</displayName>
+				<symbol draft="contributed">RUB</symbol>
+				<symbol alt="narrow" draft="contributed">₽</symbol>
 			</currency>
 			<currency type="SEK">
 				<displayName>שוועדישע קראנע</displayName>
+			</currency>
+			<currency type="USD">
+				<displayName>אמעריקאנער דאלאר</displayName>
+				<displayName count="one">אמעריקאנער דאלאר</displayName>
+				<displayName count="other">אמעריקאנער דאלארן</displayName>
+				<symbol alt="narrow" draft="contributed">$</symbol>
 			</currency>
 			<currency type="XAG">
 				<displayName>זילבער</displayName>
@@ -1373,7 +1460,30 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<currency type="XAU">
 				<displayName>גאלד</displayName>
 			</currency>
+			<currency type="XXX">
+				<displayName>אומבאַוואוסטע וואַלוטע</displayName>
+				<displayName count="one">אומבאַוואוסטע וואַלוטע</displayName>
+				<displayName count="other">אומבאַוואוסטע וואַלוטע</displayName>
+			</currency>
 		</currencies>
 	</numbers>
+	<units>
+		<durationUnit type="hm">
+			<durationUnitPattern>h:mm</durationUnitPattern>
+		</durationUnit>
+		<durationUnit type="hms">
+			<durationUnitPattern>h:mm:ss</durationUnitPattern>
+		</durationUnit>
+		<durationUnit type="ms">
+			<durationUnitPattern>m:ss</durationUnitPattern>
+		</durationUnit>
+	</units>
+	<listPatterns>
+		<listPattern>
+			<listPatternPart type="start">{0}, {1}</listPatternPart>
+			<listPatternPart type="middle">{0}, {1}</listPatternPart>
+			<listPatternPart type="end">{0} און {1}</listPatternPart>
+			<listPatternPart type="2">{0} און {1}</listPatternPart>
+		</listPattern>
+	</listPatterns>
 </ldml>
-

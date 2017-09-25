@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13701 $"/>
 		<language type="dua"/>
 	</identity>
 	<localeDisplayNames>
@@ -22,6 +22,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<exemplarCharacters>[a á b ɓ c d ɗ e é ɛ {ɛ\u0301} f g i í j k l m n {ny} ŋ o ó ɔ {ɔ\u0301} p r s t u ú ū w y]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[h q v x z]</exemplarCharacters>
 		<exemplarCharacters type="index">[A B Ɓ C D Ɗ E Ɛ F G I J K L M N Ŋ O Ɔ P S T U W Y]</exemplarCharacters>
+		<exemplarCharacters type="numbers">[  \- , % ‰ + 0 1 2 3 4 5 6 7 8 9]</exemplarCharacters>
 	</characters>
 	<delimiters>
 		<quotationStart>«</quotationStart>
@@ -181,6 +182,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</quarters>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am">idiɓa</dayPeriod>
+							<dayPeriod type="pm">ebyámu</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am">idiɓa</dayPeriod>
 							<dayPeriod type="pm">ebyámu</dayPeriod>
@@ -328,6 +333,22 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<currencyFormatLength>
 				<currencyFormat type="standard">
 					<pattern>#,##0.00 ¤</pattern>
+				</currencyFormat>
+			</currencyFormatLength>
+			<currencyFormatLength type="short">
+				<currencyFormat type="standard">
+					<pattern type="1000" count="other" draft="provisional">0K ¤</pattern>
+					<pattern type="10000" count="other" draft="provisional">00K ¤</pattern>
+					<pattern type="100000" count="other" draft="provisional">000K ¤</pattern>
+					<pattern type="1000000" count="other" draft="provisional">0M ¤</pattern>
+					<pattern type="10000000" count="other" draft="provisional">00M ¤</pattern>
+					<pattern type="100000000" count="other" draft="provisional">000M ¤</pattern>
+					<pattern type="1000000000" count="other" draft="provisional">0G ¤</pattern>
+					<pattern type="10000000000" count="other" draft="provisional">00G ¤</pattern>
+					<pattern type="100000000000" count="other" draft="provisional">000G ¤</pattern>
+					<pattern type="1000000000000" count="other" draft="provisional">0T ¤</pattern>
+					<pattern type="10000000000000" count="other" draft="provisional">00T ¤</pattern>
+					<pattern type="100000000000000" count="other" draft="provisional">000T ¤</pattern>
 				</currencyFormat>
 			</currencyFormatLength>
 		</currencyFormats>

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="ms"/>
 		<script type="Arab"/>
 	</identity>
 	<localeDisplayNames>
 		<localeDisplayPattern>
 			<localePattern>{0} ({1})</localePattern>
-			<localeSeparator>،</localeSeparator>
+			<localeSeparator>{0}، {1}</localeSeparator>
 			<localeKeyTypePattern>{0}: {1}</localeKeyTypePattern>
 		</localeDisplayPattern>
 		<languages>
@@ -90,34 +90,34 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<key type="timezone" draft="unconfirmed">زون وقتو</key>
 		</keys>
 		<types>
-			<type type="buddhist" key="calendar" draft="unconfirmed">کومبڠ بودا</type>
-			<type type="chinese" key="calendar" draft="unconfirmed">کومبڠ چينا</type>
-			<type type="dictionary" key="collation" draft="unconfirmed">اتورن ايسيه قاموس</type>
-			<type type="finance" key="numbers" draft="unconfirmed">اڠک کأواڠن</type>
-			<type type="hanidec" key="numbers" draft="unconfirmed">اڠک ڤرڤولوهن چينا</type>
-			<type type="hans" key="numbers" draft="unconfirmed">اڠک چينا ريڠکس</type>
-			<type type="hansfin" key="numbers" draft="unconfirmed">اڠک کأواڠن چينا ريڠکس</type>
-			<type type="hant" key="numbers" draft="unconfirmed">اڠک چينا تراديسيونل</type>
-			<type type="hantfin" key="numbers" draft="unconfirmed">اڠک کأواڠن چينا تراديسيونل</type>
-			<type type="indian" key="calendar" draft="unconfirmed">کومبڠ کبڠساٴن اينديا</type>
-			<type type="islamic" key="calendar" draft="unconfirmed">کومبڠ اسلام</type>
-			<type type="islamic-civil" key="calendar" draft="unconfirmed">کومبڠ سيۏيل اسلام</type>
-			<type type="japanese" key="calendar" draft="unconfirmed">کومبڠ جڤون</type>
-			<type type="jpan" key="numbers" draft="unconfirmed">اڠک جڤون</type>
-			<type type="jpanfin" key="numbers" draft="unconfirmed">اڠک کأواڠن جڤون</type>
-			<type type="latn" key="numbers" draft="unconfirmed">ديݢيت بارات</type>
-			<type type="mlym" key="numbers" draft="unconfirmed">ديݢيت مالايالم</type>
-			<type type="native" key="numbers" draft="unconfirmed">ديݢيت اصل</type>
-			<type type="persian" key="calendar" draft="unconfirmed">کومبڠ ڤرسي</type>
-			<type type="phonebook" key="collation" draft="unconfirmed">اتورن ايسيه بوکو تيليفون</type>
-			<type type="phonetic" key="collation" draft="unconfirmed">اوروتن ايسيه فونيتيک</type>
-			<type type="reformed" key="collation" draft="unconfirmed">اتورن ايسيه ڤمبهاروان</type>
-			<type type="search" key="collation" draft="unconfirmed">چارين توجوان عموم</type>
-			<type type="taml" key="numbers" draft="unconfirmed">اڠک تاميل</type>
-			<type type="tamldec" key="numbers" draft="unconfirmed">ديݢيت تاميل</type>
-			<type type="traditional" key="collation" draft="unconfirmed">اتورن ايسيه تراديسيونل</type>
-			<type type="traditional" key="numbers" draft="unconfirmed">اڠک تراديسيونل</type>
-			<type type="unihan" key="collation" draft="unconfirmed">اتورن ايسيه چوريتن راديکل</type>
+			<type key="calendar" type="buddhist" draft="unconfirmed">کومبڠ بودا</type>
+			<type key="calendar" type="chinese" draft="unconfirmed">کومبڠ چينا</type>
+			<type key="calendar" type="indian" draft="unconfirmed">کومبڠ کبڠساٴن اينديا</type>
+			<type key="calendar" type="islamic" draft="unconfirmed">کومبڠ اسلام</type>
+			<type key="calendar" type="islamic-civil" draft="unconfirmed">کومبڠ سيۏيل اسلام</type>
+			<type key="calendar" type="japanese" draft="unconfirmed">کومبڠ جڤون</type>
+			<type key="calendar" type="persian" draft="unconfirmed">کومبڠ ڤرسي</type>
+			<type key="collation" type="dictionary" draft="unconfirmed">اتورن ايسيه قاموس</type>
+			<type key="collation" type="phonebook" draft="unconfirmed">اتورن ايسيه بوکو تيليفون</type>
+			<type key="collation" type="phonetic" draft="unconfirmed">اوروتن ايسيه فونيتيک</type>
+			<type key="collation" type="reformed" draft="unconfirmed">اتورن ايسيه ڤمبهاروان</type>
+			<type key="collation" type="search" draft="unconfirmed">چارين توجوان عموم</type>
+			<type key="collation" type="traditional" draft="unconfirmed">اتورن ايسيه تراديسيونل</type>
+			<type key="collation" type="unihan" draft="unconfirmed">اتورن ايسيه چوريتن راديکل</type>
+			<type key="numbers" type="finance" draft="unconfirmed">اڠک کأواڠن</type>
+			<type key="numbers" type="hanidec" draft="unconfirmed">اڠک ڤرڤولوهن چينا</type>
+			<type key="numbers" type="hans" draft="unconfirmed">اڠک چينا ريڠکس</type>
+			<type key="numbers" type="hansfin" draft="unconfirmed">اڠک کأواڠن چينا ريڠکس</type>
+			<type key="numbers" type="hant" draft="unconfirmed">اڠک چينا تراديسيونل</type>
+			<type key="numbers" type="hantfin" draft="unconfirmed">اڠک کأواڠن چينا تراديسيونل</type>
+			<type key="numbers" type="jpan" draft="unconfirmed">اڠک جڤون</type>
+			<type key="numbers" type="jpanfin" draft="unconfirmed">اڠک کأواڠن جڤون</type>
+			<type key="numbers" type="latn" draft="unconfirmed">ديݢيت بارات</type>
+			<type key="numbers" type="mlym" draft="unconfirmed">ديݢيت مالايالم</type>
+			<type key="numbers" type="native" draft="unconfirmed">ديݢيت اصل</type>
+			<type key="numbers" type="taml" draft="unconfirmed">اڠک تاميل</type>
+			<type key="numbers" type="tamldec" draft="unconfirmed">ديݢيت تاميل</type>
+			<type key="numbers" type="traditional" draft="unconfirmed">اڠک تراديسيونل</type>
 		</types>
 		<measurementSystemNames>
 			<measurementSystemName type="metric" draft="unconfirmed">ميتريک</measurementSystemName>
@@ -129,7 +129,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 		</orientation>
 	</layout>
 	<characters>
-		<exemplarCharacters draft="contributed">[ء آ أ ؤ إ ئ ا ب ة ت ث ج چ ح خ د ذ ر ز س ش ص ض ط ظ ع غ ڠ ف ڤ ق ك ݢ ل م ن ڽ ه و ۏ ى ي]</exemplarCharacters>
+		<exemplarCharacters draft="contributed">[ء آ أ ؤ إ ئ ا ب ة ت ث ج چ ح خ د ذ ر ز س ش ص ض ط ظ ع غ ڠ ف ڤ ق ك ک ݢ ل م ن ڽ ه و ۏ ى ي]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary" draft="contributed">[ڬ ۑ]</exemplarCharacters>
 		<ellipsis type="final" draft="contributed">{0}…</ellipsis>
 		<ellipsis type="initial" draft="contributed">…{0}</ellipsis>
@@ -783,18 +783,36 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<relative type="-1" draft="unconfirmed">تاهون لڤس</relative>
 				<relative type="0" draft="unconfirmed">تاهون ني</relative>
 				<relative type="1" draft="unconfirmed">تاهون هدڤن</relative>
+				<relativeTime type="future">
+					<relativeTimePattern count="other">دالم {0} تاهون</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="other">{0} تاهون لالو</relativeTimePattern>
+				</relativeTime>
 			</field>
 			<field type="month">
 				<displayName draft="unconfirmed">بولن</displayName>
 				<relative type="-1" draft="unconfirmed">بولن لالو</relative>
 				<relative type="0" draft="unconfirmed">بولن ني</relative>
 				<relative type="1" draft="unconfirmed">بولن ستروسڽ</relative>
+				<relativeTime type="future">
+					<relativeTimePattern count="other">دالم {0} بولن</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="other">{0} بولن لالو</relativeTimePattern>
+				</relativeTime>
 			</field>
 			<field type="week">
 				<displayName draft="unconfirmed">ميڠݢو</displayName>
 				<relative type="-1" draft="unconfirmed">ميڠݢو لڤس</relative>
 				<relative type="0" draft="unconfirmed">ميڠݢو ني</relative>
 				<relative type="1" draft="unconfirmed">ميڠݢو ستروسڽ</relative>
+				<relativeTime type="future">
+					<relativeTimePattern count="other">دالم {0} ميڠݢو</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="other">{0} ميڠݢو لالو</relativeTimePattern>
+				</relativeTime>
 			</field>
 			<field type="day">
 				<displayName draft="unconfirmed">هاري</displayName>
@@ -803,18 +821,42 @@ For terms of use, see http://www.unicode.org/copyright.html
 				<relative type="0" draft="unconfirmed">هاري ني</relative>
 				<relative type="1" draft="unconfirmed">ايسوق</relative>
 				<relative type="2" draft="unconfirmed">هاري سلڤس ايسوق</relative>
+				<relativeTime type="future">
+					<relativeTimePattern count="other">دالم {0} هاري</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="other">{0} هاري لالو</relativeTimePattern>
+				</relativeTime>
 			</field>
 			<field type="weekday">
 				<displayName draft="unconfirmed">هاري دالم ميڠݢو</displayName>
 			</field>
 			<field type="hour">
 				<displayName draft="unconfirmed">جم</displayName>
+				<relativeTime type="future">
+					<relativeTimePattern count="other">دالم {0} جم</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="other">{0} جم لالو</relativeTimePattern>
+				</relativeTime>
 			</field>
 			<field type="minute">
 				<displayName draft="unconfirmed">مينيت</displayName>
+				<relativeTime type="future">
+					<relativeTimePattern count="other">دالم {0} مينيت</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="other">{0} مينيت لالو</relativeTimePattern>
+				</relativeTime>
 			</field>
 			<field type="second">
 				<displayName draft="unconfirmed">کدوا</displayName>
+				<relativeTime type="future">
+					<relativeTimePattern count="other">دالم {0} ساعت</relativeTimePattern>
+				</relativeTime>
+				<relativeTime type="past">
+					<relativeTimePattern count="other">{0} ساعت لالو</relativeTimePattern>
+				</relativeTime>
 			</field>
 			<field type="zone">
 				<displayName draft="unconfirmed">زون وقتو</displayName>
@@ -920,6 +962,9 @@ For terms of use, see http://www.unicode.org/copyright.html
 		<currencyFormats numberSystem="latn">
 			<currencyFormatLength>
 				<currencyFormat type="standard">
+					<pattern>¤#,##0.00</pattern>
+				</currencyFormat>
+				<currencyFormat type="accounting">
 					<pattern>¤#,##0.00;(¤#,##0.00)</pattern>
 				</currencyFormat>
 			</currencyFormatLength>
@@ -950,71 +995,38 @@ For terms of use, see http://www.unicode.org/copyright.html
 	</numbers>
 	<units>
 		<unitLength type="long">
-			<unit type="duration-day">
-				<unitPattern count="other">{0} هاري</unitPattern>
-			</unit>
-			<unit type="duration-day-future">
-				<unitPattern count="other">دالم {0} هاري</unitPattern>
-			</unit>
-			<unit type="duration-day-past">
-				<unitPattern count="other">{0} هاري لالو</unitPattern>
-			</unit>
-			<unit type="duration-hour">
-				<unitPattern count="other">{0} جم</unitPattern>
-			</unit>
-			<unit type="duration-hour-future">
-				<unitPattern count="other">دالم {0} جم</unitPattern>
-			</unit>
-			<unit type="duration-hour-past">
-				<unitPattern count="other">{0} جم لالو</unitPattern>
-			</unit>
-			<unit type="duration-minute">
-				<unitPattern count="other">{0} مينيت</unitPattern>
-			</unit>
-			<unit type="duration-minute-future">
-				<unitPattern count="other">دالم {0} مينيت</unitPattern>
-			</unit>
-			<unit type="duration-minute-past">
-				<unitPattern count="other">{0} مينيت لالو</unitPattern>
+			<unit type="duration-year">
+				<unitPattern count="other">{0} تاهون</unitPattern>
 			</unit>
 			<unit type="duration-month">
 				<unitPattern count="other">{0} بولن</unitPattern>
 			</unit>
-			<unit type="duration-month-future">
-				<unitPattern count="other">دالم {0} بولن</unitPattern>
+			<unit type="duration-week">
+				<unitPattern count="other">{0} ميڠݢو</unitPattern>
 			</unit>
-			<unit type="duration-month-past">
-				<unitPattern count="other">{0} بولن لالو</unitPattern>
+			<unit type="duration-day">
+				<unitPattern count="other">{0} هاري</unitPattern>
+			</unit>
+			<unit type="duration-hour">
+				<unitPattern count="other">{0} جم</unitPattern>
+			</unit>
+			<unit type="duration-minute">
+				<unitPattern count="other">{0} مينيت</unitPattern>
 			</unit>
 			<unit type="duration-second">
 				<unitPattern count="other">{0} ساعت</unitPattern>
 			</unit>
-			<unit type="duration-second-future">
-				<unitPattern count="other">دالم {0} ساعت</unitPattern>
+		</unitLength>
+		<unitLength type="short">
+			<unit type="duration-year">
+				<unitPattern count="other">{0} thn</unitPattern>
 			</unit>
-			<unit type="duration-second-past">
-				<unitPattern count="other">{0} ساعت لالو</unitPattern>
+			<unit type="duration-month">
+				<unitPattern count="other">{0} بولن</unitPattern>
 			</unit>
 			<unit type="duration-week">
 				<unitPattern count="other">{0} ميڠݢو</unitPattern>
 			</unit>
-			<unit type="duration-week-future">
-				<unitPattern count="other">دالم {0} ميڠݢو</unitPattern>
-			</unit>
-			<unit type="duration-week-past">
-				<unitPattern count="other">{0} ميڠݢو لالو</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<unitPattern count="other">{0} تاهون</unitPattern>
-			</unit>
-			<unit type="duration-year-future">
-				<unitPattern count="other">دالم {0} تاهون</unitPattern>
-			</unit>
-			<unit type="duration-year-past">
-				<unitPattern count="other">{0} تاهون لالو</unitPattern>
-			</unit>
-		</unitLength>
-		<unitLength type="short">
 			<unit type="duration-day">
 				<unitPattern count="other">{0} هاري</unitPattern>
 			</unit>
@@ -1024,17 +1036,8 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<unit type="duration-minute">
 				<unitPattern count="other">{0} min</unitPattern>
 			</unit>
-			<unit type="duration-month">
-				<unitPattern count="other">{0} بولن</unitPattern>
-			</unit>
 			<unit type="duration-second">
 				<unitPattern count="other">{0} ساعت</unitPattern>
-			</unit>
-			<unit type="duration-week">
-				<unitPattern count="other">{0} ميڠݢو</unitPattern>
-			</unit>
-			<unit type="duration-year">
-				<unitPattern count="other">{0} thn</unitPattern>
 			</unit>
 		</unitLength>
 	</units>

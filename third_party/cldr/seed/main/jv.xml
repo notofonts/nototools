@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc. CLDR data files are interpreted
+<!-- Copyright © 1991-2017 Unicode, Inc.
+For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+
 according to the LDML specification (http://unicode.org/reports/tr35/) For
 terms of use, see http://www.unicode.org/copyright.html
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="jv"/>
 	</identity>
 	<localeDisplayNames>
@@ -22,9 +25,9 @@ terms of use, see http://www.unicode.org/copyright.html
 		</orientation>
 	</layout>
 	<characters>
-		<exemplarCharacters>[a å â b c d e ê é è g h i ì j k l m n o ò p r s t u ù w y]</exemplarCharacters>
+		<exemplarCharacters>[a â å b c d e é è ê g h i ì j k l m n o ò p r s t u ù w y]</exemplarCharacters>
 		<exemplarCharacters type="auxiliary">[f q v x z]</exemplarCharacters>
-		<exemplarCharacters type="index">[A Å Â B C D E Ê É È G H I Ì J K L M N O Ò P R S T U Ù W Y]</exemplarCharacters>
+		<exemplarCharacters type="index">[A Â Å B C D E É È Ê G H I Ì J K L M N O Ò P R S T U Ù W Y]</exemplarCharacters>
 	</characters>
 	<numbers>
 		<currencies>

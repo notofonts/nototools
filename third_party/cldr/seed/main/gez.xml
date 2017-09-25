@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
-<!-- Copyright © 1991-2014 Unicode, Inc.
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+<!-- Copyright © 1991-2017 Unicode, Inc.
 For terms of use, see http://www.unicode.org/copyright.html
+Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
 -->
 <ldml>
 	<identity>
-		<version number="$Revision: 10669 $"/>
-		<generation date="$Date: 2014-07-23 14:10:33 -0700 (Wed, 23 Jul 2014) $"/>
+		<version number="$Revision: 13571 $"/>
 		<language type="gez"/>
 	</identity>
 	<localeDisplayNames>
@@ -87,7 +87,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="mk" draft="unconfirmed">ማከዶኒኛ</language>
 			<language type="ml" draft="unconfirmed">ማላያላምኛ</language>
 			<language type="mn" draft="unconfirmed">ሞንጎላዊኛ</language>
-			<language type="mo" draft="unconfirmed">ሞልዳቫዊና</language>
 			<language type="mr" draft="unconfirmed">ማራዚኛ</language>
 			<language type="ms" draft="unconfirmed">ማላይኛ</language>
 			<language type="mt" draft="unconfirmed">ማልቲስኛ</language>
@@ -107,6 +106,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<language type="rm" draft="unconfirmed">ሮማንስ</language>
 			<language type="rn" draft="unconfirmed">ሩንዲኛ</language>
 			<language type="ro" draft="unconfirmed">ሮማኒያን</language>
+			<language type="ro_MD" draft="unconfirmed">ሞልዳቫዊና</language>
 			<language type="ru" draft="unconfirmed">ራሽኛ</language>
 			<language type="rw" draft="unconfirmed">ኪንያርዋንድኛ</language>
 			<language type="sa" draft="unconfirmed">ሳንስክሪትኛ</language>
@@ -162,7 +162,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="AE" draft="unconfirmed">የተባበሩት፡አረብ፡ኤምሬትስ</territory>
 			<territory type="AL" draft="unconfirmed">አልባኒያ</territory>
 			<territory type="AM" draft="unconfirmed">አርሜኒያ</territory>
-			<territory type="AN" draft="unconfirmed">ኔዘርላንድስ፡አንቲልስ</territory>
 			<territory type="AR" draft="unconfirmed">አርጀንቲና</territory>
 			<territory type="AT" draft="unconfirmed">ኦስትሪያ</territory>
 			<territory type="AU" draft="unconfirmed">አውስትሬሊያ</territory>
@@ -184,7 +183,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="CM" draft="unconfirmed">ካሜሩን</territory>
 			<territory type="CN" draft="unconfirmed">ቻይና</territory>
 			<territory type="CO" draft="unconfirmed">ኮሎምቢያ</territory>
-			<territory type="CS" draft="unconfirmed">ሰርቢያ</territory>
 			<territory type="CV" draft="unconfirmed">ኬፕ፡ቬርዴ</territory>
 			<territory type="CY" draft="unconfirmed">ሳይፕረስ</territory>
 			<territory type="CZ" draft="unconfirmed">ቼክ፡ሪፑብሊክ</territory>
@@ -259,6 +257,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 			<territory type="PL" draft="unconfirmed">ፖላንድ</territory>
 			<territory type="PR" draft="unconfirmed">ፖርታ፡ሪኮ</territory>
 			<territory type="RO" draft="unconfirmed">ሮሜኒያ</territory>
+			<territory type="RS" draft="unconfirmed">ሰርቢያ</territory>
 			<territory type="RU" draft="unconfirmed">ራሺያ</territory>
 			<territory type="SA" draft="unconfirmed">ሳውድአረቢያ</territory>
 			<territory type="SD" draft="unconfirmed">ሱዳን</territory>
@@ -297,38 +296,6 @@ For terms of use, see http://www.unicode.org/copyright.html
 	<dates>
 		<calendars>
 			<calendar type="generic">
-				<days>
-					<dayContext type="format">
-						<dayWidth type="wide">
-							<day type="sun" draft="unconfirmed">እኁድ</day>
-							<day type="mon" draft="unconfirmed">ሰኑይ</day>
-							<day type="tue" draft="unconfirmed">ሠሉስ</day>
-							<day type="wed" draft="unconfirmed">ራብዕ</day>
-							<day type="thu" draft="unconfirmed">ሐሙስ</day>
-							<day type="fri" draft="unconfirmed">ዓርበ</day>
-							<day type="sat" draft="unconfirmed">ቀዳሚት</day>
-						</dayWidth>
-					</dayContext>
-					<dayContext type="stand-alone">
-						<dayWidth type="narrow">
-							<day type="sun" draft="unconfirmed">እ</day>
-							<day type="mon" draft="unconfirmed">ሰ</day>
-							<day type="tue" draft="unconfirmed">ሠ</day>
-							<day type="wed" draft="unconfirmed">ራ</day>
-							<day type="thu" draft="unconfirmed">ሐ</day>
-							<day type="fri" draft="unconfirmed">ዓ</day>
-							<day type="sat" draft="unconfirmed">ቀ</day>
-						</dayWidth>
-					</dayContext>
-				</days>
-				<dayPeriods>
-					<dayPeriodContext type="format">
-						<dayPeriodWidth type="wide">
-							<dayPeriod type="am" draft="unconfirmed">ጽባሕ</dayPeriod>
-							<dayPeriod type="pm" draft="unconfirmed">ምሴት</dayPeriod>
-						</dayPeriodWidth>
-					</dayPeriodContext>
-				</dayPeriods>
 				<dateFormats>
 					<dateFormatLength type="full">
 						<dateFormat>
@@ -435,6 +402,10 @@ For terms of use, see http://www.unicode.org/copyright.html
 				</days>
 				<dayPeriods>
 					<dayPeriodContext type="format">
+						<dayPeriodWidth type="abbreviated">
+							<dayPeriod type="am" draft="unconfirmed">ጽባሕ</dayPeriod>
+							<dayPeriod type="pm" draft="unconfirmed">ምሴት</dayPeriod>
+						</dayPeriodWidth>
 						<dayPeriodWidth type="wide">
 							<dayPeriod type="am" draft="unconfirmed">ጽባሕ</dayPeriod>
 							<dayPeriod type="pm" draft="unconfirmed">ምሴት</dayPeriod>
