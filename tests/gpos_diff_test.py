@@ -38,7 +38,7 @@ class GposDiffFinderText(unittest.TestCase):
         for value_diff in values:
             self.assertIn('pos %s %s: %s vs %s' % value_diff, diffs)
 
-    def test_simple(self):
+    def test_kern_simple(self):
         self._expect_kerning_diffs('''
                 pos a b -10;
                 pos a c -20;
@@ -49,7 +49,7 @@ class GposDiffFinderText(unittest.TestCase):
             [('-', 'a', 'c', [-20]), ('+', 'a', 'd', [-40])],
             [('a', 'b', [-10], [-30])])
 
-    def test_multiple_rules(self):
+    def test_kern_multiple_rules(self):
         self._expect_kerning_diffs('''
                 @a_b = [a b];
                 pos a d -10;
@@ -60,7 +60,7 @@ class GposDiffFinderText(unittest.TestCase):
             [('-', 'b', 'd', [-20])],
             [('a', 'd', [-10, -20], [-30])])
 
-    def test_single_vs_class(self):
+    def test_kern_single_vs_class(self):
         self._expect_kerning_diffs('''
                 pos a d -10;
             ''', '''
