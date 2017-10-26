@@ -829,9 +829,10 @@ class WebGen(object):
     data_obj = collections.OrderedDict()
     families_obj = collections.OrderedDict()
 
-    # Sort families by English name, except 'Noto Sans', 'Noto Serif', and
-    # 'Noto Mono' come first, in that order
-    initial_ids = ['sans-lgc', 'serif-lgc', 'mono-mono']
+    # Sort families by English name, except Noto Sans/Serif/Mono come first.
+    initial_ids = [
+        'sans-lgc', 'serif-lgc', 'sans-lgc-display', 'serif-lgc-display',
+        'mono-mono']
     family_ids = [family_id for family_id
                   in family_id_to_lang_scr_to_sample_key
                   if family_id not in initial_ids]
