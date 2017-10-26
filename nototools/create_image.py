@@ -94,7 +94,7 @@ class DrawParams:
                  language=None, rtl=False, vertical=False,
                  width=1370, font_size=32, line_spacing=50,
                  weight=pango.WEIGHT_NORMAL, style=pango.STYLE_NORMAL,
-                 stretch=pango.STRETCH_NORMAL):
+                 stretch=pango.STRETCH_NORMAL, maxheight=0, horiz_margin=0):
         self.family = family
         self.language = language
         self.rtl = rtl
@@ -105,6 +105,8 @@ class DrawParams:
         self.weight = weight
         self.style = style
         self.stretch = stretch
+        self.maxheight = maxheight
+        self.horiz_margin = horiz_margin
 
     def __repr__(self):
         return str(self.__dict__)
@@ -176,6 +178,10 @@ def draw_on_surface(surface, text, params):
     # Newly-encoded scripts can be newer than your libraries and will
     # likely order LTR if you implementation doesn't know about them.
 
+    # The width is the desired width of the image.  The layout uses this
+    # width minus the margin.
+    width = params.width - 2 * params.horiz_margin
+
     font = pango.FontDescription()
     font.set_family(params.family)
     font.set_size(params.font_size * pango.SCALE)
@@ -185,15 +191,40 @@ def draw_on_surface(surface, text, params):
 
     layout.set_font_description(font)
     layout.set_alignment(alignment)
-    layout.set_width(params.width * pango.SCALE)
+    layout.set_width(width * pango.SCALE)
     layout.set_wrap(pango.WRAP_WORD_CHAR)
     layout.set_spacing((params.line_spacing - params.font_size) * pango.SCALE)
-
     pango_ctx.set_base_dir(base_dir)
     layout.context_changed()
     layout.set_text(text)
 
+    if params.maxheight:
+      numlines = layout.get_line_count()
+      if params.maxheight < 0:
+        if -params.maxheight < numlines:
+          startindex = layout.get_line_readonly(-params.maxheight).start_index
+          layout.set_text(text[:startindex])
+      else:
+        ht = 0
+        for i in range(numlines):
+          line = layout.get_line_readonly(i)
+          lrect = line.get_extents()[1]  # logical bounds
+          lh = (-lrect[1] + lrect[3]) / pango.SCALE
+          ht += lh
+          if ht > params.maxheight and i > 0:
+            layout.set_text(text[:line.start_index])
+            break
+
     extents = layout.get_pixel_extents()
+    ovl = -extents[0][0] > params.horiz_margin
+    ovr = extents[0][2] > width + params.horiz_margin
+    if ovl or ovr:
+      if ovl:
+        print 'Error: image overflows left bounds'
+      if ovr:
+        print 'Error: image overflows right bounds'
+      print 'extents: %s, width: %s, margin: %s' % (
+          extents, params.width, params.horiz_margin)
     top_usage = min(extents[0][1], extents[1][1], 0)
     bottom_usage = max(extents[0][3], extents[1][3])
 
@@ -201,7 +232,7 @@ def draw_on_surface(surface, text, params):
     pangocairo_ctx.set_source_rgb(1, 1, 1)  # White background
     pangocairo_ctx.paint()
 
-    pangocairo_ctx.translate(0, -top_usage)
+    pangocairo_ctx.translate(params.horiz_margin, -top_usage)
     pangocairo_ctx.set_source_rgb(0, 0, 0)  # Black text color
     pangocairo_ctx.show_layout(layout)
 
@@ -262,6 +293,10 @@ def test():
             sample_text = input_file.read().strip()
         create_img(sample_text, output_file, **kwargs)
 
+    test('en-Latn_udhr.txt', 'en_latn_udhr.svg', family='Noto Serif Display',
+         maxheight=-2, font_size=80, line_spacing=96, style='italic',
+         horiz_margin=16)
+    """
     test('hi-Deva_udhr.txt', 'hindi.png', family='Noto Sans',
          language='hi-Deva')
     test('ar-Arab_udhr.txt', 'arabic.svg', family='Noto Naskh Arabic',
@@ -272,8 +307,6 @@ def test():
          language='sr-Cyrl')
     test('und-Adlm_chars.txt', 'und-adlm.png', family='Noto Sans',
          rtl=True)
-    """
-    test('en-Latn_udhr.txt', 'en_latn_udhr.svg', family='Noto Sans')
     test('en-Latn_udhr.txt', 'en_latn_udhr_semcond.svg', family='Noto Sans',
          stretch='semi-condensed')
     test('en-Latn_udhr.txt', 'en_latn_udhr_cond.svg', family='Noto Sans',
@@ -365,8 +398,9 @@ def render_codes(
       font_size, lang, ext)
 
 
-def render_text(file_name, text, font_name, weight_name, style_name,
-                stretch_name, font_size, lang, ext):
+def render_text(
+    file_name, text, font_name, weight_name, style_name, stretch_name,
+    font_size, lang, ext, maxheight=0, horiz_margin=0):
     font = font_name or 'Noto Sans'
     font_size = font_size or 32
     if not file_name:
@@ -385,7 +419,8 @@ def render_text(file_name, text, font_name, weight_name, style_name,
 
     create_img(
         text, file_name, family=font, weight=weight_name, style=style_name,
-        stretch=stretch_name, language=lang, font_size=font_size)
+        stretch=stretch_name, language=lang, font_size=font_size,
+        maxheight=maxheight, horiz_margin=horiz_margin)
     print 'generated ' + file_name
 
 
@@ -420,6 +455,12 @@ def main():
     parser.add_argument(
         '-t', '--type', metavar='ext', help='svg (default) or png',
         default='svg')
+    parser.add_argument(
+        '-mh', '--maxheight', metavar='ht', help='0 ignore, <0 for num lines, '
+        'else max height', default=0)
+    parser.add_argument(
+        '-hm', '--horiz_margin', metavar='mar', help='left and right margin, '
+        'to handle large italic side bearings', default=0)
 
     args = parser.parse_args()
     if args.test:
@@ -429,8 +470,9 @@ def main():
       print 'choose either codes or text'
       return
     if args.codes:
-      render_codes(args.out, args.codes, args.font, args.bold, args.italic,
-                   args.size, args.lang, args.type)
+      render_codes(
+          args.out, args.codes, args.font, args.bold, args.italic, args.size,
+          args.lang, args.type, args.maxheight, args.horiz_margin)
     elif args.text:
       if args.text[0] == '@':
         if not args.out:
@@ -440,8 +482,9 @@ def main():
       else:
         args.text = args.text.decode('unicode-escape')
       print 'text length %d' % len(args.text)
-      render_text(args.out, args.text, args.font, args.bold, args.italic,
-                  args.size, args.lang, args.type)
+      render_text(
+          args.out, args.text, args.font, args.bold, args.italic, args.size,
+          args.lang, args.type, args.maxheight, args.horiz_margin)
     else:
       print 'nothing to do'
 
