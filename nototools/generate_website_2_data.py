@@ -574,34 +574,33 @@ def get_css_generic_family(family):
 def css_weight(weight_string):
     return noto_fonts.WEIGHTS[weight_string]
 
-_STRETCH_CSS_NAMES = {
-    'Normal': 'normal',
-    'Condensed': 'condensed',
-    'SemiCondensed': 'semi-condensed',
-    'ExtraCondensed': 'extra-condensed',
+
+# mapping from stretch_name (font file name version) to
+# tuple of css name, image file name abbreviation, sort order key
+_STRETCH_DATA = {
+    'UltraCondensed': ('ultra-condensed', 'ucon', 'a'),
+    'ExtraCondensed': ('extra-condensed', 'xcon', 'b'),
+    'Condensed': ('condensed', 'cond', 'c'),
+    'SemiCondensed': ('semi-condensed', 'scon', 'd'),
+    'Normal': ('normal', 'norm', 'e'),
+    'SemiExpanded': ('semi-expanded', 'sexp', 'f'),
+    'Expanded': ('expanded', 'expn', 'g'),
+    'ExtraExpanded': ('extra-expanded', 'xexp', 'h'),
+    'UltraExpanded': ('ultra-expanded', 'uexp', 'i'),
 }
 
-def css_stretch(stretch_string):
-  if not stretch_string:
-    return ''
-  # fail if we don't recognize the name
-  return _STRETCH_CSS_NAMES[stretch_string]
+
+def css_stretch(stretch_name):
+  return _STRETCH_DATA[stretch_name or 'Normal'][0]
 
 
-_STRETCH_ABBREVIATIONS = {
-    'Normal': '',
-    'Condensed': 'cond',
-    'SemiCondensed': 'semcond',
-    'ExtraCondensed': 'excond',
-}
+def stretch_abbrev(stretch_name):
+  return _STRETCH_DATA[stretch_name or 'Normal'][1]
 
-def stretch_filename(stretch_string):
-  """Portion of image output file corresponding to stretch value. We
-  abbreviate."""
-  if not stretch_string or stretch_string == 'normal':
-    return ''
-  # fail if we don't recognize the name
-  return '_' + _STRETCH_ABBREVIATIONS[stretch_string]
+
+def stretch_sort_key(stretch_name):
+  return _STRETCH_DATA[stretch_name or 'Normal'][2]
+
 
 def css_style(style_value):
     if style_value is None:
@@ -806,13 +805,15 @@ class WebGen(object):
           # prevent auto-bolding of this font by describing it as bold
           weight = 700
         slope = css_style(font.slope)
+        stretch = css_stretch(font.width)
         css_file.write(
           '@font-face {\n'
           '  font-family: "%s";\n'
+          '  font-stretch: %s;\n'
           '  font-weight: %d;\n'
           '  font-style: %s;\n'
           '  src: url(../fonts/%s) format("truetype");\n'
-          '}\n' % (css_family, weight, slope, font_path))
+          '}\n' % (css_family, stretch, weight, slope, font_path))
     return max_font_size
 
   def build_css(self, families):
@@ -914,10 +915,12 @@ class WebGen(object):
   def _sorted_displayed_members(self, family):
     members = [m for m in (family.hinted_members or family.unhinted_members)
                if not (m.is_UI or (m.is_cjk and m.is_mono))]
+    # sort stretch, then weight, then italic
     # sort non-italic before italic
     return sorted(members,
-                  key=lambda f: str(css_weight(f.weight)) + '-' +
-                  ('b' if css_style(f.slope) == 'italic' else 'a'))
+                  key=lambda f: (stretch_sort_key(f.width) + '-' +
+                  str(css_weight(f.weight)) + '-' +
+                  ('b' if css_style(f.slope) == 'italic' else 'a')))
 
   def build_family_json(
       self, family_id, family, lang_scrs_map, lang_scr_sort_order, regions,
@@ -963,7 +966,12 @@ class WebGen(object):
     for font in displayed_members:
       weight_style = collections.OrderedDict()
       weight_style['weight'] = css_weight(font.weight)
-      weight_style['style'] = css_style(font.slope)
+      style = css_style(font.slope)
+      if style != 'normal':
+        weight_style['style'] = style
+      stretch = css_stretch(font.width)
+      if stretch != 'normal':
+        weight_style['stretch'] = stretch
       fonts_obj.append(weight_style)
     family_obj['fonts'] = fonts_obj
     family_obj['fontSize'] = css_info
@@ -1023,17 +1031,26 @@ class WebGen(object):
     for font in displayed_members:
       weight = css_weight(font.weight)
       style = css_style(font.slope)
-      stretch = css_stretch(font.width) # empty for normal
-      stretch_seg = stretch_filename(font.width)
+      stretch = css_stretch(font.width)
+      stretch_seg = stretch_abbrev(font.width)
+      maxheight = 0
+      horiz_margin = 0
       if font.variant == 'color':
         imgtype = 'png'
         fsize = 36
         lspc = 44
+      elif font.is_display:
+        imgtype = 'svg'
+        fsize = 80
+        lspc = 96  # 1.2
+        maxheight = -2  # lines
+        horiz_margin = 16  # lgc serif display italic
       else:
         imgtype = 'svg'
         fsize = 20
         lspc = 32
-      image_file_name = '%s_%s%s_%d_%s.%s' % (
+        horiz_margin = 10
+      image_file_name = '%s_%s_%s_%d_%s.%s' % (
           family_id, lang_scr, stretch_seg, weight, style, imgtype)
       if is_cjk and family.name.find('Serif') < 0:
         # The sans and serif cjk's are named differently, and it confuses
@@ -1064,7 +1081,9 @@ class WebGen(object):
           line_spacing=int(lspc * (72.0/96.0)),
           weight=weight,
           style=style,
-          stretch=stretch)
+          stretch=stretch,
+          maxheight=maxheight,
+          horiz_margin=horiz_margin)
 
   def build_images(self, family_id_to_lang_scr_to_sample_key,
                    families, family_id_to_default_lang_scr,
