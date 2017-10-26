@@ -840,6 +840,8 @@ class WebGen(object):
     sorted_ids = [fid for fid in initial_ids
                   if fid in family_id_to_lang_scr_to_sample_key]
     sorted_ids.extend(family_ids)
+
+    fail = False
     for k in sorted_ids:
       family = families[k]
       family_obj = {}
@@ -857,7 +859,14 @@ class WebGen(object):
       if family.rep_member.is_cjk:
         num_fonts = 7 #ignore mono
       else:
-        num_fonts = len(family.hinted_members or family.unhinted_members)
+        num_fonts = sum(
+            1 for f in (family.hinted_members or family.unhinted_members)
+            if not f.is_UI)
+        if num_fonts not in [1, 2, 4, 9, 36, 72]:
+          print 'family %s (%s) has %d fonts' % (k, family.name, num_fonts)
+          print '\n'.join(f.filepath for f in sorted(family.hinted_members or family.unhinted_members))
+          fail = True
+
       family_obj['fonts'] = num_fonts
       # only displayed langs -- see build_family_json lang_scrs
       lang_scrs_map = family_id_to_lang_scr_to_sample_key[k]
@@ -866,6 +875,9 @@ class WebGen(object):
       family_obj['regions'] = len(family_id_to_regions[k])
 
       families_obj[k] = family_obj
+
+    if fail:
+      raise Exception("some fonts had bad counts")
     data_obj['family'] = families_obj
 
     data_obj['familyOrder'] = sorted_ids
