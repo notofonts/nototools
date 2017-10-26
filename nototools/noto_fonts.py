@@ -338,6 +338,11 @@ def noto_font_to_family_id(notofont):
       tags.append(notofont.script)
   if notofont.variant:
     tags.append(notofont.variant)
+  # split display variants into their own family.  In particular, the family
+  # name of display fonts includes 'Display' and we don't want that as part
+  # of the overall family name.
+  if notofont.is_display:
+    tags.append('display')
   key = '-'.join(tags).lower()
   return key
 
