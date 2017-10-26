@@ -776,20 +776,21 @@ def test_sample_scripts(sample_dir):
   print 'Found %d errors in %d files tested.' % (errors, tested)
 
 
-def compare_samples(src_dir, trg_dir, trg_to_src_name=lambda x: x, opts=None):
-  """Report on differences between samples in source and target directories.
-  The trg_to_src_name fn takes a target file name and returns the source
+def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
+  """Report on differences between samples in base and target directories.
+  The trg_to_base_name fn takes a target file name and returns the source
   file name to use in the comparisons."""
 
-  if not os.path.isdir(src_dir):
-    print 'Original sample dir \'%s\' does not exist' % src_dir
+  if not os.path.isdir(base_dir):
+    print 'Original sample dir \'%s\' does not exist' % base_dir
     return
   if not os.path.isdir(trg_dir):
     print 'New sample dir \'%s\' does not exist' % trg_dir
     return
 
-  print 'Base dir: %s' % src_dir
-  print 'Target dir: %s' % trg_dir
+  print 'Base (current) dir: %s' % base_dir
+  print 'Target (new) dir: %s' % trg_dir
+  print '[a/b] means "a" in base is replaced with "b" in target'
 
   show_missing = opts and 'missing' in opts
   show_diffs = opts and 'diffs' in opts
@@ -802,41 +803,41 @@ def compare_samples(src_dir, trg_dir, trg_to_src_name=lambda x: x, opts=None):
     if not (os.path.isfile(trg_path) and trg_name.endswith('.txt')):
       continue
 
-    src_name = trg_to_src_name(trg_name)
-    src_path = os.path.join(src_dir, src_name)
-    if not os.path.exists(src_path):
+    base_name = trg_to_base_name(trg_name)
+    base_path = os.path.join(base_dir, base_name)
+    if not os.path.exists(base_path):
       if show_missing:
-        print 'source does not exist: %s' % src_name
+        print 'base does not exist: %s' % base_name
       continue
 
-    src_text = None
+    base_text = None
     dst_text = None
-    with codecs.open(src_path, 'r', 'utf8') as f:
-      src_text = f.read()
+    with codecs.open(base_path, 'r', 'utf8') as f:
+      base_text = f.read()
     with codecs.open(trg_path, 'r', 'utf8') as f:
       trg_text = f.read()
-    if not src_text:
-      print 'source text (%s) is empty' % k
+    if not base_text:
+      print 'base text (%s) is empty' % k
       continue
     if not trg_text:
       print 'target text is empty: %s' % trg_path
       continue
-    if src_text.find(trg_text) == -1:
-      print 'target (%s) text not in source (%s)' % (src_name, trg_name)
+    if base_text.find(trg_text) == -1:
+      print 'target (%s) text not in base (%s)' % (base_name, trg_name)
       if show_diffs:
         # In scripts that use space for word break it might be better to compare
         # word by word, but this suffices.
-        sm = difflib.SequenceMatcher(None, src_text, trg_text, autojunk=False)
+        sm = difflib.SequenceMatcher(None, base_text, trg_text, autojunk=False)
         lines = []
         for tag, i1, i2, j1, j2 in sm.get_opcodes():
           if tag == 'delete':
-            lines.append('[%s/]' % src_text[i1:i2])
+            lines.append('[%s/]' % base_text[i1:i2])
           elif tag == 'equal':
-            lines.append(src_text[i1:i2])
+            lines.append(base_text[i1:i2])
           elif tag == 'insert':
             lines.append('[/%s]' % trg_text[j1:j2])
           else:
-            lines.append('[%s/%s]' % (src_text[i1:i2], trg_text[j1:j2]))
+            lines.append('[%s/%s]' % (base_text[i1:i2], trg_text[j1:j2]))
         print ''.join(lines)
 
 
