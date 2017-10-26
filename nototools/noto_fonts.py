@@ -419,6 +419,9 @@ def wws_family_id_to_name_parts(wws_id):
       parts.append('kr')
   elif script == 'sym2':
     parts.append('Symbols2')
+  elif script == 'phag':
+    # allow hyphenated name in name table
+    pargs.append('Phags-pa')
   else:
     # Mono works as a script. The phase 2 'mono-mono' tag was special-cased
     # above so it won't get added a second time.
