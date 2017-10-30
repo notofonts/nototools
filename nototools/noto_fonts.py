@@ -338,6 +338,11 @@ def noto_font_to_family_id(notofont):
       tags.append(notofont.script)
   if notofont.variant:
     tags.append(notofont.variant)
+  # split display variants into their own family.  In particular, the family
+  # name of display fonts includes 'Display' and we don't want that as part
+  # of the overall family name.
+  if notofont.is_display:
+    tags.append('display')
   key = '-'.join(tags).lower()
   return key
 
@@ -414,6 +419,9 @@ def wws_family_id_to_name_parts(wws_id):
       parts.append('kr')
   elif script == 'sym2':
     parts.append('Symbols2')
+  elif script == 'phag':
+    # allow hyphenated name in name table
+    parts.append('Phags-pa')
   else:
     # Mono works as a script. The phase 2 'mono-mono' tag was special-cased
     # above so it won't get added a second time.
