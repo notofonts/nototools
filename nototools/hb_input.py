@@ -16,6 +16,7 @@
 from __future__ import division, print_function
 
 from fontTools.ttLib import TTFont
+from fontTools.misc.py23 import unichr
 from nototools import summary
 
 
@@ -94,12 +95,7 @@ class HbInputGenerator(object):
 
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
-            try:
-                text = unichr(self.reverse_cmap[name])
-            except ValueError:
-                ordinal = self.reverse_cmap[name]
-                uni_esc = "\\U%08x" % ordinal
-                text = uni_esc.decode('unicode-escape')
+            text = unichr(self.reverse_cmap[name])
             inputs.append(((), text))
 
         # check the substitution features
