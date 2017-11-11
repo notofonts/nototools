@@ -94,7 +94,12 @@ class HbInputGenerator(object):
 
         # see if this glyph has a simple unicode mapping
         if name in self.reverse_cmap:
-            text = unichr(self.reverse_cmap[name])
+            try:
+                text = unichr(self.reverse_cmap[name])
+            except ValueError:
+                ordinal = self.reverse_cmap[name]
+                uni_esc = "\\U%08x" % ordinal
+                text = uni_esc.decode('unicode-escape')
             inputs.append(((), text))
 
         # check the substitution features
