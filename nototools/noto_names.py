@@ -469,16 +469,29 @@ DESIGNER_STRINGS = {
     'mti-chahine': 'Nadine Chahine - Monotype Design Team',
     'mti-bosma': 'Jelle Bosma - Monotype Design Team',
     'mti-hong': 'Danh Hong and the Monotype Design Team',
+    'mti-indian': 'Indian Type Foundry and the Monotype Design Team',
+    'mti-mitchel': 'Ben Mitchell and the Monotype Design Team',
+    'mti-singh': 'Vaibhav Singh and the Monotype Design Team',
+    'mti-thirst': 'Universal Thirst, Indian Type Foundry and the Monotype Design Team',
     'mti': 'Monotype Design Team',
 }
 
+
 FAMILY_ID_TO_DESIGNER_KEY_P3 = {
     'sans-arab': 'mti-chahine',
+    'sans-beng': 'mti-bosma',
     'sans-deva': 'mti-bosma',
+    'serif-gujr': 'mti-thirst',
+    'serif-guru': 'mti-singh',
+    'serif-knda': 'mti-thirst',
     'sans-khmr': 'mti-hong',
     'serif-khmr': 'mti-hong',
+    'sans-mlym': 'mti-bosma',
+    'serif-mymr': 'mti-mitchel',
     'sans-sinh': 'mti-bosma',
     'serif-sinh': 'mti-bosma',
+    'sans-taml': 'mti-bosma',
+    'serif-taml': 'mti-indian',
 }
 
 def _designer(noto_font, phase):
