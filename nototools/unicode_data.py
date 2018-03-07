@@ -700,7 +700,7 @@ def _load_emoji_data():
       'Emoji_Presentation': set(),
       'Emoji_Modifier': set(),
       'Emoji_Modifier_Base': set(),
-      'Emoji_Regional_Indicator': set(),
+      'Extended_Pictographic': set(),
       'Emoji_Component': set(),
   }
 
@@ -843,12 +843,13 @@ _SUPPLEMENTAL_EMOJI_GROUP_DATA = """
 0039 fe0f ; fully-qualified # ? digit nine
 20e3 ; fully-qualified # ? combining enclosing keycap
 
+# As of Unicode 11 these have group data defined.
 # subgroup: skin-tone modifiers
-1f3fb ; fully-qualified # ? emoji modifier fitzpatrick type-1-2
-1f3fc ; fully-qualified # ? emoji modifier fitzpatrick type-3
-1f3fd ; fully-qualified # ? emoji modifier fitzpatrick type-4
-1f3fe ; fully-qualified # ? emoji modifier fitzpatrick type-5
-1f3ff ; fully-qualified # ? emoji modifier fitzpatrick type-6
+#1f3fb ; fully-qualified # ? emoji modifier fitzpatrick type-1-2
+#1f3fc ; fully-qualified # ? emoji modifier fitzpatrick type-3
+#1f3fd ; fully-qualified # ? emoji modifier fitzpatrick type-4
+#1f3fe ; fully-qualified # ? emoji modifier fitzpatrick type-5
+#1f3ff ; fully-qualified # ? emoji modifier fitzpatrick type-6
 
 # subgroup: regional indicator symbols
 1f1e6 ; fully-qualified # ? regional indicator symbol letter A
@@ -1028,6 +1029,9 @@ def _load_emoji_group_data():
 
   group_list.extend(_read_emoji_test_data(_SUPPLEMENTAL_EMOJI_GROUP_DATA))
   for i, (seq, group, subgroup, name) in enumerate(group_list):
+    if seq in _emoji_group_data:
+      print 'seq %s alredy in group data as %s' % (seq_to_string(seq), _emoji_group_data[seq])
+      print '    new value would be %s' % str((i, group, subgroup, name))
     _emoji_group_data[seq] = (i, group, subgroup, name)
 
   assert len(group_list) == len(_emoji_group_data)
