@@ -1145,14 +1145,14 @@ def _load_emoji_sequence_data():
     if is_default_text_presentation:
       seq = (cp, EMOJI_VS)
 
+    emoji_age = float(age(cp)) or 11.0
     current_data = _emoji_sequence_data.get(seq) or (
-        emoji_name, 10.0, 'Emoji_Single_Sequence')
+        emoji_name, emoji_age, 'Emoji_Single_Sequence')
 
-    current_version = current_data[1] or 10.0
     if is_default_text_presentation:
       emoji_name = '(emoji) ' + emoji_name
 
-    _emoji_sequence_data[seq] = (emoji_name, current_version, current_data[2])
+    _emoji_sequence_data[seq] = (emoji_name, current_data[1], current_data[2])
 
   # Fill in sequences of single emoji, handling non-canonical to canonical also.
   for k in _emoji:
@@ -1625,7 +1625,8 @@ def alt_names(cp):
 
 
 if __name__ == '__main__':
-  for k in sorted(get_emoji_sequences()):
+  all_sequences = sorted(get_emoji_sequences());
+  for k in all_sequences:
     if not get_emoji_group_data(k):
       print 'no data:', seq_to_string(k)
 
@@ -1634,3 +1635,9 @@ if __name__ == '__main__':
     for subgroup in get_emoji_subgroups(group):
       print '  subgroup:', subgroup
       print '    %d items' % len(get_emoji_in_group(group, subgroup))
+
+  # dump some information for annotations
+  for k in get_sorted_emoji_sequences(all_sequences):
+    age = get_emoji_sequence_age(k)
+    if age == 11:
+      print seq_to_string(k).replace('_', ' '), '#', get_emoji_sequence_name(k)
