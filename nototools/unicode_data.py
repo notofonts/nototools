@@ -1362,8 +1362,10 @@ def _load_unicode_emoji_variants():
     return
 
   emoji_variants = set()
+  # prior to Unicode 11 emoji variants were part of the standard data.
+  # as of Unicode 11 however they're only in a separate emoji data file.
   line_re = re.compile(r'([0-9A-F]{4,6})\s+FE0F\s*;\s*emoji style\s*;')
-  with open_unicode_data_file('StandardizedVariants.txt') as f:
+  with open_unicode_data_file('emoji-variation-sequences.txt') as f:
     for line in f:
       m = line_re.match(line)
       if m:
