@@ -1,5 +1,5 @@
 URL: http://www.unicode.org/Public/8.0.0/ucd/
-Version: 8.0.0
+Version: 11.0.0d
 License: Unicode
 License File: LICENSE
 
@@ -7,11 +7,8 @@ Description:
 Unicode data files.
 
 Local Modifications:
-1. Unicode 9.0 alpha files have been pulled from
-   http://www.unicode.org/Public/9.0.0/ucd/
+1. Unicode 11.0 alpha files have been pulled from
+   http://www.unicode.org/Public/11.0.0/ucd/
 
-2. Updates to Indic properties have been
-   pulled from https://github.com/roozbehp/unicode-data/
-
-3. emoji-data files are from (2017-03-27)
-   http://www.unicode.org/Public/emoji/5.0
+3. emoji-data files are from (copied on 2010-03-06)
+   http://www.unicode.org/Public/emoji/11.0
