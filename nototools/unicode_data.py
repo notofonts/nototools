@@ -42,6 +42,9 @@ except ImportError:
 
 from nototools import tool_utils # parse_int_ranges
 
+# Update this when we update the base version data we use
+UNICODE_VERSION = 11.0
+
 _data_is_loaded = False
 _property_value_aliases_data = {}
 _character_names_data = {}
@@ -722,6 +725,9 @@ def _load_emoji_data():
       emoji_set = emoji_sets.get(m.group(3))
       emoji_set.update(range(start, end + 1))
 
+  # allow our legacy use of handshake and wrestlers with skin tone modifiers
+  emoji_sets['Emoji_Modifier_Base'] |= set([0x1f91d, 0x1f93c])
+
   _presentation_default_emoji = frozenset(
       emoji_sets['Emoji_Presentation'])
   _presentation_default_text = frozenset(
@@ -738,6 +744,7 @@ def _load_emoji_data():
   # the regional indicators, and the skin tone modifiers.
 
 
+PROPOSED_EMOJI_AGE = 1000.0
 ZWJ = 0x200d
 EMOJI_VS = 0xfe0f
 EMOJI_SEQUENCE_TYPES = frozenset([
@@ -1145,7 +1152,7 @@ def _load_emoji_sequence_data():
     if is_default_text_presentation:
       seq = (cp, EMOJI_VS)
 
-    emoji_age = float(age(cp)) or 11.0
+    emoji_age = float(age(cp)) or PROPOSED_EMOJI_AGE
     current_data = _emoji_sequence_data.get(seq) or (
         emoji_name, emoji_age, 'Emoji_Single_Sequence')
 
@@ -1218,7 +1225,8 @@ def get_emoji_sequence_name(seq):
 
 def get_emoji_sequence_age(seq):
   """Return the age of the (possibly non-canonical)  sequence, or None if
-  not recognized as a sequence.  Proposed sequences have 1000.0 as the age."""
+  not recognized as a sequence.  Proposed sequences have PROPOSED_EMOJI_AGE
+  as the age."""
   # floats are a pain since the actual values are decimal.  maybe use
   # strings to represent age.
   data = get_emoji_sequence_data(seq)
@@ -1371,17 +1379,28 @@ def _load_unicode_emoji_variants():
       if m:
         emoji_variants.add(int(m.group(1), 16))
 
-  # temporarily hard-code in some post-9.0 proposed exceptions used
-  # in gendered emoji sequences
-  emoji_variants.union(set([0x2640, 0x2642, 0x2695]))
-
   _emoji_variants = frozenset(emoji_variants)
 
-  with open_unicode_data_file('proposed-variants.txt') as f:
-    for line in f:
-      m = line_re.match(line)
-      if m:
-        emoji_variants.add(int(m.group(1), 16))
+  try:
+    read = 0
+    skipped = 0
+    with open_unicode_data_file('proposed-variants.txt') as f:
+      for line in f:
+        m = line_re.match(line)
+        if m:
+          read += 1
+          cp = int(m.group(1), 16)
+          if cp in emoji_variants:
+            skipped += 1
+          else:
+            emoji_variants.add(cp)
+
+    print('skipped %s %d proposed variants' %
+          ('all of' if skipped == read else skipped, read))
+  except IOError as e:
+    if e.errno != 2:
+      raise e
+
   _emoji_variants_proposed = frozenset(emoji_variants)
 
 
@@ -1473,8 +1492,8 @@ def variant_data_cps():
 # proposed emoji
 
 def _load_proposed_emoji_data():
-  """Parse proposed-emoji-10.txt to get cps/names of proposed emoji that are not
-  yet approved for Unicode 10."""
+  """Parse proposed-emoji.txt if it exists to get cps/names of proposed emoji
+     (but not approved) for this version of Unicode."""
 
   global _proposed_emoji_data, _proposed_emoji_data_cps
   if _proposed_emoji_data:
@@ -1483,22 +1502,28 @@ def _load_proposed_emoji_data():
   _proposed_emoji_data = {}
   line_re = re.compile(
       r'^U\+([a-zA-z0-9]{4,5})\s.*\s\d{4}Q\d\s+(.*)$')
-  with open_unicode_data_file('proposed-emoji-10.txt') as f:
-    for line in f:
-      line = line.strip()
-      if not line or line[0] == '#' or line.startswith(u'\u2022'):
-        continue
+  try:
+    with open_unicode_data_file('proposed-emoji.txt') as f:
+      for line in f:
+        line = line.strip()
+        if not line or line[0] == '#' or line.startswith(u'\u2022'):
+          continue
 
-      m = line_re.match(line)
-      if not m:
-        raise ValueError('did not match "%s"' % line)
-      cp = int(m.group(1), 16)
-      name = m.group(2)
-      if cp in _proposed_emoji_data:
-        raise ValueError('duplicate emoji %x, old name: %s, new name: %s' % (
-            cp, _proposed_emoji_data[cp], name))
+        m = line_re.match(line)
+        if not m:
+          raise ValueError('did not match "%s"' % line)
+        cp = int(m.group(1), 16)
+        name = m.group(2)
+        if cp in _proposed_emoji_data:
+          raise ValueError('duplicate emoji %x, old name: %s, new name: %s' % (
+              cp, _proposed_emoji_data[cp], name))
 
-      _proposed_emoji_data[cp] = name
+        _proposed_emoji_data[cp] = name
+  except IOError as e:
+    if e.errno != 2:
+      # not file not found, rethrow
+      raise e;
+
   _proposed_emoji_data_cps = frozenset(_proposed_emoji_data.keys())
 
 
