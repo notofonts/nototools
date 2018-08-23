@@ -30,13 +30,20 @@ chmod a+r /usr/local/share/noto/config
 
 # crate a script to setup nototools and install it, this has to be run in
 # an active container that has mapped noto.
-cat << EOF >> /usr/local/share/noto/setup_nototools.sh
+
+# In order to access noto-emoji tools from a different location, we
+# need to put it on the path.  The naming is a problem.  We assume here
+# that we're in control of the environment so write the PYTHONPATH
+# directly.
+cat << EOF >> /usr/local/share/noto/setup_nototools
+# source this file
 pushd /app/noto/nototools
 pip install -r requirements.txt
 python setup.py develop
 popd
+
+export PYTHONPATH=/app/noto/noto-emoji
 EOF
-chmod a+x /usr/local/share/noto/setup_nototools.sh
 
 # we use 7za when we generate zips for the website data.
 #
