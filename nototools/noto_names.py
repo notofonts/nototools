@@ -125,6 +125,7 @@ _SCRIPT_KEY_TO_FONT_NAME = {
     'Zsye': None,
     'MONO': None,
     'SYM2': 'Symbols2',
+    'MUSE': None,
 }
 
 
