@@ -323,6 +323,7 @@ _SHORT_SCRIPTS = {
   'Old South Arabian': 'OldSouArab',  # Sarb
   'Psalter Pahlavi': 'PsaPahlavi',  # Phlp
   'Meetei Mayek': 'MeetMayek',  # Mtei
+  'Hanifi Rohingya': 'HanifiRohg',  # Rohg
   'Sora Sompeng': 'SoraSomp',  # Sora
   'Inscriptional Parthian': 'InsParthi',  # Prti
   'Pau Cin Hau': 'PauCinHau',  # Pauc
