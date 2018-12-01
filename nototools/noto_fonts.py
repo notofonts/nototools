@@ -44,11 +44,14 @@ ODD_SCRIPTS = {
   'CJKkr': 'Kore',
   'CJKsc': 'Hans',
   'CJKtc': 'Hant',
+  'CJKhk': 'Hant',
   'JP': 'Jpan',
   'KR': 'Kore',
   'SC': 'Hans',
   'TC': 'Hant',
+  'HK': 'Hant',
   'NKo': 'Nkoo',
+  'Meroitic': 'Mero',
   'SumeroAkkadianCuneiform': 'Xsux',
   'Symbols': 'Zsym',
   'Emoji': 'Zsye',
@@ -173,7 +176,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
 
   license_type = 'sil'
 
-  if script in ['JP', 'KR', 'TC', 'SC']:
+  if script in ['JP', 'KR', 'TC', 'SC', 'HK']:
     subset = script
   else:
     subset = None
