@@ -51,6 +51,12 @@ def _symbol_set():
   return _code_range_to_set(ranges)
 
 
+def _math_set():
+    """Returns set of characters that should be supported in Noto Math."""
+      ranges = unicode_data._parse_code_ranges(noto_data.MATH_RANGES_TXT)
+        return _code_range_to_set(ranges)
+
+
 def _cjk_set():
   """Returns set of characters that will be provided in CJK fonts."""
   ranges = unicode_data._parse_code_ranges(noto_data.CJK_RANGES_TXT)
@@ -69,6 +75,9 @@ def _get_script_required(
     # TODO: Check emoji coverage
     if not unicode_only:
       needed_chars = _emoji_pua_set()  # legacy PUA for android emoji
+  elif script == 'Zmth':  # Math
+    if not unicode_only:
+      needed_chars = _math_set()
   elif script == 'Zsym':  # Symbols
     if not unicode_only:
       needed_chars = _symbol_set()

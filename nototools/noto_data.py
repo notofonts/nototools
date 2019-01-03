@@ -114,6 +114,7 @@ DEEMED_UI_SCRIPTS_SET = frozenset({
   'Geor', # Georgian
   'Hebr', # Hebrew
   'Sinh', # Sinhala
+  'Zmth', # Math
   'Zsye', # Emoji
 })
 
