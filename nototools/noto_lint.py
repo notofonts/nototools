@@ -400,6 +400,7 @@ HARD_CODED_FONT_INFO = {
     "NotoSansEmoji-Regular.ttf": ("Sans", "Zsye", None, "Regular"),
     "NotoSansKufiArabic-Regular.ttf": ("Kufi", "Arab", None, "Regular"),
     "NotoSansKufiArabic-Bold.ttf": ("Kufi", "Arab", None, "Bold"),
+    "NotoSansMath-Regular.ttf": ("Sans", "Zmth", None, "Regular"),
     "NotoSansSymbols-Regular.ttf": ("Sans", "Zsym", None, "Regular"),
     "NotoNastaliqUrduDraft.ttf": ("Nastaliq", "Urdu", None, "Regular"),
     "NotoNastaliq-Regular.ttf": ("Nastaliq", "Urdu", None, "Regular")
