@@ -13,13 +13,13 @@
   <info family="sans-adlm" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-adlm-unjoined" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-aghb" family_name_style="very short" include_regular="t" use_preferred="t" />
-  <info family="sans-ahom" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-ahom" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-arab" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-arab-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-armi" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-armn" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-avst" family_name_style="short" include_regular="t" use_preferred="t" />
-  <info family="sans-bali" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="serif-bali" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-bamu" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-bass" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-batk" family_name_style="short" include_regular="t" use_preferred="t" />
@@ -42,6 +42,7 @@
   <info family="sans-cprt" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-deva" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-deva-ui" family_name_style="extra short" include_regular="t" use_preferred="t" />
+  <info family="sans-dogr" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-dsrt" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-dupl" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-egyp" family_name_style="very short" include_regular="t" use_preferred="t" />
@@ -49,6 +50,8 @@
   <info family="sans-ethi" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-geor" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-glag" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-gong" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-gonm" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-goth" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-gran" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-gujr" family_name_style="short" include_regular="t" use_preferred="t" />
@@ -94,9 +97,11 @@
   <info family="sans-lyci" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-lydi" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-mahj" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-maka" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-mand" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-mani" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-marc" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-medf" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-mend" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-merc" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-mero" family_name_style="very short" include_regular="t" use_preferred="t" />
@@ -114,6 +119,7 @@
   <info family="sans-nbat" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-newa" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-nkoo" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-nshu" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-ogam" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-olck" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-orkh" family_name_style="very short" include_regular="t" use_preferred="t" />
@@ -143,7 +149,10 @@
   <info family="sans-sind" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-sinh" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-sinh-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-sogd" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-sogo" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-sora" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-soyo" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-sund" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-sylo" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-sym2" family_name_style="short" include_regular="t" use_preferred="t" />
@@ -175,6 +184,7 @@
   <info family="sans-xpeo" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-xsux" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-yiii" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-zanb" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-zmth" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-zsym" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="serif-arab" family_name_style="short" include_regular="t" use_preferred="t" />
