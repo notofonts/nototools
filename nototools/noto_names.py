@@ -38,6 +38,7 @@ file names that follow noto conventions, and generates the corresponding
 name table names.  So it is not useful for non-noto fonts.
 """
 
+from __future__ import print_function
 import argparse
 import collections
 import datetime
@@ -328,6 +329,10 @@ _SHORT_SCRIPTS = {
   'Inscriptional Parthian': 'InsParthi',  # Prti
   'Pau Cin Hau': 'PauCinHau',  # Pauc
   'Old Hungarian': 'OldHung',  # Hung
+  'Masaram Gondi': 'MasaramGon',  # Gonm
+  'Gunjala Gondi': 'GunjalaGon',  # Gonj
+  'Zanabazar Square': 'Zanabazar',  # Zanb
+  'Medefaidrin': 'Medfaidrin',  # Medf
 }
 
 def _name_style_for_length(parts, limit):
@@ -421,8 +426,7 @@ def _postscript_name(preferred_family, preferred_subfamily, include_regular):
   result = re.sub('CJK(JP|KR|SC|TC)', repl_fn, result)
 
   if len(result) > 63:
-    print >> sys.stderr, 'postscript name longer than 63 characters:\n"%s"' % (
-        result)
+    print('postscript name longer than 63 characters:\n"%s"' % (result), file=sys.stderr)
   return result
 
 
@@ -581,10 +585,10 @@ def name_table_data(noto_font, family_to_name_info, phase):
   """Returns a NameTableData for this font given the family_to_name_info."""
   family_id = noto_fonts.noto_font_to_wws_family_id(noto_font)
   try:
-    info = family_to_name_info[family_id]
+      info = family_to_name_info[family_id]
   except KeyError:
-    print >> sys.stderr, 'no family name info for "%s"' % family_id
-    return None
+      print('no family name info for "%s"' % family_id, file=sys.stderr)
+      return None
 
   family_parts, subfamily_parts = _wws_parts(*_preferred_parts(noto_font))
   if not info.use_preferred and subfamily_parts not in [
@@ -592,10 +596,9 @@ def name_table_data(noto_font, family_to_name_info, phase):
       ['Bold'],
       ['Italic'],
       ['Bold', 'Italic']]:
-    print >> sys.stderr, (
-        'Error in family name info: %s requires preferred names, but info '
-        'says none are required.' % path.basename(noto_font.filepath))
-    print >> sys.stderr, subfamily_parts
+    print('Error in family name info: %s requires preferred names, but info says none are required.'
+          % path.basename(noto_font.filepath), file=sys.stderr)
+    print(subfamily_parts, file=sys.stderr)
     return None
 
   # for phase 3 we'll now force include_regular
@@ -841,13 +844,13 @@ def _create_family_to_faces(notofonts, name_fn):
 
 def _dump_family_to_faces(family_to_faces):
   for family in sorted(family_to_faces):
-    print '%s:\n  %s' % (
-        family, '\n  '.join(sorted(family_to_faces[family])))
+    print('%s:\n  %s' % (
+        family, '\n  '.join(sorted(family_to_faces[family]))))
 
 
 def _dump_name_data(name_data):
   if not name_data:
-    print '  Error: no name data'
+    print('  Error: no name data')
     return True
 
   err = False
@@ -855,11 +858,11 @@ def _dump_name_data(name_data):
     value = getattr(name_data, attr)
     if value:
       if attr == 'original_family' and len(value) > ORIGINAL_FAMILY_LIMIT:
-        print '## family too long (%2d): %s' % (len(value), value)
+        print('## family too long (%2d): %s' % (len(value), value))
         err = True
-      print '  %20s: %s' % (attr, value)
+      print('  %20s: %s' % (attr, value))
     else:
-      print '  %20s: <none>' % attr
+      print('  %20s: <none>' % attr)
   return err
 
 
@@ -867,13 +870,13 @@ def _dump_family_names(notofonts, family_to_name_info, phase):
   err_names = []
   for font in sorted(notofonts, key=lambda f: f.filepath):
     name_data = name_table_data(font, family_to_name_info, phase)
-    print
-    print font.filepath
+    print()
+    print(font.filepath)
     if _dump_name_data(name_data):
       err_names.append(font.filepath)
   if err_names:
-    print '## %d names too long:\n  %s' % (
-        len(err_names), '\n  '.join(err_names))
+    print('## %d names too long:\n  %s' % (
+        len(err_names), '\n  '.join(err_names)))
 
 
 def _dump(fonts, info_file, phase):
@@ -889,13 +892,13 @@ def _write(fonts, info_file, phase, extra_styles):
   if info_file:
     write_family_name_info_file(family_to_name_info, info_file, pretty=True)
   else:
-    print write_family_name_info(family_to_name_info, pretty=True)
+    print(write_family_name_info(family_to_name_info, pretty=True))
 
 
 def _test(fonts, phase, extra_styles):
   """Build name info from font_paths and dump the names for them."""
   family_to_name_info = create_family_to_name_info(fonts, phase, extra_styles)
-  print write_family_name_info(family_to_name_info, pretty=True)
+  print(write_family_name_info(family_to_name_info, pretty=True))
   _dump_family_names(fonts, family_to_name_info, phase)
 
 
@@ -903,8 +906,8 @@ def _info(fonts):
   """Group fonts into families and list the subfamilies for each."""
   family_to_subfamilies = _create_family_to_subfamilies(fonts)
   for family in sorted(family_to_subfamilies):
-    print '%s:\n  %s' % (
-        family, '\n  '.join(sorted(family_to_subfamilies[family])))
+    print('%s:\n  %s' % (
+        family, '\n  '.join(sorted(family_to_subfamilies[family]))))
 
 
 def _read_filename_list(filenames):
@@ -985,26 +988,26 @@ def main():
   paths = _collect_paths(args.dirs, args.files)
   fonts = _get_noto_fonts(paths)
   if not fonts:
-    print 'Please specify at least one directory or file'
+    print('Please specify at least one directory or file')
     return
 
   if not args.info_file:
     if args.phase:
       args.info_file = _PHASE_TO_FILENAME[args.phase]
-      print 'using name info file: "%s"' % args.info_file
+      print('using name info file: "%s"' % args.info_file)
 
   if args.cmd == 'dump':
     if not args.info_file:
-      print 'must specify an info file to dump'
+      print('must specify an info file to dump')
       return
     info_file = tool_utils.resolve_path(args.info_file)
     if not path.exists(info_file):
-      print '"%s" does not exist.' % args.info_file
+      print('"%s" does not exist.' % args.info_file)
       return
     _dump(fonts, info_file, args.phase)
   elif args.cmd == 'write':
     if not args.phase:
-      print 'Must specify phase when generating info.'
+      print('Must specify phase when generating info.')
       return
     out = None if args.info_file == '-' else args.info_file
     _write(fonts, out, args.phase, args.extra_styles)

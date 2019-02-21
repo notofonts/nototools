@@ -21,7 +21,6 @@ __author__ = (
     "behdad@google.com (Behdad Esfahbod), and "
     "stuartg@google.com (Stuart Gill)")
 
-
 import argparse
 import collections
 import itertools
@@ -59,6 +58,7 @@ WIN_ANSI_CODEPOINTS = (
     '0000-007f 00A0-00ff 20ac 201a 0192 201e 2026 2020 2021 02c6 2030 0160 2039 0152 017d'
     '2018 2019 201c 201d 2022 2013 2014 02dc 2122 0161 203a 0153 017e 0178')
 
+
 def all_scripts():
     """Extends unicode scripts with pseudo-script 'Urdu'."""
     result = set(unicode_data.all_scripts())
@@ -67,7 +67,7 @@ def all_scripts():
 
 
 def printable_unicode_range(input_char_set):
-    char_set = set(input_char_set) # copy
+    char_set = set(input_char_set)  # copy
     parts_list = []
     while char_set:
         last = first = min(char_set)
@@ -77,7 +77,7 @@ def printable_unicode_range(input_char_set):
         if last == first + 1:
             part = "%04X" % first
         else:
-            part = "%04X..%04X" % (first, last-1)
+            part = "%04X..%04X" % (first, last - 1)
         parts_list.append(part)
     return ", ".join(parts_list)
 
@@ -90,7 +90,7 @@ def next_circular_point(current_point, start_of_range, end_of_range):
 
 
 def curve_between(
-    coordinates, start_at, end_at, start_of_contour, end_of_contour):
+        coordinates, start_at, end_at, start_of_contour, end_of_contour):
     """Returns indices of a part of a contour between start and end of a curve.
 
     The contour is the cycle between start_of_contour and end_of_contour,
@@ -107,13 +107,13 @@ def curve_between(
       the contour if necessary.
     """
     if end_at > start_at:
-        return list(coordinates[start_at:end_at+1])
+        return list(coordinates[start_at:end_at + 1])
     elif start_of_contour == end_of_contour:  # single-point contour
         assert start_at == end_at == start_of_contour
         return [coordinates[start_at]]
     else:  # the curve goes around the range
-        return (list(coordinates[start_at:end_of_contour+1]) +
-                list(coordinates[start_of_contour:end_at+1]))
+        return (list(coordinates[start_at:end_of_contour + 1]) +
+                list(coordinates[start_of_contour:end_at + 1]))
 
 
 def curve_has_off_curve_extrema(curve):
@@ -148,10 +148,10 @@ def curve_has_off_curve_extrema(curve):
     # these set to +pi and then with all set to -pi. If the curve is proper in
     # at least one case, we assume the curve has no missing extrema.
 
-    ninety_deg = math.pi/2
+    ninety_deg = math.pi / 2
     score = 0
     for sign in [-1, +1]:
-        angles = [sign*math.pi if math.fabs(angle) == math.pi else angle
+        angles = [sign * math.pi if math.fabs(angle) == math.pi else angle
                   for angle in angles]
         min_quarter = math.floor(min(angles) / ninety_deg)
         max_quarter = math.ceil(max(angles) / ninety_deg)
@@ -162,6 +162,7 @@ def curve_has_off_curve_extrema(curve):
         return out_of_box_size(curve)
 
     return 0
+
 
 # Finds out the how far away the off-curve extrema lies from the on-curve
 # points. This is done by comparing the bounding box of the endpoints with that
@@ -178,7 +179,7 @@ def out_of_box_size(curve):
         ax, ay = curve[1]
         bx, by = curve[2]
         # Implicit point is the mid point of first two off-curve points.
-        implicit_point = ((ax + bx)/2, (ay + by)/2)
+        implicit_point = ((ax + bx) / 2, (ay + by) / 2)
         first_curve = curve[:2] + [implicit_point]
         remaining_curve = [implicit_point] + curve[2:]
     else:
@@ -198,7 +199,7 @@ def out_of_box_size(curve):
     # The out-of-box size for the entire curve will be maximum of the deviation
     # for the first curve and that of the remaining curve.
     delta = max(ex1 - bx1, ey1 - by1, bx2 - ex2, by2 - ey2,
-               out_of_box_size(remaining_curve))
+                out_of_box_size(remaining_curve))
     # ignore very small deviations
     return 0 if delta < 1 else delta
 
@@ -228,6 +229,7 @@ def cut_piece_in_half(piece):
             piece[0], piece[1], piece[2],
             0.5)
 
+
 def cut_ends(piece, cut_amount):
     if len(piece) == 2:
         return (interpolate_segment(piece, cut_amount),
@@ -244,8 +246,9 @@ def probably_intersect(piece1, piece2):
     return arrayTools.sectRect(bounds1, bounds2)[0]
 
 
-_EPSILON = 1.0/(2**14)
+_EPSILON = 1.0 / (2 ** 14)
 _MAX_DEPTH = 30
+
 
 def curve_pieces_intersect(piece1, piece2, ignore_ends):
     if ignore_ends:
@@ -274,7 +277,8 @@ def curve_pieces_intersect(piece1, piece2, ignore_ends):
                         return True
                     else:
                         pairs_to_investigate.append(
-                            (first_section, second_section, level+1))
+                            (first_section, second_section, level + 1))
+
 
 def to_float_tuples(curve):
     coord_list = []
@@ -310,13 +314,13 @@ def curves_intersect(contour_list):
 
     all_pieces = sum(all_contours, [])
     if len(set(all_pieces)) != len(all_pieces):
-        print 'some pieces are duplicates' # No piece should be repeated
+        print('some pieces are duplicates')  # No piece should be repeated
 
     adjacent_pairs = set()
     for contour_pieces in all_contours:
-        for i in range(len(contour_pieces)-1):
+        for i in range(len(contour_pieces) - 1):
             adjacent_pairs.add(
-                frozenset({contour_pieces[i], contour_pieces[i+1]}))
+                frozenset({contour_pieces[i], contour_pieces[i + 1]}))
         if len(contour_pieces) > 2:
             adjacent_pairs.add(
                 frozenset({contour_pieces[-1], contour_pieces[0]}))
@@ -341,11 +345,11 @@ def printable_font_revision(font, accuracy=2):
     font_revision = font["head"].fontRevision
     font_revision_int = int(font_revision)
     font_revision_frac = int(
-        round((font_revision - font_revision_int) * 10**accuracy))
+        round((font_revision - font_revision_int) * 10 ** accuracy))
 
     font_revision_int = str(font_revision_int)
     font_revision_frac = str(font_revision_frac).zfill(accuracy)
-    return font_revision_int+"."+font_revision_frac
+    return font_revision_int + "." + font_revision_frac
 
 
 def printable_font_versions(font):
@@ -356,7 +360,7 @@ def printable_font_versions(font):
         minor_version = match.group(2)
         accuracy = len(minor_version)
         font_revision = printable_font_revision(font, accuracy)
-        if font_revision == major_version+"."+minor_version:
+        if font_revision == major_version + "." + minor_version:
             return version
     else:
         font_revision = printable_font_revision(font, 3)
@@ -374,6 +378,8 @@ def _build_cmap_dict(filename):
 
 _phase_2_map = None
 _phase_3_map = None
+
+
 def _get_cmap_data_for_phase(phase):
     global _phase_2_map, _phase_3_map
     if phase < 3:
@@ -412,7 +418,6 @@ MIN_UI_HEIGHT = -555
 UI_ASCENT = 2189
 UI_DESCENT = -600
 
-
 _cur_file_name = None
 _printed_file_name = False
 _processed_files = 0
@@ -434,8 +439,7 @@ def font_properties_from_name(file_path, phase):
 
     is_google = True
     vendor = ('Adobe' if noto_font.is_cjk
-              else 'KhmerType' if noto_font.script in ['Khmr', 'Cham', 'Laoo']
-              else 'Monotype')
+              else 'KhmerType' if noto_font.script in ['Khmr', 'Cham', 'Laoo'] else 'Monotype')
 
     char_version = 6.0 if noto_font.family == 'Noto' else 8.0
     return FontProps(is_google, vendor, char_version, *noto_font)
@@ -467,13 +471,13 @@ def check_font(font_props, filename_error,
     _processed_files += 1
 
     def _noto_font_from_font_props(font_props):
-      fields = """
+        fields = """
           filepath,family,style,script,variant,width,weight,slope,fmt,
           manufacturer,license_type,is_hinted,is_mono,is_UI,is_UI_metrics,
           is_display,is_cjk,subset
       """.split(',')
-      vals = [getattr(font_props, p.strip()) for p in fields]
-      return noto_fonts.NotoFont(*vals)
+        vals = [getattr(font_props, p.strip()) for p in fields]
+        return noto_fonts.NotoFont(*vals)
 
     noto_font = _noto_font_from_font_props(font_props)
 
@@ -485,12 +489,12 @@ def check_font(font_props, filename_error,
             global _printed_file_name
             if not _printed_file_name:
                 _printed_file_name = True
-                print "---\nAutomatic testing for '%s', %s:" % (
+                print("---\nAutomatic testing for '%s', %s:" % (
                     _cur_file_name,
-                    printable_font_versions(font))
+                    printable_font_versions(font)))
 
         if check_test and not tests.check(test_name):
-          return
+            return
 
         interesting_part_of_file_name = ",".join(font_props.filepath.split("/")[-2:])
         if interesting_part_of_file_name != _cur_file_name:
@@ -515,17 +519,17 @@ def check_font(font_props, filename_error,
                 print_file_name()
                 se = suppressed_err_count[0]
                 if not se:
-                    print "Found %s." % pluralize_errmsg(ec)
+                    print("Found %s." % pluralize_errmsg(ec))
                 else:
-                    print "Found %s (%s hidden)." % (pluralize_errmsg(ec),
-                                                     "all" if se == ec else se)
+                    print("Found %s (%s hidden)." % (pluralize_errmsg(ec),
+                                                     "all" if se == ec else se))
                 if wc and not nowarn:
                     sw = suppressed_warn_count[0]
                     if not sw and wc:
-                        print "Found %s." % pluralize_errmsg(wc, False)
+                        print("Found %s." % pluralize_errmsg(wc, False))
                     elif wc:
-                        print "Found %s (%s hidden)." % (pluralize_errmsg(wc, False),
-                                                         "all" if sw == wc else sw)
+                        print("Found %s (%s hidden)." % (pluralize_errmsg(wc, False),
+                                                         "all" if sw == wc else sw))
 
             if ec:
                 _processed_files_with_errors += 1
@@ -564,7 +568,7 @@ def check_font(font_props, filename_error,
             if font_props.slope:
                 names.append(font_props.slope)
             subfamily = ''.join(names)
-            print ('%s,%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
+            print(('%s,%s,%s,%s,%s,%s,%s,%s,%s,"%s"' % (
                 err_type,
                 noto_fonts.script_name_for_report(font_props.script),
                 font_props.style if font_props.style else '',
@@ -574,11 +578,10 @@ def check_font(font_props, filename_error,
                 category_name,
                 interesting_part_of_file_name,
                 printable_font_revision(font),
-                message)).encode('UTF-8')
+                message)).encode('UTF-8'))
         else:
-            print "%s <%s> %s" % (err_type[0], test_name, message.encode('UTF-8'))
+            print("%s <%s> %s" % (err_type[0], test_name, message.encode('UTF-8')))
         sys.stdout.flush()
-
 
     _script_key_to_font_name = {
         'Aran': 'Urdu',
@@ -587,23 +590,22 @@ def check_font(font_props, filename_error,
         'Zsye': None,
     }
 
-
     def _check_unused_names():
-      # For now, just a warning, and we don't actually check if other tables use it.
-      # Add those checks as we need them.  See the GPOS/GSUB checks of name references
-      # for an example of how we'd check.
-      if not tests.check('name/unused'):
-        return
-      names = font_data.get_name_records(font)
-      for i in names:
-        # names 255 and below are reserved for standard names
-        # names 256-32767 are for use by font tables
-        # names 23 and 24 are for use by CPAL, so it might be considered a mistake if
-        # these are present and no CPAL table is present or it doesn't use them.  Not
-        # checking this for now.
-        if i >= 256:
-          warn('name/unused', 'Name', 'Name table has record #%d: "%s"' %
-               (i, names[i]), is_error=False)
+        # For now, just a warning, and we don't actually check if other tables use it.
+        # Add those checks as we need them.  See the GPOS/GSUB checks of name references
+        # for an example of how we'd check.
+        if not tests.check('name/unused'):
+            return
+        names = font_data.get_name_records(font)
+        for i in names:
+            # names 255 and below are reserved for standard names
+            # names 256-32767 are for use by font tables
+            # names 23 and 24 are for use by CPAL, so it might be considered a mistake if
+            # these are present and no CPAL table is present or it doesn't use them.  Not
+            # checking this for now.
+            if i >= 256:
+                warn('name/unused', 'Name', 'Name table has record #%d: "%s"' %
+                     (i, names[i]), is_error=False)
 
     def _check_name(actual, expected, keyname, is_re):
         """Set expected to '-' to require any name, set it to None if a name
@@ -635,10 +637,9 @@ def check_font(font_props, filename_error,
             warn(test_key, keyname,
                  "Expected no %s, but got '%s'" % (keyname, actual))
 
-
     def check_name_table():
         if not tests.check('name'):
-          return
+            return
 
         _check_unused_names()
 
@@ -654,9 +655,9 @@ def check_font(font_props, filename_error,
         names = font_data.get_name_records(font)
 
         def _check_idx(idx, expected, keyname):
-          actual = names.get(idx, None)
-          is_re = expected and expected[0] == '^' and expected[-1] == '$'
-          _check_name(actual, expected, keyname, is_re=is_re)
+            actual = names.get(idx, None)
+            is_re = expected and expected[0] == '^' and expected[-1] == '$'
+            _check_name(actual, expected, keyname, is_re=is_re)
 
         _check_idx(0, name_data.copyright_re, 'copyright')
         _check_idx(1, name_data.original_family, "family")
@@ -688,12 +689,13 @@ def check_font(font_props, filename_error,
 
         match = re.match(name_data.version_re, names[5])
         if not match:
-            return # already caught above
+            return  # already caught above
 
         major_version = match.group(1)
         minor_version = match.group(2)
+        version_string = '%s.%s' % (major_version, minor_version)
         if ((0 <= int(major_version) <= 65535)
-            and (0 <= int(minor_version) <= 65535)):
+                and (0 <= int(minor_version) <= 65535)):
             accuracy = len(minor_version)
             font_revision = printable_font_revision(font, accuracy)
             if font_revision != major_version + "." + minor_version:
@@ -706,19 +708,16 @@ def check_font(font_props, filename_error,
                  "Version string has numerical parts outside the range "
                  "[0, 65535]: '%s'." % version_string)
 
-
     def _get_required_chars(noto_font, noto_phase, test_key):
-      script_to_chars = _get_cmap_data_for_phase(noto_phase)
-      # do we need to map font names/families to scripts differently based
-      # on the phase?
-      try:
-        return script_to_chars[noto_font.script]
-      except KeyError:
-        warn(test_key, "Chars",
-             "no char data for script %s in %s" % (
-                 noto_font.script, noto_font.filepath))
+        script_to_chars = _get_cmap_data_for_phase(noto_phase)
+        # do we need to map font names/families to scripts differently based
+        # on the phase?
+        try:
+            return script_to_chars[noto_font.script]
+        except KeyError:
+            warn(test_key, "Chars", "no char data for script %s in %s" % (
+                noto_font.script, noto_font.filepath))
         return None
-
 
     def _check_needed_chars(cmap, char_filter):
         # TODO(roozbeh): check the glyph requirements for controls specified at
@@ -727,7 +726,7 @@ def check_font(font_props, filename_error,
         needed_chars = _get_required_chars(
             noto_font, noto_phase, 'cmap/script_required')
         if needed_chars == None:
-             return
+            return
 
         # TODO: also check character coverage against Unicode blocks for
         # characters of script Common or Inherited
@@ -736,7 +735,7 @@ def check_font(font_props, filename_error,
             # old_needed_size = len(needed_chars)
             needed_chars = set(itertools.ifilter(char_filter[1].accept, needed_chars))
             # TODO(dougfelt): figure out how to make this info available without messing up output
-            # print 'filter needed char size: %d -> %d' % (old_needed_size, len(needed_chars))
+            # print('filter needed char size: %d -> %d' % (old_needed_size, len(needed_chars))
 
         missing_chars = needed_chars - set(cmap.keys())
         if missing_chars:
@@ -744,7 +743,6 @@ def check_font(font_props, filename_error,
                  "The following %d characters are missing from the font: %s."
                  % (len(missing_chars), printable_unicode_range(missing_chars)),
                  check_test=False)
-
 
     def _check_unexpected_chars(cmap, char_filter):
         expected_chars = _get_required_chars(
@@ -760,7 +758,6 @@ def check_font(font_props, filename_error,
                  % (len(unexpected_chars), printable_unicode_range(unexpected_chars)),
                  is_error=False, check_test=False)
 
-
     def check_cmap_table():
         cmap_table = font['cmap']
         cmaps = {}
@@ -775,8 +772,8 @@ def check_font(font_props, filename_error,
                 (6, 1, 1),  # Japanese
                 (6, 1, 2),  # Traditional Chinese
                 (6, 1, 3),  # Korean
-                (6, 1, 25), # Simplified Chinese
-                ])
+                (6, 1, 25),  # Simplified Chinese
+            ])
         for table in cmap_table.tables:
             if (table.format,
                 table.platformID,
@@ -794,7 +791,7 @@ def check_font(font_props, filename_error,
                              "'cmap' has two format %d subtables that are not"
                              " aliases" % table.format)
                 else:
-                  cmaps[table.format] = table.cmap
+                    cmaps[table.format] = table.cmap
 
         if 4 not in cmaps:
             warn("cmap/tables/missing", "cmap",
@@ -804,9 +801,9 @@ def check_font(font_props, filename_error,
             cmap = cmaps[12]
             # if there is a format 12 table, it should have non-BMP characters
             if max(cmap.keys()) <= 0xFFFF:
-              warn("cmap/tables/format_12_has_bmp", "cmap",
-                   "'cmap' has a format 12 subtable but no "
-                   "non-BMP characters.")
+                warn("cmap/tables/format_12_has_bmp", "cmap",
+                     "'cmap' has a format 12 subtable but no "
+                     "non-BMP characters.")
 
             # format 4 table should be a subset of the format 12 one
             if tests.check('cmap/tables/format_4_subset_of_12') and 4 in cmaps:
@@ -823,18 +820,17 @@ def check_font(font_props, filename_error,
         else:
             cmap = cmaps[4]
 
-
         if tests.check('cmap/required'):
             required_in_all_fonts = [
-                0x0000, # .null
-                0x000D, # CR
-                0x0020] # space
+                0x0000,  # .null
+                0x000D,  # CR
+                0x0020]  # space
             for code in required_in_all_fonts:
                 if code not in cmap:
                     warn("cmap/required", "cmap",
                          "U+%04X is not mapped in cmap, but it should be (see "
                          "https://www.microsoft.com/typography/otspec/recom.htm)."
-                             % code,
+                         % code,
                          check_test=False)
 
         if not font_props.is_cjk and tests.check('cmap/script_required'):
@@ -846,6 +842,7 @@ def check_font(font_props, filename_error,
             pua_filter = tests.get_filter('cmap/private_use')
             if pua_filter:
                 pua_filter = pua_filter[1].accept
+
             def is_unwanted_pua(char):
                 if char in needed_chars:
                     return False
@@ -866,7 +863,7 @@ def check_font(font_props, filename_error,
 
         if tests.check('cmap/non_characters'):
             non_characters = frozenset(
-                range(0xFDD0, 0xFDEF+1)
+                range(0xFDD0, 0xFDEF + 1)
                 + [0xFFFE + plane_no * 0x10000 for plane_no in range(0, 17)]
                 + [0xFFFF + plane_no * 0x10000 for plane_no in range(0, 17)])
             non_characters_in_cmap = non_characters & set(cmap.keys())
@@ -874,19 +871,19 @@ def check_font(font_props, filename_error,
                 warn("cmap/non_characters", "Chars",
                      "There should be no non-characters defined in the font, but "
                      "there are: %s."
-                         % printable_unicode_range(non_characters_in_cmap),
+                     % printable_unicode_range(non_characters_in_cmap),
                      check_test=False)
 
         if tests.check('cmap/disallowed_ascii') and not (
-            font_props.script == "Zsye" or
-            font_props.script == "Latn" or
-            font_props.script == "LGC" or
-            font_props.is_cjk):
+                font_props.script == "Zsye" or
+                font_props.script == "Latn" or
+                font_props.script == "LGC" or
+                font_props.is_cjk):
             ascii_letters = noto_data.ascii_letters()
             contained_letters = ascii_letters & set(cmap.keys())
             if contained_letters:
                 warn("cmap/disallowed_ascii", "Chars",
-                    "There should not be ASCII letters in the font, but there are: %s."
+                     "There should not be ASCII letters in the font, but there are: %s."
                      % printable_unicode_range(contained_letters),
                      check_test=False)
 
@@ -911,7 +908,7 @@ def check_font(font_props, filename_error,
             num = len(cps_with_variants)
             info = lint_config.write_int_ranges(cps_with_variants, sep=', ')
             if len(info) > 50:
-              info = "not shown"
+                info = "not shown"
             warn("cmap/variants", "Variants",
                  "Font contains %d characters with standard variants, but has "
                  "no variation selector cmap table (%s)." % (num, info))
@@ -923,7 +920,7 @@ def check_font(font_props, filename_error,
                     warn("cmap/variants", "Variants",
                          "Char %04x has standard variant selector %04x, but "
                          "this selector is not in the variant table." %
-                         (cp, sel), check_test=False )
+                         (cp, sel), check_test=False)
                     continue
                 sel_info = None
                 for t in vs_cmap.uvsDict[sel]:
@@ -955,7 +952,6 @@ def check_font(font_props, filename_error,
                              (cp, sel, sel_glyphid, varcp, expected_glyphid),
                              check_test=False)
 
-
     def check_head_tables(cmap):
         if not tests.check('head'):
             return
@@ -984,34 +980,34 @@ def check_font(font_props, filename_error,
                          (bucket_index, range_name, set_unset, chars_in_bucket, size_of_bucket),
                          check_test=False)
 
-            # print printable_unicode_range(set(cmap.keys()))
-            # print "expected %s" % font_data.unicoderange_bitmap_to_string(expected_bitmap)
-            # print "have %s" % font_data.unicoderange_bitmap_to_string(bitmap)
+            # print(printable_unicode_range(set(cmap.keys()))
+            # print("expected %s" % font_data.unicoderange_bitmap_to_string(expected_bitmap)
+            # print("have %s" % font_data.unicoderange_bitmap_to_string(bitmap)
 
         hhea_table = font["hhea"]
         upem = font['head'].unitsPerEm
         if upem == 2048:
-          ui_ascent = UI_ASCENT
-          ui_descent = UI_DESCENT
+            ui_ascent = UI_ASCENT
+            ui_descent = UI_DESCENT
         else:
-          ui_ascent = int(math.ceil(UI_ASCENT * upem / 2048.0))
-          ui_descent = int(math.floor(UI_DESCENT * upem / 2048.0))
+            ui_ascent = int(math.ceil(UI_ASCENT * upem / 2048.0))
+            ui_descent = int(math.floor(UI_DESCENT * upem / 2048.0))
 
         if tests.check('head/hhea'):
             if font_props.is_UI_metrics:
                 if hhea_table.ascent > ui_ascent:
                     warn("head/hhea/ascent", "Bounds",
                          "Value of ascent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.ascent, ui_ascent))
+                         % (hhea_table.ascent, ui_ascent))
                 if hhea_table.descent < ui_descent:
                     warn("head/hhea/descent", "Bounds",
                          "Value of descent in 'hhea' table is %d, but should be %d."
-                             % (hhea_table.descent, ui_descent))
+                         % (hhea_table.descent, ui_descent))
 
             if hhea_table.lineGap != 0:
                 warn("head/hhea/linegap", "Line Gap",
                      "Value of lineGap in 'hhea' table is %d, but should be 0."
-                         % hhea_table.lineGap)
+                     % hhea_table.lineGap)
 
         vhea_table = font.get("vhea")
         if tests.check('head/vhea') and vhea_table:
@@ -1069,7 +1065,7 @@ def check_font(font_props, filename_error,
             # hack for windows GDI
             # remove this for phase 3
             if noto_phase <= 2:
-              expected_weight = max(expected_weight, 250)
+                expected_weight = max(expected_weight, 250)
 
             if os2_table.usWeightClass != expected_weight:
                 warn("head/os2/weight_class", "OS/2",
@@ -1096,9 +1092,9 @@ def check_font(font_props, filename_error,
             check_ul_unicode_range()
 
             if os2_table.panose.bFamilyType != 2:
-              warn("head/os2/panose/family", "OS/2",
-                   "Panose family value is %s but expected 2" %
-                   os2_table.panose.bSerifStyle)
+                warn("head/os2/panose/family", "OS/2",
+                     "Panose family value is %s but expected 2" %
+                     os2_table.panose.bSerifStyle)
 
             expect_serif = noto_font.style == 'Serif' or noto_font.family in [
                 'Cousine', 'Tinos']
@@ -1106,13 +1102,13 @@ def check_font(font_props, filename_error,
             serif_val = os2_table.panose.bSerifStyle
             is_serif = 1 < serif_val < 11
             if serif_val == 1:
-              warn("head/os2/panose/serif", "OS/2",
-                   "Panose serif value is 1 (no_fit) but expected 0 or %s" %
-                   expected_serif_range_str)
+                warn("head/os2/panose/serif", "OS/2",
+                     "Panose serif value is 1 (no_fit) but expected 0 or %s" %
+                     expected_serif_range_str)
             elif serif_val != 0 and expect_serif != is_serif:
-              warn("head/os2/panose/serif", "OS/2",
-                   "Panose serif value is %s but expected %s" %
-                   (serif_val, expected_serif_range_str))
+                warn("head/os2/panose/serif", "OS/2",
+                     "Panose serif value is %s but expected %s" %
+                     (serif_val, expected_serif_range_str))
 
             # TODO(dougfelt): check condensed, semicondensed proportions?
             expect_mono = noto_font.is_mono or noto_font.family == 'Cousine'
@@ -1121,17 +1117,16 @@ def check_font(font_props, filename_error,
             is_mono = proportion_val == 9
             if proportion_val <= 1:
 
-              warn("head/os2/panose/proportion", "OS/2",
-                   "Panose proportion value is %s (%s) but "
-                   "expected %s" % (
-                       proportion_val,
-                       'no_fit' if proportion_val == 1 else 'any',
-                       expect_mono_range_str))
+                warn("head/os2/panose/proportion", "OS/2",
+                     "Panose proportion value is %s (%s) but "
+                     "expected %s" % (
+                         proportion_val,
+                         'no_fit' if proportion_val == 1 else 'any',
+                         expect_mono_range_str))
             elif expect_mono != is_mono:
-              warn("head/os2/panose/proportion", "OS/2",
-                   "Panose proportion value is %s but expected %s" %
-                   (proportion_val, expect_mono_range_str))
-
+                warn("head/os2/panose/proportion", "OS/2",
+                     "Panose proportion value is %s but expected %s" %
+                     (proportion_val, expect_mono_range_str))
 
     def check_vertical_limits():
         if 'glyf' not in font:
@@ -1142,11 +1137,11 @@ def check_font(font_props, filename_error,
 
         upem = font['head'].unitsPerEm
         if upem == 2048:
-          max_ui_height = MAX_UI_HEIGHT
-          min_ui_height = MIN_UI_HEIGHT
+            max_ui_height = MAX_UI_HEIGHT
+            min_ui_height = MIN_UI_HEIGHT
         else:
-          max_ui_height = int(math.ceil(MAX_UI_HEIGHT * upem / 2048.0))
-          min_ui_height = int(math.floor(MIN_UI_HEIGHT * upem / 2048.0))
+            max_ui_height = int(math.ceil(MAX_UI_HEIGHT * upem / 2048.0))
+            min_ui_height = int(math.floor(MIN_UI_HEIGHT * upem / 2048.0))
 
         glyf_table = font['glyf']
         us_win_ascent = font['OS/2'].usWinAscent
@@ -1161,8 +1156,8 @@ def check_font(font_props, filename_error,
         tmp_gids = set()
         cmap = font_data.get_cmap(font)
         for cp in lint_config.parse_int_ranges(WIN_ANSI_CODEPOINTS, True):
-          if cp in cmap:
-            tmp_gids.add(font.getGlyphID(cmap[cp], requireReal=True))
+            if cp in cmap:
+                tmp_gids.add(font.getGlyphID(cmap[cp], requireReal=True))
         win_ansi_gids = frozenset(tmp_gids)
 
         font_ymin = None
@@ -1183,26 +1178,26 @@ def check_font(font_props, filename_error,
 
             is_win_ansi = glyph_index in win_ansi_gids
             if is_win_ansi:
-              ascent_limit = us_win_ascent
-              ascent_name = 'usWinAscent'
-              descent_limit = -us_win_descent
-              descent_name = 'usWinDescent'
+                ascent_limit = us_win_ascent
+                ascent_name = 'usWinAscent'
+                descent_limit = -us_win_descent
+                descent_name = 'usWinDescent'
             else:
-              ascent_limit = typo_ascent
-              ascent_name = 'sTypoAscent'
-              descent_limit = typo_descent
-              descent_name = 'sTypoDescent'
+                ascent_limit = typo_ascent
+                ascent_name = 'sTypoAscent'
+                descent_limit = typo_descent
+                descent_name = 'sTypoDescent'
 
             if font_props.is_UI_metrics:
                 if (tests.checkvalue('bounds/glyph/ui_ymax', glyph_index) and
-                    ymax is not None and ymax > max_ui_height):
+                        ymax is not None and ymax > max_ui_height):
                     warn("bounds/glyph/ui_ymax", "UI Bounds",
                          "Real yMax for glyph %d (%s) is %d, which is more than "
                          "max ui height %d." % (
                              glyph_index, glyph_name, ymax, max_ui_height),
                          check_test=False)
                 if (tests.checkvalue('bounds/glyph/ui_ymin', glyph_index) and
-                    ymin is not None and ymin < min_ui_height):
+                        ymin is not None and ymin < min_ui_height):
                     warn("bounds/glyph/ui_ymin", "UI Bounds",
                          "Real yMin for glyph %d (%s) is %d, which is less than "
                          "min ui height %d." % (
@@ -1210,7 +1205,7 @@ def check_font(font_props, filename_error,
                          check_test=False)
 
             if (tests.checkvalue('bounds/glyph/ymax', glyph_index) and ymax is not None and
-                ymax > ascent_limit):
+                    ymax > ascent_limit):
                 warn("bounds/glyph/ymax", "Bounds",
                      "Real yMax for glyph %d (%s) is %d, which is higher than "
                      "the font's %s (%d), resulting in clipping." %
@@ -1218,7 +1213,7 @@ def check_font(font_props, filename_error,
                      check_test=False)
 
             if (tests.checkvalue('bounds/glyph/ymin', glyph_index) and ymin is not None and
-                ymin < descent_limit):
+                    ymin < descent_limit):
                 warn("bounds/glyph/ymin", "Bounds",
                      "Real yMin for glyph %d (%s) is %d, which is lower than "
                      "the font's %s (%d), resulting in clipping." %
@@ -1295,7 +1290,7 @@ def check_font(font_props, filename_error,
                             curves_in_contour.append(curve)
 
                             if not check_extrema:
-                              continue
+                                continue
                             out_of_box = curve_has_off_curve_extrema(curve)
                             if out_of_box > 0:
                                 warn("paths/extrema", "Extrema",
@@ -1308,7 +1303,7 @@ def check_font(font_props, filename_error,
                                         next_point,
                                         glyph.coordinates[next_point],
                                         out_of_box),
-                                      extrema_details,
+                                     extrema_details,
                                      check_test=False)
                     start_point = end_point + 1
                     all_contours.append(curves_in_contour)
@@ -1375,9 +1370,9 @@ def check_font(font_props, filename_error,
                     if glyph in class_def:
                         klass = class_def[glyph]
                         if (tests.checkvalue('gdef/classdef/not_combining_mismatch', code) and
-                            klass == 3
-                            and unicode_data.category(code) != "Mn"
-                            and code not in noto_data.ACCEPTABLE_AS_COMBINING):
+                                klass == 3
+                                and unicode_data.category(code) != "Mn"
+                                and code not in noto_data.ACCEPTABLE_AS_COMBINING):
                             warn("gdef/classdef/not_combining_mismatch", "Glyph Class",
                                  "Glyph %s (U+%04X %s) is defined as class 3 "
                                  "(non-spacing) in the GDEF/GlyphClassDef table, "
@@ -1449,20 +1444,19 @@ def check_font(font_props, filename_error,
         GSUB_OR_GPOS = gsub_or_gpos.upper()
         table = font[GSUB_OR_GPOS].table
         if not table.FeatureList:
-          return
+            return
 
         name_id_set = None
         for index in range(table.FeatureList.FeatureCount):
-          record = table.FeatureList.FeatureRecord[index]
-          params = record.Feature.FeatureParams
-          if isinstance(params, otTables.FeatureParamsStylisticSet):
-            if not name_id_set:
-              name_id_set = {r.nameID for r in font['name'].names}
-            if not params.UINameID in name_id_set:
-              warn("complex/%s/ui_name_id" % gsub_or_gpos, GSUB_OR_GPOS,
-                   "Feature index %s (%s) has UINameID %d but it is not in the name table" % (
-                       index, record.FeatureTag, params.UINameID))
-
+            record = table.FeatureList.FeatureRecord[index]
+            params = record.Feature.FeatureParams
+            if isinstance(params, otTables.FeatureParamsStylisticSet):
+                if not name_id_set:
+                    name_id_set = {r.nameID for r in font['name'].names}
+                if not params.UINameID in name_id_set:
+                    warn("complex/%s/ui_name_id" % gsub_or_gpos, GSUB_OR_GPOS,
+                         "Feature index %s (%s) has UINameID %d but it is not in the name table" % (
+                             index, record.FeatureTag, params.UINameID))
 
     def check_shaping(font_file, strs, context, errors):
         text = '\n'.join(strs)
@@ -1478,14 +1472,13 @@ def check_font(font_props, filename_error,
             if context:
                 features.append(context)
             command.append('--features=%s' % ','.join(features))
-            # print "command: %s" % ' '.join(command)
+            # print("command: %s" % ' '.join(command)
             result = subprocess.check_output(command)
             for src, res in zip(strs, result.splitlines()):
                 if res.find('|') != -1:
                     errors.append((src, context, res))
         finally:
             temp_file.close()
-
 
     def check_gsub_variants():
         """Checks if harfbuzz can use GSUB to generate standard variants"""
@@ -1505,16 +1498,16 @@ def check_font(font_props, filename_error,
             for sel, _, ctx in sorted(data):
                 line = unichr(cp) + unichr(sel);
                 if ctx == 0:
-                  any_strs.append(line)
-                  continue
+                    any_strs.append(line)
+                    continue
                 if ctx & 1:
-                  isolate_strs.append(line)
+                    isolate_strs.append(line)
                 if ctx & 2:
-                  initial_strs.append(line)
+                    initial_strs.append(line)
                 if ctx & 4:
-                  medial_strs.append(line)
+                    medial_strs.append(line)
                 if ctx & 8:
-                  final_strs.append(line)
+                    final_strs.append(line)
 
         errors = []
         font_file = font_props.filepath
@@ -1584,7 +1577,7 @@ def check_font(font_props, filename_error,
             check_complex_stylistic_set_name_ids('gsub')
             check_gsub_variants()
 
-        #TODO: Add more script-specific checks
+        # TODO: Add more script-specific checks
 
     def check_for_bidi_pairs(cmap):
         """Checks for proper support of bidi mirroring in the font.
@@ -1604,11 +1597,11 @@ def check_font(font_props, filename_error,
         rtlm = {}
         if "GSUB" in font:
             try:
-              feature_record = font["GSUB"].table.FeatureList.FeatureRecord
+                feature_record = font["GSUB"].table.FeatureList.FeatureRecord
             except AttributeError:
-              warn("bidi", "bidi",
-                   "GSUB table with no feature record", is_error=False)
-              feature_record = []
+                warn("bidi", "bidi",
+                     "GSUB table with no feature record", is_error=False)
+                feature_record = []
             for record in feature_record:
                 if record.FeatureTag == "rtlm":  # FIXME
                     for lookup_number in record.Feature.LookupListIndex:
@@ -1738,7 +1731,7 @@ def check_font(font_props, filename_error,
             else:
                 # note name switch, since the higher divisor returns the lower value
                 high_exp = int(round(float(expected) / low_divisor))
-                low_exp =  int(round(float(expected) / high_divisor))
+                low_exp = int(round(float(expected) / high_divisor))
                 if not (low_exp - slop <= adv <= high_exp + slop):
                     glyph_name = cmap[codepoint]
                     glyph_id = font.getGlyphID(glyph_name)
@@ -1776,7 +1769,7 @@ def check_font(font_props, filename_error,
         if tests.check('advances/whitespace'):
             if font_props.is_mono:
                 space_width = get_horizontal_advance(space_char)
-                cps = [ tab_char, nbsp_char ] + range(0x2000, 0x200B)
+                cps = [tab_char, nbsp_char] + range(0x2000, 0x200B)
                 for cp in cps:
                     if cp in cmap:
                         expect_width(cp, space_width)
@@ -1790,34 +1783,34 @@ def check_font(font_props, filename_error,
                         expect_width(nbsp_char, space_width)
 
                 em_width = font['head'].unitsPerEm
-                expect_width(0x2000, em_width, 2) # en_quad
-                expect_width(0x2001, em_width)    # em_quad
-                expect_width(0x2002, em_width, 2) # en_space
-                expect_width(0x2003, em_width)    # em_space
-                expect_width(0x2004, em_width, 3) # three-per-em space
-                expect_width(0x2005, em_width, 4) # four-per-em space
-                expect_width(0x2006, em_width, 6) # six-per-em space
+                expect_width(0x2000, em_width, 2)  # en_quad
+                expect_width(0x2001, em_width)  # em_quad
+                expect_width(0x2002, em_width, 2)  # en_space
+                expect_width(0x2003, em_width)  # em_space
+                expect_width(0x2004, em_width, 3)  # three-per-em space
+                expect_width(0x2005, em_width, 4)  # four-per-em space
+                expect_width(0x2006, em_width, 6)  # six-per-em space
                 if digit_char in cmap:
-                    expect_width(0x2007, digit_width) # figure space
+                    expect_width(0x2007, digit_width)  # figure space
                 if period_char in cmap:
-                    expect_width(0x2008, period_width) # punctuation space
+                    expect_width(0x2008, period_width)  # punctuation space
                 # see http://unicode.org/charts/PDF/U2000.pdf, but microsoft (below)
                 # says French uses 1/8 em.
-                expect_width(0x2009, em_width, 5, 6) # thin space
+                expect_width(0x2009, em_width, 5, 6)  # thin space
                 # see http://www.microsoft.com/typography/developers/fdsspec/spaces.htm
-                expect_width(0x200A, em_width, 10, 16) # hair space
-                expect_width(0x200B, 0) # zero width space
+                expect_width(0x200A, em_width, 10, 16)  # hair space
+                expect_width(0x200B, 0)  # zero width space
 
         if tests.check('advances/spacing_marks'):
-          spacing_marks = lint_config.parse_int_ranges(
-              "02C8 02CA-02D7 02DE 02DF 02EC 02ED 02EF-02F2 02F4-02FF", True)
-          for cp in spacing_marks:
-            if cp not in cmap:
-              continue
-            if not get_horizontal_advance(cp):
-              warn("advances/spacing_marks", "Advances",
-                   "The spacing mark %s (%04x) should have a non-zero advance." % (
-                       unichr(cp), cp));
+            spacing_marks = lint_config.parse_int_ranges(
+                "02C8 02CA-02D7 02DE 02DF 02EC 02ED 02EF-02F2 02F4-02FF", True)
+            for cp in spacing_marks:
+                if cp not in cmap:
+                    continue
+                if not get_horizontal_advance(cp):
+                    warn("advances/spacing_marks", "Advances",
+                         "The spacing mark %s (%04x) should have a non-zero advance." % (
+                             unichr(cp), cp));
 
     def check_stems(cmap):
         if not 'glyf' in font:
@@ -1829,8 +1822,8 @@ def check_font(font_props, filename_error,
         # Only implemented for Ogham, currently
         # FIXME: Add support for Arabic, Syriac, Mongolian, Phags-Pa,
         # Devanagari, Bengali, etc
-        joins_to_right = set(range(0x1680, 0x169B+1))
-        joins_to_left = set(range(0x1680, 0x169A+1) + [0x169C])
+        joins_to_right = set(range(0x1680, 0x169B + 1))
+        joins_to_left = set(range(0x1680, 0x169A + 1) + [0x169C])
         all_joining = joins_to_right | joins_to_left
 
         glyf_table = font['glyf']
@@ -1876,13 +1869,13 @@ def check_font(font_props, filename_error,
         subsetter = subset.Subsetter()
         subsetter.populate(unicodes=cmap.keys())
         try:
-          subsetter._closure_glyphs(font)
+            subsetter._closure_glyphs(font)
         except Exception as e:
-          warn("reachable", "Reachability",
-               "Subsetter failure, bad/missing tables?: '%s'" % e)
-          return
+            warn("reachable", "Reachability",
+                 "Subsetter failure, bad/missing tables?: '%s'" % e)
+            return
 
-        unreachable_glyphs = all_glyphs - subsetter.glyphs_all
+        unreachable_glyphs = all_glyphs - subsetter.glyphs_retained
         if unreachable_glyphs:
             reported_glyphs = set()
             reported_list = []
@@ -1899,9 +1892,7 @@ def check_font(font_props, filename_error,
                      (len(reported_glyphs), report_info),
                      check_test=False)
 
-
     ### actual start of check_font fn
-
 
     # python 2.7 does not have nonlocal, so hack around it
     suppressed_err_count = [0]
@@ -1915,7 +1906,7 @@ def check_font(font_props, filename_error,
     is_indic = font_props.script in {
         "Deva", "Beng", "Guru", "Gujr", "Orya",
         "Taml", "Telu", "Knda", "Mlym", "Sinh",
-        "Khmr" }
+        "Khmr"}
 
     fi = lint_config.FontInfo(
         filename=path.basename(font_path),
@@ -1939,7 +1930,6 @@ def check_font(font_props, filename_error,
             warn("filename/name", "File name",
                  "File name '%s' does not match the Noto font naming guidelines."
                  % path.basename(font_props.filepath))
-
 
     check_name_table()
     cmap = check_cmap_table()
@@ -1965,18 +1955,18 @@ def check_font(font_props, filename_error,
         log = sorted(tests.runlog())
         count = len(log)
         if count:
-          print 'Ran %d test%s:\n  %s' % (count, 's' if count != 1 else '',
-                                        '\n  '.join(log))
+            print('Ran %d test%s:\n  %s' % (count, 's' if count != 1 else '',
+                                            '\n  '.join(log)))
         else:
-          print 'Ran no tests.'
+            print('Ran no tests.')
     if skiplog:
         log = sorted(tests.skiplog())
         count = len(log)
         if len(log):
-          print 'Skipped %d test/group%s:\n  %s' % (count, 's' if count != 1 else '',
-                                            '\n  '.join(log))
+            print('Skipped %d test/group%s:\n  %s' % (count, 's' if count != 1 else '',
+                                                      '\n  '.join(log)))
         else:
-          print 'Skipped no tests'
+            print('Skipped no tests')
 
     # TODO(roozbeh):
     # * Check that hintedness based on data in the glyf table
@@ -1988,25 +1978,25 @@ def check_font(font_props, filename_error,
 
 
 def get_lint_spec(spec_file, extra_specs):
-  """Return a LintSpec from spec_file supplemented with extra_specs.
+    """Return a LintSpec from spec_file supplemented with extra_specs.
   If spec_file is None, only use extra_specs."""
 
-  spec = None
-  if spec_file != 'None':
-    spec = lint_config.parse_spec_file(spec_file)
-  return lint_config.parse_spec(extra_specs, spec)
+    spec = None
+    if spec_file != 'None':
+        spec = lint_config.parse_spec_file(spec_file)
+    return lint_config.parse_spec(extra_specs, spec)
 
 
 def parse_font_props(font_props_file):
-  """Return a list of FontProps objects."""
-  with open(font_props_file) as f:
-    font_spec = f.read()
-  spec_data = json.loads(font_spec)
-  return [FontProps(**m) for m in spec_data]
+    """Return a list of FontProps objects."""
+    with open(font_props_file) as f:
+        font_spec = f.read()
+    spec_data = json.loads(font_spec)
+    return [FontProps(**m) for m in spec_data]
 
 
 def write_font_props(font_props):
-  print json.dumps(font_props._asdict())
+    print(json.dumps(font_props._asdict()))
 
 
 def main():
@@ -2087,7 +2077,7 @@ def main():
             font_props, filename_error = get_font_properties_with_fallback(
                 font_file_path, phase=arguments.phase)
             if filename_error:
-                print '#Error for %s: %s' % (font_file_path, filename_error)
+                print('#Error for %s: %s' % (font_file_path, filename_error))
             else:
                 write_font_props(font_props)
         return
@@ -2104,7 +2094,7 @@ def main():
         font_props, filename_error = get_font_properties_with_fallback(
             font_file_path, phase=arguments.phase)
         if not font_props:
-            print '## ERROR: cannot parse %s' % font_file_path
+            print('## ERROR: cannot parse %s' % font_file_path)
         else:
             check_font(font_props,
                        filename_error,
@@ -2121,34 +2111,35 @@ def main():
     if arguments.font_props_file:
         font_props_list = parse_font_props(arguments.font_props_file)
         for font_props in font_props_list:
-             check_font(font_props,
-                        '',
-                        lint_spec,
-                        arguments.runlog,
-                        arguments.skiplog,
-                        arguments.csv,
-                        arguments.info,
-                        arguments.extrema_details,
-                        arguments.nowarn,
-                        arguments.quiet,
-                        arguments.phase,
-                        arguments.variable)
+            check_font(font_props,
+                       '',
+                       lint_spec,
+                       arguments.runlog,
+                       arguments.skiplog,
+                       arguments.csv,
+                       arguments.info,
+                       arguments.extrema_details,
+                       arguments.nowarn,
+                       arguments.quiet,
+                       arguments.phase,
+                       arguments.variable)
 
     if not arguments.csv:
-        print "------"
+        print("------")
         if _processed_files == 1:
-            print "Finished linting 1 file."
+            print("Finished linting 1 file.")
         else:
-            print "Finished linting %d files." % _processed_files
+            print("Finished linting %d files." % _processed_files)
         if _processed_files > 1:
             if _processed_files_with_errors:
-                print "%d file%s had errors." % (
+                print("%d file%s had errors." % (
                     _processed_files_with_errors,
-                    '' if _processed_files_with_errors == 1 else 's')
+                    '' if _processed_files_with_errors == 1 else 's'))
             if _processed_files_with_warnings:
-                print "%d file%s had warnings." % (
+                print("%d file%s had warnings." % (
                     _processed_files_with_warnings,
-                    '' if _processed_files_with_warnings == 1 else 's')
+                    '' if _processed_files_with_warnings == 1 else 's'))
+
 
 if __name__ == "__main__":
     main()
