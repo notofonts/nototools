@@ -139,7 +139,7 @@ class GposDiffFinder:
         unmatched = {}
         mismatched = {}
         rx = re.compile('pos %s \[([\w\d\s@_.]+)\]\s+<anchor (-?\d+) (-?\d+)> '
-                        'mark (@[\w\d_.]+);' % mark_type)
+                        'mark (@?[\w\d_.]+);' % mark_type)
         self._parse_anchor_info(rx, '-', self.text_a, unmatched, mismatched)
         self._parse_anchor_info(rx, '+', self.text_b, unmatched, mismatched)
 
