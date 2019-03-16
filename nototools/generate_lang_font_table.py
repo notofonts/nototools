@@ -45,7 +45,8 @@ def accept_font(f):
       f.family == 'Noto' and  # exclude Arimo, Tinos, Cousine
       f.style != 'Nastaliq' and  # exclude Nastaliq, not suitable for maps
       f.script != 'HST' and  # exclude Historic, tool limitation
-      f.weight == 'Regular' and  # to limit members of fonts, we don't
+      f.weight == 'Regular' and  # to limit members of fonts
+      f.width == 'Regular' and  # to limit members of fonts, we don't
       not f.slope and            #   care about weights
       f.fmt in ['ttf', 'otf'] and  # only support these formats
       (not f.is_cjk or f.subset))  # 'small' language-specific CJK subsets

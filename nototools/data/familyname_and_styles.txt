@@ -115,10 +115,10 @@ NotoSansSignwriting
 NotoSansTakri
 NotoSansTirhuta
 NotoSansWarangCiti
-NotoSansAhom
+NotoSerifAhom
 NotoSansAnatolianHieroglyphs
 NotoSansAvestan
-NotoSansBalinese
+NotoSerifBalinese
 NotoSansBamum
 NotoSansBassaVah
 NotoSansBatak
@@ -131,12 +131,14 @@ NotoSansCaucasianAlbanian
 NotoSansCoptic
 NotoSansCypriot
 NotoSansDeseret
+NotoSansDogra
 NotoSansDuployan
 NotoSansElbasan
 NotoSansEgyptianHieroglyphs
 NotoSansGlagolitic
 NotoSansGothic
 NotoSansGrantha
+NotoSansGunjalaGondi
 NotoSansHanunoo
 NotoSansHatran
 NotoSansImperialAramaic
@@ -156,8 +158,11 @@ NotoSansLisu
 NotoSansLycian
 NotoSansLydian
 NotoSansMahajani
+NotoSansMakasar
 NotoSansMandaic
 NotoSansManichaean
+NotoSansMasaramGondi
+NotoSansMedefaidrin
 NotoSansMeeteiMayek
 NotoSansMeroiticCursive
 NotoSansMeroiticHieroglyphs
@@ -167,6 +172,7 @@ NotoSansMultani
 NotoSansNKo
 NotoSansNabataean
 NotoSansNewTaiLue
+NotoSansNushu
 NotoSansOgham
 NotoSansOlChiki
 NotoSansOldHungarian
@@ -174,6 +180,7 @@ NotoSansOldItalic
 NotoSansOldNorthArabian
 NotoSansOldPermic
 NotoSansOldPersian
+NotoSansOldSogdian
 NotoSansOldSouthArabian
 NotoSansOldTurkic
 NotoSansOsmanya
@@ -188,7 +195,9 @@ NotoSansSamaritan
 NotoSansSaurashtra
 NotoSansShavian
 # NotoSansShorthandFormatControls (spreadsheet had this, it's Duployan)
+NotoSansSogdian
 NotoSansSoraSompeng
+NotoSansSoyombo
 NotoSansSundanese
 NotoSansSumeroAkkadianCuneiform
 NotoSansSylotiNagri
@@ -202,7 +211,7 @@ NotoSansTifinagh
 NotoSansUgaritic
 NotoSansVai
 NotoSansYi
-# NotoSansZanabazarSquare (not in Unicode 9)
+NotoSansZanabazarSquare
 
 #extras
 -- RB/R/RI --

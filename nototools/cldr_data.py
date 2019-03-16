@@ -317,7 +317,7 @@ def is_script_rtl(script):
     # updated.  Also special case locale-script codes, we have some.
     if script == 'Adlm':
       return True
-    if script in ['Zsym', 'Zsye', 'Hrkt', 'Jpan']:
+    if script in ['Zsym', 'Zsye', 'Zmth', 'Hrkt', 'Jpan']:
       return False
     # we really should throw an exception
     if _DEBUG:

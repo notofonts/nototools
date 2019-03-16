@@ -501,6 +501,7 @@ EXEMPLARS = {
   'und-Tglg': r'[\u1700-\u170c \u170e-\u1711]',
   'und-Ugar': r'[\U010380-\U01039d \U01039f]',
   'und-Xsux': r'[\U012000-\U01202f]',
+  'und-Zmth': r'[\U010AC0-\U010AE6 \U010AEB-\U010AF6]',
   'und-Zsye': r'[\u2049\u231a\u231b\u2600\u260e\u2614\u2615\u26fa\u2708\u2709'
               r'\u270f\u3297\U01f004\U01f170\U01f193\U01f197\U01f30d\U01f318'
               r'\U01f332\U01f334\U01f335\U01f344\U01f346\U01f352\U01f381'

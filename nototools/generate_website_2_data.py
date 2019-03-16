@@ -507,6 +507,9 @@ def get_family_id_to_default_lang_scr(family_id_to_lang_scrs, families):
     if script_key == 'Aran':
       # patch for Nastaliq
       lang = 'ur'
+    elif script_key == 'Hatr':
+      # patch for Hatran
+      lang = 'und'
     else:
       lang = lang_data.script_to_default_lang(primary_script)
     lang_scr = lang + '-' + primary_script
@@ -862,7 +865,7 @@ class WebGen(object):
         num_fonts = sum(
             1 for f in (family.hinted_members or family.unhinted_members)
             if not f.is_UI)
-        if num_fonts not in [1, 2, 4, 9, 36, 72]:
+        if num_fonts not in [1, 2, 3, 4, 9, 12, 36, 72]:
           print 'family %s (%s) has %d fonts' % (k, family.name, num_fonts)
           print '\n'.join(f.filepath for f in sorted(family.hinted_members or family.unhinted_members))
           fail = True
@@ -1180,7 +1183,9 @@ class WebGen(object):
     readme_path = self.get_readme_path('cjk')
     readme_pair = (readme_path, path.basename(readme_path))
     for style in ['Sans', 'Serif']:
-      for subset in ['KR', 'JP', 'SC', 'TC']:
+      for subset in ['KR', 'JP', 'SC', 'TC', 'HK']:
+        if style == 'Serif' and subset == 'HK':
+          continue
         base_name = 'Noto%s%s' % (style, subset)
         zip_name = '%s.zip' % base_name
         zip_path = path.join(self.pkgs, zip_name)
