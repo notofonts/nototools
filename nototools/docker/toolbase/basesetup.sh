@@ -9,10 +9,11 @@ mkdir -p /app/pkgs
 #   qmake: could not find a Qt installation of 'qt5'
 # so perhaps qt5-qmake does not pull in qt5 dependencies automatically)
 # udhr tooling uses dos2unix
-apt-get update && apt-get install -y python-gtk2 ragel gperf python-lxml qt5-default dos2unix
+# fontconfig 2.13 requires uuid-dev, but config files claims it requires util-linux.
+apt-get update && apt-get install -y python-gtk2 ragel gperf python-lxml qt5-default dos2unix uuid-dev
 
 # install a newer version of git
-GIT="git-2.12.2"
+GIT="git-2.19.2"
 cd /app/pkgs
 wget https://www.kernel.org/pub/software/scm/git/${GIT}.tar.xz -O - | tar -xJ
 cd $GIT
@@ -44,7 +45,7 @@ make install
 # get ttfautohint for font swatting
 # requires harfbuzz >= 1.3.0, so install after installing harfbuzz
 cd /app/pkgs
-AUTOHINT="1.7"
+AUTOHINT="1.8.2"
 wget https://sourceforge.net/projects/freetype/files/ttfautohint/${AUTOHINT}/ttfautohint-${AUTOHINT}.tar.gz -O - | tar -xz
 cd "ttfautohint-${AUTOHINT}"
 
@@ -53,18 +54,36 @@ make
 make check
 make install
 
-# behdad's cairo has the patch for color emoji
+# behdad's cairo fork is no longer needed, base cairo has the patch for color emoji
+
+# fontconfig needs a newer libfreetype, >= 21.0.5
 cd /app/pkgs
-git clone https://github.com/behdad/cairo behdad_cairo
-cd behdad_cairo
-./autogen.sh
+FREETYPE="2.10.0"
+wget https://download.savannah.gnu.org/releases/freetype/freetype-${FREETYPE}.tar.gz -O - | tar -xz
+cd "freetype-${FREETYPE}"
+./configure
 make
+make check
 make install
 
-# need new-ish fontconfig to scale bitmap emoji font
-git clone --branch 2.12.1 git://anongit.freedesktop.org/fontconfig
-cd fontconfig
-./autogen.sh --sysconfdir=/etc --prefix=/usr --mandir=/usr/share/man
+# newer fontconfigs know how to scale bitmap emoji font
+# 2.13.1 can handle lxml issue with PyFPE_jbuf, but adds dependency on uuid-dev, and
+# also requires a newer freetype
+cd /app/pkgs
+FONTCONFIG="2.13.1"
+wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG}.tar.gz -O - | tar -xz
+cd "fontconfig-${FONTCONFIG}"
+./configure
+make
+make check
+make install
+
+# install pngquant, version in noto-emoji is old
+cd /app/pkgs
+PNGQUANT="2.12.2"
+wget http://pngquant.org/pngquant-${PNGQUANT}-src.tar.gz -O - | tar -xz
+cd "pngquant-${PNGQUANT}"
+./configure
 make
 make install
 
