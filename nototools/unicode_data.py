@@ -43,7 +43,7 @@ except ImportError:
 from nototools import tool_utils # parse_int_ranges
 
 # Update this when we update the base version data we use
-UNICODE_VERSION = 11.0
+UNICODE_VERSION = 12.0
 
 _data_is_loaded = False
 _property_value_aliases_data = {}
@@ -748,6 +748,7 @@ PROPOSED_EMOJI_AGE = 1000.0
 ZWJ = 0x200d
 EMOJI_VS = 0xfe0f
 EMOJI_SEQUENCE_TYPES = frozenset([
+    'Basic_Emoji',
     'Emoji_Keycap_Sequence',
     'Emoji_Combining_Sequence',
     'Emoji_Flag_Sequence',
@@ -756,11 +757,15 @@ EMOJI_SEQUENCE_TYPES = frozenset([
     'Emoji_ZWJ_Sequence',
     'Emoji_Single_Sequence'])
 
+# Unicode 12 decided to be 'helpful' and included single emoji in the sequence
+# data, but unlike all the other data represents these in batches as XXXX..XXXX
+# rather than one per line.  We can't get name data for these so we can't
+# use that data, but still have to parse the line.
 def _read_emoji_data(lines):
   """Parse lines of emoji data and return a map from sequence to tuples of
   name, age, type."""
   line_re = re.compile(
-      r'([0-9A-F ]+);\s*(%s)\s*;\s*([^#]*)\s*#\s*(\d+\.\d+).*' %
+      r'(?:([0-9A-F ]+)|([0-9A-F]+\.\.[0-9A-F]+)\s*);\s*(%s)\s*;\s*([^#]*)\s*#\s*(\d+\.\d+).*' %
       '|'.join(EMOJI_SEQUENCE_TYPES))
   result = {}
   for line in lines:
@@ -770,11 +775,19 @@ def _read_emoji_data(lines):
     m = line_re.match(line)
     if not m:
       raise ValueError('Did not match "%s"' % line)
+
+    # group 1 is a sequence, group 2 is a range of single character sequences.
+    # we can't process the range because we don't have a name for each character
+    # in the range, so skip it and get these emoji and their names from
+    # UnicodeData
+    if m.group(2):
+      continue
+
     # discourage lots of redundant copies of seq_type
-    seq_type = intern(m.group(2).strip().encode('ascii'))
+    seq_type = intern(m.group(3).strip().encode('ascii'))
     seq = tuple(int(s, 16) for s in m.group(1).split())
-    name = m.group(3).strip()
-    age = float(m.group(4))
+    name = m.group(4).strip()
+    age = float(m.group(5))
     result[seq] = (name, age, seq_type)
   return result
 
@@ -784,7 +797,7 @@ def _read_emoji_data_file(filename):
     return _read_emoji_data(f.readlines())
 
 
-_EMOJI_QUAL_TYPES = ['fully-qualified', 'non-fully-qualified']
+_EMOJI_QUAL_TYPES = ['component', 'fully-qualified', 'minimally-qualified', 'unqualified']
 
 def _read_emoji_test_data(data_string):
   """Parse the emoji-test.txt data.  This has names of proposed emoji that are
@@ -817,9 +830,11 @@ def _read_emoji_test_data(data_string):
     m = line_re.match(line)
     if not m:
       raise ValueError('Did not match "%s" in emoji-test.txt' % line)
-    if m.group(2) == _EMOJI_QUAL_TYPES[1]:
-      # we only want fully-qualified sequences, as those are 'canonical'.
-      # Information for the non-fully-qualified sequences should be
+    if m.group(2) not in ['component', 'fully-qualified']:
+      # We only want component and fully-qualified sequences, as those are
+      # 'canonical'.  'minimally-qualified' apparently just leave off the
+      # FEOF emoji presentation tag, we already assume these.
+      # Information for the unqualified sequences should be
       # redundant.  At the moment we don't verify this so if the file
       # changes we won't catch that.
       continue
@@ -1666,5 +1681,5 @@ if __name__ == '__main__':
   # dump some information for annotations
   for k in get_sorted_emoji_sequences(all_sequences):
     age = get_emoji_sequence_age(k)
-    if age == 11:
+    if age == 12:
       print seq_to_string(k).replace('_', ' '), '#', get_emoji_sequence_name(k)
