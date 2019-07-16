@@ -107,14 +107,14 @@ class CmapOps(object):
 
   def _report(self, text):
     if self._log_events:
-      print text
+      print(text)
 
   def _finish_block(self):
     if self._block and self._log_events and not self._log_details:
       for text in sorted(self._block_count):
-        print '%s: %s' % (
+        print('%s: %s' % (
             text, tool_utils.write_int_ranges(
-                self._block_count[text]))
+                self._block_count[text])))
 
   def _report_cp(self, cp, text, script):
     if not self._log_events:
@@ -123,18 +123,18 @@ class CmapOps(object):
     if cp_block != self._block:
       self._finish_block()
       self._block = cp_block
-      print '# block: ' + self._block
+      print('# block: ' + self._block)
       self._block_count = collections.defaultdict(set)
     if self._log_details:
       if not (
           self._block in self._suppressed_blocks or
           script in self._suppressed_scripts):
-        print self._cp_info(cp), text
+        print(self._cp_info(cp), text)
     else:
       self._block_count[text].add(cp)
 
   def _error(self, text):
-    print >> sys.stderr, text
+    sys.stderr.write(text + '\n')
     raise ValueError('failed')
 
   def _verify_script_exists(self, script):
@@ -332,15 +332,15 @@ def _build_block_to_primary_script():
       block_info = '%s %s' % (block, ', '.join('%s/%d' % t for t in info))
       if block in assigned_primaries:
         max_script = assigned_primaries[block]
-        # print 'assigning primary', block_info, '->', max_script
+        # print('assigning primary', block_info, '->', max_script)
       else:
-        print >> sys.stderr, 'ERROR: no primary', block, block_info
+        sys.stderr.write('ERROR: no primary\n', block, block_info)
         max_script = None
     elif max_script == 'Zinh':
       if block in inherited_primaries:
         max_script = inherited_primaries[block]
       else:
-        print >> sys.stderr, 'ERROR: no inherited primary', block, block_info
+        sys.stderr.write('ERROR: no inherited primary\n', block, block_info)
         max_script = None
     block_to_script[block] = max_script
   return block_to_script
@@ -390,9 +390,9 @@ def _reassign_inherited(cmap_ops):
   for cp in cmap_ops.script_chars('Zinh'):
     primary_script = _primary_script_for_block(unicode_data.block(cp))
     if not primary_script:
-      print >> sys.stderr, 'Error: no primary script for %04X' % cp
+      sys.stderr.write('Error: no primary script for %04X\n' % cp)
     elif primary_script == 'Zinh':
-      print >> sys.stderr, 'Error: primary script for %04X is Zinh' % cp
+      sys.stderr.write('Error: primary script for %04X is Zinh\n' % cp)
     else:
       cmap_ops.ensure_script(primary_script)
       cmap_ops.add(cp, primary_script)
@@ -518,7 +518,7 @@ def _reassign_common_by_block(cmap_ops):
     if block != last_block:
       last_block = block
       if block not in block_assignments:
-        print >> sys.stderr, 'ERROR: no assignment for block %s' % block
+        sys.stderr.write('ERROR: no assignment for block %s\n' % block)
         new_script = None
       else:
         new_script = block_assignments[block]
@@ -528,21 +528,21 @@ def _reassign_common_by_block(cmap_ops):
       cmap_ops.remove(cp, 'Zyyy')
       cmap_ops.add(cp, new_script)
     else:
-      print >> sys.stderr, '  could not assign %04x %s' % (
-          cp, unicode_data.name(cp))
+      sys.stderr.write('  could not assign %04x %s\n' % (
+          cp, unicode_data.name(cp)))
 
   if len(used_assignments) != len(block_assignments):
-    print >> sys.stderr, 'ERROR: some block assignments unused'
+    sys.stderr.write('ERROR: some block assignments unused\n')
     unused = set([block for block in block_assignments
         if block not in used_assignments])
     for block in unicode_data.block_names():
       if block in unused:
-        print >> sys.stderr, '  %s' % block
+        sys.stderr.write('  %s\n' % block)
         unused.remove(block)
     if unused:
-      print >> sys.stderr, 'ERROR: unknown block names'
+      sys.stderr.write('ERROR: unknown block names\n')
       for block in sorted(unused):
-        print >> sys.stderr, '  %s' % block
+        sys.stderr.write('  %s\n' % block)
 
   cmap_ops.delete_script('Zyyy')
 
@@ -595,8 +595,8 @@ def _reassign_by_block(cmap_ops):
       if not unicode_data.is_defined(cp):
         continue
       if cp not in char_to_scripts and to_script != 'EXCL':
-        print >> sys.stderr, 'reassign missing %04X %s' % (
-            cp, unicode_data.name(cp, '<unnamed>'))
+        sys.stderr.write('reassign missing %04X %s\n' % (
+            cp, unicode_data.name(cp, '<unnamed>')))
         continue
       if all_scripts:
         from_list = char_to_scripts[cp]
@@ -917,15 +917,15 @@ def _generate_script_extra(script_to_chars):
       name = unicode_data.name(cp, '<unnamed">')
       if cp not in chars:
         if block == None:
-          print "'%s': tool_utils.parse_int_ranges(\"\"\"" % script
+          print("'%s': tool_utils.parse_int_ranges(\"\"\"" % script)
         cp_block = unicode_data.block(cp)
         if cp_block != block:
           block = cp_block
-          print '  # %s' % block
-        print '  %04X # %s' % (cp, name)
+          print('  # %s' % block)
+        print('  %04X # %s' % (cp, name))
         chars.add(cp)
     if block != None:
-      print '  """),'
+      print('  """),')
 
 # maintained using 'regen_script_required' fn
 _SCRIPT_REQUIRED = [
@@ -2642,9 +2642,9 @@ def _regen_script_required():
       except KeyError:
         pass
       script_name = script_name.replace(unichr(0x2019), "'")
-    print '  # %s - %s' % (script, script_name)
+    print('  # %s - %s' % (script, script_name))
     if script in script_to_comment_and_data:
-      print "  ('%s'," % script
+      print("  ('%s'," % script)
       lines = []
       comment, data = script_to_comment_and_data[script]
       lines.append('   # Comment')
@@ -2665,8 +2665,8 @@ def _regen_script_required():
         cp_name = unicode_data.name(cp, '<unnamed>')
         lines.append('%04X  # %s' % (cp, cp_name))
       lines.append('"""),')
-      print '\n   '.join(lines)
-    print
+      print('\n   '.join(lines))
+    print()
 
 
 def _assign_script_required(cmap_ops):
@@ -2760,11 +2760,11 @@ def _check_CJK():
   # ignore plane 2 and above
   not_in_legacy -= set(range(0x20000, 0x120000))
   if not_in_legacy:
-    print 'not in legacy (%d):' % len(not_in_legacy)
+    print('not in legacy (%d):' % len(not_in_legacy))
     compare_cmap_data._print_detailed(not_in_legacy)
   not_in_new = legacy_cjk_chars - cjk_chars
   if not_in_new:
-    print 'not in new (%d):' % len(not_in_new)
+    print('not in new (%d):' % len(not_in_new))
     compare_cmap_data._print_detailed(not_in_new)
 
 
@@ -2997,13 +2997,13 @@ def _assign_symbols_from_groups(cmap_ops):
       try:
         cps = tool_utils.parse_int_ranges(ranges)
       except Exception as err:
-        print >> sys.stderr, err
-        print >> sys.stderr, cols[2]
-        print >> sys.stderr, 'problem on %d "%s"' % (lineix, line)
+        sys.stderr.write(err + '\n')
+        sys.stderr.write(cols[2] + '\n')
+        sys.stderr.write('problem on %d "%s"\n' % (lineix, line))
         raise err
       if len(cps) > 50:
-        print >> sys.stderr, 'large range (%d) on %d "%s"' % (
-            len(cps), lineix, line)
+        sys.stderr.write('large range (%d) on %d "%s"\n' % (
+            len(cps), lineix, line))
 
       cmap_ops.log('group: %s (%d)' % (name, len(cps)))
       if add:
@@ -3269,7 +3269,7 @@ def _merge_fallback_chars(script_to_chars, srcfile):
       else:
         xcmap = None  # not a tuple, so probably no fallback data
     else:
-      print >> sys.stderr, 'no script %s found in %s' % (script, srcfile)
+      sys.stderr.write('no script %s found in %s\n' % (script, srcfile))
     merged_cmap[script] = (cmap, xcmap)
   return merged_cmap
 
@@ -3285,10 +3285,10 @@ def _dump_primaries():
   for block in unicode_data.block_names():
     block_range = unicode_data.block_range(block)
     primary_script = _primary_script_for_block(block)
-    print '%13s %6s %s' % (
+    print('%13s %6s %s\n' % (
       '%04X-%04X' % block_range,
       '\'%s\'' % primary_script if primary_script else '------',
-      block)
+      block))
 
 
 def main():
@@ -3323,9 +3323,9 @@ def main():
   cmapdata = _get_cmap_data(script_to_chars, metadata)
   if args.outfile:
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
-    print 'wrote %s' % args.outfile
+    print('wrote %s' % args.outfile)
   else:
-    print cmap_data.write_cmap_data(cmapdata, pretty=True)
+    print(cmap_data.write_cmap_data(cmapdata, pretty=True))
 
 
 if __name__ == "__main__":

@@ -127,7 +127,7 @@ def ensure_dir_exists(path, clean=False):
   if not os.path.isdir(path):
     if os.path.exists(path):
       raise ValueError('%s exists and is not a directory' % path)
-    print "making '%s'" % path
+    print("making '%s'" % path)
     os.makedirs(path)
   elif clean:
     shutil.rmtree(path)
@@ -195,7 +195,7 @@ def git_checkout(repo, branch_or_tag, verbose=False):
     result = subprocess.check_output(
         ['git', 'checkout', branch_or_tag], stderr=subprocess.STDOUT)
     if verbose:
-      print '%s:\n%s\n-----' % (repo, result)
+      print('%s:\n%s\n-----' % (repo, result))
 
 
 def git_mv(repo, old, new):
@@ -270,13 +270,13 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
       protected_files.append(f)
 
   if files_not_under_version_control:
-    print >> sys.stderr, '%d files were not under version control:\n  %s' % (
+    sys.stderr.write('%d files were not under version control:\n  %s\n' % (
         len(files_not_under_version_control),
-        ', '.join(files_not_under_version_control))
+        ', '.join(files_not_under_version_control)))
 
   if protected_files:
-    print >> sys.stderr, '%d files protected:\n  %s' % (
-        len(protected_files), ', '.join(protected_files))
+    sys.stderr.write('%d files protected:\n  %s\n' % (
+        len(protected_files), ', '.join(protected_files)))
 
   return tool_generated_files
 
@@ -298,10 +298,10 @@ def git_is_clean(repo, print_errors=False):
     def dumplines(msg, text, limit):
       if text:
         lines = text.splitlines()
-        print '%s (%d lines):\n  %s' % (
-            msg, len(lines), '\n  '.join(lines[:limit]))
+        print('%s (%d lines):\n  %s' % (
+            msg, len(lines), '\n  '.join(lines[:limit])))
         if len(lines) > limit:
-          print '  ...'
+          print('  ...')
 
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate()
@@ -315,7 +315,7 @@ def git_is_clean(repo, print_errors=False):
     if subprocess.call(
         ['git', 'diff-files', '--quiet', '--ignore-submodules', '--']):
       if (print_errors):
-        print 'There are unstaged changes:'
+        print('There are unstaged changes:')
         capture_and_show_errors(
             ['git', 'diff-files', '--name-status', '-r', '--ignore-submodules',
              '--'])
@@ -324,7 +324,7 @@ def git_is_clean(repo, print_errors=False):
         ['git', 'diff-index', '--cached', '--quiet', 'HEAD',
          '--ignore-submodules', '--']):
       if (print_errors):
-        print 'There are uncommitted changes:'
+        print('There are uncommitted changes:')
         capture_and_show_errors(
             ['git', 'diff-index', '--cached', '--name-status', '-r', 'HEAD',
              '--ignore-submodules', '--'])

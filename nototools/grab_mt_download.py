@@ -62,14 +62,14 @@ def write_data_to_file(data, root, subdir, filename):
     os.mkdir(dstdir)
   with open(os.path.join(dstdir, filename), 'wb') as f:
     f.write(data)
-  print 'extracted \'%s\' into %s' % (filename, subdir)
+  print('extracted \'%s\' into %s' % (filename, subdir))
 
 
 def unzip_to_directory_tree(drop_dir, filepath):
   hint_rx = re.compile(r'_((?:un)?hinted)/(.+)')
   plain_rx = re.compile(r'[^/]+')
   zf = zipfile.ZipFile(filepath, 'r')
-  print 'extracting files from %s to %s' % (filepath, drop_dir)
+  print('extracting files from %s to %s' % (filepath, drop_dir))
   count = 0
   mapped_names = []
   unmapped = []
@@ -81,7 +81,7 @@ def unzip_to_directory_tree(drop_dir, filepath):
     try:
       data = zf.read(name)
     except KeyError:
-      print 'did not find %s in zipfile' % name
+      print('did not find %s in zipfile' % name)
       continue
 
     result = hint_rx.search(name)
@@ -95,7 +95,7 @@ def unzip_to_directory_tree(drop_dir, filepath):
 
     result = plain_rx.match(name)
     if not result:
-      print "subdir structure without hint/unhint: '%s'" % name
+      print("subdir structure without hint/unhint: '%s'" % name)
       continue
 
     # we have to figure out where it goes.
@@ -131,7 +131,7 @@ def unzip_to_directory_tree(drop_dir, filepath):
       write_data_to_file(data, drop_dir, subdir, name)
       count += 1
 
-  print 'extracted %d files' % count
+  print('extracted %d files' % count)
 
 
 def main():

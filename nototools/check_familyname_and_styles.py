@@ -90,9 +90,9 @@ def _get_stylenames(styles):
 def check_familyname(name, styles):
   notofont = noto_fonts.get_noto_font('unhinted/' + name + '-Regular.ttf')
   if not notofont:
-    print 'Error: could not parse', name
+    print('Error: could not parse', name)
     return False
-  print name, noto_fonts.noto_font_to_wws_family_id(notofont), styles
+  print(name, noto_fonts.noto_font_to_wws_family_id(notofont), styles)
   return True
 
 
@@ -156,7 +156,7 @@ def generate_filenames(namefile, outfile, sort=False):
       f.write(allnames)
       f.write('\n')
   else:
-    print allnames
+    print(allnames)
 
 
 def main():
@@ -180,17 +180,17 @@ def main():
   if args.check:
     passed = check_familynames(args.familynamedata)
     if not passed:
-      print 'Check failed, some files had errors.'
+      print('Check failed, some files had errors.')
       return
-    print 'Check succeeded.'
+    print('Check succeeded.')
 
   if args.write:
     outfile = None if args.write == 'stdout' else args.write
     if not outfile and args.check:
-      print
+      print()
     generate_filenames(args.familynamedata, outfile, args.sort)
     if outfile:
-      print 'Wrote', outfile
+      print('Wrote', outfile)
 
 
 if __name__ == '__main__':

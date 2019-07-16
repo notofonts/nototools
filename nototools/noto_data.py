@@ -205,7 +205,7 @@ def ascii_letters():
     return _char_set('0041..005a,0061..007a')
 
 def char_range(start, end):
-    return range(start, end+1)
+    return list(range(start, end+1))
 
 COPTIC_EPACT = char_range(0x102E0, 0x102FB)
 ARABIC_MATH = char_range(0x1EE00, 0x1EEF1)

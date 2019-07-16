@@ -100,7 +100,7 @@ class ParseOhchr(html.HTMLParser):
 
   def outdent(self):
     if not self.margin:
-      print '*** cannot outdent ***'
+      print('*** cannot outdent ***')
     else:
       self.margin = self.margin[:-2]
 
@@ -113,11 +113,11 @@ class ParseOhchr(html.HTMLParser):
   def handle_starttag(self, tag, attrs):
     if tag not in ['link', 'meta', 'area', 'img', 'br']:
       if self.trace:
-        print self.margin + tag + '>'
+        print(self.margin + tag + '>')
       self.tag_stack.append((tag, self.getpos()))
       self.indent()
     elif self.trace:
-      print self.margin + tag
+      print(self.margin + tag)
 
     if self.state == 'before_table' and tag == 'table':
       table_id = self.get_attr(attrs, 'id')
@@ -149,11 +149,11 @@ class ParseOhchr(html.HTMLParser):
       self.outdent()
       if tag != prev_tag:
         if self.trace:
-          print 'no close tag for %s at %s' % (prev_tag, prev_pos)
+          print('no close tag for %s at %s' % (prev_tag, prev_pos))
       else:
         break
     if self.trace:
-      print self.margin + '<'
+      print(self.margin + '<')
     if self.state == 'in_table':
       if tag == 'table':
         self.state = 'after_table'
@@ -200,9 +200,9 @@ def parse_ohchr_html_file(htmlfile, outfile):
     lines.append('\t'.join([ohchr_code, s, lang, attrib]))
   data = '\n'.join(lines) + '\n'
 
-  print 'outfile: "%s"' % outfile
+  print('outfile: "%s"' % outfile)
   if not outfile or outfile == '-':
-    print data
+    print(data)
   else:
     with open(outfile, 'w') as f:
       f.write(data)

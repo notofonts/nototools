@@ -106,8 +106,8 @@ def compare_interscript(base_map, base_script, target_script, opts=None):
   if target_script not in base_map:
     missing_scripts.append(target_script)
   if missing_scripts:
-    print 'Cannot compare %s and %s, %s not in cmap data.' % (
-        base_script, target_script, ', '.join(missing_scripts))
+    print('Cannot compare %s and %s, %s not in cmap data.' % (
+        base_script, target_script, ', '.join(missing_scripts)))
     return
   base_data = base_map[base_script]
   target_data = base_map[target_script]
@@ -139,10 +139,10 @@ def _print_detailed(cps, inverted_target=None):
   def show_undefined(start, end):
     if start >= 0:
       if end > start:
-        print '      %04x-%04x Zzzz <%d undefined>' % (
-            start, end, end - start - 1)
+        print('      %04x-%04x Zzzz <%d undefined>' % (
+            start, end, end - start - 1))
       else:
-        print '      %04x Zzzz <1 undefined>' % start
+        print('      %04x Zzzz <1 undefined>' % start)
 
   for cp in sorted(cps):
     block = unicode_data.block(cp)
@@ -150,7 +150,7 @@ def _print_detailed(cps, inverted_target=None):
       show_undefined(undefined_start, undefined_end)
       undefined_start, undefined_end = -1, -1
       if block != last_block:
-        print '    %s' % block
+        print('    %s' % block)
         last_block = block
     script = unicode_data.script(cp)
     if script == 'Zzzz':
@@ -178,14 +178,14 @@ def _print_detailed(cps, inverted_target=None):
       else:
         script_text = ', '.join(scripts)
       extra = ' (font %s)' % script_text
-    print '    %6s %4s %2s %3s %s%s%s' % (
+    print('    %6s %4s %2s %3s %s%s%s' % (
         '%04x' % cp,
         script,
         unicode_data.category(cp),
         unicode_data.age(cp),
         unicode_data.name(cp, ''),
         extensions,
-        extra)
+        extra))
   show_undefined(undefined_start, undefined_end)
 
 
@@ -195,16 +195,16 @@ def report_cmap_compare(
   def report_cps(label, cps, inverted=None):
     if not cps:
       return
-    print '  %s (%d): %s' % (
-        label, len(cps), lint_config.write_int_ranges(cps))
+    print('  %s (%d): %s' % (
+        label, len(cps), lint_config.write_int_ranges(cps)))
     if detailed:
       _print_detailed(cps, inverted)
 
   if report_same:
-    print label
+    print(label)
   if added or removed or xadded or xremoved:
     if not report_same:
-      print label
+      print(label)
     removed_to_fallback = removed & xadded if removed and xadded else None
     if removed_to_fallback:
       removed -= removed_to_fallback
@@ -235,8 +235,8 @@ def report_compare(compare_result, detailed=True):
   base_title = title_from_metadata(base_cmap_data.meta)
   target_title = title_from_metadata(target_cmap_data.meta)
 
-  print 'base: %s' % base_title
-  print 'target: %s' % target_title
+  print('base: %s' % base_title)
+  print('target: %s' % target_title)
   for script in sorted(compare):
     added, removed, xadded, xremoved = compare[script]
     label = '%s # %s' % (script, base_map[script].name)
@@ -248,7 +248,7 @@ def report_interscript_compare(compare_result, detailed=True):
   compare, base_cmap_data = compare_result
   base_map = cmap_data.create_map_from_table(base_cmap_data.table)
   title = title_from_metadata(base_cmap_data.meta)
-  print 'data: %s' % title
+  print('data: %s' % title)
   for t in sorted(compare):
     added, removed, xadded, xremoved = compare[t]
     base_script, target_script = t
@@ -313,7 +313,7 @@ def main():
 
   if not args.target:
     if not scripts or len(scripts) < 2:
-      print 'Interscript comparison requires two or more scripts.'
+      print('Interscript comparison requires two or more scripts.')
       return
     result = compare_interscript_data_file(args.base, args.scripts, opts)
     report_interscript_compare(result, detailed=args.detailed)

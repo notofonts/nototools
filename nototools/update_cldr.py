@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -60,7 +60,7 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
   tool_utils.check_dir_exists(cldr_repo)
 
   if not tool_utils.git_is_clean(noto_repo):
-    print 'Please fix'
+    print('Please fix')
     return
 
   if update:
@@ -79,13 +79,13 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
   for subdir in CLDR_SUBDIRS:
     src = os.path.join(cldr_repo, subdir)
     dst = os.path.join(noto_cldr, subdir)
-    print 'replacing directory %s...' % subdir
+    print('replacing directory %s...' % subdir)
     shutil.rmtree(dst)
     shutil.copytree(src, dst)
 
   # replace files
   for f in CLDR_FILES:
-    print 'replacing file %s...' % f
+    print('replacing file %s...' % f)
     src = os.path.join(cldr_repo, f)
     dst = os.path.join(noto_cldr, f)
     shutil.copy(src, dst)
@@ -95,7 +95,7 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
 
   # print commit message
   tag_string = (' tag %s' % cldr_tag) if cldr_tag else ''
-  print 'Update CLDR data to SVN r%s%s.' % (cldr_version, tag_string)
+  print('Update CLDR data to SVN r%s%s.' % (cldr_version, tag_string))
 
 
 def main():
@@ -113,13 +113,13 @@ def main():
   args = parser.parse_args()
 
   if not args.cldr or not args.noto:
-    print "Missing either or both of cldr and noto locations."
+    print("Missing either or both of cldr and noto locations.")
     return
 
   if args.branch:
     cur_branch = tool_utils.git_get_branch(args.noto)
     if cur_branch != args.branch:
-      print "Expected branch '%s' but %s is in branch '%s'." % (args.branch, args.noto, cur_branch)
+      print("Expected branch '%s' but %s is in branch '%s'." % (args.branch, args.noto, cur_branch))
       return
 
   update_cldr(args.noto, args.cldr, args.update_cldr, args.cldr_tag)

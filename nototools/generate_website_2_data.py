@@ -88,8 +88,8 @@ def check_families(family_map):
       # via the website.
       #
       # We'll keep the representative font and not try to change it.
-      print 'Family %s has %d hinted members but %d unhinted memberts' % (
-          family_id, len(hinted_members), len(unhinted_members))
+      print('Family %s has %d hinted members but %d unhinted memberts' % (
+          family_id, len(hinted_members), len(unhinted_members)))
 
       # The namedtuples are immutable, so we need to break them apart and reform
       # them
@@ -130,9 +130,9 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     for lang_scr in ['bal-Arab', 'hnd-Arab', 'hno-Arab', 'ks-Arab', 'lah-Arab',
                      'pa-Arab', 'skr-Arab', 'ur-Arab']:
       if not lang_scr in lang_scrs:
-        print 'Map nastaliq: %s not found' % lang_scr
+        print('Map nastaliq: %s not found' % lang_scr)
       else:
-        print 'added %s to nastaliq' % lang_scr
+        print('added %s to nastaliq' % lang_scr)
         nastaliq_lang_scrs.add(lang_scr)
 
   # Kufi patches:
@@ -143,10 +143,10 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     kufi_lang_scrs = family_id_to_lang_scrs['kufi-arab']
     for lang_scr in ['ur-Arab', 'khw-Arab', 'ks-Arab']:
       if not lang_scr in lang_scrs:
-        print 'Patch kufi: %s not found' % lang_scr
+        print('Patch kufi: %s not found' % lang_scr)
       else:
         kufi_lang_scrs.remove(lang_scr)
-        print 'removed %s from kufi' % lang_scr
+        print('removed %s from kufi' % lang_scr)
         if not kufi_lang_scrs:
           break
 
@@ -157,10 +157,10 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     hebr_lang_scrs = family_id_to_lang_scrs['sans-hebr']
     for lang_scr in ['lad-Hebr']:
       if not lang_scr in lang_scrs:
-        print 'Patch lad: %s not found' % lang_scr
+        print('Patch lad: %s not found' % lang_scr)
       else:
         hebr_lang_scrs.remove(lang_scr)
-        print 'removed %s from sans-hebr' % lang_scr
+        print('removed %s from sans-hebr' % lang_scr)
         if not hebr_lang_scrs:
           break;
 
@@ -171,16 +171,16 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     jpan_lang_scrs = family_id_to_lang_scrs['sans-jpan']
     for lang_scr in ['ja-Kana', 'ja-Hira']:
       if not lang_scr in lang_scrs:
-        print 'Patch jpan: %s not found' % lang_scr
+        print('Patch jpan: %s not found' % lang_scr)
       else:
         jpan_lang_scrs.remove(lang_scr)
-        print 'removed %s from sans-jpan' % lang_scr
+        print('removed %s from sans-jpan' % lang_scr)
         if not jpan_lang_scrs:
           break;
 
   for f, ls in sorted(family_id_to_lang_scrs.iteritems()):
     if not ls:
-      print '!family %s has no lang' % f
+      print('!family %s has no lang' % f)
 
   return family_id_to_lang_scrs
 
@@ -221,8 +221,8 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
           full_key = sample_key + '-' + family_id
           if full_key in tested_keys:
             if full_key in failed_keys:
-              print 'family %s already rejected sample %s (lang %s)' % (
-                  family_id, sample_key, lang_scr)
+              print('family %s already rejected sample %s (lang %s)' % (
+                  family_id, sample_key, lang_scr))
               continue
           else:
             failed_cps = set()
@@ -237,15 +237,15 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
                 failed_cps.add(ord(cp))
 
             if failed_cps:
-              print 'family %s rejects sample %s for lang %s:\n  %s' % (
+              print('family %s rejects sample %s for lang %s:\n  %s' % (
                   family_id, sample_key, lang_scr,
                   '\n  '.join('%04x (%s)' % (
-                      cp, unichr(cp)) for cp in sorted(failed_cps)))
+                      cp, unichr(cp)) for cp in sorted(failed_cps))))
               failed_keys.add(full_key)
               continue
 
-          # print 'family %s accepts sample %s for lang %s' % (
-          #    family_id, sample_key, lang_scr)
+          # print('family %s accepts sample %s for lang %s' % (
+          #    family_id, sample_key, lang_scr))
 
           sample_key_for_lang = sample_key
           if sample_key not in sample_key_to_info:
@@ -253,16 +253,16 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
           break
 
         if not sample_key_for_lang:
-          print '%s has no sample to display in %s' % (lang_scr, family_id)
+          print('%s has no sample to display in %s' % (lang_scr, family_id))
         else:
           lang_scr_to_sample_key[lang_scr] = sample_key_for_lang
 
       if not lang_scr_to_sample_key:
-        print '!%s can display no samples for any lang of %s' % (
-            family_id, ', '.join(sorted(family_id_to_lang_scrs[family_id])))
+        print('!%s can display no samples for any lang of %s' % (
+            family_id, ', '.join(sorted(family_id_to_lang_scrs[family_id]))))
       else:
-        print '%s has samples for %s langs' % (
-            family_id, len(lang_scr_to_sample_key))
+        print('%s has samples for %s langs' % (
+            family_id, len(lang_scr_to_sample_key)))
         family_id_to_lang_scr_to_sample_key[family_id] = lang_scr_to_sample_key
 
     return (family_id_to_lang_scr_to_sample_key, sample_key_to_info)
@@ -274,7 +274,7 @@ def get_family_id_to_regions(family_id_to_lang_scr_to_sample_key):
     if region == 'ZZ':
       continue
     if len(region) > 2: # e.g. world
-      print 'skipping region %s' % region
+      print('skipping region %s' % region)
       continue
     lang_scrs = cldr_data.region_to_lang_scripts(region)
     for lang_scr in lang_scrs:
@@ -294,7 +294,7 @@ def get_family_id_to_regions(family_id_to_lang_scr_to_sample_key):
           warnings.add(lang_scr)
 
   for lang_scr in sorted(warnings):
-    print 'no mapping from %s to any region' % lang_scr
+    print('no mapping from %s to any region' % lang_scr)
 
   return family_id_to_regions
 
@@ -427,12 +427,12 @@ def get_attribution(lang_scr_typ):
         continue
       tag, attrib = line.split(':')
       ATTRIBUTION_DATA[tag.strip()] = attrib.strip()
-    print 'read %d lines of attribution data' % len(ATTRIBUTION_DATA)
+    print('read %d lines of attribution data' % len(ATTRIBUTION_DATA))
   try:
     return ATTRIBUTION_DATA[lang_scr_typ + '.txt']
   except KeyError:
     if not lang_scr_typ.endswith('_chars'):
-      print 'no attribution for %s' % lang_scr_typ
+      print('no attribution for %s' % lang_scr_typ)
     return 'none'
 
 
@@ -488,7 +488,7 @@ def get_sample_infos(lang_scr):
   add_exemplars(und_scr)
 
   if not sample_infos:
-    print '!No sample info for %s' % lang_scr
+    print('!No sample info for %s' % lang_scr)
 
   return sample_infos
 
@@ -515,8 +515,8 @@ def get_family_id_to_default_lang_scr(family_id_to_lang_scrs, families):
     lang_scr = lang + '-' + primary_script
 
     if lang_scr not in lang_scrs:
-      print 'default lang_scr \'%s\' not listed for family %s %s' % (
-          lang_scr, family_id, lang_scrs)
+      print('default lang_scr \'%s\' not listed for family %s %s' % (
+          lang_scr, family_id, lang_scrs))
 
     family_id_to_default_lang_scr[family_id] = lang_scr
   return family_id_to_default_lang_scr
@@ -628,8 +628,8 @@ def check_debug(debug):
 
   for key in debug:
     if not key in _DEBUG_KEYS:
-      print 'Bad debug key(s) found.  Keys are:\n  %s' % (
-        '\n  '.join(sorted(_DEBUG_KEYS)))
+      print('Bad debug key(s) found.  Keys are:\n  %s' % (
+        '\n  '.join(sorted(_DEBUG_KEYS))))
       raise ValueError()
 
   return frozenset(debug)
@@ -659,7 +659,7 @@ class WebGen(object):
 
   def clean_target_dir(self):
     if path.exists(self.target):
-        print 'Removing the old website directory from %s...' % self.target
+        print('Removing the old website directory from %s...' % self.target)
         shutil.rmtree(self.target)
 
   def write_json(self, obj, name):
@@ -701,7 +701,7 @@ class WebGen(object):
       for font in fonts:
         pairs.append((font.filepath, path.basename(font.filepath)))
       tool_utils.generate_zip_with_7za_from_filepairs(pairs, zippath)
-      print 'Created zip %s' % zippath
+      print('Created zip %s' % zippath)
     return os.stat(zippath).st_size
 
   def get_readme_keys(self):
@@ -866,8 +866,8 @@ class WebGen(object):
             1 for f in (family.hinted_members or family.unhinted_members)
             if not f.is_UI)
         if num_fonts not in [1, 2, 3, 4, 9, 12, 36, 72]:
-          print 'family %s (%s) has %d fonts' % (k, family.name, num_fonts)
-          print '\n'.join(f.filepath for f in sorted(family.hinted_members or family.unhinted_members))
+          print('family %s (%s) has %d fonts' % (k, family.name, num_fonts))
+          print('\n'.join(f.filepath for f in sorted(family.hinted_members or family.unhinted_members)))
           fail = True
 
       family_obj['fonts'] = num_fonts
@@ -1082,9 +1082,9 @@ class WebGen(object):
       image_location = path.join(self.samples, image_file_name)
       if path.isfile(image_location):
         # Don't rebuild images when continuing.
-        print "Continue: assuming image file '%s' is valid." % image_location
+        print("Continue: assuming image file '%s' is valid." % image_location)
         continue
-      print 'create %s' % image_file_name
+      print('create %s' % image_file_name)
       create_image.create_img(
           sample_text,
           image_location,
@@ -1106,7 +1106,7 @@ class WebGen(object):
                    sample_key_to_info):
     for family_id in sorted(family_id_to_lang_scr_to_sample_key):
       family = families[family_id]
-      print 'Generating images for %s...' % family.name
+      print('Generating images for %s...' % family.name)
       default_lang = family_id_to_default_lang_scr[family_id]
       lang_scr_to_sample_key = family_id_to_lang_scr_to_sample_key[family_id]
 
@@ -1146,8 +1146,8 @@ class WebGen(object):
           (path.join(CJK_DIR, filename), filename)]
       tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
       newsize = os.stat(zip_path).st_size
-      print "Wrote " + zip_path
-      print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
+      print("Wrote " + zip_path)
+      print('Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize))
 
     # NotoSans/SerifCJK.ttc.zip already has been zipped for size reasons
     # because git doesn't like very large files. So it wasn't in the above
@@ -1163,7 +1163,7 @@ class WebGen(object):
     for filename in ['NotoSansCJK.ttc.zip', 'NotoSerifCJK.ttc.zip']:
       src_zip = path.join(CJK_DIR, filename)
       if not path.isfile(src_zip):
-        print 'Warning: %s does not exist' % filename
+        print('Warning: %s does not exist' % filename)
         continue
       pairs = [(SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
       if os.stat(src_zip).st_size < 100000000:  # lower than 100MB
@@ -1205,8 +1205,8 @@ class WebGen(object):
 
         tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
         newsize = os.stat(zip_path).st_size
-        print "Wrote " + zip_path
-        print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
+        print("Wrote " + zip_path)
+        print('Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize))
 
   def generate(self):
     if self.clean:
@@ -1226,25 +1226,25 @@ class WebGen(object):
     check_families(families)
 
     if 'families' in self.debug:
-      print '\n#debug families'
-      print '%d found' % len(families)
+      print('\n#debug families')
+      print('%d found' % len(families))
       for i, (family_id, family) in enumerate(sorted(families.iteritems())):
-        print '%2d] %s (%s, %s)' % (
-            i, family_id, family.name, noto_fonts.get_family_filename(family))
+        print('%2d] %s (%s, %s)' % (
+            i, family_id, family.name, noto_fonts.get_family_filename(family)))
         if family.hinted_members:
-          print '  hinted: %s' % ', '.join(sorted(
-              [path.basename(m.filepath) for m in family.hinted_members]))
+          print('  hinted: %s' % ', '.join(sorted(
+              [path.basename(m.filepath) for m in family.hinted_members])))
         if family.unhinted_members:
-          print '  unhinted: %s' % ', '.join(sorted(
-              [path.basename(m.filepath) for m in family.unhinted_members]))
+          print('  unhinted: %s' % ', '.join(sorted(
+              [path.basename(m.filepath) for m in family.unhinted_members])))
 
     script_to_family_ids = get_script_to_family_ids(families)
     if 'script_to_family_ids' in self.debug:
-      print '\n#debug script to family ids'
-      print '%d found' % len(script_to_family_ids)
+      print('\n#debug script to family ids')
+      print('%d found' % len(script_to_family_ids))
       for i, (script, family_ids) in enumerate(
           sorted(script_to_family_ids.iteritems())):
-        print '%2d] %s: %s' % (i, script, ', '.join(sorted(family_ids)))
+        print('%2d] %s: %s' % (i, script, ', '.join(sorted(family_ids))))
 
     all_lang_scrs = set(['und-' + script for script in script_to_family_ids])
     all_lang_scrs.update(lang_data.lang_scripts())
@@ -1252,7 +1252,7 @@ class WebGen(object):
     for lang_scr in sorted(all_lang_scrs):
       lang, script = lang_scr.split('-')
       if not script in script_to_family_ids:
-        print 'no family supports script in %s' % lang_scr
+        print('no family supports script in %s' % lang_scr)
         continue
 
       sample_infos = get_sample_infos(lang_scr)
@@ -1262,70 +1262,70 @@ class WebGen(object):
       lang_scr_to_sample_infos[lang_scr] = sample_infos
 
     if 'lang_scr_to_sample_infos' in self.debug:
-      print '\n#debug lang+script to sample infos'
-      print '%d found' % len(lang_scr_to_sample_infos)
+      print('\n#debug lang+script to sample infos')
+      print('%d found' % len(lang_scr_to_sample_infos))
       for lang_scr, info_list in sorted(lang_scr_to_sample_infos.iteritems()):
         for info in info_list:
-          print '%s: %s, %s, len %d' % (
-              lang_scr, info[2], info[1], len(info[0]))
+          print('%s: %s, %s, len %d' % (
+              lang_scr, info[2], info[1], len(info[0])))
 
     family_id_to_lang_scrs = get_family_id_to_lang_scrs(
         lang_scr_to_sample_infos.keys(), script_to_family_ids)
     if 'family_id_to_lang_scrs' in self.debug:
-      print '\n#debug family id to list of lang+script'
-      print '%d found' % len(family_id_to_lang_scrs)
+      print('\n#debug family id to list of lang+script')
+      print('%d found' % len(family_id_to_lang_scrs))
       for i, (family_id, lang_scrs) in enumerate(
           sorted(family_id_to_lang_scrs.iteritems())):
-        print '%3d] %s: (%d) %s' % (
-            i, family_id, len(lang_scrs), ' '.join(sorted(lang_scrs)))
+        print('%3d] %s: (%d) %s' % (
+            i, family_id, len(lang_scrs), ' '.join(sorted(lang_scrs))))
 
     family_id_to_lang_scr_to_sample_key, sample_key_to_info = (
         get_family_id_to_lang_scr_to_sample_key(
             family_id_to_lang_scrs, families, lang_scr_to_sample_infos))
     if 'family_id_to_lang_scr_to_sample_key' in self.debug:
-      print '\n#debug family id to map from lang+script to sample key'
-      print '%d found' % len(family_id_to_lang_scr_to_sample_key)
+      print('\n#debug family id to map from lang+script to sample key')
+      print('%d found' % len(family_id_to_lang_scr_to_sample_key))
       for i, (family_id, lang_scr_to_sample_key) in enumerate(
           sorted(family_id_to_lang_scr_to_sample_key.iteritems())):
-        print '%2d] %s (%d):' % (i, family_id, len(lang_scr_to_sample_key))
+        print('%2d] %s (%d):' % (i, family_id, len(lang_scr_to_sample_key)))
         for j, (lang_scr, sample_key) in enumerate(
             sorted(lang_scr_to_sample_key.iteritems())):
-          print '  [%2d] %s: %s' % (j, lang_scr, sample_key)
+          print('  [%2d] %s: %s' % (j, lang_scr, sample_key))
     if 'sample_key_to_info' in self.debug:
-      print '\n#debug sample key to sample info'
-      print '%d found' % len(sample_key_to_info)
+      print('\n#debug sample key to sample info')
+      print('%d found' % len(sample_key_to_info))
       for i, (sample_key, info) in enumerate(
           sorted(sample_key_to_info.iteritems())):
-        print '%2d] %s: %s, len %d' % (
-            i, sample_key, info[1], len(info[0]))
+        print('%2d] %s: %s, len %d' % (
+            i, sample_key, info[1], len(info[0])))
 
     family_id_to_regions = get_family_id_to_regions(
         family_id_to_lang_scr_to_sample_key)
     if 'family_id_to_regions' in self.debug:
-      print '\n#debug family id to regions'
-      print '%d found' % len(family_id_to_regions)
+      print('\n#debug family id to regions')
+      print('%d found' % len(family_id_to_regions))
       for i, (family_id, regions) in enumerate(
           sorted(family_id_to_regions.iteritems())):
-        print '%2d] %s: (%d) %s' % (
-            i, family_id, len(regions), ', '.join(sorted(regions)))
+        print('%2d] %s: (%d) %s' % (
+            i, family_id, len(regions), ', '.join(sorted(regions))))
 
     region_to_family_ids = get_region_to_family_ids(family_id_to_regions)
     if 'region_to_family_ids' in self.debug:
-      print '\n#debug region to family ids'
-      print '%d found' % len(region_to_family_ids)
+      print('\n#debug region to family ids')
+      print('%d found' % len(region_to_family_ids))
       for i, (region, family_ids) in enumerate(
           sorted(region_to_family_ids.iteritems())):
-        print '%2d] %s: (%d) %s' % (
-            i, region, len(family_ids), ', '.join(sorted(family_ids)))
+        print('%2d] %s: (%d) %s' % (
+            i, region, len(family_ids), ', '.join(sorted(family_ids))))
 
     family_id_to_default_lang_scr = get_family_id_to_default_lang_scr(
         family_id_to_lang_scrs, families)
     if 'family_id_to_default_lang_scr' in self.debug:
-      print '\n#debug family id to default lang scr'
-      print '%d found' % len(family_id_to_default_lang_scr)
+      print('\n#debug family id to default lang scr')
+      print('%d found' % len(family_id_to_default_lang_scr))
       for i, (family_id, lang_scr) in enumerate(
           sorted(family_id_to_default_lang_scr.iteritems())):
-        print '%2d] %s: %s' % (i, family_id, lang_scr)
+        print('%2d] %s: %s' % (i, family_id, lang_scr))
 
     region_data = get_region_lat_lng_data(region_to_family_ids.keys())
 
@@ -1365,16 +1365,16 @@ class WebGen(object):
                           (default_lang_scr, family_id))
 
     if error_list:
-      print 'Errors:\n' + '\n  '.join(error_list)
+      print('Errors:\n' + '\n  '.join(error_list))
 
     if error_list or self.no_build:
-      print 'skipping build output'
+      print('skipping build output')
       return
 
     # build outputs
     # zips are required for data
     if self.no_zips and self.no_data:
-      print 'skipping zip output'
+      print('skipping zip output')
     else:
       self.build_readmes()
 
@@ -1387,12 +1387,12 @@ class WebGen(object):
         self.build_subset_zips()
 
     if self.no_css:
-      print 'skipping css output'
+      print('skipping css output')
     else:
       family_css_info = self.build_css(families)
 
     if self.no_data:
-      print 'skipping data output'
+      print('skipping data output')
     else:
       self.build_data_json(family_id_to_lang_scr_to_sample_key,
                            families, family_zip_info, universal_zip_info,
@@ -1406,7 +1406,7 @@ class WebGen(object):
       self.build_misc_json(sample_key_to_info, region_data)
 
     if self.no_images:
-      print 'skipping image output'
+      print('skipping image output')
     else:
       self.build_images(family_id_to_lang_scr_to_sample_key,
                         families,  family_id_to_default_lang_scr,
@@ -1459,7 +1459,7 @@ def get_repo_info(skip_checks):
     repo_info[repo_name] = message
 
   for rname, v in sorted(repo_info.iteritems()):
-    print '--%s--\n%s' % (rname, v)
+    print('--%s--\n%s' % (rname, v))
   if errors:
     raise Exception('Some repos are not clean\n' + '\n'.join(errors))
   return repo_info

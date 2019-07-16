@@ -137,11 +137,11 @@ def _parse_supplemental_data():
       _LANG_TO_SCRIPTS[lang].add(script)
 
   if langs_missing_likely_subtag_data:
-    print 'cldr_data: %d keys not in likely subtags:' % len(
-        langs_missing_likely_subtag_data)
+    print('cldr_data: %d keys not in likely subtags:' % len(
+        langs_missing_likely_subtag_data))
     for k in sorted(langs_missing_likely_subtag_data):
-      print ' ', k
-    print 'cldr_data: defaulting script to Latn'
+      print(' ', k)
+    print('cldr_data: defaulting script to Latn')
     # raise Exception('oops')
 
   # Use likely subtag data mapping script to lang to extend lang_to_scripts.
@@ -155,8 +155,8 @@ def _parse_supplemental_data():
       lang = _LIKELY_SUBTAGS[und_scr][0]
       if lang != 'und' and script not in _LANG_TO_SCRIPTS[lang]:
         if _DEBUG:
-          print 'lang to scripts missing script %s for %s (from %s)' % (
-              script, lang, ', '.join(_LANG_TO_SCRIPTS[lang]))
+          print('lang to scripts missing script %s for %s (from %s)' % (
+              script, lang, ', '.join(_LANG_TO_SCRIPTS[lang])))
         _LANG_TO_SCRIPTS[lang].add(script)
 
   if _USE_EXTRA_LOCALE_DATA:
@@ -175,13 +175,13 @@ def _parse_supplemental_data():
       lang_scripts = _LANG_TO_SCRIPTS[lang]
       if script not in lang_scripts:
         if _DEBUG:
-          print ('extra likely subtags lang %s has script %s but supplemental '
+          print(('extra likely subtags lang %s has script %s but supplemental '
                  'only has [%s]') % (
-                     lang, script, ', '.join(sorted(lang_scripts)))
+                     lang, script, ', '.join(sorted(lang_scripts))))
         if len(lang_scripts) == 1:
           replacement = set([script])
           if _DEBUG:
-            print 'replacing %s with %s' % (lang_scripts, replacement)
+            print('replacing %s with %s' % (lang_scripts, replacement))
           _LANG_TO_SCRIPTS[lang] = replacement
         else:
           _LANG_TO_SCRIPTS[lang].add(script)
@@ -189,8 +189,8 @@ def _parse_supplemental_data():
       # skip ZZ region
       if region != 'ZZ' and lang_script not in _REGION_TO_LANG_SCRIPTS[region]:
         if _DEBUG:
-          print 'extra lang_script %s not in cldr for %s, adding' % (
-              lang_script, region)
+          print('extra lang_script %s not in cldr for %s, adding' % (
+              lang_script, region))
         _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
         _LANG_TO_REGIONS[lang].add(region)
 
@@ -265,7 +265,7 @@ def get_likely_subtags(lang_tag):
       m = LSRV_RE.match(lang_tag)
       if not m:
         if _DEBUG:
-          print 'regex did not match locale \'%s\'' % loc_tag
+          print('regex did not match locale \'%s\'' % loc_tag)
         return result
       lang = m.group(1)
       script = m.group(2)
@@ -291,7 +291,7 @@ def get_likely_subtags(lang_tag):
         break
 
   if _DEBUG:
-    print 'no likely subtag for %s' % lang_tag
+    print('no likely subtag for %s' % lang_tag)
   tags = lang_tag.split('-')
   return (tags[0], tags[1] if len(tags) > 1 else 'Zzzz',
           tags[2] if len(tags) > 2 else 'ZZ')
@@ -321,7 +321,7 @@ def is_script_rtl(script):
       return False
     # we really should throw an exception
     if _DEBUG:
-      print 'No script metadata for %s' % script
+      print('No script metadata for %s' % script)
     return False
 
 
@@ -467,7 +467,7 @@ def get_english_language_name(lang_scr):
       except KeyError:
         pass
   if _DEBUG:
-    print 'No English name for \'%s\'' % lang_scr
+    print('No English name for \'%s\'' % lang_scr)
   return None
 
 
@@ -477,7 +477,7 @@ def get_english_region_name(region):
     return _ENGLISH_TERRITORY_NAMES[region]
   except KeyError:
     if _DEBUG:
-      print 'No English name for region %s' % region
+      print('No English name for region %s' % region)
     return ''
 
 
@@ -582,7 +582,7 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
           if accept(s)]
       exemplars.extend(unicode_set_string_to_list(tag.text))
     except Exception as e:
-      print 'failed parse of %s' % cldr_file_path
+      print('failed parse of %s' % cldr_file_path)
       raise e
     break
 
@@ -643,7 +643,7 @@ def loc_tag_to_lsrv(loc_tag):
   m = LSRV_RE.match(loc_tag)
   if not m:
     if _DEBUG:
-      print 'regex did not match locale \'%s\'' % loc_tag
+      print('regex did not match locale \'%s\'' % loc_tag)
     return None
   lang = m.group(1)
   script = m.group(2)
@@ -697,8 +697,7 @@ def _init_lang_scr_to_lit_pops():
   # population and converting the list to a tuple
   for lang_scr, values in tmp_map.iteritems():
     _lang_scr_to_lit_pops[lang_scr] = tuple(
-        sorted(values, key=lambda (r, p): (-p, r)))
-
+        sorted(values, key=lambda x: (-x[1], x[0])))
 
 def get_lang_scr_to_lit_pops():
   """Return a mapping from lang_scr to a list of tuples of region and
@@ -759,28 +758,28 @@ def main():
     _USE_EXTRA_LOCALE_DATA = False
 
   if args.region_to_lang != None:
-    print 'region to lang+script'
+    print('region to lang+script')
     regions = args.region_to_lang or sorted(known_regions())
     for r in regions:
-      print '%s (%s):' % (r, get_english_region_name(r))
+      print('%s (%s):' % (r, get_english_region_name(r)))
       for ls in sorted(region_to_lang_scripts(r)):
-        print '  %s' % ls
+        print('  %s' % ls)
 
   if args.lang_to_region != None:
-    print 'lang to region'
+    print('lang to region')
     langs = args.lang_to_region or sorted(known_langs())
     for l in langs:
-      print '%s (%s):' % (l, get_english_language_name(l))
+      print('%s (%s):' % (l, get_english_language_name(l)))
       for r in sorted(lang_to_regions(l)):
-        print '  %s' % r
+        print('  %s' % r)
 
   if args.lang_to_script != None:
-    print 'lang to script'
+    print('lang to script')
     langs = args.lang_to_script or sorted(known_langs())
     for l in langs:
-      print '%s (%s):' % (l, get_english_language_name(l))
+      print('%s (%s):' % (l, get_english_language_name(l)))
       for s in sorted(lang_to_scripts(l)):
-        print '  %s' % s
+        print('  %s' % s)
 
 
 if __name__ == "__main__":

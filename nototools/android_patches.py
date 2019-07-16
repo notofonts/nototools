@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright 2016 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,7 +76,7 @@ def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
           & coverage.character_set(lgc_font_file))
 
       if chars_to_add:
-        print 'patch hyphens', font_name
+        print('patch hyphens', font_name)
         merger.merge_chars_from_bank(
             path.join(srcdir, font_name),
             path.join(srcdir, lgc_font_name),
@@ -86,9 +86,9 @@ def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
         if copy_unchanged:
           shutil.copy2(
               path.join(srcdir,font_name), path.join(dstdir, font_name))
-          print '%s already has hyphens, copying' % font_name
+          print('%s already has hyphens, copying' % font_name)
         else:
-          print '%s already has hyphens' % font_name
+          print('%s already has hyphens' % font_name)
 
 
 def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
@@ -122,7 +122,7 @@ def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
   )
 
   for font_name in cjk_font_names:
-    print 'remove cjk emoji', font_name
+    print('remove cjk emoji', font_name)
     _remove_from_cmap(
         path.join(srcdir, font_name),
         path.join(dstdir, font_name),
@@ -149,12 +149,12 @@ def patch_cjk_ttcs(srcdir, dstdir):
   result to dstdir using the same name."""
 
   if not path.isdir(srcdir):
-    print '%s is not a directory' % srcdir
+    print('%s is not a directory' % srcdir)
     return
 
   ttc_files = [f for f in os.listdir(srcdir) if f.endswith('.ttc')]
   if not ttc_files:
-    print 'no .ttc file to patch in %s' % srcdir
+    print('no .ttc file to patch in %s' % srcdir)
     return
 
   tool_utils.ensure_dir_exists(dstdir)
@@ -284,7 +284,7 @@ def _format_set(char_set, name, filename):
   lines.append('}\n')
   with codecs.open(filename, 'w', 'UTF-8') as f:
     f.write('\n'.join(lines))
-  print 'wrote', filename
+  print('wrote', filename)
 
 
 def subset_symbols(srcdir, dstdir):
@@ -339,7 +339,7 @@ def subset_symbols(srcdir, dstdir):
   target_coverage -= set(range(0x23BE, 0x23CC+1))
 
   for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
-    print 'main subset', font_file
+    print('main subset', font_file)
     out_file = path.join(
         dstdir, path.basename(font_file)[:-4] + '-Subsetted.ttf')
     subset.subset_font(font_file, out_file, include=target_coverage)
@@ -349,7 +349,7 @@ def subset_symbols(srcdir, dstdir):
   target_coverage = EMOJI | unicode_data.get_unicode_emoji_variants()
 
   for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
-    print 'secondary subset', font_file
+    print('secondary subset', font_file)
     out_file = path.join(
         dstdir, path.basename(font_file)[:-4] + '-Subsetted2.ttf')
     subset.subset_font(font_file, out_file, include=target_coverage)
@@ -360,10 +360,10 @@ def patch_post_table(srcdir, dstdir):
 
   # Leave alone OTF
   for font_file in glob.glob(path.join(srcdir, '*.ttf')):
-    print 'change post table to 3.0', font_file
+    print('change post table to 3.0', font_file)
     out_file = path.join(dstdir, path.basename(font_file))
     if path.isfile(out_file):
-      print '  repatching', out_file
+      print('  repatching', out_file)
       font_file = out_file
     font = ttLib.TTFont(font_file)
     font['post'].formatType = 3.0

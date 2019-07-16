@@ -37,8 +37,8 @@ def noto_check_clean():
       errors.append(r)
 
   if errors:
-    print >> sys.stderr, '%s %s not clean' % (
-        ' '.join(errors), 'is' if len(errors) == 1 else 'are')
+    sys.stderr.write('%s %s not clean\n' % (
+        ' '.join(errors), 'is' if len(errors) == 1 else 'are'))
     return False
   return True
 
@@ -54,7 +54,7 @@ def noto_checkout_master(dry_run=False):
     for p in _REPO_PATHS:
       tool_utils.git_checkout(p, 'master')
   else:
-    print 'would have checked out master in %s' % (', '.join(_REPOS))
+    print('would have checked out master in %s' % (', '.join(_REPOS)))
 
   return True
 
@@ -84,7 +84,7 @@ def noto_checkout(
       failed_tags.append('%s: %s' % (r, t))
 
   if failed_tags:
-    print >> sys.stderr, 'failed to find:\n  %s' % '\n  '.join(failed_tags)
+    sys.stderr.write('failed to find:\n  %s' % '\n  \n'.join(failed_tags))
     return False
 
   if not dry_run:
@@ -92,9 +92,9 @@ def noto_checkout(
       tool_utils.git_checkout(p, t)
 
   if verbose or dry_run:
-    print '%schecked out:\n  %s' % (
+    print('%schecked out:\n  %s' % (
         'would have ' if dry_run else '',
-        '\n  '.join('%s: %s' % (r, t) for r, t in zip(_REPOS, resolved_tags)))
+        '\n  '.join('%s: %s' % (r, t) for r, t in zip(_REPOS, resolved_tags))))
 
   return True
 

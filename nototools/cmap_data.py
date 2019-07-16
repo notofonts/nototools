@@ -222,13 +222,13 @@ def _test():
       '2,6.4',
       ])
   cmapdata = CmapData(meta, table)
-  print cmapdata
+  print(cmapdata)
   xml_text = write_cmap_data(cmapdata)
   newdata = read_cmap_data(xml_text)
-  print newdata
+  print(newdata)
   write_cmap_data_file(cmapdata, 'test_cmap_data.xml', pretty=True)
   newdata = read_cmap_data_file('test_cmap_data.xml')
-  print newdata
+  print(newdata)
 
 
 if __name__ == "__main__":

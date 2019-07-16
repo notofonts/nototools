@@ -99,7 +99,7 @@ def _collect_script_to_punct(files):
       script = cldr_data.get_likely_script(filename)
       if script == 'Zzzz':
         if filename != 'root':
-          print >> sys.stderr, 'no script for %s' % filename
+          sys.stderr.write('no script for %s\n' % filename)
       else:
         script_to_punct[script] |= punct
 
@@ -135,13 +135,13 @@ def script_to_punct():
 
 
 def _write_script_to_punct(script_to_punct):
-  print 'SCRIPT_TO_PUNCT = {'
+  print('SCRIPT_TO_PUNCT = {')
   for script in sorted(script_to_punct):
     chars = script_to_punct[script]
     int_chars = [ord(cp) for cp in chars]
-    print '  # %s' % ('|'.join(sorted(chars)))
-    print "  '%s': '%s'," % (script, tool_utils.write_int_ranges(int_chars))
-  print '}'
+    print('  # %s' % ('|'.join(sorted(chars))))
+    print("  '%s': '%s'," % (script, tool_utils.write_int_ranges(int_chars)))
+  print('}')
 
 
 def main():

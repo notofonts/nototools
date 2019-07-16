@@ -220,11 +220,11 @@ def draw_on_surface(surface, text, params):
     ovr = extents[0][2] > width + params.horiz_margin
     if ovl or ovr:
       if ovl:
-        print 'Error: image overflows left bounds'
+        print('Error: image overflows left bounds')
       if ovr:
-        print 'Error: image overflows right bounds'
-      print 'extents: %s, width: %s, margin: %s' % (
-          extents, params.width, params.horiz_margin)
+        print('Error: image overflows right bounds')
+      print('extents: %s, width: %s, margin: %s' % (
+          extents, params.width, params.horiz_margin))
     top_usage = min(extents[0][1], extents[1][1], 0)
     bottom_usage = max(extents[0][3], extents[1][3])
 
@@ -250,7 +250,7 @@ def create_svg(text, output_path, **kwargs):
 
     real_surface = cairo.SVGSurface(
         output_path, params.width, calculated_height)
-    print 'writing', output_path
+    print('writing', output_path)
     draw_on_surface(real_surface, text, params)
     real_surface.flush()
     real_surface.finish()
@@ -268,7 +268,7 @@ def create_png(text, output_path, **kwargs):
     real_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
         params.width, calculated_height)
     draw_on_surface(real_surface, text, params)
-    print 'writing', output_path
+    print('writing', output_path)
     real_surface.write_to_png(output_path)
 
 
@@ -281,7 +281,7 @@ def create_img(text, output_path, **kwargs):
     elif ext == '.svg':
         create_svg(text, output_path, **kwargs)
     else:
-        print 'extension % not supported' % ext
+        print('extension % not supported' % ext)
 
 
 def test():
@@ -421,7 +421,7 @@ def render_text(
         text, file_name, family=font, weight=weight_name, style=style_name,
         stretch=stretch_name, language=lang, font_size=font_size,
         maxheight=maxheight, horiz_margin=horiz_margin)
-    print 'generated ' + file_name
+    print('generated ' + file_name)
 
 
 def main():
@@ -467,7 +467,7 @@ def main():
       test()
       return
     if args.codes and args.text:
-      print 'choose either codes or text'
+      print('choose either codes or text')
       return
     if args.codes:
       render_codes(
@@ -481,12 +481,12 @@ def main():
           args.text = f.read()
       else:
         args.text = args.text.decode('unicode-escape')
-      print 'text length %d' % len(args.text)
+      print('text length %d' % len(args.text))
       render_text(
           args.out, args.text, args.font, args.bold, args.italic, args.size,
           args.lang, args.type, args.maxheight, args.horiz_margin)
     else:
-      print 'nothing to do'
+      print('nothing to do')
 
 
 if __name__ == '__main__':

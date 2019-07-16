@@ -42,7 +42,7 @@ def _help():
 
 def _build_text(name_map, initial_text=''):
   text = initial_text
-  print 'build text using map of length %d' % len(name_map)
+  print('build text using map of length %d' % len(name_map))
   while True:
     line = raw_input('> ')
     if not line:
@@ -53,12 +53,12 @@ def _build_text(name_map, initial_text=''):
       _help()
       continue
     if line == 'names':
-      print 'names:\n  ' + '\n  '.join(sorted(name_map.keys()))
+      print('names:\n  ' + '\n  '.join(sorted(name_map.keys())))
       continue
     if line == 'dump':
-      print 'dump: \'%s\'' % text
+      print('dump: \'%s\'' % text)
       for cp in text:
-        print '%06x %s' % (ord(cp), unicode_data.name(ord(cp)))
+        print('%06x %s' % (ord(cp), unicode_data.name(ord(cp))))
       continue
     if line == 'clear':
       text = ''
@@ -74,17 +74,17 @@ def _build_text(name_map, initial_text=''):
       if line in name:
         matches.append(name)
     if not matches:
-      print 'no match for "%s"'% line
+      print('no match for "%s"'% line)
       continue
 
     if len(matches) == 1:
-      print matches[0]
+      print(matches[0])
       text += unichr(name_map[matches[0]])
       continue
 
     # if we match a full line, then use that
     if line in matches:
-      print line
+      print(line)
       text += unichr(name_map[line])
       continue
 
@@ -95,14 +95,14 @@ def _build_text(name_map, initial_text=''):
 
     # if we match a full word, and only one line has this full word, use that
     if len(new_matches) == 1:
-      print new_matches[0]
+      print(new_matches[0])
       text += unichr(name_map[new_matches[0]])
       continue
 
     select_multiple = True
     while select_multiple:
-      print 'multiple matches:\n  ' + '\n  '.join(
-          '[%2d] %s' % (i, n) for i, n in enumerate(matches))
+      print('multiple matches:\n  ' + '\n  '.join(
+          '[%2d] %s' % (i, n) for i, n in enumerate(matches)))
       while True:
         line = raw_input('0-%d or q to skip> ' % (len(matches) - 1))
         if line == 'q':
@@ -118,13 +118,13 @@ def _build_text(name_map, initial_text=''):
         break
 
       if n < 0 or n >= len(matches):
-        print '%d out of range' % n
+        print('%d out of range' % n)
         continue
 
       text += unichr(name_map[matches[n]])
       select_multiple = False
 
-  print 'done.'
+  print('done.')
   return text
 
 
@@ -148,7 +148,7 @@ def _get_char_names(charset):
 def _write_text(filename, text):
   with codecs.open(filename, 'w', 'utf-8') as f:
     f.write(text)
-  print 'wrote %s' % filename
+  print('wrote %s' % filename)
 
 
 def main():
@@ -175,7 +175,7 @@ def main():
     charset = coverage.character_set(args.font)
     name_map = _get_char_names(charset)
     text = _build_text(name_map, text)
-    print 'text: ' + text
+    print('text: ' + text)
   else:
     charset = None
 

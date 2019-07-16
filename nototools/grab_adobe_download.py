@@ -62,7 +62,7 @@ import grab_download
 def unzip_to_directory_tree(drop_dir, filepath):
   skip_re = re.compile('.*/OTF-Fallback/.*')
   zf = zipfile.ZipFile(filepath, 'r')
-  print 'extracting files from %s to %s' % (filepath, drop_dir)
+  print('extracting files from %s to %s' % (filepath, drop_dir))
   count = 0
   for name in zf.namelist():
     # skip names representing portions of the path
@@ -75,14 +75,14 @@ def unzip_to_directory_tree(drop_dir, filepath):
     try:
       data = zf.read(name)
     except KeyError:
-      print 'did not find %s in zipfile' % name
+      print('did not find %s in zipfile' % name)
       continue
     dst_file = os.path.join(drop_dir, os.path.basename(name))
     with open(dst_file, 'wb') as f:
       f.write(data)
     count += 1
-    print 'extracted \'%s\'' % name
-  print 'extracted %d files' % count
+    print('extracted \'%s\'' % name)
+  print('extracted %d files' % count)
 
 
 def main():

@@ -35,7 +35,7 @@ def internal_font_name(font):
 
 def print_indented(output_string, indents=1):
     """Prints a string indented with a specified number of spaces."""
-    print '  ' * indents + output_string
+    print('  ' * indents + output_string)
 
 def printable_glyph_class(glyph_list, quote=False):
     """Returns a printable form for a class of glyphs."""
@@ -66,11 +66,11 @@ def printable_glyph_list(glyph_list, quote=False):
 
 def dump_lang_sys(script, lang, lang_sys):
     """Dumps a language system."""
-    print '%s %s:' % (script, lang),
+    print('%s %s:' % (script, lang),)
     assert lang_sys.LookupOrder is None
     if lang_sys.ReqFeatureIndex != 65535:
-        print '<%s>' % lang_sys.ReqFeatureIndex,
-    print lang_sys.FeatureIndex
+        print('<%s>' % lang_sys.ReqFeatureIndex,)
+    print(lang_sys.FeatureIndex)
 
 
 def extract_glyphs_from_coverage(coverage):
@@ -249,7 +249,7 @@ def printable_anchor(anchor):
             printable_device(anchor.XDeviceTable),
             printable_device(anchor.YDeviceTable))
     else:
-        print vars(anchor)
+        print(vars(anchor))
         assert False, "don't know about anchor format"
 
 
@@ -435,7 +435,7 @@ def dump_feature_record(feature_record):
         record = feature_record[index]
         tag = record.FeatureTag
         feature = record.Feature
-        print index, tag, feature.LookupListIndex
+        print(index, tag, feature.LookupListIndex)
         if feature.FeatureParams is not None:
             print_indented('# name <%s>;' % feature.FeatureParams.UINameID)
 
@@ -444,8 +444,8 @@ def dump_lookup_list(lookup_list, table_name):
     """Prints out a lookup list."""
     for index in range(len(lookup_list)):
         lookup = lookup_list[index]
-        print 'lookup %d { # type=%d flag=0x%X' % (
-            index, lookup.LookupType, lookup.LookupFlag)
+        print('lookup %d { # type=%d flag=0x%X' % (
+            index, lookup.LookupType, lookup.LookupFlag))
     
         for subtable in lookup.SubTable:
             if table_name == 'GSUB':
@@ -453,26 +453,26 @@ def dump_lookup_list(lookup_list, table_name):
             elif table_name == 'GPOS':
                 dump_gpos_subtable(lookup.LookupType, subtable)      
     
-        print '}'
+        print('}')
 
 
 def dump_otl_table(font, table_name):
     """Prints out an OpenType Layout table."""
     if table_name not in font:
-        print 'no %s table' % table_name
-        print
+        print('no %s table' % table_name)
+        print()
         return
     else:
-        print '%s' % table_name
-        print '----'
+        print('%s' % table_name)
+        print('----')
 
     table = font[table_name].table
     dump_script_record(table.ScriptList.ScriptRecord)
-    print
+    print()
     dump_feature_record(table.FeatureList.FeatureRecord)
-    print
+    print()
     dump_lookup_list(table.LookupList.Lookup, table_name)
-    print
+    print()
 
 
 
@@ -480,7 +480,7 @@ def main():
     """Dump the OpenType Layout tables for all input arguments."""
     for font_file_name in sys.argv[1:]:
         font = ttLib.TTFont(font_file_name)
-        print '%s: %s' % (font_file_name, internal_font_name(font))
+        print('%s: %s' % (font_file_name, internal_font_name(font)))
         dump_otl_table(font, 'GPOS')
         dump_otl_table(font, 'GSUB')
 

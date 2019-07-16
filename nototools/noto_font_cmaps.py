@@ -143,7 +143,7 @@ def main():
   if args.outfile:
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
   else:
-    print cmap_data.write_cmap_data(cmapdata, pretty=True)
+    print(cmap_data.write_cmap_data(cmapdata, pretty=True))
 
 
 if __name__ == "__main__":

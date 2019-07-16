@@ -715,7 +715,7 @@ class TestSpacingMarks(FontTest):
     def test_individual_spacing_marks(self):
         """Tests that spacing marks are spacing by themselves."""
         for font in self.font_files:
-            print 'Testing %s for stand-alone spacing marks...' % font
+            print('Testing %s for stand-alone spacing marks...' % font)
             for mark in self.marks_to_test:
                 mark = unichr(mark)
                 advances = layout.get_advances(mark, font)
@@ -725,13 +725,13 @@ class TestSpacingMarks(FontTest):
     def test_spacing_marks_in_combination(self):
         """Tests that spacing marks do not combine with base letters."""
         for font in self.font_files:
-            print 'Testing %s for spacing marks in combination...' % font
+            print('Testing %s for spacing marks in combination...' % font)
             for base_letter in (u'A\u00C6BCDEFGHIJKLMNO\u00D8\u01A0PRST'
                                 u'U\u01AFVWXYZ'
                                 u'a\u00E6bcdefghi\u0131j\u0237klmn'
                                 u'o\u00F8\u01A1prs\u017Ftu\u01B0vwxyz'
                                 u'\u03D2'):
-                print 'Testing %s combinations' % base_letter
+                print('Testing %s combinations' % base_letter)
                 for mark in self.marks_to_test:
                     if mark == 0x02DE:
                         # Skip rhotic hook, as it's perhaps OK for it to form
@@ -758,14 +758,14 @@ class TestSoftDottedChars(FontTest):
         """Tests that soft-dotted characters lose their dots when combined."""
 
         for font in self.font_files:
-            print 'Testing %s for soft-dotted combinations...' % font
+            print('Testing %s for soft-dotted combinations...' % font)
 
             # TODO: replace the following list with actual derivation based on
             # Unicode's soft-dotted property
             for base_letter in (u'ij\u012F\u0249\u0268\u029D\u02B2\u03F3\u0456'
                                 u'\u0458\u1D62\u1D96\u1DA4\u1DA8\u1E2D\u1ECB'
                                 u'\u2071\u2C7C'):
-                print 'Testing %s combinations' % base_letter.encode('UTF-8')
+                print('Testing %s combinations' % base_letter.encode('UTF-8'))
                 for mark in self.marks_to_test:
                     mark = unichr(mark)
                     letter_only = layout.get_glyphs(base_letter, font)

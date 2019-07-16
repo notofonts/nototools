@@ -25,7 +25,7 @@ def print_names(families):
   """Write the names of the families in sorted order."""
   family_names = [family.name for family in families.itervalues()]
   for name in sorted(family_names):
-    print name
+    print(name)
 
 
 def check_cp(families, cp):
@@ -87,17 +87,17 @@ def run(args, families):
         out_family_str = '\n  '.join(sorted(out_families))
       else:
         out_family_str = '<no coverage>'
-      print '%s:\n  %s' % (to_ranges_str(out_cps), out_family_str)
+      print('%s:\n  %s' % (to_ranges_str(out_cps), out_family_str))
 
     cps = codepoints(args.each)
-    print 'families that contain any of %s, by cp' % to_ranges_str(cps)
+    print('families that contain any of %s, by cp' % to_ranges_str(cps))
     for family in families.itervalues():
       family_cps = family.charset & cps
       for cp in family_cps:
         cp_to_families[cp].add(family.name)
 
     if not cp_to_families:
-      print 'no family supports any codepoint'
+      print('no family supports any codepoint')
     else:
       cp_list = sorted(cps)
       cp = cp_list[0]
@@ -117,7 +117,7 @@ def run(args, families):
     missing = set()
     result = {}
     cps = sorted(codepoints(args.any))
-    print 'families that contain any of %s' % to_ranges_str(cps)
+    print('families that contain any of %s' % to_ranges_str(cps))
     for cp in cps:
       family_names = check_cp(families, cp)
       if family_names:
@@ -130,21 +130,21 @@ def run(args, families):
         missing.add(cp)
     if result:
       for k, v in sorted(result.iteritems()):
-        print '  %s: %s' % (k, to_ranges_str(v))
+        print('  %s: %s' % (k, to_ranges_str(v)))
     if missing:
-      print '  not supported: %s' % to_ranges_str(missing)
+      print('  not supported: %s' % to_ranges_str(missing))
 
   if args.all:
     cps = sorted(codepoints(args.all))
-    print 'families that contain all of %s' % to_ranges_str(cps)
+    print('families that contain all of %s' % to_ranges_str(cps))
     result = set([family.name for family in families.itervalues()])
     for cp in cps:
       family_names = check_cp(families, cp)
       result &= family_names
     if result:
-      print '\n'.join(['  %s' % name for name in sorted(result)])
+      print('\n'.join(['  %s' % name for name in sorted(result)]))
     else:
-      print 'no family contains all the codepoints'
+      print('no family contains all the codepoints')
 
 
 def main():

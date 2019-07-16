@@ -133,15 +133,15 @@ def get_bumped_version(ttfont, is_hinted=None):
   version = names[_VERSION_ID]
   m = re.match(r'Version (\d{1,5})\.(\d{1,5})( uh)?(;.*)?', version)
   if not m:
-    print '! Could not match version string (%s)' % version
+    print('! Could not match version string (%s)' % version)
     return None, None
 
   major_version = m.group(1)
   minor_version = m.group(2)
-  print 'old version: "%s"' % version
+  print('old version: "%s"' % version)
   if is_hinted == None:
     is_hinted = not bool(m.group(3))
-    print 'computed hinted = %s' % is_hinted
+    print('computed hinted = %s' % is_hinted)
 
   version_remainder = m.group(4)
   accuracy = len(minor_version)
@@ -155,8 +155,8 @@ def get_bumped_version(ttfont, is_hinted=None):
   # bump the minor version keeping significant digits:
   new_minor_version = str(int(minor_version) + 1).zfill(accuracy)
   new_revision = major_version + '.' + new_minor_version
-  print 'Update revision from  \'%s\' to \'%s\'' % (
-      expected_revision, new_revision)
+  print('Update revision from  \'%s\' to \'%s\'' % (
+      expected_revision, new_revision))
   # double check we are going to properly round-trip this value
   float_revision = float(new_revision)
   fixed_revision = misc.fixedTools.floatToFixed(float_revision, 16)
@@ -184,10 +184,10 @@ def _swat_font(noto_font, dst_root, dry_run):
   filepath = noto_font.filepath
   basename = path.basename(filepath)
   if noto_font.is_cjk:
-    print '# Skipping cjk font %s' % basename
+    print('# Skipping cjk font %s' % basename)
     return
   if noto_font.fmt == 'ttc':
-    print '# Deferring ttc font %s' % basename
+    print('# Deferring ttc font %s' % basename)
     _ttc_fonts[noto_font] = ttc_utils.ttcfile_filenames(filepath)
     return
 
@@ -200,7 +200,7 @@ def _swat_font(noto_font, dst_root, dry_run):
   if not rel_filepath:
     raise ValueError('Could not identify noto root of %s' % filepath)
 
-  print '-----\nUpdating %s' % rel_filepath
+  print('-----\nUpdating %s' % rel_filepath)
 
   dst_file = path.join(dst_root, rel_filepath)
 
@@ -208,10 +208,10 @@ def _swat_font(noto_font, dst_root, dry_run):
     new_revision, new_version_string = get_bumped_version(
         ttfont, noto_font.is_hinted)
   except ValueError as e:
-    print e
+    print(e)
     return
 
-  print '%s: %s' % ('Would write' if dry_run else 'Writing', dst_file)
+  print('%s: %s' % ('Would write' if dry_run else 'Writing', dst_file))
 
   new_trademark = "%s is a trademark of Google Inc." % noto_font.family
 
@@ -286,7 +286,7 @@ def _swat_font(noto_font, dst_root, dry_run):
       label = _NAME_ID_LABELS[name_id]
       oldText = '\'%s\'' % old if old else 'None'
       newText = newText or ('\'%s\'' % new)
-      print '%s:\n  old: %s\n  new: %s' % (label, oldText, newText or new)
+      print('%s:\n  old: %s\n  new: %s' % (label, oldText, newText or new))
 
       label_change = _changes.get(label)
       if not label_change:
@@ -342,7 +342,7 @@ def _swat_font(noto_font, dst_root, dry_run):
   if not path.isdir(dst_dir):
     os.makedirs(dst_dir)
   ttfont.save(dst_file)
-  print 'Wrote file.'
+  print('Wrote file.')
 
 
 def _construct_ttc_fonts(fonts, dst_root, dry_run):
@@ -364,7 +364,7 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
 
   for ttcfont, components in sorted(_ttc_fonts.iteritems()):
     rel_filepath = _noto_relative_path(ttcfont.filepath)
-    print '-----\nBuilding %s' % rel_filepath
+    print('-----\nBuilding %s' % rel_filepath)
 
     component_list = []
     # note the component order must match the original ttc, so
@@ -372,8 +372,8 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
     for component in components:
       possible_components = basename_to_fonts.get(component)
       if not possible_components:
-        print '! no match for component named %s in %s' % (
-            component, rel_path)
+        print('! no match for component named %s in %s' % (
+            component, rel_path))
         component_list = []
         break
 
@@ -381,23 +381,23 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
       for possible_component in possible_components:
         if possible_component.is_hinted == ttcfont.is_hinted:
           if matched_possible_component:
-            print '! already matched possible component %s for %s' % (
+            print('! already matched possible component %s for %s' % (
                 matched_possible_component.filename,
-                possible_component_filename)
+                possible_component_filename))
             matched_possible_component = None
             break
           matched_possible_component = possible_component
       if not matched_possible_component:
-        print 'no matched component named %s' % component
+        print('no matched component named %s' % component)
         component_list = []
         break
       component_list.append(matched_possible_component)
     if not component_list:
-      print '! cannot generate ttc font %s' % rel_path
+      print('! cannot generate ttc font %s' % rel_path)
       continue
 
-    print 'components:\n  ' + '\n  '.join(
-        _noto_relative_path(font.filepath) for font in component_list)
+    print('components:\n  ' + '\n  '.join(
+        _noto_relative_path(font.filepath) for font in component_list))
     if dry_run:
       continue
 
@@ -405,7 +405,7 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
     src_files = [path.join(dst_root, _noto_relative_path(font.filepath))
                  for font in component_list]
     ttc_utils.build_ttc(dst_ttc, src_files)
-    print 'Built %s' % dst_ttc
+    print('Built %s' % dst_ttc)
 
 
 def main():
@@ -421,33 +421,33 @@ def main():
 
   _swat_fonts(args.dst_root, args.dry_run)
 
-  print '------\nchange summary\n'
+  print('------\nchange summary\n')
   for name_key in sorted(_changes):
-    print '%s:' % name_key
+    print('%s:' % name_key)
     new_vals = _changes[name_key]
     for new_val in sorted(new_vals):
-      print '  change to \'%s\':' % new_val
+      print('  change to \'%s\':' % new_val)
       old_vals = new_vals[new_val]
       for old_val in sorted(old_vals):
-        print '    from %s (%d files)%s' % (
+        print('    from %s (%d files)%s' % (
             '\'%s\'' % old_val if old_val else 'None',
-            len(old_vals[old_val]), ':' if args.details else '')
+            len(old_vals[old_val]), ':' if args.details else ''))
         if args.details:
           for file_name in sorted(old_vals[old_val]):
             x = file_name.rfind('/')
             if x > 0:
               x = file_name.rfind('/', 0, x)
-            print '      ' + file_name[x:]
+            print('      ' + file_name[x:])
 
-  print '------\nautofix summary\n'
+  print('------\nautofix summary\n')
   for fix_key in sorted(_autofix):
     fixed_files = _autofix[fix_key]
-    print '%s (%d):' % (fix_key, len(fixed_files))
+    print('%s (%d):' % (fix_key, len(fixed_files)))
     for file_name in sorted(fixed_files):
       x = file_name.rfind('/')
       if x > 0:
         x = file_name.rfind('/', 0, x)
-        print '    ' + file_name[x:]
+        print('    ' + file_name[x:])
 
 
 if __name__ == "__main__":

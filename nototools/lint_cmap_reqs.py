@@ -115,7 +115,7 @@ def _get_script_required(
     needed_chars |= set([0, 0xd, 0x20])
 
   if verbose:
-    print >> sys.stderr, script,
+    sys.stderr.write(script + '\n')
 
   needed_chars &= unicode_data.defined_characters(version=unicode_version)
 
@@ -156,7 +156,7 @@ def _check_scripts(scripts):
     if script[0] < 'A' or script[0] > 'Z':
       bad_scripts.append(script)
   if bad_scripts:
-    print 'bad scripts: %s' % ', '.join(bad_scripts)
+    print('bad scripts: %s' % ', '.join(bad_scripts))
     raise ValueError('bad scripts')
 
   return set(scripts)
@@ -211,10 +211,10 @@ def main():
   if args.outfile:
     if args.outfile == '-default-':
       args.outfile = 'lint_cmap_%s.xml' % args.unicode_version
-    print >> sys.stderr, 'writing %s' % args.outfile
+    sys.stderr.write('writing %s\n' % args.outfile)
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
   else:
-    print cmap_data.write_cmap_data(cmapdata, pretty=True)
+    print(cmap_data.write_cmap_data(cmapdata, pretty=True))
 
 if __name__ == "__main__":
   main()

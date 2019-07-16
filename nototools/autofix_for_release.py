@@ -58,7 +58,7 @@ def fix_revision(font):
     expected_font_revision = major_version+'.'+minor_version
     if font_revision != expected_font_revision:
         font['head'].fontRevision = float(expected_font_revision)
-        print 'Fixed fontRevision to %s' % expected_font_revision
+        print('Fixed fontRevision to %s' % expected_font_revision)
         return True
 
     return False
@@ -68,7 +68,7 @@ def fix_fstype(font):
     """Fix the fsType of the font."""
     if font['OS/2'].fsType != 0:
         font['OS/2'].fsType = 0
-        print 'Updated fsType to 0'
+        print('Updated fsType to 0')
         return True
     return False
 
@@ -77,7 +77,7 @@ def fix_vendor_id(font):
     """Fix the vendor ID of the font."""
     if font['OS/2'].achVendID != 'GOOG':
         font['OS/2'].achVendID = 'GOOG'
-        print 'Changed font vendor ID to GOOG'
+        print('Changed font vendor ID to GOOG')
         return True
     return False
 
@@ -107,7 +107,7 @@ def fix_name_table(font):
     copyright_data = u'Copyright %s Google Inc. All Rights Reserved.' % year
 
     if copyright_data != name_records[0]:
-        print 'Updated copyright message to "%s"' % copyright_data
+        print('Updated copyright message to "%s"' % copyright_data)
         font_data.set_name_record(font, 0, copyright_data)
         modified = True
 
@@ -120,8 +120,8 @@ def fix_name_table(font):
                 break
         if record != name_records[name_id]:
             font_data.set_name_record(font, name_id, record)
-            print 'Updated name table record #%d from "%s" to "%s"' % (
-                name_id, oldrecord, record)
+            print('Updated name table record #%d from "%s" to "%s"' % (
+                name_id, oldrecord, record))
             modified = True
 
     trademark_names = ['Noto', 'Arimo', 'Tinos', 'Cousine']
@@ -132,29 +132,29 @@ def fix_name_table(font):
             trademark_name = name
             break
     if not trademark_name:
-        print 'no trademarked name in \'%s\'' % font_family
+        print('no trademarked name in \'%s\'' % font_family)
     else:
         trademark_line = TRADEMARK_TEMPLATE % trademark_name
         if name_records[7] != trademark_line:
             old_line = name_records[7]
             font_data.set_name_record(font, 7, trademark_line)
             modified = True
-            print 'Updated name table record 7 from "%s" to "%s"' % (old_line, trademark_line)
+            print('Updated name table record 7 from "%s" to "%s"' % (old_line, trademark_line))
 
     if name_records[11] != NOTO_URL:
         font_data.set_name_record(font, 11, NOTO_URL)
         modified = True
-        print 'Updated name table record 11 to "%s"' % NOTO_URL
+        print('Updated name table record 11 to "%s"' % NOTO_URL)
 
     if name_records[_LICENSE_ID] != _SIL_LICENSE:
         font_data.set_name_record(font, _LICENSE_ID, _SIL_LICENSE)
         modified = True
-        print 'Updated license id'
+        print('Updated license id')
 
     if name_records[_LICENSE_URL_ID] != _SIL_LICENSE_URL:
         font_data.set_name_record(font, _LICENSE_URL_ID, _SIL_LICENSE_URL)
         modified = True
-        print 'Updated license url'
+        print('Updated license url')
 
     # TODO: check preferred family/subfamily(16&17)
 
@@ -177,7 +177,7 @@ def fix_attachlist(font):
             modified = True
 
     if modified:
-        print 'Fixed GDEF.AttachList'
+        print('Fixed GDEF.AttachList')
 
     return modified
 
@@ -193,7 +193,7 @@ def drop_hints(font):
             if glyph.program.bytecode:
                 glyph.program.bytecode = array.array('B')
                 modified = True
-                print 'Dropped hints from glyph "%s"' % glyph_name
+                print('Dropped hints from glyph "%s"' % glyph_name)
     return modified
 
 
@@ -203,7 +203,7 @@ def drop_tables(font, tables):
     for table in tables:
         if table in font:
             modified = True
-            print 'Dropped table "%s"' % table
+            print('Dropped table "%s"' % table)
             modified = True
             del font[table]
     return modified
@@ -249,8 +249,8 @@ def fix_os2_unicoderange(font):
         old_bitmap_string = font_data.unicoderange_bitmap_to_string(os2_bitmap)
         font_data.set_os2_unicoderange_bitmap(font, expected_bitmap)
         bitmap_string = font_data.unicoderange_bitmap_to_string(expected_bitmap)
-        print 'Change unicoderanges from:\n  %s\nto:\n  %s' % (
-            old_bitmap_string, bitmap_string)
+        print('Change unicoderanges from:\n  %s\nto:\n  %s' % (
+            old_bitmap_string, bitmap_string))
         return True
     return False
 
@@ -259,17 +259,17 @@ def fix_linegap(font):
     modified = False
     hhea_table = font["hhea"]
     if hhea_table.lineGap != 0:
-        print 'hhea lineGap was %s, setting to 0' % hhea_table.lineGap
+        print('hhea lineGap was %s, setting to 0' % hhea_table.lineGap)
         hhea_table.lineGap = 0
         modified = True
     vhea_table = font.get("vhea")
     if vhea_table and vhea_table.lineGap != 0:
-        print 'vhea lineGap was %s, setting to 0' % vhea_table.lineGap
+        print('vhea lineGap was %s, setting to 0' % vhea_table.lineGap)
         vhea_table.lineGap = 0
         modified = True
     os2_table = font["OS/2"]
     if os2_table.sTypoLineGap != 0:
-        print 'os/2 sTypoLineGap was %d, setting to 0' % os2_table.sTypoLineGap
+        print('os/2 sTypoLineGap was %d, setting to 0' % os2_table.sTypoLineGap)
         os2_table.sTypoLineGap = 0
         modified = True
     return modified
@@ -282,7 +282,7 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
 
     src_file = os.path.join(src_root, file_path)
 
-    print 'Font file: %s' % src_file
+    print('Font file: %s' % src_file)
     font = ttLib.TTFont(src_file)
     modified = False
 
@@ -305,11 +305,11 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
 
     fixed_path = fix_path(file_path, is_hinted)
     if fixed_path != file_path:
-        print 'changed file_path from "%s" to "%s"' % (file_path, fixed_path)
+        print('changed file_path from "%s" to "%s"' % (file_path, fixed_path))
         modified = True
 
     if not modified:
-        print 'No modification necessary'
+        print('No modification necessary')
     if modified or save_unmodified:
         # wait until we need it before we create the dest directory
         dst_file = os.path.join(dst_root, fixed_path)
@@ -317,7 +317,7 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
         if not path.isdir(dst_dir):
             os.makedirs(dst_dir)
         font.save(dst_file)
-        print 'Wrote %s' % dst_file
+        print('Wrote %s' % dst_file)
 
 
 def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
@@ -353,17 +353,17 @@ def main():
 
     if not args.src_root:
         # not on command line and not in user's .notoconfig
-        print 'no src root specified.'
+        print('no src root specified.')
         return
 
     src_root = path.expanduser(args.src_root)
     if not path.isdir(src_root):
-        print '%s does not exist or is not a directory' % src_root
+        print('%s does not exist or is not a directory' % src_root)
         return
 
     dst_root = path.expanduser(args.dst_root)
     if not path.isdir(dst_root):
-        print '%s does not exist or is not a directory' % dst_root
+        print('%s does not exist or is not a directory' % dst_root)
         return
 
     fix_fonts(src_root, dst_root, args.name_pat, args.save_unmodified)
