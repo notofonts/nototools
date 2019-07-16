@@ -446,7 +446,7 @@ def parse_int_ranges(
     is_range = False
     start = 0
     len_limit = -1
-    for i in xrange(len(r)):
+    for i in range(len(r)):
       cp = r[i]
       if cp not in stops:
         continue
@@ -613,7 +613,7 @@ def collect_paths(dirs, files):
 
   paths = []
   if dirs:
-    for i in xrange(len(dirs)):
+    for i in range(len(dirs)):
       # special case '[noto]' to include all noto font dirs
       if dirs[i] == '[noto]':
         dirs[i] = None
