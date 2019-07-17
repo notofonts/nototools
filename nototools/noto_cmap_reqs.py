@@ -3285,7 +3285,7 @@ def _dump_primaries():
   for block in unicode_data.block_names():
     block_range = unicode_data.block_range(block)
     primary_script = _primary_script_for_block(block)
-    print('%13s %6s %s\n' % (
+    print('%13s %6s %s' % (
       '%04X-%04X' % block_range,
       '\'%s\'' % primary_script if primary_script else '------',
       block))

@@ -84,7 +84,7 @@ def noto_checkout(
       failed_tags.append('%s: %s' % (r, t))
 
   if failed_tags:
-    sys.stderr.write('failed to find:\n  %s' % '\n  \n'.join(failed_tags))
+    sys.stderr.write('failed to find:\n  %s\n' % '\n  '.join(failed_tags))
     return False
 
   if not dry_run:

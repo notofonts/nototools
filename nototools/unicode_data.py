@@ -783,7 +783,6 @@ def _read_emoji_data(lines):
     if m.group(2):
       continue
 
-    # discourage lots of redundant copies of seq_type
     seq_type = m.group(3).strip().encode('ascii')
     seq = tuple(int(s, 16) for s in m.group(1).split())
     name = m.group(4).strip()

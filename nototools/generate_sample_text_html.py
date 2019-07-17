@@ -71,9 +71,9 @@ def generate_table(filename):
         cols.append(sample_type)
         cols.append(sample_text)
         f.write('<td>'.join(cols) + '\n')
-      f.write('<tr><td colspan=4>&nbsp;')
-    f.write('</table>')
-    f.write(_HTML_FOOTER)
+      f.write('<tr><td colspan=4>&nbsp;\n')
+    f.write('</table>\n')
+    f.write(_HTML_FOOTER + '\n')
 
 
 def _get_script_to_samples():
