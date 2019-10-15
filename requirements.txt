@@ -1,6 +1,7 @@
-booleanOperations==0.7.0
-defcon==0.3.1
-fonttools>=3.36.0
-Pillow==4.0.0
-pyclipper==1.0.6
+booleanOperations==0.8.2
+defcon==0.6.0
+fonttools==3.44.0; python_version < '3.6'
+fonttools==4.0.2; python_version >= '3.6'
+Pillow==6.2.0
+pyclipper==1.1.0.post1
 scour==0.37
