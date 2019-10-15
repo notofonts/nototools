@@ -27,7 +27,6 @@ setup(name='nototools',
           # 'pygtk',
           # 'imagemagick'
       ],
-      dependency_links=['https://github.com/behdad/fontTools/tarball/master#egg=fontTools-3.0'],
       package_data={
           'nototools': [
               '*.sh',
