@@ -1,8 +1,10 @@
 #!/bin/bash
 
 for f in *_test.py; do
+    echo ">>> Running $f"
     python "$f"
     if [[ "$?" != 0 ]]; then
         exit 1
     fi
+    echo -e "\n"
 done
