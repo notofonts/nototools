@@ -41,7 +41,7 @@ import booleanOperations
 from defcon import Glyph
 from fontTools.pens.basePen import BasePen
 from fontTools.ttLib import TTFont
-from ufoLib.pointPen import PointToSegmentPen
+from fontTools.pens.pointPen import PointToSegmentPen
 
 from nototools.glyph_area_pen import GlyphAreaPen
 from nototools import hb_input

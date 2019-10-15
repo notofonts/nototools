@@ -3,5 +3,4 @@ defcon==0.3.1
 fonttools>=3.36.0
 Pillow==4.0.0
 pyclipper==1.0.6
-ufoLib==2.0.0
 scour==0.37
