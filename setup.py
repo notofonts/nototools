@@ -27,6 +27,14 @@ setup(name='nototools',
           # 'pygtk',
           # 'imagemagick'
       ],
+      extras_require={
+          # optional requirements for nototools.shape_diff module
+          'shapediff': [
+              'booleanOperations',
+              'defcon',
+              'Pillow',
+          ],
+      },
       package_data={
           'nototools': [
               '*.sh',
