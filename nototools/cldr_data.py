@@ -19,7 +19,7 @@ import collections
 import os
 from os import path
 import re
-import unicode_data
+from nototools import unicode_data
 import xml.etree.cElementTree as ElementTree
 
 from nototools import extra_locale_data

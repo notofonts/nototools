@@ -22,7 +22,7 @@ import json
 import os
 import subprocess
 
-import font_caching
+from nototools import font_caching
 
 from fontTools.pens.boundsPen import BoundsPen
 

@@ -23,7 +23,7 @@ import os
 from os import path
 import re
 import sys
-import unicode_data
+from nototools import unicode_data
 
 from nototools import lint_config
 

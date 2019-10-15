@@ -26,8 +26,8 @@ import sys
 
 from fontTools import ttLib
 
-import noto_lint
-import font_data
+from nototools import noto_lint
+from nototools import font_data
 
 def get_largest_cmap(font):
   cmap_table = font['cmap']
