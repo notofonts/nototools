@@ -33,7 +33,7 @@ from __future__ import division
 import os
 from PIL import Image
 import re
-import StringIO
+from io import BytesIO
 import subprocess
 import tempfile
 
@@ -153,10 +153,10 @@ class ShapeDiffFinder:
             if unichr(0) in text:
                 continue
 
-            img_file_a = StringIO.StringIO(subprocess.check_output([
+            img_file_a = BytesIO(subprocess.check_output([
                 'hb-view', '--font-size=%d' % font_size,
                 '--features=%s' % ','.join(features), self.path_a, text]))
-            img_file_b = StringIO.StringIO(subprocess.check_output([
+            img_file_b = BytesIO(subprocess.check_output([
                 'hb-view', '--font-size=%d' % font_size,
                 '--features=%s' % ','.join(features), self.path_b, text]))
             img_a = Image.open(img_file_a)
