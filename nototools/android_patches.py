@@ -270,7 +270,7 @@ ANDROID_EMOJI = {
     0x2764,  # ❤ HEAVY BLACK HEART
 }
 
-# TV symbols, see https://github.com/googlei18n/noto-fonts/issues/557
+# TV symbols, see https://github.com/googlefonts/noto-fonts/issues/557
 TV_SYMBOLS_FOR_SUBSETTED = tool_utils.parse_int_ranges(
   '1f19b-1f1ac 1f23b')
 

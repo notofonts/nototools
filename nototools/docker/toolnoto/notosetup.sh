@@ -12,7 +12,7 @@ mkdir -p /app/noto
 cd /app/noto
 
 # get the most recent version of the tools
-git clone --depth 1 -b master https://github.com/googlei18n/nototools.git
+git clone --depth 1 -b master https://github.com/googlefonts/nototools.git
 
 # we are going to clone at release tags for these, but this configures
 # the repos to only know about the tag, not any branches.  So we then
@@ -24,21 +24,21 @@ git clone --depth 1 -b master https://github.com/googlei18n/nototools.git
 #
 # Unfortunately, -q doesn't supporess the warnings about detached HEAD
 # when we clone this way.
-git clone --depth 1 --branch v2017-05-18-cook-color-fix https://github.com/googlei18n/noto-emoji.git
+git clone --depth 1 --branch v2017-05-18-cook-color-fix https://github.com/googlefonts/noto-emoji.git
 cd noto-emoji
 git config --add remote.origin.fetch +refs/heads/master:refs/remotes/origin/master
 git fetch
 git branch -t master origin/master
 cd ..
 
-git clone --depth 1 --branch v2017-04-25-adlam https://github.com/googlei18n/noto-fonts.git
+git clone --depth 1 --branch v2017-04-25-adlam https://github.com/googlefonts/noto-fonts.git
 cd noto-fonts
 git config --add remote.origin.fetch +refs/heads/master:refs/remotes/origin/master
 git fetch
 git branch -t master origin/master
 cd ..
 
-git clone --depth 1 --branch v2017-04-03-serif-cjk-1-0 https://github.com/googlei18n/noto-cjk.git
+git clone --depth 1 --branch v2017-04-03-serif-cjk-1-0 https://github.com/googlefonts/noto-cjk.git
 cd noto-cjk
 git config --add remote.origin.fetch +refs/heads/master:refs/remotes/origin/master
 git fetch
