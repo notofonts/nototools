@@ -11,7 +11,7 @@ branches:
 install:
   - python --version
   - python -m pip install --upgrade pip setuptools
-  - python -m pip install -e .
+  - python -m pip install -r requirements.txt -e .
   # for ttxn
   - sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
   - wget https://github.com/adobe-type-tools/afdko/releases/download/2.5.65322/FDK-25-LINUX.b65322.zip
