@@ -36,8 +36,8 @@ class GposDiffFinder:
     """Provides methods to report diffs in GPOS content between ttxn outputs."""
 
     def __init__(self, file_a, file_b, error_bound, output_lines=6):
-        ttxn_file_a = tempfile.NamedTemporaryFile()
-        ttxn_file_b = tempfile.NamedTemporaryFile()
+        ttxn_file_a = tempfile.NamedTemporaryFile("w+t")
+        ttxn_file_b = tempfile.NamedTemporaryFile("w+t")
         subprocess.call(['ttxn', '-q', '-t', 'GPOS', '-o', ttxn_file_a.name,
                                                      '-f', file_a])
         subprocess.call(['ttxn', '-q', '-t', 'GPOS', '-o', ttxn_file_b.name,
@@ -62,7 +62,7 @@ class GposDiffFinder:
         self._parse_kerning(rx, '+', self.text_b, classes_b, unmatched)
         self._organize_kerning_diffs(unmatched, mismatched)
 
-        unmatched = [(k, v) for k, v in unmatched.iteritems() if v]
+        unmatched = [(k, v) for k, v in unmatched.items() if v]
         res = ['%d differences in kerning pairs' % len(unmatched)]
         # (('+', 'a', 'b'), [-20, 10])
         # Sort order:
@@ -76,7 +76,7 @@ class GposDiffFinder:
             res.append('%s pos %s %s %s' % (sign, left, right, vals))
         res.append('')
 
-        mismatched = [(k, v) for k, v in mismatched.iteritems() if any(v)]
+        mismatched = [(k, v) for k, v in mismatched.items() if any(v)]
         res.append('%d differences in kerning values' % len(mismatched))
         # (('V', 'A'), ([-4], [-17]))
         # Sort order:
@@ -116,7 +116,7 @@ class GposDiffFinder:
         res.append('')
 
         res.append('%d differences in mark class values' % len(mismatched))
-        mismatched = mismatched.items()
+        mismatched = list(mismatched.items())
         # (('uni0300', '@uni0300_23'), ((0, 527), (300, 527)))
         # Sort order:
         # 1. Reverse absolute difference between position before and after
@@ -145,7 +145,7 @@ class GposDiffFinder:
 
         res = ['%d differences in mark-to-%s positioning rule coverage' %
                (len(unmatched), mark_type)]
-        unmatched = unmatched.items()
+        unmatched = list(unmatched.items())
         # Sort order: same as 'mark class definitions'
         unmatched.sort(key=lambda t: (t[0][1], t[0][2]))
         for (sign, member, mark_class), (x, y) in unmatched[:self.out_lines]:
@@ -155,7 +155,7 @@ class GposDiffFinder:
 
         res.append('%d differences in mark-to-%s positioning rule values' %
                    (len(mismatched), mark_type))
-        mismatched = mismatched.items()
+        mismatched = list(mismatched.items())
         # Sort order: same as 'mark class values'
         mismatched.sort(key=lambda t:(-(abs(t[1][0][0] - t[1][1][0])
                                       + abs(t[1][0][1] - t[1][1][1])),
@@ -203,7 +203,7 @@ class GposDiffFinder:
     def _organize_kerning_diffs(self, unmatched, mismatched):
         """Move mismatched kerning rules into a separate dictionary."""
 
-        keys = unmatched.keys()
+        keys = list(unmatched.keys())
         for key in keys:
             if key not in unmatched:  # already matched and removed
                 continue
