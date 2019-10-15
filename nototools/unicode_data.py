@@ -34,7 +34,7 @@ from os import path
 import re
 import sys
 
-from fontTools.misc.py23 import unichr
+from nototools.py23 import unichr, unicode
 try:
   import unicodedata2 as unicodedata  # Unicode 8 compliant native lib
 except ImportError:

@@ -16,8 +16,8 @@
 from __future__ import division, print_function
 
 from fontTools.ttLib import TTFont
-from fontTools.misc.py23 import unichr
 from nototools import summary
+from nototools.py23 import unichr
 
 
 class HbInputGenerator(object):
