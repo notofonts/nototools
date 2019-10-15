@@ -89,7 +89,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
           font_paths.append(src_path)
 
   if not font_paths:
-    print 'All .ttf files compare identical.  Exiting.'
+    print('All .ttf files compare identical.  Exiting.')
     return
 
   # summarize fonts in this commit
@@ -132,8 +132,8 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
   # generate compare file to use as checkin log
   checkin_msg_file = '/tmp/svn_checkin.txt'
   with RedirectStdout(checkin_msg_file):
-    print one_line_msg
-    print
+    print(one_line_msg)
+    print()
     compare_summary.compare_summary(
       alphadir, srcdir, None, compare_summary.tuple_compare, True, False, False, False)
 
@@ -157,9 +157,9 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
   with open(checkin_msg_file) as f:
     checkin_msg = f.read().strip();
 
-  print '%s\n-----\n%s\n-----' % ('dry run' if dry_run else 'summary', checkin_msg)
+  print('%s\n-----\n%s\n-----' % ('dry run' if dry_run else 'summary', checkin_msg))
   if not dry_run:
-    print 'command to update: svn commit -F \'%s\'' % checkin_msg_file
+    print('command to update: svn commit -F \'%s\'' % checkin_msg_file)
 
 
 def main():
@@ -175,11 +175,11 @@ def main():
   args = parser.parse_args()
 
   if not os.path.isdir(args.srcdir):
-    print '%s does not exist or is not a directory' % args.srcdir
+    print('%s does not exist or is not a directory' % args.srcdir)
     return
 
   if not os.path.exists(args.alpha):
-    print '%s does not exist or is not a directory' % args.alpha
+    print('%s does not exist or is not a directory' % args.alpha)
     return
 
   push_to_noto_alpha(args.alpha, args.srcdir, args.dry_run)

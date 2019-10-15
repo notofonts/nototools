@@ -112,7 +112,7 @@ def print_tup(tup, short):
 
   line = [to_str(idx, val) for idx, val in enumerate(tup)
           if not (short and (idx == 3 or idx == 6 or idx == 7))]
-  print '\t'.join(line)
+  print('\t'.join(line))
 
 def print_summary(summary_list, short):
   labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars', 'cmap', 'table_info')
@@ -130,10 +130,10 @@ def main():
     args = parser.parse_args()
 
     if not os.path.isdir(args.root):
-      print '%s does not exist or is not a directory' % args.root
+      print('%s does not exist or is not a directory' % args.root)
     else:
       root = os.path.abspath(args.root)
-      print "root: %s, name: %s" % (root, args.name if args.name else '[all]')
+      print("root: %s, name: %s" % (root, args.name if args.name else '[all]'))
       print_summary(summarize(root, name=args.name), args.short)
 
 if __name__ == "__main__":

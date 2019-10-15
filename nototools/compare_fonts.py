@@ -82,10 +82,10 @@ class FontCompare(object):
     failed = False
     for test in test_list:
       if test not in FontCompare.test_names:
-        print 'unknown test: \'%s\'' % test
+        print('unknown test: \'%s\'' % test)
         failed = True
     if failed:
-      print 'tests are: %s' % (','.join(sorted(FontCompare.test_names)))
+      print('tests are: %s' % (','.join(sorted(FontCompare.test_names))))
       return None
     return frozenset(test_list)
 
@@ -131,25 +131,25 @@ class FontCompare(object):
   def _log(self, msg):
     """Write a message that should not go to config output."""
     if not self.emit_config:
-      print msg
+      print(msg)
 
   def _logerr(self, msg):
     """Write an error that should not go to config output."""
     # this is an error, but lint doesn't check for it, so no point in emitting a comment.
     if not self.emit_config:
-      print msg
+      print(msg)
 
   def _err(self, msg):
     """Write a message that should go to config as a comment, or just be logged."""
     if self.emit_config:
-      print '# ' + msg
+      print('# ' + msg)
     else:
-      print msg
+      print(msg)
 
   def _config(self, msg):
     """Write a message that should go to config."""
     if self.emit_config:
-      print msg
+      print(msg)
 
   def _check_attribute(self, target_obj, test_obj, attr):
     target_value = getattr(target_obj, attr)
@@ -238,9 +238,9 @@ class FontCompare(object):
 
     for attr, test_val, target_val in sorted(failed_attrs):
       if self.emit_config:
-        print 'enable head/hhea/%s' % attr.lower()
+        print('enable head/hhea/%s' % attr.lower())
       else:
-        print 'font hhea %s was %d but target was %d' % (attr, test_val, target_val)
+        print('font hhea %s was %d but target was %d' % (attr, test_val, target_val))
 
   def check_os2(self):
     if self._skip('OS/2'):
@@ -260,9 +260,9 @@ class FontCompare(object):
 
     for attr, test_val, target_val in sorted(failed_attrs):
       if self.emit_config:
-        print 'enable head/os2/%s' % attr_name_map[attr]
+        print('enable head/os2/%s' % attr_name_map[attr])
       else:
-        print 'font OS/2 %s was %d but target was %d' % (attr, test_val, target_val)
+        print('font OS/2 %s was %d but target was %d' % (attr, test_val, target_val))
 
   def check_glyph_bounds(self):
     # Don't compare the actual bounds, but whether they exceed the limits when the target
@@ -451,14 +451,14 @@ def check_font(target_file, test_file, incremental_version=False, emit_config=Fa
   target = ttLib.TTFont(target_file)
   test = ttLib.TTFont(test_file)
   if reverse:
-    print 'reversing comparison'
+    print('reversing comparison')
     temp = target
     target = test
     test = temp
 
-  print
+  print()
   if not emit_config:
-    print 'target is previous version' if incremental_version else 'target is reference font'
+    print('target is previous version' if incremental_version else 'target is reference font')
   FontCompare(target, test, incremental_version, emit_config, ignored_cp, only_cp,
               enabled_tests).check_all()
 

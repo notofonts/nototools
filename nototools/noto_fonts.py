@@ -449,7 +449,7 @@ def get_noto_fonts(paths=NOTO_FONT_PATHS):
   of these.  'paths' defaults to the standard noto font paths, using notoconfig."""
 
   font_dirs = filter(None, [tool_utils.resolve_path(p) for p in paths])
-  print 'Getting fonts from: %s' % font_dirs
+  print('Getting fonts from: %s' % font_dirs)
 
   all_fonts = []
   for font_dir in font_dirs:
@@ -460,8 +460,8 @@ def get_noto_fonts(paths=NOTO_FONT_PATHS):
       filepath = path.join(font_dir, filename)
       font = get_noto_font(filepath)
       if not font:
-        print >> sys.stderr, 'bad font filename in %s: \'%s\'.' % (
-            (font_dir, filename))
+        sys.stderr.write('bad font filename in %s: \'%s\'.\n' % (
+            (font_dir, filename)))
         continue
 
       all_fonts.append(font)
@@ -577,8 +577,8 @@ def _all_noto_font_key_to_names(paths):
     familyname = fontname if ix == -1 else fontname[:ix]
     wws_key = noto_font_to_wws_family_id(font)
     if wws_key_to_family_name.get(wws_key, familyname) != familyname:
-      print '!!! mismatching font names for key %s: %s and %s' % (
-          wws_key, wws_key_to_family_name[wws_key], familyname)
+      print('!!! mismatching font names for key %s: %s and %s' % (
+          wws_key, wws_key_to_family_name[wws_key], familyname))
     else:
       wws_key_to_family_name[wws_key] = familyname
   return wws_key_to_family_name
@@ -588,7 +588,7 @@ def test(paths):
   """test name generation to make sure we match the font name from the wws id"""
   wws_key_to_family_name = _all_noto_font_key_to_names(paths)
   for key, val in sorted(wws_key_to_family_name.items()):
-    print key, val
+    print(key, val)
     name = ''.join(wws_family_id_to_name_parts(key))
     if name != val:
       raise Exception('!!! generated name %s does not match' % name)
@@ -617,9 +617,9 @@ def main():
       args.dirs = NOTO_FONT_PATHS
     fonts = get_noto_fonts(paths=args.dirs)
     for font in fonts:
-      print font.filepath
+      print(font.filepath)
       for attr in font._fields:
-        print '  %15s: %s' % (attr, getattr(font, attr))
+        print('  %15s: %s' % (attr, getattr(font, attr)))
 
 
 if __name__ == "__main__":

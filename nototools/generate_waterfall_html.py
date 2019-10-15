@@ -128,9 +128,9 @@ def _write_html(directory, font_names, font_sizes, text, out_file):
   if out_file:
     with codecs.open(out_file, 'w', 'utf-8') as f:
       f.write(html_text)
-    print 'wrote %s' % out_file
+    print('wrote %s' % out_file)
   else:
-    print html_text
+    print(html_text)
 
 
 def _get_font_list(root, name_str):
@@ -169,7 +169,7 @@ def _get_sample_text(directory, font_names, lang):
         samples.append(f)
         break
 
-  print sorted(samples)
+  print(sorted(samples))
   # limit to scripts supported by all fonts
   selected = []
   for sample in samples:
@@ -201,7 +201,7 @@ def _get_sample_text(directory, font_names, lang):
     raise Exception (
         'found %d sample files (%s) but need exactly 1' % (
             len(samples), ', '.join(sorted(samples))))
-  print 'selected sample %s' % samples[0]
+  print('selected sample %s' % samples[0])
 
   with codecs.open(path.join(sample_dir, samples[0]), 'r', 'utf-8') as f:
     text = f.read()
@@ -217,8 +217,8 @@ def generate(root, font_str, font_sizes, text, lang, out_file):
   if not font_names:
     raise Exception('no fonts matching "%s" in %s' % (font_str, root))
 
-  print 'found %d fonts under %s:\n  %s' % (
-      len(font_names), root, '\n  '.join(sorted(font_names)))
+  print('found %d fonts under %s:\n  %s' % (
+      len(font_names), root, '\n  '.join(sorted(font_names))))
 
   if not font_sizes:
     font_sizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 28, 32]
@@ -230,7 +230,7 @@ def generate(root, font_str, font_sizes, text, lang, out_file):
     out_file = path.abspath(out_file)
     file_dir = tool_utils.ensure_dir_exists(path.dirname(out_file))
     if path.exists(out_file):
-      print 'file %s already exists, overwriting' % out_file
+      print('file %s already exists, overwriting' % out_file)
     font_dir = tool_utils.ensure_dir_exists(path.join(file_dir, 'fonts'))
     for font_name in font_names:
       src = path.join(root, font_name)

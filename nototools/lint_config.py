@@ -156,7 +156,7 @@ class IntSetFilter(object):
   def __init__(self, accept_if_in, intset):
     self.accept_if_in = accept_if_in
     self.intset = intset
-    # print 'IntSetFilter %s %s' % ('only' if accept_if_in else 'except', intset)
+    # print('IntSetFilter %s %s' % ('only' if accept_if_in else 'except', intset))
 
   def accept(self, cp):
     return self.accept_if_in == (cp in self.intset)
@@ -468,7 +468,7 @@ class TestSpec(object):
       arg_type = m.group(4)
       comment = m.group(5)
 
-      while line_indent <= indent[0]:
+      while len(line_indent) <= indent[0]:
         if indent[2]:
           indent = indent[2]
         else:
@@ -479,8 +479,8 @@ class TestSpec(object):
       else:
         tag = tag_part
       tag_data[tag] = (relation, arg_type, comment)
-      if line_indent > indent[0]:
-        indent = (line_indent, tag, indent)
+      if len(line_indent) > indent[0]:
+        indent = (len(line_indent), tag, indent)
     return tag_data
 
   tag_data = _process_data(data)
@@ -764,11 +764,11 @@ def main():
   args = parser.parse_args()
 
   if not (args.tags or args.comments or args.filters or args.spec or args.parsefile):
-    print 'nothing to do.'
+    print('nothing to do.')
     return
 
   if args.spec:
-    print spec_format
+    print(spec_format)
     return
 
   for tag in sorted(TestSpec.tag_set):
@@ -780,14 +780,14 @@ def main():
       filter = None
     show_tag = args.tags or comment or filter
     if show_tag:
-      print tag
+      print(tag)
       if filter:
-        print '  ' + filter
+        print('  ' + filter)
       if comment:
-        print '  -- ' + comment
+        print('  -- ' + comment)
 
   if args.parsefile:
-    print parse_spec_file(args.parsefile)
+    print(parse_spec_file(args.parsefile))
 
 
 if __name__ == '__main__':

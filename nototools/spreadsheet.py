@@ -54,7 +54,7 @@ def check_spreadsheet(src_file):
       if not m:
         m = re.match(r'Noto (Sans) (Myanmar) (UI)(.*)', font)
         if not m:
-          print 'could not parse Myanmar exception: "%s"' % font
+          print('could not parse Myanmar exception: "%s"' % font)
           continue
 
       style, script, ui, weight = m.groups()
@@ -82,15 +82,15 @@ def check_spreadsheet(src_file):
         script = 'Cuneiform'
 
       fontname = ''.join(['Noto', style, script, ui, '-', weight, '.', ext])
-      # print '%s:\n--> %s\n--> %s' % (
-      #    font, str((style, script, ui, weight)), fontname)
+      # print('%s:\n--> %s\n--> %s' % (
+      #    font, str((style, script, ui, weight)), fontname))
 
       if not hinting in [
           'hinted',
           'hinted (CFF)',
           'unhinted']:
-        print 'unrecognized hinting value \'%s\' on line %d (%s)' % (
-            hinting, index, fontname)
+        print('unrecognized hinting value \'%s\' on line %d (%s)' % (
+            hinting, index, fontname))
         continue
       hinted = 'hinted' if hinting in ['hinted', 'hinted (CFF)'] else 'unhinted'
 
@@ -103,8 +103,8 @@ def check_spreadsheet(src_file):
           'Design approved',
           'Design re-approved',
           'Released']:
-        print 'unrecognized status value \'%s\' on line %d (%s)' % (
-            status, index, fontname)
+        print('unrecognized status value \'%s\' on line %d (%s)' % (
+            status, index, fontname))
         continue
 
       expect_font = status in [
@@ -129,11 +129,11 @@ def check_spreadsheet(src_file):
     spreadsheet_extra = spreadsheet_filenames - noto_filenames
     spreadsheet_missing = noto_filenames - spreadsheet_filenames
     if spreadsheet_extra:
-      print 'spreadsheet extra:\n  ' + '\n  '.join(
-          sorted(spreadsheet_extra))
+      print('spreadsheet extra:\n  ' + '\n  '.join(
+          sorted(spreadsheet_extra)))
     if spreadsheet_missing:
-      print 'spreadsheet missing:\n  ' + '\n  '.join(
-          sorted(spreadsheet_missing))
+      print('spreadsheet missing:\n  ' + '\n  '.join(
+          sorted(spreadsheet_missing)))
 
     spreadsheet_match = spreadsheet_filenames & noto_filenames
     for filename in sorted(spreadsheet_match):
@@ -144,10 +144,10 @@ def check_spreadsheet(src_file):
       approved_version = data[4]
       if approved_version:
         warn = '!!!' if approved_version != font_version else ''
-        print '%s%s version: %s approved: %s' % (
-            warn, filename, font_version, approved_version)
+        print('%s%s version: %s approved: %s' % (
+            warn, filename, font_version, approved_version))
       else:
-        print '%s version: %s' % (filename, font_version)
+        print('%s version: %s' % (filename, font_version))
 
 
 def main():

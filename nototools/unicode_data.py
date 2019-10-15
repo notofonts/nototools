@@ -148,7 +148,7 @@ def name(char, *args):
 
 def _char_to_int(char):
   """Converts a potential character to its scalar value."""
-  if type(char) in [str, unicode]:
+  if type(char) in [str, type(u'')]:
     return ord(char)
   else:
     return char
@@ -249,7 +249,7 @@ def block_chars(block):
   """Returns a frozenset of the cps in the named block."""
   load_data()
   first, last = _block_range[block]
-  return frozenset(xrange(first, last + 1))
+  return frozenset(range(first, last + 1))
 
 
 def block_names():
@@ -417,7 +417,7 @@ _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
 
 _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE = {
     _folded_script_name(name): code for code, name in
-    _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES.iteritems()
+    _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES.items()
 }
 
 def human_readable_script_name(code):
@@ -572,7 +572,7 @@ def _load_unicode_data_txt():
     elif char_name.endswith("Last>"):
       # Ignore surrogates
       if "Surrogate" not in char_name:
-        for char in xrange(last_range_opener, code+1):
+        for char in range(last_range_opener, code+1):
           _general_category_data[char] = general_category
           _combining_class_data[char] = combining_class
           if bidi_mirroring:
@@ -599,7 +599,7 @@ def _load_scripts_txt():
   for first, last, script_name in script_ranges:
     folded_script_name = _folded_script_name(script_name)
     script = _folded_script_name_to_code[folded_script_name]
-    for char_code in xrange(first, last+1):
+    for char_code in range(first, last+1):
       _script_data[char_code] = script
 
 
@@ -610,7 +610,7 @@ def _load_script_extensions_txt():
 
   for first, last, script_names in script_extensions_ranges:
     script_set = frozenset(script_names.split(' '))
-    for character_code in xrange(first, last+1):
+    for character_code in range(first, last+1):
       _script_extensions_data[character_code] = script_set
 
 
@@ -622,7 +622,7 @@ def _load_blocks_txt():
   for first, last, block_name in block_ranges:
     _block_names.append(block_name)
     _block_range[block_name] = (first, last)
-    for character_code in xrange(first, last + 1):
+    for character_code in range(first, last + 1):
       _block_data[character_code] = block_name
 
 
@@ -632,7 +632,7 @@ def _load_derived_age_txt():
     age_ranges = _parse_code_ranges(derived_age_txt.read())
 
   for first, last, char_age in age_ranges:
-    for char_code in xrange(first, last+1):
+    for char_code in range(first, last+1):
       _age_data[char_code] = char_age
 
 
@@ -642,7 +642,7 @@ def _load_derived_core_properties_txt():
     dcp_ranges = _parse_code_ranges(dcp_txt.read())
 
   for first, last, property_name in dcp_ranges:
-    for character_code in xrange(first, last+1):
+    for character_code in range(first, last+1):
       try:
         _core_properties_data[property_name].add(character_code)
       except KeyError:
@@ -680,13 +680,13 @@ def _load_indic_data():
   with open_unicode_data_file("IndicPositionalCategory.txt") as inpc_txt:
     positional_ranges = _parse_code_ranges(inpc_txt.read())
   for first, last, char_position in positional_ranges:
-    for char_code in xrange(first, last+1):
+    for char_code in range(first, last+1):
       _indic_positional_data[char_code] = char_position
 
   with open_unicode_data_file("IndicSyllabicCategory.txt") as insc_txt:
     syllabic_ranges = _parse_code_ranges(insc_txt.read())
   for first, last, char_syllabic_category in syllabic_ranges:
-    for char_code in xrange(first, last+1):
+    for char_code in range(first, last+1):
       _indic_syllabic_data[char_code] = char_syllabic_category
 
 
@@ -783,8 +783,7 @@ def _read_emoji_data(lines):
     if m.group(2):
       continue
 
-    # discourage lots of redundant copies of seq_type
-    seq_type = intern(m.group(3).strip().encode('ascii'))
+    seq_type = m.group(3).strip().encode('ascii')
     seq = tuple(int(s, 16) for s in m.group(1).split())
     name = m.group(4).strip()
     age = float(m.group(5))
@@ -1003,7 +1002,7 @@ def _get_android_order_patch():
 
   # maps from sequence to (name, age, type), we only need the name
   seq_data = _read_emoji_data(_LEGACY_ANDROID_SEQUENCES.splitlines())
-  seq_to_name = {k: v[0] for k, v in seq_data.iteritems()}
+  seq_to_name = {k: v[0] for k, v in seq_data.items()}
   return _get_order_patch(_LEGACY_ANDROID_ORDER, seq_to_name)
 
 
@@ -1052,8 +1051,8 @@ def _load_emoji_group_data():
   group_list.extend(_read_emoji_test_data(_SUPPLEMENTAL_EMOJI_GROUP_DATA))
   for i, (seq, group, subgroup, name) in enumerate(group_list):
     if seq in _emoji_group_data:
-      print 'seq %s alredy in group data as %s' % (seq_to_string(seq), _emoji_group_data[seq])
-      print '    new value would be %s' % str((i, group, subgroup, name))
+      print('seq %s alredy in group data as %s' % (seq_to_string(seq), _emoji_group_data[seq]))
+      print('    new value would be %s' % str((i, group, subgroup, name)))
     _emoji_group_data[seq] = (i, group, subgroup, name)
 
   assert len(group_list) == len(_emoji_group_data)
@@ -1100,7 +1099,7 @@ def get_emoji_in_group(group, subgroup=None):
   exist, and an empty list if subgroup does not exist in group."""
   _load_emoji_group_data()
   result = None
-  for seq, (index, g, sg, _) in _emoji_group_data.iteritems():
+  for seq, (index, g, sg, _) in _emoji_group_data.items():
     if g == group:
       if result == None:
         result = []
@@ -1131,9 +1130,9 @@ def _load_emoji_sequence_data():
   _emoji_non_vs_to_canonical = {}
 
   def add_data(data):
-    for k, t in data.iteritems():
+    for k, t in data.items():
       if k in _emoji_sequence_data:
-        print 'already have data for sequence:', seq_to_string(k), t
+        print('already have data for sequence:', seq_to_string(k), t)
       _emoji_sequence_data[k] = t
       if EMOJI_VS in k:
         _emoji_non_vs_to_canonical[strip_emoji_vs(k)] = k
@@ -1149,7 +1148,7 @@ def _load_emoji_sequence_data():
   # Get names for single emoji from the test data. We will prefer these over
   # those in UnicodeData (e.g. prefer "one o'clock" to "clock face one oclock"),
   # and if they're not in UnicodeData these are proposed new emoji.
-  for seq, (_, _, _, emoji_name) in _emoji_group_data.iteritems():
+  for seq, (_, _, _, emoji_name) in _emoji_group_data.items():
     non_vs_seq = strip_emoji_vs(seq)
     if len(non_vs_seq) > 1:
       continue
@@ -1596,10 +1595,10 @@ def _dump_emoji_presentation():
       text_p += 1
     else:
       presentation = '<error>'
-    print '%s%04x %5s %s' % (
-        ' ' if cp < 0x10000 else '', cp, presentation, cp_name)
-  print '%d total emoji, %d text presentation, %d emoji presentation' % (
-      len(get_emoji()), text_p, emoji_p)
+    print('%s%04x %5s %s' % (
+        ' ' if cp < 0x10000 else '', cp, presentation, cp_name))
+  print('%d total emoji, %d text presentation, %d emoji presentation' % (
+      len(get_emoji()), text_p, emoji_p))
 
 
 def _load_nameslist_data():
@@ -1670,16 +1669,16 @@ if __name__ == '__main__':
   all_sequences = sorted(get_emoji_sequences());
   for k in all_sequences:
     if not get_emoji_group_data(k):
-      print 'no data:', seq_to_string(k)
+      print('no data:', seq_to_string(k))
 
   for group in get_emoji_groups():
-    print 'group:', group
+    print('group:', group)
     for subgroup in get_emoji_subgroups(group):
-      print '  subgroup:', subgroup
-      print '    %d items' % len(get_emoji_in_group(group, subgroup))
+      print('  subgroup:', subgroup)
+      print('    %d items' % len(get_emoji_in_group(group, subgroup)))
 
   # dump some information for annotations
   for k in get_sorted_emoji_sequences(all_sequences):
     age = get_emoji_sequence_age(k)
     if age == 12:
-      print seq_to_string(k).replace('_', ' '), '#', get_emoji_sequence_name(k)
+      print(seq_to_string(k).replace('_', ' '), '#', get_emoji_sequence_name(k))

@@ -77,7 +77,7 @@ def _print_char_info(chars):
       name = unicode_data.name(char)
     except ValueError:
       name = '<Unassigned>'
-    print 'U+%04X %s' % (char, name)
+    print('U+%04X %s' % (char, name))
 
 
 def _write_char_text(chars, filepath, chars_per_line, sep):
@@ -91,8 +91,8 @@ def _write_char_text(chars, filepath, chars_per_line, sep):
   if m:
     filename = m.group(1)
   filename += '_chars.txt'
-  print 'writing file: %s' % filename
-  print '%d characters (of %d)' % (len(text), len(chars))
+  print('writing file: %s' % filename)
+  print('%d characters (of %d)' % (len(text), len(chars)))
   if chars_per_line > 0:
     lines = []
     for n in range(0, len(text), chars_per_line):
@@ -108,7 +108,7 @@ def _process_font(filepath, args):
   if args.limit_set:
     char_set = char_set & args.limit_set
     if not char_set:
-      print 'limit excludes all chars in %s' % filepath
+      print('limit excludes all chars in %s' % filepath)
       return
   sorted_chars = sorted(char_set)
   if args.info:
@@ -116,7 +116,7 @@ def _process_font(filepath, args):
   if args.text:
     _write_char_text(sorted_chars, filepath, args.chars_per_line, args.sep)
   if args.ranges:
-    print 'ranges:\n  ' + lint_config.write_int_ranges(sorted_chars, True)
+    print('ranges:\n  ' + lint_config.write_int_ranges(sorted_chars, True))
 
 
 def main():
@@ -151,13 +151,13 @@ def main():
 
   if args.limit:
     args.limit_set = lint_config.parse_int_ranges(args.limit)
-    print 'limit to: ' + lint_config.write_int_ranges(args.limit_set)
+    print('limit to: ' + lint_config.write_int_ranges(args.limit_set))
   else:
     # make sure it exists so checks don't have to care
     args.limit_set = None
 
   for fontpath in args.files:
-    print 'Font: ' + path.normpath(fontpath)
+    print('Font: ' + path.normpath(fontpath))
     _process_font(fontpath, args)
 
 

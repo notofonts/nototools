@@ -44,13 +44,13 @@ _HTML_FOOTER = """</body>
 def generate_table(filename):
   with codecs.open(filename, 'w', 'utf-8') as f:
     script_to_samples = _get_script_to_samples()
-    print >> f, _HTML_HEADER
-    print >> f, '<table>'
-    print >> f, '<tr><th>Script<br/>BCP<th>name<th>type<th>text'
+    f.write(_HTML_HEADER)
+    f.write('<table>\n')
+    f.write('<tr><th>Script<br/>BCP<th>name<th>type<th>text\n')
 
     for script, samples in sorted(script_to_samples.iteritems()):
       script_en = cldr_data.get_english_script_name(script)
-      print >> f, '<tr><th colspan=4>%s' % script_en
+      f.write('<tr><th colspan=4>%s\n' % script_en)
       for bcp, sample_type, sample_text in samples:
         try:
           lsrv = cldr_data.loc_tag_to_lsrv(bcp)
@@ -62,7 +62,7 @@ def generate_table(filename):
           if bcp_en == 'Unknown Language' and sample_type == 'chars':
             bcp_en = '(characters)'
         except:
-          print 'could not get english name for %s' % bcp
+          print('could not get english name for %s' % bcp)
           bcp_en = bcp
 
         cols = ['<tr>']
@@ -70,10 +70,10 @@ def generate_table(filename):
         cols.append(bcp_en)
         cols.append(sample_type)
         cols.append(sample_text)
-        print >> f, '<td>'.join(cols)
-      print >> f, '<tr><td colspan=4>&nbsp;'
-    print >> f, '</table>'
-    print >> f, _HTML_FOOTER
+        f.write('<td>'.join(cols) + '\n')
+      f.write('<tr><td colspan=4>&nbsp;\n')
+    f.write('</table>\n')
+    f.write(_HTML_FOOTER + '\n')
 
 
 def _get_script_to_samples():
@@ -83,13 +83,13 @@ def _get_script_to_samples():
   for f in sorted(os.listdir(sample_dir)):
     base, ext = path.splitext(f)
     if ext != '.txt' or '_' not in base:
-      print 'skipping', f
+      print('skipping', f)
       continue
     bcp, sample_type = base.split('_')
     try:
       lang, script, region, variant = cldr_data.loc_tag_to_lsrv(bcp)
     except:
-      print 'bcp %s did not parse as lsrv' % bcp
+      print('bcp %s did not parse as lsrv' % bcp)
       continue
     if script == 'Latn':
       continue

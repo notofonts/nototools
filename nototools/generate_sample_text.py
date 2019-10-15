@@ -36,7 +36,7 @@ def main(argv):
         else:
             chars.append(char_rep_to_code(arg))
     chars = u' '.join([unichr(code) for code in chars])
-    print chars.encode('UTF-8')
+    print(chars.encode('UTF-8'))
 
 if __name__ == '__main__':
     main(sys.argv)

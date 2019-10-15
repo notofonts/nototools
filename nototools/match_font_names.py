@@ -30,7 +30,7 @@ def _build_regex(names):
 def match_files(src_dir, names):
   matched_files = set()
   src_dir = tool_utils.resolve_path(src_dir)
-  print '# root: %s' % src_dir
+  print('# root: %s' % src_dir)
   name_re = _build_regex(names)
   for root, dirs, files in os.walk(src_dir):
     effective_root = root[len(src_dir)+1:]
@@ -44,7 +44,7 @@ def _print_list(names):
   if not names:
     return
   for n in names:
-    print n
+    print(n)
 
 
 def _collect_names(names):

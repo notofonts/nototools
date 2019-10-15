@@ -158,8 +158,8 @@ class SampleGen(object):
       ok_patterns = []
       for pattern in select_patterns:
         if pattern not in self.patterns:
-          print 'No pattern named \'%s\' in %s' % (
-              pattern, ', '.join(self.pattern_order))
+          print('No pattern named \'%s\' in %s' % (
+              pattern, ', '.join(self.pattern_order)))
           continue
         ok_patterns.append(pattern)
       select_patterns = ok_patterns
@@ -176,7 +176,7 @@ class SampleGen(object):
       with codecs.open(out_file, 'w', 'utf-8') as f:
         f.write(output_text)
     else:
-      print output_text
+      print(output_text)
 
 
   def _generate_output(self, output_lines, pattern, group, sep, label, sort):
@@ -365,12 +365,12 @@ def _parse_group(value):
     for arg in value.split(','):
       for expanded_arg in _expand_ranges(arg.strip()):
         if expanded_arg in args:
-          print 'The sequence "%s" is already in this group, ignoring it' % (
-              'U+%04X' % cp for cp in expanded_arg)
+          print('The sequence "%s" is already in this group, ignoring it' % (
+              'U+%04X' % cp for cp in expanded_arg))
           continue
         args.append(expanded_arg)
   except ValueError as e:
-    print str(e)
+    print(str(e))
     return None
 
   if not args[-1]:
@@ -387,10 +387,10 @@ def _check_balanced_parens(text):
     elif text[i] == ')':
       count -= 1
       if count < 0:
-        print 'Unmatched close paren.'
+        print('Unmatched close paren.')
         return None
   if count > 0:
-    print 'Unmatched open paren.'
+    print('Unmatched open paren.')
     return None
   return text
 
@@ -420,8 +420,8 @@ def _parse_pattern(value, groups):
     if name:
       # angle brackets
       if name not in groups:
-        print 'Could not find "%s" in groups (%s)' % (
-            name, ', '.join(sorted(groups)))
+        print('Could not find "%s" in groups (%s)' % (
+            name, ', '.join(sorted(groups))))
         return None
       pat_list.append(groups[name])
       value = value[m.end():].strip()
@@ -454,7 +454,7 @@ def parse_sample_gen(definition):
       continue
     m = _LINE_RE.match(line)
     if not m:
-      print 'Could not parse "%s"' % original_lines[n]
+      print('Could not parse "%s"' % original_lines[n])
       return None
     name = m.group(1)
     is_group = m.group(2) == '='
@@ -466,16 +466,16 @@ def parse_sample_gen(definition):
         return None
       value = _parse_pattern(value, groups)
     if not value:
-      print 'Could not parse values in "%s"' % original_lines[n]
+      print('Could not parse values in "%s"' % original_lines[n])
       return None
     if is_group:
       if name in groups:
-        print 'The group "%s" has already been defined' % name
+        print('The group "%s" has already been defined' % name)
         return None
       groups[name] = value
     else:
       if name in patterns:
-        print 'The pattern "%s" has already been defined' % name
+        print('The pattern "%s" has already been defined' % name)
         return None
       pattern_order.append(name)
       patterns[name] = value

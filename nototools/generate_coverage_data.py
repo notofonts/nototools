@@ -170,7 +170,7 @@ def write(coveragedata, out_file=None):
   if out_file:
     tree.write(out_file, encoding='utf-8', xml_declaration=True)
   else:
-    print ET.tostring(tree.getroot(), encoding='utf-8')
+    print(ET.tostring(tree.getroot(), encoding='utf-8'))
 
 
 def _read_meta(meta_elem):
@@ -237,7 +237,7 @@ def main():
     cps = get_cps_from_cmap_data_file(cmap_path)
     paths = None
   else:
-    print 'Please specify font files, directories, or a cmap data file.'
+    print('Please specify font files, directories, or a cmap data file.')
     return
   coverage = create(args.name, cps, paths=paths, cmap_data=cmap_path)
   write(coverage, args.output_file)

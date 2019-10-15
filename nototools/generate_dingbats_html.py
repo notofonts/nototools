@@ -382,7 +382,7 @@ class CodeTableTarget(Target):
     dump_metrics = False
 
     if dump_metrics:
-      print '$ %s' % self.name
+      print('$ %s' % self.name)
 
     def context_string(codelist, cp):
       cps = unichr(codelist.mapped_code(cp))
@@ -414,7 +414,7 @@ class CodeTableTarget(Target):
         metrics_font = _get_font(fontname)
       else:
         metrics_font = None
-        print >> sys.stderr, 'no metrics font'
+        sys.stderr.write('no metrics font\n')
 
     lines = ['<h3 id="target_%d">%s</h3>' % (tindex, self.name)]
     char_line = _character_string_html(self.codelist, self.used_fonts[-1])
@@ -457,7 +457,7 @@ class CodeTableTarget(Target):
         if cp_metrics:
           lsb, rsb, wid, adv, cy = cp_metrics
           if dump_metrics:
-            print '%04x # %4d, %4d, %4d, %s' % (cp, lsb, adv, cy, name)
+            print('%04x # %4d, %4d, %4d, %s' % (cp, lsb, adv, cy, name))
 
           if cp in metrics:
             nlsb, nadv, ncy = metrics[cp]
@@ -878,20 +878,20 @@ def _flagged_name(cp, flag_sets):
 
 
 def generate_text(outfile, title, fonts, targets, flag_sets, metrics, data_dir):
-  print >> outfile, title
-  print >> outfile
-  print >> outfile, 'Fonts:'
+  outfile.write(title + '\n')
+  outfile.write('\n')
+  outfile.write('Fonts:\n')
   max_keylen = max(len(key) for key, _ in fonts)
   fmt = '  %%%ds: %%s (%%s)' % max_keylen
   for key, keyinfos in fonts:
     for font, name, _ in keyinfos:
       rel_font = path.relpath(font, data_dir) if font else '(no font)'
-      print >> outfile, fmt % (key, name, rel_font)
-  print >> outfile
+      outfile.write(fmt % (key, name, rel_font) + '\n')
+  outfile.write('\n')
 
   for target in targets:
-    print >> outfile
-    print >> outfile, target.generate_text(flag_sets, metrics)
+    outfile.write('\n')
+    outfile.write(target.generate_text(flag_sets, metrics) + '\n')
 
 
 def _generate_fontkey(fonts, targets, data_dir):
@@ -1125,7 +1125,7 @@ def _generate_html_lines(outfile, fontkey):
     lines.append(string + '<br/>')
   lines.append('</div>')
 
-  print >> outfile, '\n'.join(lines)
+  outfile.write('\n'.join(lines) + '\n')
 """
 
 def generate_html(
@@ -1138,19 +1138,19 @@ def generate_html(
   styles = _generate_styles(fonts, relpath)
   mstyles = _METRICS_STYLES if metrics != None else ''
   contextfont = _CONTEXT_FONT if context else 'sansserif'
-  print >> outfile, template.substitute(
-      title=title, styles=styles, mstyles=mstyles, contextfont=contextfont)
+  outfile.write(template.substitute(
+      title=title, styles=styles, mstyles=mstyles, contextfont=contextfont) + '\n')
 
-  print >> outfile, _generate_fontkey(fonts, targets, data_dir)
+  outfile.write(_generate_fontkey(fonts, targets, data_dir) + '\n')
 
   # hardcode font key for now
   # _generate_html_lines(outfile, 'sym4')
 
   for index, target in enumerate(targets):
-    print >> outfile, target.generate_html(
-        index, context, metrics, flag_sets, cp_to_targets)
+    outfile.write(target.generate_html(
+        index, context, metrics, flag_sets, cp_to_targets) + '\n')
 
-  print >> outfile, _HTML_FOOTER
+  outfile.write(_HTML_FOOTER + '\n')
 
 
 def _build_cp_to_targets(targets):

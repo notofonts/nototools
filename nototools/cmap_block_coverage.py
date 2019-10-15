@@ -85,8 +85,8 @@ def _list_details(start_cp, limit_cp, defined_cps, defined_count, details):
   initial_cp = start_cp
   while num < details - 1 and num < defined_count:
     if initial_cp in defined_cps:
-      print '%13d %04x %s' % (
-          num + 1, initial_cp, unicode_data.name(initial_cp, '(unnamed)'))
+      print('%13d %04x %s' % (
+          num + 1, initial_cp, unicode_data.name(initial_cp, '(unnamed)')))
       num += 1
     initial_cp += 1
   if num < defined_count:
@@ -102,11 +102,11 @@ def _list_details(start_cp, limit_cp, defined_cps, defined_count, details):
       middle_cp = final_cp - 1
       while middle_cp >= initial_cp:
         if middle_cp in defined_cps:
-          print '%13s' % '...'
+          print('%13s' % '...')
           break
         middle_cp -= 1
     if final_name:
-      print '%13d %04x %s' % (defined_count, final_cp, final_name)
+      print('%13d %04x %s' % (defined_count, final_cp, final_name))
 
 def _is_empty_scripts(scripts):
   return (not scripts
@@ -135,10 +135,10 @@ def _list_range(
       script_names = '(all)'
     else:
       script_names = _script_names(scripts)
-  print '%13s %6d %3s in %3d %7s: %s' % (
+  print('%13s %6d %3s in %3d %7s: %s' % (
       range_text, defined_count, 'cps' if defined_count != 1 else 'cp',
       num_scripts, 'scripts' if num_scripts != 1 else 'script',
-      script_names)
+      script_names))
 
   if details > 0:
     _list_details(start_cp, limit_cp, defined_cps, defined_count, details)
@@ -162,7 +162,7 @@ def _list_blocks(
       if block and block != 'No_Block':
         if not (skip_empty and _is_empty_scripts(scripts)):
           if not showed_block:
-            print '...' if block == 'No_Block' else block
+            print('...') if block == 'No_Block' else block
             showed_block = True
           _list_range(
               start_cp, cp, defined_cps, defined_count, scripts, all_scripts,
@@ -178,7 +178,7 @@ def _list_blocks(
       defined_count += 1
   if not (skip_empty and _is_empty_scripts(scripts)):
     if not showed_block:
-      print '...' if block == 'No_Block' else block
+      print('...') if block == 'No_Block' else block
     _list_range(
         start_cp, limit, defined_cps, defined_count, scripts, all_scripts,
         only_scripts, details)
@@ -186,13 +186,13 @@ def _list_blocks(
 
 def _summarize_block(block, block_count, defined_count, script_counts):
   if block == 'No_Block':
-    print '...'
+    print('...')
     return
 
   if block_count == defined_count:
-    print '%s (%d cps)' % (block, defined_count)
+    print('%s (%d cps)' % (block, defined_count))
   else:
-    print '%s (%d of %d cps)' % (block, defined_count, block_count)
+    print('%s (%d of %d cps)' % (block, defined_count, block_count))
 
   lower_limit = int(defined_count / 10)
   groups = collections.defaultdict(list)
@@ -223,7 +223,7 @@ def _summarize_block(block, block_count, defined_count, script_counts):
     else:
       count = '%d-%d' % (low, hi)
     script_names = _script_names(scripts)
-    print '%6s: %s' % (count, script_names)
+    print('%6s: %s' % (count, script_names))
 
 
 def _summarize_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts):

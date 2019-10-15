@@ -125,17 +125,17 @@ def ttc_dump(ttc, data):
 
   table_map = {}
   for font_index, font_entry in enumerate(ttc.fonts):
-    print '[%2d] %s' % (font_index, names[font_index])
+    print('[%2d] %s' % (font_index, names[font_index]))
     for table_index, table_entry in enumerate(font_entry.tables):
       table = ttc.tables[table_entry]
       if table_entry not in table_map:
         table_map[table_entry] = (font_index, table_index)
-        print '  [%2d] %s %8d %8d' % (
-            table_index, table.tag, table.offset, table.length)
+        print('  [%2d] %s %8d %8d' % (
+            table_index, table.tag, table.offset, table.length))
       else:
         table_from = table_map[table_entry]
-        print '  [%2d] %s @%d.%d' % (
-            table_index, table.tag, table_from[0], table_from[1])
+        print('  [%2d] %s @%d.%d' % (
+            table_index, table.tag, table_from[0], table_from[1]))
 
 
 def ttcfile_filenames(ttcfile):
@@ -289,7 +289,7 @@ def main():
   if args.op == 'dump':
     ttcfile_dump(args.ttcfile)
   elif args.op == 'names':
-    print '\n'.join(ttcfile_filenames(args.ttcfile))
+    print('\n'.join(ttcfile_filenames(args.ttcfile)))
   elif args.op == 'extract':
     ttcfile_extract_and_write_namesfile(args.ttcfile, args.filedir)
   elif args.op=='build':

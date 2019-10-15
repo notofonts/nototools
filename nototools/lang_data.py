@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -40,7 +40,7 @@ from nototools import unicode_data
 # controls printing of debug/trace information
 # normally disabled
 def _log(msg):
-  # print >> sys.stderr, '#lang_data: ' + msg
+  # sys.stderr.write('#lang_data: ' + msg + '\n')
   pass
 
 def is_excluded_script(script_code):
@@ -290,34 +290,34 @@ def lang_script_to_names(lang_script):
 
 def main():
   lang_data = _get_lang_data()
-  print
-  print '--------'
+  print()
+  print('--------')
 
   langs_without_scripts = _langs_with_no_scripts(lang_data)
   if langs_without_scripts:
-    print 'langs without scripts: ' + ', '.join(sorted(langs_without_scripts))
+    print('langs without scripts: ' + ', '.join(sorted(langs_without_scripts)))
     _remove_keys_from_dict(langs_without_scripts, lang_data)
-    print
+    print()
 
-  print 'lang data'
+  print('lang data')
   for k in sorted(lang_data):
     used, unused = lang_data[k]
     used_msg = 'used: ' + ', '.join(sorted(used)) if used else None
     unused_msg = 'unused: ' + ', '.join(sorted(unused)) if unused else None
     msg = '; '.join([m for m in (used_msg, unused_msg) if m])
-    print k, msg
+    print(k, msg)
 
-  print
-  print 'lang_script to names'
+  print()
+  print('lang_script to names')
   lang_script_to_names = _get_lang_script_to_names()
   for t in sorted(lang_script_to_names.iteritems()):
-    print '%s: %s' % t
+    print('%s: %s' % t)
 
-  print
-  print 'script to default lang'
+  print()
+  print('script to default lang')
   script_to_default_lang = _get_script_to_default_lang()
   for t in sorted(script_to_default_lang.iteritems()):
-    print '%s: %s' % t
+    print('%s: %s' % t)
 
 
 if __name__ == '__main__':

@@ -38,18 +38,18 @@ def _covered_cps(cmap_file):
 
 
 def show_cps_by_block(cps):
-  print '%d missing codepoints' % len(cps)
+  print('%d missing codepoints' % len(cps))
   block = None
   for cp in sorted(cps):
     new_block = unicode_data.block(cp)
     if new_block != block:
-      print '# %s' % new_block
+      print('# %s' % new_block)
       block = new_block
-    print '%5s %s' % ('%04x' % cp, unicode_data.name(cp))
+    print('%5s %s' % ('%04x' % cp, unicode_data.name(cp)))
 
 
 def display_missing(cmap_file):
-  print 'Checking data in %s' % cmap_file
+  print('Checking data in %s' % cmap_file)
   filename = tool_utils.resolve_path(cmap_file)
   cps = _covered_cps(filename)
   defined_cps = unicode_data.defined_characters(version=9.0)

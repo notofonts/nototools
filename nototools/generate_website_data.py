@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright 2014 Google Inc. All rights reserved.
 #
@@ -378,7 +378,7 @@ def get_sample_text(language, script):
     if sample_text is not None:
         return sample_text
 
-    raise ValueError, 'language=%s script=%s' % (language, script)
+    raise ValueError('language=%s script=%s' % (language, script))
 
 
 def xml_to_dict(element):
@@ -419,7 +419,7 @@ def get_english_language_name(lang_scr):
         name = '%s (%s script)' % (
             english_language_name[lang],
             english_script_name[script])
-        print "Constructing name '%s' for %s." % (name, lang_scr)
+        print("Constructing name '%s' for %s." % (name, lang_scr))
         return name
 
 used_in_regions = collections.defaultdict(set)
@@ -586,7 +586,7 @@ def create_langs_object():
             try:
                 script = find_likely_script(language)
             except KeyError:
-                print "no likely script for %s" % language
+                print("no likely script for %s" % language)
                 continue
 
         lang_object['name'] = get_english_language_name(lang_scr)
@@ -716,11 +716,11 @@ def compress_png(pngpath):
 
 
 def compress(filepath, compress_function):
-    print 'Compressing %s.' % filepath
+    print('Compressing %s.' % filepath)
     oldsize = os.stat(filepath).st_size
     compress_function(filepath)
     newsize = os.stat(filepath).st_size
-    print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
+    print('Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize))
 
 
 zip_contents_cache = {}
@@ -890,7 +890,7 @@ def create_families_object(target_platform):
                 'weight': css_weight(font.weight),
             })
         if len(font_list) not in [1, 2, 4, 7]:
-            print key, font_list
+            print(key, font_list)
         assert len(font_list) in [1, 2, 4, 7]
         family_object['fonts'] = font_list
 
@@ -921,8 +921,8 @@ def generate_ttc_zips_with_7za():
                  (SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
         tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
         newsize = os.stat(zip_path).st_size
-        print "Wrote " + zip_path
-        print 'Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize)
+        print("Wrote " + zip_path)
+        print('Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize))
     shutil.copy2(path.join(CJK_DIR, 'NotoSansCJK.ttc.zip'),
                  path.join(pkg_dir, 'NotoSansCJK.ttc.zip'))
 
@@ -932,7 +932,7 @@ def generate_sample_images(data_object):
     for family_key in data_object['family']:
         family_obj = data_object['family'][family_key]
         font_family_name = family_obj['name']
-        print 'Generating images for %s...' % font_family_name
+        print('Generating images for %s...' % font_family_name)
         is_cjk_family = (
             family_key.endswith('-hans') or
             family_key.endswith('-hant') or
@@ -954,7 +954,7 @@ def generate_sample_images(data_object):
                 image_location = path.join(image_dir, image_file_name)
                 if path.isfile(image_location):
                     # Don't rebuild images when continuing.
-                    print "Continue: assuming image file '%s' is valid." % image_location
+                    print("Continue: assuming image file '%s' is valid." % image_location)
                     continue
                 create_image.create_png(
                     sample_text,
@@ -992,7 +992,7 @@ def main():
     if not args.continuing:
         if path.exists(OUTPUT_DIR):
             assert path.isdir(OUTPUT_DIR)
-            print 'Removing the old website directory...'
+            print('Removing the old website directory...')
             shutil.rmtree(OUTPUT_DIR)
         os.mkdir(OUTPUT_DIR)
         os.mkdir(path.join(OUTPUT_DIR, 'pkgs'))
@@ -1004,25 +1004,25 @@ def main():
         os.mkdir(path.join(OUTPUT_DIR, 'images', 'samples'))
         os.mkdir(path.join(OUTPUT_DIR, 'js'))
 
-    print 'Finding all fonts...'
+    print('Finding all fonts...')
     find_fonts()
 
-    print 'Parsing CLDR data...'
+    print('Parsing CLDR data...')
     parse_english_labels()
     parse_supplemental_data()
 
     for target_platform in ['windows', 'linux', 'other']:
-        print 'Target platform %s:' % target_platform
+        print('Target platform %s:' % target_platform)
 
         output_object = {}
-        print 'Generating data objects and CSS...'
+        print('Generating data objects and CSS...')
         output_object['region'] = create_regions_object()
         output_object['lang'] = create_langs_object()
 
         output_object['family'], all_font_files = create_families_object(
             target_platform)
 
-        print 'Creating comprehensive zip file...'
+        print('Creating comprehensive zip file...')
         output_object['pkg'] = create_package_object(
             all_font_files, target_platform)
 

@@ -55,14 +55,14 @@ fonts = filter(accept_font, noto_fonts.get_noto_fonts())
 families = noto_fonts.get_families(fonts).values()
 
 def write_csv_header(outfile):
-  print >> outfile, 'Code,Script,Style,UI,Font Name'
+  outfile.write('Code,Script,Style,UI,Font Name\n')
 
 
 def write_csv(outfile, lang, script, style, ui, members):
   if members:
-    print >> outfile, ','.join(
+    outfile.write(','.join(
         [lang, script, style, ui,
-         noto_fonts.get_font_family_name(members[0].filepath)])
+         noto_fonts.get_font_family_name(members[0].filepath)]))
 
 
 with open('lang_to_font_table.csv', 'w') as outfile:
@@ -87,4 +87,4 @@ with open('lang_to_font_table.csv', 'w') as outfile:
                 ui_members)
 
     if not found_font:
-      print '## no font found for lang %s' % lang
+      print('## no font found for lang %s' % lang)

@@ -55,7 +55,7 @@ def get_key_lists(base_map, target_map, base_root, target_root):
 
 def print_keys(key_list):
   for k in key_list:
-    print '  ' + k
+    print('  ' + k)
 
 def compare_table_info(base_info, target_info):
   biggest_deltas = []
@@ -110,7 +110,7 @@ def compare_table_info(base_info, target_info):
 def print_difference(k, base_tuple, target_tuple, other_difference):
   b_path, b_version, b_name, b_size, b_numglyphs, b_numchars, b_cmap, b_tableinfo = base_tuple
   t_path, t_version, t_name, t_size, t_numglyphs, t_numchars, t_cmap, t_tableinfo = target_tuple
-  print '  ' + k
+  print('  ' + k)
   versions_differ = b_version != t_version
   diff_list = []
   if versions_differ:
@@ -118,10 +118,10 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
       msg = '(base is newer!)'
     else:
       msg = ''
-    print '    version: %s vs %s %s' % (b_version, t_version, msg)
+    print('    version: %s vs %s %s' % (b_version, t_version, msg))
   if b_name != t_name:
     diff_list.append('name')
-    print "    name: '%s' vs '%s'" % (b_name, t_name)
+    print("    name: '%s' vs '%s'" % (b_name, t_name))
   if b_size != t_size:
     diff_list.append('size')
     delta = int(t_size) - int(b_size)
@@ -129,11 +129,11 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
       msg = '%d byte%s smaller' % (-delta, '' if delta == -1 else 's')
     else:
       msg = '%d byte%s bigger' % (delta, '' if delta == 1 else 's')
-    print '    size: %s vs %s (%s)' % (b_size, t_size, msg)
+    print('    size: %s vs %s (%s)' % (b_size, t_size, msg))
   table_diffs = compare_table_info(b_tableinfo, t_tableinfo)
   if table_diffs:
     diff_list.append('table')
-    print '    tables: %s' % table_diffs
+    print('    tables: %s' % table_diffs)
   if b_numglyphs != t_numglyphs:
     diff_list.append('glyph count')
     delta = int(t_numglyphs) - int(b_numglyphs)
@@ -141,7 +141,7 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
       msg = '%d fewer glyph%s' % (-delta, '' if delta == -1 else 's')
     else:
       msg = '%d more glyph%s' % (delta, '' if delta == 1 else 's')
-    print '    glyphs: %s vs %s (%s)' % (b_numglyphs, t_numglyphs, msg)
+    print('    glyphs: %s vs %s (%s)' % (b_numglyphs, t_numglyphs, msg))
   if b_numchars != t_numchars:
     diff_list.append('char count')
     delta = int(t_numchars) - int(b_numchars)
@@ -149,20 +149,20 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
       msg = '%d fewer char%s' % (-delta, '' if delta == -1 else 's')
     else:
       msg = '%d more char%s' % (delta, '' if delta == 1 else 's')
-    print '    chars: %s vs %s (%s)' % (b_numchars, t_numchars, msg)
+    print('    chars: %s vs %s (%s)' % (b_numchars, t_numchars, msg))
   if b_cmap != t_cmap:
     removed_from_base = b_cmap - t_cmap
     if removed_from_base:
-      print '    cmap removed: ' + noto_lint.printable_unicode_range(
-        removed_from_base)
+      print('    cmap removed: ' + noto_lint.printable_unicode_range(
+        removed_from_base))
     added_in_target = t_cmap - b_cmap
     if added_in_target:
-      print '    cmap added: ' + noto_lint.printable_unicode_range(
-          added_in_target)
+      print('    cmap added: ' + noto_lint.printable_unicode_range(
+          added_in_target))
   if diff_list and not versions_differ:
-    print '    %s differs but revision number is the same' % ', '.join(diff_list)
+    print('    %s differs but revision number is the same' % ', '.join(diff_list))
   if not diff_list and other_difference:
-    print '    other difference'
+    print('    other difference')
 
 def print_changed(key_list, base_map, target_map, comparefn):
   for k in key_list:
@@ -195,16 +195,16 @@ def compare_summary(base_root, target_root, name=None, comparefn=tuple_compare,
 
   def header_line(msg):
     if have_output_hack[0]:
-      print
+      print()
     else:
       have_output_hack[0] = True
     if msg:
-      print msg
+      print(msg)
 
   if show_paths:
     header_line(None)
-    print 'base root: ' + base_root
-    print 'target root: ' + target_root
+    print('base root: ' + base_root)
+    print('target root: ' + target_root)
   if show_added and added:
     header_line('added')
     print_keys(added)
@@ -239,11 +239,11 @@ def main():
   args.target_root = tool_utils.resolve_path(args.target_root)
 
   if not os.path.isdir(args.base_root):
-    print 'base_root %s does not exist or is not a directory' % args.base_root
+    print('base_root %s does not exist or is not a directory' % args.base_root)
     return
 
   if not os.path.isdir(args.target_root):
-    print 'target_root %s does not exist or is not a directory' % args.target_root
+    print('target_root %s does not exist or is not a directory' % args.target_root)
     return
 
   comparefn = tuple_compare if args.compare_size else tuple_compare_no_size

@@ -47,13 +47,13 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
 
   for f in files:
     if not os.path.exists(f):
-      print 'file \'%s\' does not exist, skipping' % f
+      print('file \'%s\' does not exist, skipping' % f)
       continue
 
     filename = os.path.basename(f)
     result = name_date_re.match(filename)
     if not result:
-      print 'could not parse %s, skipping' % f
+      print('could not parse %s, skipping' % f)
       continue
 
     name = result.group(1)
@@ -64,7 +64,7 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
     zip_filename = os.path.join(zip_dir, filename)
     if os.path.exists(drop_dir):
       if os.path.exists(zip_filename):
-        print 'already have a %s drop and zip for %s' % (src_vendor, filename)
+        print('already have a %s drop and zip for %s' % (src_vendor, filename))
         continue
       else:
         # clean up, assume needs rebuild
@@ -72,14 +72,14 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
     else:
       if os.path.exists(zip_filename):
         if os.path.realpath(f) != os.path.realpath(zip_filename):
-          print 'already have a zip file named %s for %s' % (zip_filename, f)
+          print('already have a zip file named %s for %s' % (zip_filename, f))
           continue
 
     os.mkdir(drop_dir)
     extract_fn(drop_dir, f)
 
     if not os.path.exists(zip_filename):
-      print 'writing %s to %s' % (f, zip_filename)
+      print('writing %s to %s' % (f, zip_filename))
       shutil.copy2(f, zip_filename)
 
 
@@ -94,7 +94,7 @@ def matching_files_in_dir(src, namere):
       continue
     filelist.append(path)
   if not filelist:
-    print "no files in %s matched '%s'" % (src, namere)
+    print("no files in %s matched '%s'" % (src, namere))
   return filelist
 
 
@@ -120,13 +120,13 @@ def invoke_main(src_vendor, name_date_re, extract_fn, default_params = {}):
   The dest directory must exist and should have 'zips' and 'drops' subdirs."""
 
   if not src_vendor:
-    print 'must define src_vendor'
+    print('must define src_vendor')
     return
   if not name_date_re:
-    print 'must define name_date_re'
+    print('must define name_date_re')
     return
   if not extract_fn:
-    print 'must define extract_fn'
+    print('must define extract_fn')
     return
 
   default_srcdir = default_params.get('default_srcdir')
@@ -146,12 +146,12 @@ def invoke_main(src_vendor, name_date_re, extract_fn, default_params = {}):
   args = parser.parse_args()
 
   if not os.path.exists(args.dstdir):
-    print '%s does not exists or is not a directory' % args.dstdir
+    print('%s does not exists or is not a directory' % args.dstdir)
     return
 
   if not args.srcs:
     if not os.path.isdir(args.srcdir):
-      print '%s does not exist or is not a directory' % args.srcdir
+      print('%s does not exist or is not a directory' % args.srcdir)
       return
     filelist = matching_files_in_dir(args.srcdir, args.name)
   else:

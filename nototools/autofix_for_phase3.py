@@ -87,16 +87,16 @@ def _get_version_info(fonts):
   # add '/' to distinguish between noto-fonts/ and noto-fonts-alpha/
   for repo_tag in ['[fonts]', '[fonts_alpha]', '[source]']:
     prefix = tool_utils.resolve_path(repo_tag) + '/'
-    print 'trying prefix "%s"' % prefix
+    print('trying prefix "%s"' % prefix)
     if all(tool_utils.resolve_path(f).startswith(prefix) for f in fonts):
       return _get_fonts_repo_version_info(repo_tag)
     # else report the first failure
     for f in fonts:
       if not tool_utils.resolve_path(f).startswith(prefix):
-        print '# failed at "%s"' % tool_utils.resolve_path(f)
+        print('# failed at "%s"' % tool_utils.resolve_path(f))
         break
 
-  print 'no prefix succeeded'
+  print('no prefix succeeded')
   return None
 
 
@@ -158,12 +158,12 @@ def autofix_fonts(
   dst_dir = tool_utils.ensure_dir_exists(dst_dir)
 
   font_names = sorted(_expand_font_names(font_names))
-  print 'Processing %d fonts\n  %s' % (
-      len(font_names), '\n  '.join(font_names[:5]) + '...')
+  print('Processing %d fonts\n  %s' % (
+      len(font_names), '\n  '.join(font_names[:5]) + '...'))
 
   src_root = tool_utils.resolve_path(src_root)
-  print 'Src root: %s' % src_root
-  print 'Dest dir: %s' % dst_dir
+  print('Src root: %s' % src_root)
+  print('Dest dir: %s' % dst_dir)
 
   if release_dir is None:
     rel_dir = None
@@ -181,7 +181,7 @@ def autofix_fonts(
 
     if not version_info:
       raise Exception('could not compute version info from fonts')
-    print 'Computed version_info: %s' % version_info
+    print('Computed version_info: %s' % version_info)
   else:
     _check_version_info(version_info)
 
@@ -189,7 +189,7 @@ def autofix_fonts(
   _check_autohint(autohint)
 
   if dry_run:
-    print '*** dry run %s***' % ('(autohint) ' if autohint else '')
+    print('*** dry run %s***' % ('(autohint) ' if autohint else ''))
   for f in font_names:
     f = path.join(src_root, f)
     fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run)
@@ -237,7 +237,7 @@ def get_new_version(font, relfont, nversion):
   rversion = _extract_version(relfont) if relfont else None
 
   if rversion:
-    print 'Existing release version: %s' % rversion
+    print('Existing release version: %s' % rversion)
     r_mm, r_is_phase2 = _version_str_to_mm(rversion)
 
   mm, is_phase2 = _version_str_to_mm(version)
@@ -245,7 +245,7 @@ def get_new_version(font, relfont, nversion):
     if nversion == 'keep':
       if rversion is not None:
         if r_is_phase2:
-          print 'Warning, keeping phase 2 release version %s' % rversion
+          print('Warning, keeping phase 2 release version %s' % rversion)
         return rversion
     else:
       n_mm, n_is_phase_2 = _version_str_to_mm(nversion)
@@ -309,11 +309,11 @@ def _autohint_code(f, script):
 def autohint_font(src, dst, script, dry_run):
   code = _autohint_code(src, script)
   if code == 'not-hinted':
-    print 'Warning: no hinting information for %s, script %s' % (src, script)
+    print('Warning: no hinting information for %s, script %s' % (src, script))
     return
 
   if code == None:
-    print 'Warning: unable to autohint %s' % src
+    print('Warning: unable to autohint %s' % src)
     return
 
   if code == 'no-script':
@@ -321,14 +321,14 @@ def autohint_font(src, dst, script, dry_run):
   else:
     args = ['ttfautohint', '-t', '-W', '-f', code, src, dst]
   if dry_run:
-    print 'dry run would autohint:\n  "%s"' % ' '.join(args)
+    print('dry run would autohint:\n  "%s"' % ' '.join(args))
     return
 
   hinted_dir = tool_utils.ensure_dir_exists(path.dirname(dst))
   try:
     subprocess.check_call(args)
   except Exception as e:
-    print '### failed to autohint %s' % src
+    print('### failed to autohint %s' % src)
     # we failed to autohint, let's continue anyway
     # however autohint will have left an empty file there, remove it.
     try:
@@ -337,7 +337,7 @@ def autohint_font(src, dst, script, dry_run):
       pass
 
 
-  print 'wrote autohinted %s using %s' % (dst, code)
+  print('wrote autohinted %s using %s' % (dst, code))
 
 
 def _alert(val_name, cur_val, new_val):
@@ -345,7 +345,7 @@ def _alert(val_name, cur_val, new_val):
     tmpl = 'update %s\n  from: "%s"\n    to: "%s"'
   else:
     tmpl = 'update %s\n  from: %4d\n    to: %4d'
-  print  tmpl % (val_name, cur_val, new_val)
+  print( tmpl % (val_name, cur_val, new_val))
 
 
 def _alert_and_check(val_name, cur_val, expected_val, max_diff):
@@ -396,7 +396,7 @@ def _get_release_font(f, rel_dir):
 
 
 def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
-  print '\n-----\nfont:', f
+  print('\n-----\nfont:', f)
   font = ttLib.TTFont(f)
 
   relfont = _get_release_font(f, rel_dir)
@@ -419,7 +419,7 @@ def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
   expected_upem = 1000
   upem = font['head'].unitsPerEm
   if upem != expected_upem:
-    print 'expected %d upem but got %d upem' % (expected_upem, upem)
+    print('expected %d upem but got %d upem' % (expected_upem, upem))
 
   if _is_ui_metrics(f):
     if upem == 2048:
@@ -450,10 +450,10 @@ def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
   fname = path.basename(f)
   udst = path.join(dst_dir, 'unhinted', fname)
   if dry_run:
-    print 'dry run would write:\n  "%s"' % udst
+    print('dry run would write:\n  "%s"' % udst)
   else:
     font.save(udst)
-    print 'wrote %s' % udst
+    print('wrote %s' % udst)
 
   if autohint:
     hdst = path.join(dst_dir, 'hinted', fname)

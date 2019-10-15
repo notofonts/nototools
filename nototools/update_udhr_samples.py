@@ -45,7 +45,7 @@ def fetch_udhr(fetch_dir):
   fetch_dir = tool_utils.ensure_dir_exists(fetch_dir)
   dstfile = os.path.join(fetch_dir, UDHR_XML_ZIP_NAME)
   result = urllib.urlretrieve(UDHR_XML_ZIP_URL, dstfile)
-  print 'Fetched: ' + result[0]
+  print('Fetched: ' + result[0])
 
 
 def update_udhr(udhr_dir, fetch_dir, in_repo):
@@ -71,7 +71,7 @@ def update_udhr(udhr_dir, fetch_dir, in_repo):
 
   date = datetime.datetime.now().strftime('%Y-%m-%d')
   dst = 'in %s ' % udhr_dir if not in_repo else ''
-  print 'Update UDHR files %sfrom %s as of %s.' % (dst, fetch_dir, date)
+  print('Update UDHR files %sfrom %s as of %s.' % (dst, fetch_dir, date))
 
 
 def parse_index(src_dir):
@@ -99,7 +99,7 @@ def parse_index(src_dir):
     bcp = e.attrib.get('bcp47')
     if not bcp:
       # don't know what to do with this, maybe we could supply a mapping.
-      print 'no bcp for %s' % code
+      print('no bcp for %s' % code)
       continue
 
     script = e.attrib.get('iso15924')
@@ -304,9 +304,9 @@ def fix_index(bcp_to_codes):
       result[new_bcp] = code
 
   if errors:
-    print 'fix_index had %d errors:' % len(errors)
+    print('fix_index had %d errors:' % len(errors))
     for e in errors:
-      print ' ', e
+      print(' ', e)
     raise Exception('correct the fixes whitelist')
 
   return result
@@ -340,7 +340,7 @@ def add_likely_scripts(bcp_to_code):
         # otherwise, we assume the 4-char value is a script, and leave it alone.
       except KeyError:
         # if we can't provide a script, it's no use for a script sample, so exclude it
-        print 'no likely subtag (script) data for %s, excluding' % parts[0]
+        print('no likely subtag (script) data for %s, excluding' % parts[0])
         continue
     result[new_bcp] = code
   return result
@@ -400,12 +400,12 @@ def add_default_lang_script(bcp_to_code_attrib_sample):
 
   for lang_scr in sorted(options):
     if lang_scr in bcp_to_code_attrib_sample:
-      print '%s exists with variants %s' % (
-          lang_scr, ', '.join(sorted(options[lang_scr])))
+      print('%s exists with variants %s' % (
+          lang_scr, ', '.join(sorted(options[lang_scr]))))
       del options[lang_scr]
 
   for lang_scr in sorted(options):
-    print '%s options: %s' % (lang_scr, options[lang_scr])
+    print('%s options: %s' % (lang_scr, options[lang_scr]))
     if not lang_scr in OPTION_MAP:
       errors.append('%s missing from option map' % lang_scr)
     elif not OPTION_MAP[lang_scr] in options[lang_scr]:
@@ -413,13 +413,13 @@ def add_default_lang_script(bcp_to_code_attrib_sample):
           lang_scr, OPTION_MAP[lang_scr]))
     else:
       alias = OPTION_MAP[lang_scr]
-      print 'adding %s (from %s)' % (lang_scr, alias)
+      print('adding %s (from %s)' % (lang_scr, alias))
       bcp_to_code_attrib_sample[lang_scr] = bcp_to_code_attrib_sample[alias]
 
   if errors:
-    print 'add_default_lang_script encountered %d errors:' % len(errors)
+    print('add_default_lang_script encountered %d errors:' % len(errors))
     for e in errors:
-      print ' ', e
+      print(' ', e)
     raise Exception('oops')
 
 
@@ -469,7 +469,7 @@ def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
     attr = code_to_attrib.get(ohchr)
     if not attr:
       attr = 'none'
-      print '%s (%s) not in ohchr attribution data' % (code, ohchr)
+      print('%s (%s) not in ohchr attribution data' % (code, ohchr))
     sample = bcp_to_sample[bcp]
     bcp_to_code_attrib_sample[bcp] = (code, attr, sample)
 
@@ -479,10 +479,10 @@ def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
 
 
 def print_bcp_to_code_attrib_sample(bcp_to_code_attrib_sample):
-  print 'index size: %s' % len(bcp_to_code_attrib_sample)
+  print('index size: %s' % len(bcp_to_code_attrib_sample))
   for bcp, (code, attrib, sample) in sorted(
       bcp_to_code_attrib_sample.iteritems()):
-    print '%s: %s, %s\n  "%s"' % (bcp, code, attrib, sample)
+    print('%s: %s, %s\n  "%s"' % (bcp, code, attrib, sample))
 
 
 def extract_para(src_path):
@@ -514,9 +514,9 @@ def fix_sample(sample, bcp):
     return sample
 
   if new_sample == sample:
-    print 'sample for %s was not changed by fix' % bcp
+    print('sample for %s was not changed by fix' % bcp)
   else:
-    print 'fixed sample for %s' % bcp
+    print('fixed sample for %s' % bcp)
   return new_sample
 
 
@@ -526,7 +526,7 @@ def get_sample_for_code(udhr_dir, code):
   src_path = os.path.join(udhr_dir, src_file)
   sample = extract_para(src_path)
   if not sample:
-    print 'unable to get sample from %s' % src_file
+    print('unable to get sample from %s' % src_file)
     return None
   return sample
 
@@ -538,7 +538,7 @@ def get_bcp_to_sample(src_dir, bcp_to_code):
     code = bcp_to_code[bcp]
     sample = get_sample_for_code(src_dir, code)
     if not sample:
-      print 'bcp %s: no sample found (code %s)' % (bcp, code)
+      print('bcp %s: no sample found (code %s)' % (bcp, code))
     else:
       bcp_to_sample[bcp] = sample
   return bcp_to_sample
@@ -622,9 +622,9 @@ def check_bcp_to_sample(bcp_to_sample):
       del bcp_to_sample[bcp]
 
   if errors:
-    print 'found %d errors in samples' % len(errors)
+    print('found %d errors in samples' % len(errors))
     for e in errors:
-      print ' ', e
+      print(' ', e)
 
 
 def update_samples(
@@ -643,8 +643,8 @@ def update_samples(
   if in_repo:
     repo, subdir = os.path.split(sample_dir)
     tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
-    print 'allowing overwrite of %d files:\n  %s' % (
-        len(tool_samples), ', '.join(sorted(tool_samples)))
+    print('allowing overwrite of %d files:\n  %s' % (
+        len(tool_samples), ', '.join(sorted(tool_samples))))
 
   comments = [
     '# Attributions for sample excerpts:',
@@ -660,13 +660,13 @@ def update_samples(
     dst_file = '%s_udhr.txt' % bcp
     dst_path = os.path.join(sample_dir, dst_file)
     if in_repo and os.path.isfile(dst_path) and dst_file not in tool_samples:
-      print 'Not overwriting modified file %s' % dst_file
+      print('Not overwriting modified file %s' % dst_file)
     else:
       with codecs.open(dst_path, 'w', 'utf8') as f:
         f.write(sample)
       count += 1
     sample_attrib_list.append('%s: %s' % (dst_file, attrib))
-  print 'Created %d samples' % count
+  print('Created %d samples' % count)
 
   # Some existing samples that we don't overwrite are not in
   # bcp_to_code_attrib_sample, so they're not listed.  Readers of the
@@ -685,7 +685,7 @@ def update_samples(
 
   # prefix of this sample commit message indicates that these were
   # tool-generated
-  print 'Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date)
+  print('Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date))
 
 
 def get_scripts(text):
@@ -759,7 +759,7 @@ def test_sample_scripts(sample_dir):
       if required and required - scripts:
         required_name = ', '.join(sorted([s for s in required]))
         scripts_name = ', '.join(sorted([s for s in scripts]))
-        print '%s requires %s but contains only %s' % (filename, required_name, scripts_name)
+        print('%s requires %s but contains only %s' % (filename, required_name, scripts_name))
         errors += 1
       else:
         remainder = scripts
@@ -771,9 +771,9 @@ def test_sample_scripts(sample_dir):
           allowed_name = '<none>' if not allowed else ', '.join(
               sorted([s for s in allowed]))
           scripts_name = ', '.join(sorted([s for s in scripts]))
-          print '%s allows %s but contains %s' % (filename, allowed_name, scripts_name)
+          print('%s allows %s but contains %s' % (filename, allowed_name, scripts_name))
           errors += 1
-  print 'Found %d errors in %d files tested.' % (errors, tested)
+  print('Found %d errors in %d files tested.' % (errors, tested))
 
 
 def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
@@ -782,15 +782,15 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
   file name to use in the comparisons."""
 
   if not os.path.isdir(base_dir):
-    print 'Original sample dir \'%s\' does not exist' % base_dir
+    print('Original sample dir \'%s\' does not exist' % base_dir)
     return
   if not os.path.isdir(trg_dir):
-    print 'New sample dir \'%s\' does not exist' % trg_dir
+    print('New sample dir \'%s\' does not exist' % trg_dir)
     return
 
-  print 'Base (current) dir: %s' % base_dir
-  print 'Target (new) dir: %s' % trg_dir
-  print '[a/b] means "a" in base is replaced with "b" in target'
+  print('Base (current) dir: %s' % base_dir)
+  print('Target (new) dir: %s' % trg_dir)
+  print('[a/b] means "a" in base is replaced with "b" in target')
 
   show_missing = opts and 'missing' in opts
   show_diffs = opts and 'diffs' in opts
@@ -807,7 +807,7 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
     base_path = os.path.join(base_dir, base_name)
     if not os.path.exists(base_path):
       if show_missing:
-        print 'base does not exist: %s' % base_name
+        print('base does not exist: %s' % base_name)
       continue
 
     base_text = None
@@ -817,13 +817,13 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
     with codecs.open(trg_path, 'r', 'utf8') as f:
       trg_text = f.read()
     if not base_text:
-      print 'base text (%s) is empty' % k
+      print('base text (%s) is empty' % k)
       continue
     if not trg_text:
-      print 'target text is empty: %s' % trg_path
+      print('target text is empty: %s' % trg_path)
       continue
     if base_text.find(trg_text) == -1:
-      print 'target (%s) text not in base (%s)' % (base_name, trg_name)
+      print('target (%s) text not in base (%s)' % (base_name, trg_name))
       if show_diffs:
         # In scripts that use space for word break it might be better to compare
         # word by word, but this suffices.
@@ -838,13 +838,13 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
             lines.append('[/%s]' % trg_text[j1:j2])
           else:
             lines.append('[%s/%s]' % (base_text[i1:i2], trg_text[j1:j2]))
-        print ''.join(lines)
+        print(''.join(lines))
 
 
 def update_repo(repo_samples, new_samples):
   # Verify directory is clean.
   if not tool_utils.git_is_clean(new_samples):
-    print 'Please fix.'
+    print('Please fix.')
     return
 
   # Copy samples into git repo
@@ -858,7 +858,7 @@ def update_repo(repo_samples, new_samples):
   tool_utils.git_add_all(new_samples)
 
   # Sample commit message.
-  print 'Update UDHR sample data.'
+  print('Update UDHR sample data.')
 
 
 def main():
@@ -914,7 +914,7 @@ def main():
 
   if not (args.fetch or args.update_udhr or args.update_sample or args.mapping
           or args.base_sample_dir or args.test_script):
-    print 'nothing to do.'
+    print('nothing to do.')
     return
 
   def fix_noto_prefix(argname):
@@ -963,7 +963,7 @@ def main():
     if args.test_script:
       test_sample_scripts(args.sample_dir)
   except ValueError as e:
-      print 'Error:', e
+      print('Error:', e)
 
 if __name__ == '__main__':
     main()

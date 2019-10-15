@@ -94,7 +94,7 @@ def get_script_to_cmaps(csvdata):
         if v[-1] == '*':
           xdata[i].add(int(v[:-1], 16))
         elif v[-1] == '+':
-          print '> %s added %s' % (header[i], v[:-1])
+          print('> %s added %s' % (header[i], v[:-1]))
           data[i].add(int(v[:-1], 16))
         else:
           data[i].add(int(v, 16))
@@ -131,10 +131,10 @@ def cmap_data_from_csv_file(
 def csv_to_xml(csv_file, xml_file, scripts, exclude_scripts):
   cmapdata = cmap_data_from_csv_file(csv_file, scripts, exclude_scripts)
   if xml_file:
-    print >> sys.stderr, 'writing %s' % xml_file
+    sys.stderr.write('writing %s\n' % xml_file)
     cmap_data.write_cmap_data_file(cmapdata, xml_file, pretty=True)
   else:
-    print cmap_data.write_cmap_data(cmapdata, pretty=True)
+    print(cmap_data.write_cmap_data(cmapdata, pretty=True))
 
 
 def _script_to_name(script):
@@ -183,7 +183,7 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
   num_cells += num_cols  # headers are not empty
   all_cells = num_cols * max_lines
   fmt = 'Columns: %d\nRows: %d\nNon-empty cells: %d\nCells: %d'
-  print >> sys.stderr, fmt % (num_cols, max_lines, num_cells, all_cells)
+  sys.stderr.write(fmt % (num_cols, max_lines, num_cells, all_cells) + '\n')
   cmap_lines = []
   cmap_lines.append(','.join(col[0] for col in cols))
   for i in range(1, max_lines):
@@ -198,7 +198,7 @@ def xml_to_csv(xml_file, csv_file, scripts, exclude_scripts):
     with open(csv_file, 'w') as f:
       f.write(csv_data)
   else:
-    print csv_data
+    print(csv_data)
 
 
 def _check_scripts(scripts):
@@ -210,7 +210,7 @@ def _check_scripts(scripts):
         ['CJK', 'EXCL', 'LGC', 'MONO', 'MUSIC', 'SYM2', 'Zsye'])
     for s in scripts:
       if s not in all_scripts:
-        print >> sys.stderr, 'unknown script:', s
+        sys.stderr.write('unknown script:\n', s)
         have_unknown = True
   return not have_unknown
 
@@ -236,10 +236,10 @@ def main():
   args = parser.parse_args()
 
   if not _check_scripts(args.scripts):
-    print >> sys.stderr, 'some scripts failed'
+    sys.stderr.write('some scripts failed\n')
     return
   if not _check_scripts(args.exclude_scripts):
-    print >> sys.stderr, 'some exclude scripts failed'
+    sys.stderr.write('some exclude scripts failed\n')
     return
 
   if args.outfile == '-default-':

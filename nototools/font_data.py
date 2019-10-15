@@ -130,7 +130,7 @@ def unicoderange_info_to_bitmap(ur_info):
     # for this without explicit per-script data, we're really just
     # trying to catch obvious errors.
 
-    expected_bitmap = 0L
+    expected_bitmap = 0
     for count, info in ur_info:
         bit = info[2]
         # any non-bmp character causes bit 57 to be set
