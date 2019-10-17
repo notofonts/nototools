@@ -9,7 +9,7 @@ readme = """Noto font tools are a set of scripts useful for release
 engineering of Noto and similar fonts"""
 
 setup(name='nototools',
-      version='0.0.1',
+      version='0.2.0',
       description='Noto font tools',
       license="Apache",
       long_description=readme,
