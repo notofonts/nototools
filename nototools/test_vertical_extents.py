@@ -38,8 +38,9 @@ import sys
 import xml.etree.ElementTree
 
 import coverage
-import font_caching
-import render
+
+from nototools import font_caching
+from nototools import render
 
 
 def _regular_expression_from_set(character_set):
