@@ -19,10 +19,13 @@
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import sys
+from nototools.py23 import unichr
+
 
 def char_rep_to_code(char_rep):
     """Converts a character representation in hex to its code."""
     return int(char_rep, 16)
+
 
 def main(argv):
     """Outputs a space-separated list of characters based on input ranges."""
@@ -36,7 +39,11 @@ def main(argv):
         else:
             chars.append(char_rep_to_code(arg))
     chars = u' '.join([unichr(code) for code in chars])
-    print(chars.encode('UTF-8'))
+    if sys.version_info >= (2, 7):
+        print(chars)
+    else:
+        print(chars.encode('UTF-8'))
+
 
 if __name__ == '__main__':
     main(sys.argv)

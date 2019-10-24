@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import print_function
 
 import argparse
 import codecs
@@ -21,16 +22,13 @@ import math
 from os import path
 import sys
 
-from nototools import cmap_data
-from nototools import coverage
 from nototools import generate_coverage_data
 from nototools import tool_utils
 from nototools import unicode_data
 
-from fontTools import ttLib
-
 default_version=6.0
 default_coverage_file = 'noto_cmap_phase2.xml'
+
 
 def get_defined_cps(version=default_version, exclude_ranges=None):
   defined_cps = unicode_data.defined_characters(version)
@@ -143,7 +141,7 @@ def write_block_coverage_html(block_data, names, msg, out_file=sys.stdout):
 
 def write_block_coverage_text(block_data, names, msg, out_file=sys.stdout):
   block_data.sort()
-  print >> out_file, msg
+  print(msg, file=out_file)
   name_len = max(len(t[2]) for t in block_data)
   fmt_str = '%%%ds' % name_len
   fmt_str = '%13s ' + fmt_str + ' %5s'
@@ -153,7 +151,7 @@ def write_block_coverage_text(block_data, names, msg, out_file=sys.stdout):
   header_parts.append(fmt_str % ('range', 'block name', 'count'))
   for fmt, name in zip(header_fmts, names):
     header_parts.append(fmt % name)
-  print >> out_file, ' '.join(header_parts)
+  print(' '.join(header_parts), file=out_file)
   for start, end, name, block_cps, block_covered_cps_list in block_data:
     line_parts = []
     range_str = '%04x-%04x' % (start, end)
@@ -164,7 +162,7 @@ def write_block_coverage_text(block_data, names, msg, out_file=sys.stdout):
       pct = '%d%%' % int(100.0 * num_covered / num_in_block)
       part_str = '%5d %4s' % (num_covered, pct)
       line_parts.append(fmt % part_str)
-    print >> out_file, ' '.join(line_parts)
+    print(' '.join(line_parts), file=out_file)
   out_file.flush()
 
 
@@ -265,6 +263,7 @@ def main():
   names = [cov.cmapdata.name for cov in coverages]
   write_block_coverage(
       block_data, names, args.message, args.format, args.output_file)
+
 
 if __name__ == '__main__':
   main()

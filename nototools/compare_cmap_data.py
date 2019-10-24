@@ -227,7 +227,7 @@ def report_compare(compare_result, detailed=True):
   target_map = cmap_data.create_map_from_table(target_cmap_data.table)
 
   inverted_target = collections.defaultdict(set)
-  for script, row in target_map.iteritems():
+  for script, row in target_map.items():
     cps = tool_utils.parse_int_ranges(row.ranges)
     for cp in cps:
       inverted_target[cp].add(script)

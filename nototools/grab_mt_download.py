@@ -43,7 +43,7 @@ built by this tool.
 __author__ = "dougfelt@google.com (Doug Felt)"
 
 import argparse
-import cStringIO
+from io import BytesIO
 import os
 import os.path
 import re
@@ -53,8 +53,9 @@ import zipfile
 
 from fontTools import ttLib
 
-import grab_download
-import notoconfig
+from nototools import grab_download
+from nototools import notoconfig
+
 
 def write_data_to_file(data, root, subdir, filename):
   dstdir = os.path.join(root, subdir)
@@ -107,7 +108,7 @@ def unzip_to_directory_tree(drop_dir, filepath):
     # it in the same subdir the .ttf file went into.
     # else we put it at drop_dir (no subdir).
     if name.endswith('.ttf'):
-      blobfile = cStringIO.StringIO(data)
+      blobfile = BytesIO(data)
       font = ttLib.TTFont(blobfile)
       subdir = 'hinted' if font.get('fpgm') or font.get('prep') else 'unhinted'
       write_data_to_file(data, drop_dir, subdir, name)
@@ -137,7 +138,7 @@ def unzip_to_directory_tree(drop_dir, filepath):
 def main():
   params = {
       'default_srcdir': os.path.expanduser('~/Downloads'),
-      'default_dstdir': notoconfig.values.get('monotype_data'),
+      'default_dstdir': notoconfig._values.get('monotype_data'),
       'default_regex': r'Noto.*_\d{8}.zip',
   }
   grab_download.invoke_main(

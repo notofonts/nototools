@@ -42,6 +42,7 @@ import argparse
 import collections
 import sys
 
+from nototools.py23 import unichr
 from nototools import cldr_data
 from nototools import cmap_data
 from nototools import compare_cmap_data
@@ -59,7 +60,7 @@ _MERGED_SCRIPTS_BY_TARGET = {
 def _invert_script_to_chars(script_to_chars):
   """Convert script_to_chars to char_to_scripts and return."""
   char_to_scripts = collections.defaultdict(set)
-  for script, cps in script_to_chars.iteritems():
+  for script, cps in script_to_chars.items():
     for cp in cps:
       char_to_scripts[cp].add(script)
   return char_to_scripts
@@ -321,14 +322,14 @@ def _build_block_to_primary_script():
         num += 1
     max_script = None
     max_script_count = 0
-    for script, count in script_counts.iteritems():
+    for script, count in script_counts.items():
       if count > max_script_count:
         max_script = script
         max_script_count = count
     if num == 0:
       max_script = 'EXCL'  # exclude
     elif float(max_script_count) / num < 0.8:
-      info = sorted(script_counts.iteritems(), key=lambda t: (-t[1], t[0]))
+      info = sorted(script_counts.items(), key=lambda t: (-t[1], t[0]))
       block_info = '%s %s' % (block, ', '.join('%s/%d' % t for t in info))
       if block in assigned_primaries:
         max_script = assigned_primaries[block]
@@ -425,7 +426,7 @@ def _unassign_latin(cmap_ops):
 
 def _assign_cldr_punct(cmap_ops):
   """Assigns cldr punctuation to scripts."""
-  for script, punct in collect_cldr_punct.script_to_punct().iteritems():
+  for script, punct in collect_cldr_punct.script_to_punct().items():
     if script != 'CURRENCY':
       cmap_ops.phase('assign cldr punct for ' + script)
       cmap_ops.ensure_script(script)
@@ -449,7 +450,7 @@ def _reassign_scripts(cmap_ops, scripts, new_script):
 
 def _reassign_merged_scripts(cmap_ops):
   """Reassign merged scripts."""
-  for target, scripts in sorted(_MERGED_SCRIPTS_BY_TARGET.iteritems()):
+  for target, scripts in sorted(_MERGED_SCRIPTS_BY_TARGET.items()):
     cmap_ops.phase('reassign to ' + target)
     _reassign_scripts(cmap_ops, scripts, target)
 
@@ -615,7 +616,7 @@ def _remove_empty(cmap_ops):
   """Remove any empty scripts (Braille should be one)."""
   cmap_ops.phase('remove empty')
   script_to_chars = cmap_ops.create_script_to_chars()
-  for script, chars in script_to_chars.iteritems():
+  for script, chars in script_to_chars.items():
     if not chars:
       cmap_ops.delete_script(script)
 
@@ -2623,7 +2624,7 @@ def _regen_script_required():
       for script, comment, data in _SCRIPT_REQUIRED
   }
   scripts = set(unicode_data.all_scripts())
-  for to_script, from_scripts in _MERGED_SCRIPTS_BY_TARGET.iteritems():
+  for to_script, from_scripts in _MERGED_SCRIPTS_BY_TARGET.items():
     scripts.add(to_script)
     scripts -= set(from_scripts)
   # keep extra script data, e.g. 'Aran'
@@ -2688,7 +2689,7 @@ def _assign_script_required(cmap_ops):
 def _assign_script_special_chars(cmap_ops):
   """Assign special characters listed in opentype_data."""
   cmap_ops.phase('assign special chars')
-  for script, chars in opentype_data.SPECIAL_CHARACTERS_NEEDED.iteritems():
+  for script, chars in opentype_data.SPECIAL_CHARACTERS_NEEDED.items():
     cmap_ops.add_all(frozenset(chars), script)
 
 
@@ -2698,7 +2699,7 @@ def _assign_legacy_phase2(cmap_ops):
   legacy_map = cmap_data.create_map_from_table(legacy_data.table)
   legacy_script_to_chars = {
       script: tool_utils.parse_int_ranges(row.ranges)
-      for script, row in legacy_map.iteritems()}
+      for script, row in legacy_map.items()}
 
   # The default is to include all legacy characters, except for the chars
   # listed for these scripts, for some default chars, and for some scripts.
@@ -2774,7 +2775,7 @@ def _assign_bidi_mirroring(cmap_ops):
   cmap_ops.phase('bidi mirroring')
   script_to_chars = cmap_ops.create_script_to_chars()
   mirrored = unicode_data.mirrored_chars()
-  for script, cps in sorted(script_to_chars.iteritems()):
+  for script, cps in sorted(script_to_chars.items()):
     mirrored_in_script = cps & mirrored
     if not mirrored_in_script:
       continue
@@ -3141,7 +3142,7 @@ def _assign_dotted_circle(cmap_ops):
   # circle, but as using dotted circle is the convention used by Unicode in
   # their code charts we'll require it for Arabic too.
   script_to_chars = cmap_ops.create_script_to_chars()
-  for script, charset in sorted(script_to_chars.iteritems()):
+  for script, charset in sorted(script_to_chars.items()):
     if script == 'EXCL':
       continue
     nsm = frozenset(cp for cp in charset if is_combining(cp))

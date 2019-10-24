@@ -196,7 +196,7 @@ def _summarize_block(block, block_count, defined_count, script_counts):
 
   lower_limit = int(defined_count / 10)
   groups = collections.defaultdict(list)
-  for script, count in script_counts.iteritems():
+  for script, count in script_counts.items():
     groupnum = int(count / 5) * 5
     if groupnum < lower_limit:
       groupnum = 0

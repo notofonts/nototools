@@ -9,3 +9,7 @@ try:
 except NameError:
     unichr = chr
 
+try:
+  basestring = basestring
+except NameError:
+  basestring = str

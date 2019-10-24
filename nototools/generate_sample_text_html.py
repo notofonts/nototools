@@ -48,7 +48,7 @@ def generate_table(filename):
     f.write('<table>\n')
     f.write('<tr><th>Script<br/>BCP<th>name<th>type<th>text\n')
 
-    for script, samples in sorted(script_to_samples.iteritems()):
+    for script, samples in sorted(script_to_samples.items()):
       script_en = cldr_data.get_english_script_name(script)
       f.write('<tr><th colspan=4>%s\n' % script_en)
       for bcp, sample_type, sample_text in samples:
@@ -95,14 +95,14 @@ def _get_script_to_samples():
       continue
     script_to_samples[script].append((bcp, sample_type))
 
-  for script, samples in sorted(script_to_samples.iteritems()):
+  for script, samples in sorted(script_to_samples.items()):
     pref = {}
     for bcp, sample_type in samples:
       if bcp not in pref or sample_type == 'udhr':
         pref[bcp] = sample_type
 
     full_samples = []
-    for bcp, sample_type in sorted(pref.iteritems()):
+    for bcp, sample_type in sorted(pref.items()):
       filename = '%s_%s.txt' % (bcp, sample_type)
       filepath = path.join(sample_dir, filename)
       with codecs.open(filepath, 'r', 'utf-8') as f:

@@ -18,6 +18,8 @@ import argparse
 import codecs
 import re
 
+from nototools.py23 import unichr, unicode
+
 """Generate samples from a description file."""
 
 USAGE = """
@@ -104,8 +106,9 @@ sequences within an group.
 # about working with non-bmp unicode on narrow builds.
 
 # constants
-_LEAD_OFFSET = 0xD800 - (0x10000 >> 10);
-_SURROGATE_OFFSET = 0x10000 - (0xD800 << 10) - 0xDC00;
+_LEAD_OFFSET = 0xD800 - (0x10000 >> 10)
+_SURROGATE_OFFSET = 0x10000 - (0xD800 << 10) - 0xDC00
+
 
 def cp_to_str(cp):
   if cp < 0x10000:
@@ -115,7 +118,7 @@ def cp_to_str(cp):
 
 def surrogate_pair_to_cp(low, high):
   # assumes low and high are proper surrogate values
-  return (low << 10) + high + _SURROGATE_OFFSET;
+  return (low << 10) + high + _SURROGATE_OFFSET
 
 
 def prev_cp(ustr, index):

@@ -61,7 +61,7 @@ def _create_metadata(**kwargs):
   date = str(kwargs.pop('date', datetime.date.today()))
   program = str(kwargs.pop('program', 'generate_coverage_data'))
   arglist = [
-      (k, v) for k, v in sorted(kwargs.iteritems())
+      (k, v) for k, v in sorted(kwargs.items())
       if v is not None]
   return MetaData(date, program, arglist)
 

@@ -18,6 +18,7 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
+from nototools.py23 import unicode
 from nototools import opentype_data
 
 from fontTools.ttLib.tables._n_a_m_e import NameRecord
@@ -219,7 +220,7 @@ def add_to_cmap(font, mapping):
     cmap_table = font['cmap']
     for table in cmap_table.tables:
         if (table.format, table.platformID, table.platEncID) in UNICODE_CMAPS:
-            for code, glyph in mapping.iteritems():
+            for code, glyph in mapping.items():
                 table.cmap[code] = glyph
 
 

@@ -36,6 +36,7 @@ import xml.etree.cElementTree as ElementTree
 
 from fontTools import ttLib
 
+from nototools.py23 import unichr, unicode
 from nototools import coverage
 from nototools import create_image
 from nototools import extra_locale_data

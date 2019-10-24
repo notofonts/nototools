@@ -26,10 +26,12 @@ from os import path
 import string
 
 from nototools import notoconfig
+from nototools.py23 import basestring
 
 import cairo
 import pango
 import pangocairo
+
 
 _fonts_conf_template = """<?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">

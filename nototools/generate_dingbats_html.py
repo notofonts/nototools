@@ -30,6 +30,7 @@ from nototools import cmap_data
 from nototools import font_data
 from nototools import tool_utils
 from nototools import unicode_data
+from nototools.py23 import basestring
 
 """Generate html comparison of codepoints in various fonts."""
 
@@ -869,7 +870,7 @@ def _flagged_name(cp, flag_sets):
   except:
     raise Exception('no name for %04X' % cp)
   flags = []
-  for k, v in sorted(flag_sets.iteritems()):
+  for k, v in sorted(flag_sets.items()):
     if (cp in v[0]) == v[1]:
       flags.append(k)
   if flags:

@@ -13,6 +13,7 @@ import re
 
 from nototools import tool_utils
 
+
 def _build_regex(names):
   parts = []
   for name in names:
@@ -71,15 +72,15 @@ def _collect_names(names):
 
 
 def main():
-  parser = argparse.ArgumentParser();
+  parser = argparse.ArgumentParser()
   parser.add_argument(
       '-f', '--files', help='list of names and/or files (prefixed with \'@\'',
       metavar='name', required=True, nargs='+')
   parser.add_argument(
       '-s', '--src_dir', help='directory under which to search for files',
       metavar='dir', required=True)
-  args = parser.parse_args();
-  _print_list(match_files(args.src_dir, _collect_names(args.files)));
+  args = parser.parse_args()
+  _print_list(match_files(args.src_dir, _collect_names(args.files)))
 
 
 if __name__ == '__main__':

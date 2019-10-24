@@ -25,6 +25,7 @@ import subprocess
 
 from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
 
+from nototools.py23 import unicode 
 from nototools import tool_utils
 
 _ttcHeader = '>4sLL'

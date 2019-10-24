@@ -76,7 +76,7 @@ num_rows = len(rows)
 width  = NUM_COLS * CELL_SIZE + 2 * (2 * MARGIN + LABEL_WIDTH)
 height = num_rows * CELL_SIZE + 2 * MARGIN
 
-print "Generating %s at %.3gx%.3gin" % (outfile, width/72., height/72.)
+print("Generating %s at %.3gx%.3gin" % (outfile, width/72., height/72.))
 if outfile.endswith(".pdf"):
 	surface = cairo.PDFSurface(outfile, width, height)
 elif outfile.endswith(".ps"):

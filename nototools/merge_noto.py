@@ -17,6 +17,7 @@
 """Merges Noto fonts."""
 import os.path
 import tempfile
+from nototools.py23 import unicode
 
 from fontTools import merge
 from fontTools import ttLib
@@ -50,6 +51,7 @@ def add_ui_alternative(table, target):
 def has_gsub_table(fontfile):
     font = ttLib.TTFont(fontfile)
     return 'GSUB' in font
+
 
 SCRIPT_TO_OPENTYPE_SCRIPT_TAG = {
     'CypriotSyllabary': 'cprt',

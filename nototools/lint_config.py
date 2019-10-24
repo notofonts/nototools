@@ -30,6 +30,7 @@
 import argparse
 import re
 
+from nototools.py23 import basestring
 
 spec_format = """
 A spec defines a list of conditions to be run in sequence.  A condition consists of
@@ -308,7 +309,7 @@ class FontCondition(object):
         fn = value[0]
         val = value[1]
         cond_name = None
-        for fn_text, fn_obj in FontCondition.fn_map.iteritems():
+        for fn_text, fn_obj in FontCondition.fn_map.items():
           if fn == fn_obj:
             cond_name = fn_text
             break
@@ -320,7 +321,7 @@ class FontCondition(object):
           cond_value = str(val)
       return '%s %s' % (cond_name, cond_value)
 
-    output = ['\n  %s: %s' % (k,value_str(v)) for k,v in self.__dict__.iteritems() if v]
+    output = ['\n  %s: %s' % (k,value_str(v)) for k,v in self.__dict__.items() if v]
     return 'condition:%s' % ''.join(output)
 
 

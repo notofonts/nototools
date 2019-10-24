@@ -20,7 +20,7 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import sys
 
-import subset
+from nototools import subset
 
 
 def main(argv):

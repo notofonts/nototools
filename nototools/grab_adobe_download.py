@@ -56,8 +56,9 @@ import shutil
 import sys
 import zipfile
 
-import notoconfig
-import grab_download
+from nototools import notoconfig
+from nototools import grab_download
+
 
 def unzip_to_directory_tree(drop_dir, filepath):
   skip_re = re.compile('.*/OTF-Fallback/.*')
@@ -88,7 +89,7 @@ def unzip_to_directory_tree(drop_dir, filepath):
 def main():
   params = {
       'default_srcdir': os.path.expanduser('~/Downloads'),
-      'default_dstdir': notoconfig.values.get('adobe_data'),
+      'default_dstdir': notoconfig._values.get('adobe_data'),
       'default_regex': r'Noto_Sans_CJK-\d{4}-\d{2}-\d{2}\.zip'
   }
   grab_download.invoke_main(

@@ -18,21 +18,12 @@
 
 import argparse
 import collections
-import datetime
-import os
-from os import path
 import sys
 
-from fontTools import ttLib
-
-from nototools import cldr_data
+from nototools.py23 import unicode
 from nototools import cmap_data
 from nototools import lint_config
-from nototools import noto_data
 from nototools import noto_fonts
-from nototools import noto_lint
-from nototools import opentype_data
-from nototools import unicode_data
 
 
 def report_set_differences(name_to_cpset, out=sys.stderr):
@@ -45,30 +36,29 @@ def report_set_differences(name_to_cpset, out=sys.stderr):
   while len(name_to_cpset):
     common = None
     if len(name_to_cpset) > 1:
-      for name, cpset in name_to_cpset.iteritems():
+      for name, cpset in name_to_cpset.items():
         if common == None:
           common = cpset.copy()
         else:
           common &= cpset
     if common:
       name = ', '.join(sorted(name_to_cpset))
-      print >> out, '%d%s in common among %s:' % (
-          len(common), additional, name)
-      print >> out, lint_config.write_int_ranges(common)
+      out.write('%d%s in common among %s:\n' % (len(common), additional, name))
+      out.write('%s\n' % lint_config.write_int_ranges(common))
 
-      for name, cpset in sorted(name_to_cpset.iteritems()):
+      for name, cpset in sorted(name_to_cpset.items()):
         extra = cpset - common
         if extra:
           name_to_cpset[name] = extra
         else:
-          print >> out, '%s has no additional' % name
+          out.write('%s has no additional\n' % name)
           del name_to_cpset[name]
       additional = ' additional'
       continue
 
-    for name, cpset in sorted(name_to_cpset.iteritems()):
-      print >> out, '%s has %d%s:' % (name, len(cpset), additional)
-      print >> out, lint_config.write_int_ranges(cpset)
+    for name, cpset in sorted(name_to_cpset.items()):
+      out.write('%s has %d%s:\n' % (name, len(cpset), additional))
+      out.write('%s\n' % lint_config.write_int_ranges(cpset))
     break
 
 
@@ -97,10 +87,10 @@ def font_cmap_data(paths):
     script_to_data[script].append(ScriptData(family_name, script, cpset))
 
   def report_data_error(index, script_data):
-    print >> sys.stderr, '  %d: %s, %d, %s' % (
+    sys.stderr.write('  %d: %s, %d, %s\n' % (
         index, script_data.family_name, script_data.script,
         len(script_data.cpset),
-        lint_config.write_int_ranges(script_data.cpset))
+        lint_config.write_int_ranges(script_data.cpset)))
 
   script_to_cmap = {}
   for script in sorted(script_to_data):
@@ -116,7 +106,7 @@ def font_cmap_data(paths):
         if len(test_data.cpset) > len(selected_cpset):
           selected_cpset = test_data.cpset
       if differ:
-        print >> sys.stderr, '\nscript %s cmaps differ' % script
+        sys.stderr.write('\nscript %s cmaps differ\n' % script)
         differences = {i.family_name: i.cpset for i in data}
         report_set_differences(differences)
     script_to_cmap[script] = selected_cpset
@@ -143,7 +133,7 @@ def main():
   if args.outfile:
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
   else:
-    print(cmap_data.write_cmap_data(cmapdata, pretty=True))
+    print(unicode(cmap_data.write_cmap_data(cmapdata, pretty=True), "utf-8"))
 
 
 if __name__ == "__main__":

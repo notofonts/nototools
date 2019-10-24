@@ -37,8 +37,8 @@ import re
 import sys
 import xml.etree.ElementTree
 
-import coverage
-
+from nototools.py23 import unichr, unicode
+from nototools import coverage
 from nototools import font_caching
 from nototools import render
 

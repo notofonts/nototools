@@ -13,6 +13,8 @@ NotoSerif
 NotoSerifDisplay
 -- TRBH --
 NotoSansSymbols
+NotoSansIndicSiyaqNumbers
+NotoSansMayanNumerals
 -- R --
 NotoSansSymbols2
 NotoSansMath
@@ -114,6 +116,7 @@ NotoSansSiddham
 NotoSansSignwriting
 NotoSansTakri
 NotoSansTirhuta
+NotoSansWancho
 NotoSansWarangCiti
 NotoSerifAhom
 NotoSansAnatolianHieroglyphs

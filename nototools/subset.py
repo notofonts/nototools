@@ -22,7 +22,7 @@ import sys
 
 from fontTools import subset
 
-import coverage
+from nototools import coverage
 
 
 def subset_font(source_file, target_file,
@@ -59,7 +59,7 @@ def subset_font(source_file, target_file,
     opt.drop_tables = ['+TTFA']
 
     if options is not None:
-        for name, value in options.iteritems():
+        for name, value in options.items():
             setattr(opt, name, value)
 
     if include is not None:

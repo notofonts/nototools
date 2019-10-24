@@ -100,6 +100,7 @@
   <info family="sans-maka" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-mand" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-mani" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-manu" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-marc" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-medf" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-mend" family_name_style="short" include_regular="t" use_preferred="t" />
@@ -149,6 +150,7 @@
   <info family="sans-sind" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-sinh" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-sinh-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="sans-siyq" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-sogd" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-sogo" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-sora" family_name_style="short" include_regular="t" use_preferred="t" />
@@ -180,6 +182,7 @@
   <info family="sans-tirh" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-ugar" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-vaii" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-wcho" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-wara" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-xpeo" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-xsux" family_name_style="very short" include_regular="t" use_preferred="t" />

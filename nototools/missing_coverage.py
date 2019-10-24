@@ -60,7 +60,7 @@ def display_missing(cmap_file):
 
 
 def main():
-  default_cmap_name = 'noto_cmap_phase3.xml'
+  default_cmap_name = 'data/noto_cmap_phase3.xml'
 
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -69,6 +69,7 @@ def main():
   args = parser.parse_args()
 
   display_missing(args.filename)
+
 
 if __name__ == '__main__':
   main()

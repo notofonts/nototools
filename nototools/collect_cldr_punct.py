@@ -27,6 +27,7 @@ from os import path
 import sys
 import xml.etree.cElementTree as ET
 
+from nototools.py23 import unichr
 from nototools import cldr_data
 from nototools import tool_utils
 from nototools import unicode_data

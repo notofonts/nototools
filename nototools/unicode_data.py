@@ -32,9 +32,8 @@ import collections
 import os
 from os import path
 import re
-import sys
 
-from nototools.py23 import unichr, unicode
+from nototools.py23 import unichr, unicode, basestring
 try:
   import unicodedata2 as unicodedata  # Unicode 8 compliant native lib
 except ImportError:
@@ -1051,7 +1050,7 @@ def _load_emoji_group_data():
   group_list.extend(_read_emoji_test_data(_SUPPLEMENTAL_EMOJI_GROUP_DATA))
   for i, (seq, group, subgroup, name) in enumerate(group_list):
     if seq in _emoji_group_data:
-      print('seq %s alredy in group data as %s' % (seq_to_string(seq), _emoji_group_data[seq]))
+      print('seq %s already in group data as %s' % (seq_to_string(seq), _emoji_group_data[seq]))
       print('    new value would be %s' % str((i, group, subgroup, name)))
     _emoji_group_data[seq] = (i, group, subgroup, name)
 
