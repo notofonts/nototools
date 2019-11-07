@@ -19,6 +19,7 @@
 import argparse
 import sys
 
+from nototools.py23 import unicode
 from nototools import lint_config
 from nototools import noto_data
 from nototools import opentype_data
@@ -53,8 +54,8 @@ def _symbol_set():
 
 def _math_set():
     """Returns set of characters that should be supported in Noto Math."""
-      ranges = unicode_data._parse_code_ranges(noto_data.MATH_RANGES_TXT)
-        return _code_range_to_set(ranges)
+    ranges = unicode_data._parse_code_ranges(noto_data.MATH_RANGES_TXT)
+    return _code_range_to_set(ranges)
 
 
 def _cjk_set():
@@ -214,7 +215,8 @@ def main():
     sys.stderr.write('writing %s\n' % args.outfile)
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
   else:
-    print(cmap_data.write_cmap_data(cmapdata, pretty=True))
+    print(unicode(cmap_data.write_cmap_data(cmapdata, pretty=True), "utf-8"))
+
 
 if __name__ == "__main__":
   main()

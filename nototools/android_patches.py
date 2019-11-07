@@ -24,6 +24,7 @@ from os import path
 import shutil
 import tempfile
 
+from nototools.py23 import unichr
 from nototools import subset
 from nototools import coverage
 from nototools import fix_khmer_and_lao_coverage as merger
@@ -115,9 +116,9 @@ def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
 
   EMOJI = (
       [0x26BD, 0x26BE, 0x1F18E]
-      + range(0x1F191, 0x1F19A+1)
+      + list(range(0x1F191, 0x1F19A+1))
       + [0x1F201, 0x1F21A, 0x1F22F]
-      + range(0x1F232, 0x1F236+1)
+      + list(range(0x1F232, 0x1F236+1))
       + [0x1F238, 0x1F239, 0x1F23A, 0x1F250, 0x1F251]
   )
 

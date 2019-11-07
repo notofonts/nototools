@@ -101,8 +101,8 @@ def get_script_to_cmaps(csvdata):
       except:
         raise ValueError('error in col %d of row %d: "%s"' % (
             i, n, v))
-  return { script: (cmap, xcmap)
-           for script, cmap, xcmap in zip(header, data, xdata) }
+  return {script: (cmap, xcmap)
+           for script, cmap, xcmap in zip(header, data, xdata)}
 
 
 def cmap_data_from_csv(
@@ -111,7 +111,7 @@ def cmap_data_from_csv(
   metadata = cmap_data.create_metadata('mti_cmap_data', args)
   script_to_cmaps = get_script_to_cmaps(csvdata)
   if scripts or exclude_scripts:
-    script_list = script_to_cmap.keys()
+    script_list = script_to_cmaps.keys()
     for script in script_list:
       if scripts and script not in scripts:
         del script_to_cmaps[script]

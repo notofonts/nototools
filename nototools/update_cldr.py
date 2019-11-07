@@ -24,8 +24,8 @@ import shutil
 import string
 import subprocess
 
-import notoconfig
-import tool_utils
+from nototools import notoconfig
+from nototools import tool_utils
 
 CLDR_SUBDIRS = [
   'common/main',

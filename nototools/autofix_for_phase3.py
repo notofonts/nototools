@@ -27,7 +27,6 @@ hinted.  We also put more info into the version string.
 
 import argparse
 import datetime
-import glob
 import os
 from os import path
 import re
@@ -35,6 +34,7 @@ import subprocess
 
 from fontTools import ttLib
 
+from nototools.py23 import basestring
 from nototools import font_data
 from nototools import noto_data
 from nototools import noto_fonts
@@ -249,7 +249,7 @@ def get_new_version(font, relfont, nversion):
         return rversion
     else:
       n_mm, n_is_phase_2 = _version_str_to_mm(nversion)
-      if n_is_phase2:
+      if n_is_phase_2:
         raise Exception('bad phase 3 minor version ("%s")' % nversion)
       if rversion is not None:
         if n_mm < r_mm:

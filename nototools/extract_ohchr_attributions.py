@@ -69,11 +69,11 @@
 
 
 import argparse
-import codecs
-import HTMLParser as html
+import html.parser as html
 import re
 
 from nototools import tool_utils
+
 
 class ParseOhchr(html.HTMLParser):
   def __init__(self, trace=False):

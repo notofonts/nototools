@@ -126,14 +126,14 @@ def build_valid_filenames(files=files, directory=directory):
     for f in files:
         valid_file = directory + '/' + f
         if not os.path.isfile(valid_file):
-            log.warn('can not find %s, skipping it.' % valid_file)
+            log.warning('can not find %s, skipping it.' % valid_file)
         else:
             valid_files.append(valid_file)
 
     if len(valid_files) == 0:
         return valid_files
     if os.path.basename(valid_files[0]) != files[0]:
-        log.warn('can not find the font %s to read line metrics from. Line '
+        log.warning('can not find the font %s to read line metrics from. Line '
             + 'metrics in the result might be wrong.' % files[0])
     return valid_files
 
@@ -153,7 +153,7 @@ def main():
 
     valid_files = build_valid_filenames(directory=args.directory)
     if len(valid_files) <= 1:
-        log.warn('expecting at least two fonts to merge, but only got %d '
+        log.warning('expecting at least two fonts to merge, but only got %d '
             + 'font(s).', len(valid_files))
         sys.exit(-1)
 

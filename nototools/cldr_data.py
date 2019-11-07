@@ -22,6 +22,7 @@ import re
 from nototools import unicode_data
 import xml.etree.cElementTree as ElementTree
 
+from nototools.py23 import unichr, unicode
 from nototools import extra_locale_data
 
 TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
@@ -49,7 +50,7 @@ def _parse_likely_subtags():
     from_tag = tag.get('from').replace('_', '-')
     to_tag = tag.get('to').split('_')
     _LIKELY_SUBTAGS[from_tag] = to_tag
-    # print 'likely subtag from %s -> %s' % (from_tag, to_tag)
+    # print('likely subtag from %s -> %s' % (from_tag, to_tag))
 
   _LIKELY_SUBTAGS.update(extra_locale_data.LIKELY_SUBTAGS)
 
@@ -161,7 +162,7 @@ def _parse_supplemental_data():
 
   if _USE_EXTRA_LOCALE_DATA:
     # Supplement lang to script mapping with extra locale data
-    for lang, scripts in extra_locale_data.LANG_TO_SCRIPTS.iteritems():
+    for lang, scripts in extra_locale_data.LANG_TO_SCRIPTS.items():
       _LANG_TO_SCRIPTS[lang] |= set(scripts)
 
     # Use extra locale data's likely subtag info to change the supplemental
@@ -194,7 +195,7 @@ def _parse_supplemental_data():
         _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
         _LANG_TO_REGIONS[lang].add(region)
 
-    for tup in extra_locale_data.REGION_TO_LANG_SCRIPTS.iteritems():
+    for tup in extra_locale_data.REGION_TO_LANG_SCRIPTS.items():
       territory, lang_scripts = tup
       _REGION_TO_LANG_SCRIPTS[territory] |= set(lang_scripts)
       for lang_script in lang_scripts:
@@ -695,7 +696,7 @@ def _init_lang_scr_to_lit_pops():
 
   # make it a bit more useful by sorting the value list in order of decreasing
   # population and converting the list to a tuple
-  for lang_scr, values in tmp_map.iteritems():
+  for lang_scr, values in tmp_map.items():
     _lang_scr_to_lit_pops[lang_scr] = tuple(
         sorted(values, key=lambda x: (-x[1], x[0])))
 

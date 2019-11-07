@@ -684,7 +684,7 @@ class TestGlyphAreas(unittest.TestCase):
         errors = []
         for other in glyph_sets[1:]:
             other_pen = GlyphAreaPen(other)
-            for name, area in areas.iteritems():
+            for name, area in areas.items():
                 if name in self.whitelist:
                     continue
                 other[name].draw(other_pen)

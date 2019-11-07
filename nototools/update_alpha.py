@@ -34,8 +34,8 @@ import shutil
 import subprocess
 import sys
 
-import notoconfig
-import compare_summary
+from nototools import notoconfig
+from nototools import compare_summary
 
 class RedirectStdout(object):
   """Redirect stdout to file."""
@@ -112,7 +112,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
         new_label = 'h/u'
     if new_label:
       name_info[root_name] = new_label
-    names = ', '.join(sorted(['%s(%s)' % (k, v) for k, v in name_info.iteritems()]))
+    names = ', '.join(sorted(['%s(%s)' % (k, v) for k, v in name_info.items()]))
 
   # get date of the drop from srcdir
   result = re.search(r'\d{4}_\d{2}_\d{2}', srcdir)

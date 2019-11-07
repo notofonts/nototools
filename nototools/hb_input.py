@@ -15,7 +15,6 @@
 
 from __future__ import division, print_function
 
-from fontTools.ttLib import TTFont
 from nototools import summary
 from nototools.py23 import unichr
 

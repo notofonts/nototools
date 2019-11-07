@@ -169,7 +169,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
      slope, fmt) = match.groups()
   else:
     if _EXT_REGEX.match(filename):
-      print >> sys.stderr, '%s did not match font regex' % filename
+      sys.stderr.write('%s did not match font regex\n' % filename)
     return None
 
   is_cjk = filedir.endswith('noto-cjk')
@@ -194,7 +194,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
   is_mono = mono == 'Mono'
 
   if width not in [None, '', 'Condensed', 'SemiCondensed', 'ExtraCondensed']:
-    print >> sys.stderr, 'noto_fonts: Unexpected width "%s"' % width
+    sys.stderr.write('noto_fonts: Unexpected width "%s"\n' % (width))
     if width in ['SemiCond', 'Narrow']:
       width = 'SemiCondensed'
     elif width == 'Cond':
@@ -223,7 +223,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
     try:
       script = convert_to_four_letter(script)
     except ValueError:
-      print >> sys.stderr, 'unknown script: %s for %s' % (script, filename)
+      sys.stderr.write('unknown script: %s for %s\n' % (script, filename))
       return None
 
   if not weight:
@@ -448,11 +448,13 @@ def get_noto_fonts(paths=NOTO_FONT_PATHS):
   """Scan paths for fonts, and create a NotoFont for each one, returning a list
   of these.  'paths' defaults to the standard noto font paths, using notoconfig."""
 
-  font_dirs = filter(None, [tool_utils.resolve_path(p) for p in paths])
+  font_dirs = list(filter(None, [tool_utils.resolve_path(p) for p in paths]))
   print('Getting fonts from: %s' % font_dirs)
 
   all_fonts = []
   for font_dir in font_dirs:
+    if not os.path.exists(font_dir):
+      continue
     for filename in os.listdir(font_dir):
       if not _EXT_REGEX.match(filename):
         continue
@@ -508,7 +510,7 @@ def get_families(fonts):
     family_id = noto_font_to_family_id(font)
     family_id_to_fonts[family_id].add(font)
 
-  for family_id, fonts in family_id_to_fonts.iteritems():
+  for family_id, fonts in family_id_to_fonts.items():
     hinted_members = []
     unhinted_members = []
     rep_member = None

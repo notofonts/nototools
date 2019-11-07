@@ -310,13 +310,13 @@ def main():
   print()
   print('lang_script to names')
   lang_script_to_names = _get_lang_script_to_names()
-  for t in sorted(lang_script_to_names.iteritems()):
+  for t in sorted(lang_script_to_names.items()):
     print('%s: %s' % t)
 
   print()
   print('script to default lang')
   script_to_default_lang = _get_script_to_default_lang()
-  for t in sorted(script_to_default_lang.iteritems()):
+  for t in sorted(script_to_default_lang.items()):
     print('%s: %s' % t)
 
 

@@ -38,7 +38,6 @@ file names that follow noto conventions, and generates the corresponding
 name table names.  So it is not useful for non-noto fonts.
 """
 
-from __future__ import print_function
 import argparse
 import collections
 import datetime
@@ -218,7 +217,7 @@ def _preferred_parts(noto_font):
     parts_pair = _preferred_cjk_parts(noto_font)
   else:
     parts_pair = _preferred_non_cjk_parts(noto_font)
-  return filter(None, parts_pair[0]), filter(None, parts_pair[1])
+  return list(filter(None, parts_pair[0])), list(filter(None, parts_pair[1]))
 
 
 def _shift_parts(family_parts, subfamily_parts, stop_fn):
@@ -426,7 +425,7 @@ def _postscript_name(preferred_family, preferred_subfamily, include_regular):
   result = re.sub('CJK(JP|KR|SC|TC)', repl_fn, result)
 
   if len(result) > 63:
-    print('postscript name longer than 63 characters:\n"%s"' % (result), file=sys.stderr)
+    sys.stderr.write('postscript name longer than 63 characters:\n"%s"\n' % (result))
   return result
 
 
@@ -587,7 +586,7 @@ def name_table_data(noto_font, family_to_name_info, phase):
   try:
       info = family_to_name_info[family_id]
   except KeyError:
-      print('no family name info for "%s"' % family_id, file=sys.stderr)
+      sys.stderr.write('no family name info for "%s"\n' % family_id)
       return None
 
   family_parts, subfamily_parts = _wws_parts(*_preferred_parts(noto_font))
@@ -596,9 +595,9 @@ def name_table_data(noto_font, family_to_name_info, phase):
       ['Bold'],
       ['Italic'],
       ['Bold', 'Italic']]:
-    print('Error in family name info: %s requires preferred names, but info says none are required.'
-          % path.basename(noto_font.filepath), file=sys.stderr)
-    print(subfamily_parts, file=sys.stderr)
+    sys.stderr.write('Error in family name info: %s requires preferred names, but info says none are required.\n'
+          % path.basename(noto_font.filepath))
+    sys.stderr.write('%s\n' % subfamily_parts)
     return None
 
   # for phase 3 we'll now force include_regular
@@ -707,13 +706,13 @@ def create_family_to_name_info(notofonts, phase, extra_styles):
         continue
       seen_ids.add(family_id)
       preferred_family, _ = _preferred_parts(noto_font)
-      preferred_subfamily = filter(None, [
+      preferred_subfamily = list(filter(None, [
           'Mono' if noto_font.is_mono else None,
           'UI' if noto_font.is_UI else None,
           'Display' if noto_font.is_display else None,
           'ExtraCondensed',  # longest width name
-          'ExtraLight', # longest weight name
-          'Italic'])  # longest slope name
+          'ExtraLight',  # longest weight name
+          'Italic']))  # longest slope name
       _, subfamily_parts = _wws_parts(preferred_family, preferred_subfamily)
       family_to_parts[family_id].update(subfamily_parts)
       family_parts, _ = _original_parts(preferred_family, preferred_subfamily)
@@ -723,7 +722,7 @@ def create_family_to_name_info(notofonts, phase, extra_styles):
 
 
   result = {}
-  for family_id, part_set in family_to_parts.iteritems():
+  for family_id, part_set in family_to_parts.items():
     # Even through CJK mono fonts are in their own families and have only
     # bold and regular weights, they behave like they have more weights like
     # the rest of CJK.
@@ -860,7 +859,7 @@ def _dump_name_data(name_data):
       if attr == 'original_family' and len(value) > ORIGINAL_FAMILY_LIMIT:
         print('## family too long (%2d): %s' % (len(value), value))
         err = True
-      print('  %20s: %s' % (attr, value))
+        print('  %20s: %s' % (attr, value))
     else:
       print('  %20s: <none>' % attr)
   return err

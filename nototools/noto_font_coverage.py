@@ -43,8 +43,8 @@ def codepoints(cp_list):
         temp = low
         low = high
         high = temp
-      for cp in range(low, high + 1):
-        result.add(cp)
+      for cp2 in range(low, high + 1):
+        result.add(cp2)
     else:
       result.add(int(cp, 16))
   return result
@@ -129,7 +129,7 @@ def run(args, families):
       else:
         missing.add(cp)
     if result:
-      for k, v in sorted(result.iteritems()):
+      for k, v in sorted(result.items()):
         print('  %s: %s' % (k, to_ranges_str(v)))
     if missing:
       print('  not supported: %s' % to_ranges_str(missing))
@@ -161,6 +161,7 @@ def main():
   fonts = noto_fonts.get_noto_fonts()
   families = noto_fonts.get_families(fonts)
   run(args, families)
+
 
 if __name__ == '__main__':
     main()

@@ -21,14 +21,14 @@ Replicating the sample text they describe can be a bit tedious.  This
 lets you interactively search characters in the font by name to assemble
 a string and save it to a file."""
 
+from builtins import input
 import argparse
 import codecs
-import readline
 
+from nototools.py23 import unichr
 from nototools import coverage
 from nototools import unicode_data
 
-from fontTools import ttLib
 
 def _help():
   print ('enter a string to match or one of the following:\n'
@@ -44,7 +44,7 @@ def _build_text(name_map, initial_text=''):
   text = initial_text
   print('build text using map of length %d' % len(name_map))
   while True:
-    line = raw_input('> ')
+    line = input('> ')
     if not line:
       continue
     if line == 'quit':
@@ -64,13 +64,13 @@ def _build_text(name_map, initial_text=''):
       text = ''
       continue
     if line == 'write':
-      line = raw_input('file name> ')
+      line = input('file name> ')
       if line:
         _write_text(line, text)
       continue
 
     matches = []
-    for name, cp in sorted(name_map.iteritems()):
+    for name, cp in sorted(name_map.items()):
       if line in name:
         matches.append(name)
     if not matches:
@@ -104,7 +104,7 @@ def _build_text(name_map, initial_text=''):
       print('multiple matches:\n  ' + '\n  '.join(
           '[%2d] %s' % (i, n) for i, n in enumerate(matches)))
       while True:
-        line = raw_input('0-%d or q to skip> ' % (len(matches) - 1))
+        line = input('0-%d or q to skip> ' % (len(matches) - 1))
         if line == 'q':
           select_multiple = False
           break

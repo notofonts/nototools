@@ -362,7 +362,7 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
       basename = path.basename(font.filepath)
       basename_to_fonts[basename].append(font)
 
-  for ttcfont, components in sorted(_ttc_fonts.iteritems()):
+  for ttcfont, components in sorted(_ttc_fonts.items()):
     rel_filepath = _noto_relative_path(ttcfont.filepath)
     print('-----\nBuilding %s' % rel_filepath)
 
@@ -373,7 +373,7 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
       possible_components = basename_to_fonts.get(component)
       if not possible_components:
         print('! no match for component named %s in %s' % (
-            component, rel_path))
+            component, rel_filepath))
         component_list = []
         break
 
@@ -383,7 +383,7 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
           if matched_possible_component:
             print('! already matched possible component %s for %s' % (
                 matched_possible_component.filename,
-                possible_component_filename))
+                possible_component.filename))
             matched_possible_component = None
             break
           matched_possible_component = possible_component
@@ -393,7 +393,7 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
         break
       component_list.append(matched_possible_component)
     if not component_list:
-      print('! cannot generate ttc font %s' % rel_path)
+      print('! cannot generate ttc font %s' % rel_filepath)
       continue
 
     print('components:\n  ' + '\n  '.join(

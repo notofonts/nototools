@@ -24,17 +24,21 @@ import codecs
 import collections
 import datetime
 import difflib
-import generate_website_data
 import os
 import re
 import shutil
-import unicode_data
-import urllib
-import xml.etree.ElementTree as ET
-import zipfile
 
-from nototools import cldr_data
+try:
+  from urllib.request import urlretrieve
+except:
+  from urllib import urlretrieve
+
+import xml.etree.ElementTree as ET
+
+from nototools.py23 import unicode
+from nototools import generate_website_data
 from nototools import tool_utils
+from nototools import unicode_data
 
 DIR_URL = 'http://unicode.org/udhr/d'
 UDHR_XML_ZIP_NAME = 'udhr_xml.zip'
@@ -44,7 +48,7 @@ def fetch_udhr(fetch_dir):
   """Fetch UDHR xml bundle from unicode.org to fetch_dir."""
   fetch_dir = tool_utils.ensure_dir_exists(fetch_dir)
   dstfile = os.path.join(fetch_dir, UDHR_XML_ZIP_NAME)
-  result = urllib.urlretrieve(UDHR_XML_ZIP_URL, dstfile)
+  result = urlretrieve(UDHR_XML_ZIP_URL, dstfile)
   print('Fetched: ' + result[0])
 
 
@@ -324,7 +328,7 @@ def add_likely_scripts(bcp_to_code):
   """Add script subtags where they are not present in the bcp code.  If
   we don't know the script"""
   result= {}
-  for bcp, code in bcp_to_code.iteritems():
+  for bcp, code in bcp_to_code.items():
     if code in CODE_TO_BCP:
       new_bcp = CODE_TO_BCP[code]
     else:
@@ -361,7 +365,7 @@ EXCLUDE_CODES = frozenset([
 
 def filter_bcp_to_code(bcp_to_code):
   """Exclude entries for samples improved in noto/sample_texts and for bad samples."""
-  return {k: v for k, v in bcp_to_code.iteritems()
+  return {k: v for k, v in bcp_to_code.items()
           if k not in EXCLUDE_BCP and v not in EXCLUDE_CODES}
 
 
@@ -481,7 +485,7 @@ def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
 def print_bcp_to_code_attrib_sample(bcp_to_code_attrib_sample):
   print('index size: %s' % len(bcp_to_code_attrib_sample))
   for bcp, (code, attrib, sample) in sorted(
-      bcp_to_code_attrib_sample.iteritems()):
+      bcp_to_code_attrib_sample.items()):
     print('%s: %s, %s\n  "%s"' % (bcp, code, attrib, sample))
 
 
@@ -656,7 +660,7 @@ def update_samples(
   sample_attrib_list = []
   sample_dir = tool_utils.ensure_dir_exists(sample_dir)
   count = 0
-  for bcp, (code, attrib, sample) in bcp_to_code_attrib_sample.iteritems():
+  for bcp, (code, attrib, sample) in bcp_to_code_attrib_sample.items():
     dst_file = '%s_udhr.txt' % bcp
     dst_path = os.path.join(sample_dir, dst_file)
     if in_repo and os.path.isfile(dst_path) and dst_file not in tool_samples:
@@ -817,7 +821,7 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
     with codecs.open(trg_path, 'r', 'utf8') as f:
       trg_text = f.read()
     if not base_text:
-      print('base text (%s) is empty' % k)
+      print('base text (%s) is empty' % base_path)
       continue
     if not trg_text:
       print('target text is empty: %s' % trg_path)
@@ -954,7 +958,7 @@ def main():
           in_repo, args.no_stage)
 
     if args.mapping:
-      print_bcp_to_code_attrib(bcp_to_code_attrib)
+      print_bcp_to_code_attrib_sample(bcp_to_code_attrib_sample)
 
     if args.base_sample_dir:
       compare_samples(

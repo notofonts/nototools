@@ -166,7 +166,7 @@ def generate_zip_with_7za_from_filepairs(pairs, archive_path):
     if source_root not in pair_map:
       pair_map[source_root] = set()
     pair_map[source_root].add(dest)
-  for source_root, dest_set in pair_map.iteritems():
+  for source_root, dest_set in pair_map.items():
     generate_zip_with_7za(source_root, sorted(dest_set), archive_path)
 
 
@@ -339,7 +339,7 @@ def git_head_commit(repo):
     text = subprocess.check_output(
         ['git', 'show', '-s', '--date=format:%Y-%m-%d %H:%M:%S',
          '--no-expand-tabs', '--pretty=format:%H\t%cd\t%s', 'HEAD'])
-    return tuple(text.strip().split('\t', 2))
+    return tuple(text.strip().split(b'\t', 2))
 
 
 def git_check_remote_commit(repo, commit, remote='upstream', branch='master'):

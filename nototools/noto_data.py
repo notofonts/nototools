@@ -184,13 +184,13 @@ def _char_set(compact_set_text):
         if sep_index == -1:
             cp = int(part, base=16)
             assert cp > prev
-            # print '%04x' % cp
+            # print('%04x' % cp)
             result.add(cp)
             prev = cp
         else:
           start = int(part[:sep_index], base=16)
           end = int(part[sep_index + 2:], base=16)
-          # print '%04x..%04x' % (start, end)
+          # print('%04x..%04x' % (start, end))
           assert start > prev
           assert end > start
           for cp in range(start, end + 1):

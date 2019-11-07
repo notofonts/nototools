@@ -53,6 +53,11 @@ from nototools import render
 from nototools import tool_utils
 from nototools import unicode_data
 
+try:
+    from future_builtins import filter
+except ImportError:
+    pass
+
 # from wikipedia windows 1252 page.  As of windows 98.
 WIN_ANSI_CODEPOINTS = (
     '0000-007f 00A0-00ff 20ac 201a 0192 201e 2026 2020 2021 02c6 2030 0160 2039 0152 017d'
@@ -373,7 +378,7 @@ def _build_cmap_dict(filename):
     data = cmap_data.read_cmap_data_file(filename)
     script_to_rowdata = cmap_data.create_map_from_table(data.table)
     return {script: frozenset(tool_utils.parse_int_ranges(rd.ranges))
-            for script, rd in script_to_rowdata.iteritems()}
+            for script, rd in script_to_rowdata.items()}
 
 
 _phase_2_map = None
@@ -733,7 +738,7 @@ def check_font(font_props, filename_error,
 
         if char_filter:
             # old_needed_size = len(needed_chars)
-            needed_chars = set(itertools.ifilter(char_filter[1].accept, needed_chars))
+            needed_chars = set(filter(char_filter[1].accept, needed_chars))
             # TODO(dougfelt): figure out how to make this info available without messing up output
             # print('filter needed char size: %d -> %d' % (old_needed_size, len(needed_chars))
 
@@ -751,7 +756,7 @@ def check_font(font_props, filename_error,
             return
         unexpected_chars = set(cmap) - expected_chars
         if char_filter and unexpected_chars:
-            unexpected_chars = set(itertools.ifilter(char_filter[1].accept, unexpected_chars))
+            unexpected_chars = set(filter(char_filter[1].accept, unexpected_chars))
         if unexpected_chars:
             warn("cmap/script_unexpected", "Chars",
                  "The following %d chars were not expected in the font: %s"
@@ -863,7 +868,7 @@ def check_font(font_props, filename_error,
 
         if tests.check('cmap/non_characters'):
             non_characters = frozenset(
-                range(0xFDD0, 0xFDEF + 1)
+                list(range(0xFDD0, 0xFDEF + 1))
                 + [0xFFFE + plane_no * 0x10000 for plane_no in range(0, 17)]
                 + [0xFFFF + plane_no * 0x10000 for plane_no in range(0, 17)])
             non_characters_in_cmap = non_characters & set(cmap.keys())
@@ -1769,7 +1774,7 @@ def check_font(font_props, filename_error,
         if tests.check('advances/whitespace'):
             if font_props.is_mono:
                 space_width = get_horizontal_advance(space_char)
-                cps = [tab_char, nbsp_char] + range(0x2000, 0x200B)
+                cps = [tab_char, nbsp_char] + list(range(0x2000, 0x200B))
                 for cp in cps:
                     if cp in cmap:
                         expect_width(cp, space_width)
@@ -1823,7 +1828,7 @@ def check_font(font_props, filename_error,
         # FIXME: Add support for Arabic, Syriac, Mongolian, Phags-Pa,
         # Devanagari, Bengali, etc
         joins_to_right = set(range(0x1680, 0x169B + 1))
-        joins_to_left = set(range(0x1680, 0x169A + 1) + [0x169C])
+        joins_to_left = set(list(range(0x1680, 0x169A + 1)) + [0x169C])
         all_joining = joins_to_right | joins_to_left
 
         glyf_table = font['glyf']
