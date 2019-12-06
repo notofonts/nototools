@@ -519,10 +519,8 @@ def write_int_ranges(int_values, in_hex=True, sep=' '):
 
   num_list = []
 
-  if type(int_values) is not list:
-    int_values = [v for v in int_values]
-  int_values.sort()
-  start = prev = int_values[0]
+  int_values = iter(sorted(int_values))
+  start = prev = next(int_values)
   single_fmt = '%04x' if in_hex else '%d'
   pair_fmt = single_fmt + '-' + single_fmt
 
@@ -532,7 +530,7 @@ def write_int_ranges(int_values, in_hex=True, sep=' '):
     else:
       num_list.append(pair_fmt % (start, prev))
 
-  for v in int_values[1:]:
+  for v in int_values:
     if v == prev + 1:
       prev += 1
       continue

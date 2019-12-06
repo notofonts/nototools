@@ -39,7 +39,7 @@ def character_set(font):
   Returns:
     A frozenset listing the characters supported in the font.
   """
-  if type(font) is str:
+  if isinstance(font, str):
     font = ttLib.TTFont(font, fontNumber=0)
   cmap_table = font['cmap']
   cmaps = {}
