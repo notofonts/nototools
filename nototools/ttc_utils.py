@@ -25,7 +25,6 @@ import subprocess
 
 from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
 
-from nototools.py23 import unicode 
 from nototools import tool_utils
 
 _ttcHeader = '>4sLL'
@@ -171,7 +170,7 @@ def ttc_filenames(ttc, data):
       ps_name = None
       for r in name_table.names:
         if (r.nameID, r.platformID, r.platEncID, r.langID) == (6, 3, 1, 0x409):
-          ps_name = unicode(r.string, 'UTF-16BE')
+          ps_name = r.string.decode('UTF-16BE')
           break
       if ps_name:
         file_name = ps_name

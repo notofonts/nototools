@@ -37,7 +37,6 @@ import xml.etree.cElementTree as ElementTree
 
 from fontTools import ttLib
 
-from nototools.py23 import unicode
 from nototools import cldr_data
 from nototools import coverage
 from nototools import create_image
@@ -411,7 +410,7 @@ def get_sample_names_for_lang_scr_typ(lang_scr, typ):
 def get_sample_from_sample_file(lang_scr_typ):
   filepath = path.join(SAMPLE_TEXT_DIR, lang_scr_typ + '.txt')
   if path.exists(filepath):
-    return unicode(open(filepath).read().strip(), 'UTF-8')
+    return open(filepath).read().strip().decode('UTF-8')
   return None
 
 

@@ -37,7 +37,7 @@ import re
 import sys
 import xml.etree.ElementTree
 
-from nototools.py23 import unichr, unicode
+from nototools.py23 import unichr
 from nototools import coverage
 from nototools import font_caching
 from nototools import render
@@ -103,7 +103,7 @@ def test_rendering_from_file(
 
     else:
         # Assume text file, with all the data as one large string
-        input_data = unicode(input_data, 'UTF-8')
+        input_data = input_data.decode('UTF-8')
 
     # Now, input_data is just a long string, with new lines as separators.
 

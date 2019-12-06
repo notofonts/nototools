@@ -35,7 +35,6 @@ except:
 
 import xml.etree.ElementTree as ET
 
-from nototools.py23 import unicode
 from nototools import generate_website_data
 from nototools import tool_utils
 from nototools import unicode_data
@@ -699,7 +698,7 @@ def get_scripts(text):
   exclusions = {0x00, 0x0A, 0x0D, 0x20, 0xA0, 0xFEFF}
   zyyy_chars = set()
   scripts = set()
-  ustr = unicode(text, 'utf8')
+  ustr = text.decode('utf8')
   for cp in ustr:
     if ord(cp) in exclusions:
       continue

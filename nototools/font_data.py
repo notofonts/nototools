@@ -18,7 +18,6 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
-from nototools.py23 import unicode
 from nototools import opentype_data
 
 from fontTools.ttLib.tables._n_a_m_e import NameRecord
@@ -31,7 +30,7 @@ def get_name_records(font):
         name_ids = (record.platformID, record.platEncID, record.langID)
         if name_ids != (3, 1, 0x409):
             continue
-        names[record.nameID] = unicode(record.string, 'UTF-16BE')
+        names[record.nameID] = record.string.decode('UTF-16BE')
     return names
 
 
