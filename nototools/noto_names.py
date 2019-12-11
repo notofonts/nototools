@@ -461,8 +461,12 @@ def _trademark(noto_font):
 def _manufacturer(noto_font):
   if noto_font.manufacturer == 'Adobe':
     return 'Adobe Systems Incorporated'
+  if noto_font.manufacturer == 'Ek Type':
+    return 'Ek Type'
   if noto_font.manufacturer == 'Monotype':
     return 'Monotype Imaging Inc.'
+  if noto_font.manufacturer == 'JamraPatel LLC':
+    return 'JamraPatel LLC'
   if noto_font.manufacturer == 'Khmertype':
     return 'Danh Hong'
   if noto_font.manufacturer == 'Google':
@@ -479,6 +483,9 @@ DESIGNER_STRINGS = {
     'mti-singh': 'Vaibhav Singh and the Monotype Design Team',
     'mti-thirst': 'Universal Thirst, Indian Type Foundry and the Monotype Design Team',
     'mti': 'Monotype Design Team',
+    'ek-type-gonm': 'Ek Type & Mukund Gokhale',
+    'ek-type-gong': 'Ek Type',
+    'jamra-patel': 'JamraPatel'
 }
 
 
@@ -497,6 +504,16 @@ FAMILY_ID_TO_DESIGNER_KEY_P3 = {
     'serif-sinh': 'mti-bosma',
     'sans-taml': 'mti-bosma',
     'serif-taml': 'mti-indian',
+    'sans-gonm': 'ek-type-gonm',
+    'sans-gong': 'ek-type-gong',
+    'sans-tfng': 'jamra-patel',
+    'sans-tfng-apt': 'jamra-patel',
+    'sans-tfng-agrawimazighen': 'jamra-patel',
+    'sans-tfng-ahaggar': 'jamra-patel',
+    'sans-tfng-hawad': 'jamra-patel',
+    'sans-tfng-rhissaixa': 'jamra-patel',
+    'sans-tfng-sil': 'jamra-patel',
+    'sans-tfng-tawellemmet': 'jamra-patel',
 }
 
 def _designer(noto_font, phase):
@@ -518,6 +535,18 @@ def _designer(noto_font, phase):
     if noto_font.family in ['Arimo', 'Cousine', 'Tinos']:
       return 'Steve Matteson'
     raise ValueError('unknown family "%s"' % noto_font.family)
+  if noto_font.manufacturer == 'Ek Type':
+    if phase == 3:
+      family_id = noto_fonts.noto_font_to_family_id(noto_font)
+      designer_key = FAMILY_ID_TO_DESIGNER_KEY_P3.get(family_id)
+      if designer_key:
+        return DESIGNER_STRINGS[designer_key]
+  if noto_font.manufacturer == 'JamraPatel LLC':
+    if phase == 3:
+      family_id = noto_fonts.noto_font_to_family_id(noto_font)
+      designer_key = FAMILY_ID_TO_DESIGNER_KEY_P3.get(family_id)
+      if designer_key:
+        return DESIGNER_STRINGS[designer_key]
   if noto_font.manufacturer == 'Khmertype':
     return 'Danh Hong'
   if noto_font.manufacturer == 'Google':
@@ -528,12 +557,16 @@ def _designer(noto_font, phase):
 def _designer_url(noto_font):
   if noto_font.manufacturer == 'Adobe':
     return 'http://www.adobe.com/type/'
-  if noto_font.manufacturer == 'Monotype':
-    return 'http://www.monotype.com/studio'
-  if noto_font.manufacturer == 'Khmertype':
-    return 'http://www.khmertype.org'
+  if noto_font.manufacturer == 'Ek Type':
+    return 'http://www.ektype.in'
   if noto_font.manufacturer == 'Google':
     return 'http://www.google.com/get/noto/'
+  if noto_font.manufacturer == 'JamraPatel LLC':
+    return 'http://www.jamra-patel.com'
+  if noto_font.manufacturer == 'Khmertype':
+    return 'http://www.khmertype.org'
+  if noto_font.manufacturer == 'Monotype':
+    return 'http://www.monotype.com/studio'
   raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
@@ -551,6 +584,10 @@ def _description_re(noto_font, phase):
     hint_prefix = ''
 
   designer = ''
+  if noto_font.manufacturer == 'Ek Type':
+    designer = 'Designed by %s' % _designer(noto_font, phase)
+  if noto_font.manufacturer == 'JamraPatel LLC':
+    designer = 'Designed by %s' % _designer(noto_font, phase)
   if noto_font.manufacturer == 'Monotype':
     if noto_font.family == 'Noto':
       designer = 'Designed by Monotype design team.'

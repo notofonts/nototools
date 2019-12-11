@@ -172,6 +172,13 @@
   <info family="sans-telu" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-telu-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="sans-tfng" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng-apt" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng-agrawimazighen" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng-ahaggar" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng-hawad" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng-rhissaixa" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng-sil" family_name_style="short" include_regular="t" use_preferred="t" />
+  <info family="sans-tfng-tawellemmet" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-tglg" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-thaa" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="sans-thai" family_name_style="short" include_regular="t" use_preferred="t" />
@@ -200,6 +207,7 @@
   <info family="serif-deva" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="serif-ethi" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="serif-geor" family_name_style="very short" include_regular="t" use_preferred="t" />
+  <info family="serif-gran" family_name_style="short" include_regular="t" use_preferred="t" />
   <info family="serif-gujr" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="serif-guru" family_name_style="very short" include_regular="t" use_preferred="t" />
   <info family="serif-hans" include_regular="t" use_preferred="t" />

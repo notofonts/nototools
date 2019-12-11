@@ -55,6 +55,13 @@ ODD_SCRIPTS = {
   'SumeroAkkadianCuneiform': 'Xsux',
   'Symbols': 'Zsym',
   'Emoji': 'Zsye',
+  'TifinaghAPT': 'Tfng',
+  'TifinaghAgrawImazighen': 'Tfng',
+  'TifinaghAhaggar': 'Tfng',
+  'TifinaghHawad': 'Tfng',
+  'TifinaghRhissaIxa': 'Tfng',
+  'TifinaghSIL': 'Tfng',
+  'TifinaghTawellemmet': 'Tfng'
 }
 
 
@@ -143,7 +150,7 @@ _FONT_NAME_REGEX = (
     '(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji|Music)?'
     '(Mono(?:space)?)?'
     '(.*?)'
-    '(Eastern|Estrangela|Western|Slanted|New|Unjoined)?'
+    '(Eastern|Estrangela|Western|Slanted|New|Unjoined|APT|AgrawImazighen|Ahaggar|Hawad|RhissaIxa|SIL|Tawellemmet)?'
     '(UI)?'
     '(Display)?'
     '-?'
@@ -251,6 +258,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
       'Adobe' if is_cjk
       else 'Google' if script == 'Zsye' and variant == 'color'
       else 'Khmertype' if phase < 3 and script in ['Khmr', 'Cham', 'Laoo']
+      else 'Ek Type' if script in ['Gong', 'Gonm']
+      else 'JamraPatel LLC' if script in ['Tfng']
       else 'Monotype')
 
   return NotoFont(
@@ -364,8 +373,6 @@ def noto_font_to_wws_family_id(notofont):
     id += '-mono'
   if notofont.is_UI:
     id += '-ui'
-  if notofont.is_display:
-    id += '-display'
   return id
 
 
@@ -437,7 +444,8 @@ def wws_family_id_to_name_parts(wws_id):
       pass
     elif extra == 'ui':
       parts.append('UI')
-    elif extra in ['eastern', 'estrangela', 'western', 'display', 'unjoined']:
+    elif extra in ['eastern', 'estrangela', 'western', 'display', 'unjoined',
+                   'apt', 'hawad', 'agrawimazighen', 'ahaggar', 'rhissaixa', 'sil', 'tawellemmet']:
       parts.append(extra.title())
     else:
       raise Exception('unknown extra tag in %s' % wws_id)
