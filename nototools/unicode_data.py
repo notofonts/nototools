@@ -406,7 +406,7 @@ def script_code(script_name):
 # that we special-case
 _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
     'Aran': 'Nastaliq', # not assigned
-    'Nkoo': 'N\'Ko',
+    'Nkoo': 'NKo',
     'Phag': 'Phags-pa',
     'Piqd': 'Klingon', # not assigned
     'Zmth': 'Math', # not assigned
