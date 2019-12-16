@@ -251,6 +251,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
       'Adobe' if is_cjk
       else 'Google' if script == 'Zsye' and variant == 'color'
       else 'Khmertype' if phase < 3 and script in ['Khmr', 'Cham', 'Laoo']
+      else 'Ek Type' if script in ['Gonm','aml_Sup','Gong']
+      else 'JamraPatel LLC' if script in ['Adlm'] # ready to add new fonts to  this manufacturer
       else 'Monotype')
 
   return NotoFont(
@@ -364,8 +366,8 @@ def noto_font_to_wws_family_id(notofont):
     id += '-mono'
   if notofont.is_UI:
     id += '-ui'
-  if notofont.is_display:
-    id += '-display'
+  #if notofont.is_display: # Not sure why we add -display again. It's already appended to id in line 350.
+    #id += '-display'
   return id
 
 
