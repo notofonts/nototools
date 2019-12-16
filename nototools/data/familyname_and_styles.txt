@@ -38,6 +38,7 @@ NotoSerifArabic  # was Naskh
 NotoSansGeorgian
 NotoSerifGeorgian
 NotoSansTamil
+NotoSansTamilSupplement
 NotoSansTamilUI
 NotoSerifTamil
 NotoSerifTamilSlanted
@@ -261,4 +262,3 @@ NotoKufiArabic
 NotoNaskhArabic
 NotoNaskhArabicUI
 NotoMono
-
