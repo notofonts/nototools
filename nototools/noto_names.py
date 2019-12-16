@@ -60,8 +60,8 @@ ORIGINAL_FAMILY_LIMIT = 32
 
 # Regex values returned in NameTableData must start with ^ and end with $,
 # since lint uses this to understand the value is a regex.
-GOOGLE_COPYRIGHT_RE = r'^Copyright 20\d\d Google Inc. All Rights Reserved\.$'
-
+# Updated regex expression to return match if: A- string contain years range or single year  B- string contain Google LLC or Google Inc.  C-  string contain 'Rights Reserved' or 'rights reserved'
+GOOGLE_COPYRIGHT_RE = r'^(?:Copyright 20\d\d Google|Copyright 20\d\d-20\d\d Google) (?:LLC|Inc). All (?:Rights Reserved|rights reserved)\.$'
 ADOBE_COPYRIGHT_RE = (
     u"^Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
     u"\(http://www.adobe.com/\)\.$")
@@ -126,6 +126,7 @@ _SCRIPT_KEY_TO_FONT_NAME = {
     'MONO': None,
     'SYM2': 'Symbols2',
     'MUSE': None,
+    'Mero': 'Meroitic',
 }
 
 
@@ -281,7 +282,7 @@ _SHORT_NAMES = {
     'SemiBold': 'SemBd',
     'ExtraBold': 'ExtBd',
     'Black': 'Blk',
-    'Display': 'Disp',
+    'Display': 'Disp', #This will trigger error when performing family check. NotoSerifDisplay and NotoSansfDisplay added exceptions for those 2 fonts line 369
 }
 
 _VERY_SHORT_NAMES = {
@@ -305,31 +306,31 @@ _VERY_SHORT_NAMES = {
 # need it.  If the name data changes this can break.
 _SHORT_SCRIPTS = {
   'Anatolian Hieroglyphs': 'AnatoHiero',  # Hluw
-  'Pahawh Hmong': 'PahHmong',  # Hmng
+  #'Pahawh Hmong': 'PahHmong',  # Hmng   This will trigger error for family check for this font. Not needed
   'New Tai Lue': 'NewTaiLue',  # Talu
-  'Syloti Nagri': 'SyloNagri',  # Sylo
+  #'Syloti Nagri': 'SyloNagri',  # Sylo  This will trigger error for family check for this font. Not needed
   'Imperial Aramaic': 'ImpAramaic',  # Armi
   'SignWriting': 'SignWrit',  # Sgnw
   'Warang Citi': 'WarangCiti',  # Wara
   'Canadian Aboriginal': 'CanAborig',  # Cans
   'Egyptian Hieroglyphs': 'EgyptHiero',  # Egyp
-  'Mende Kikakui': 'MendKik',  # Mend
+  #'Mende Kikakui': 'MendKik',  # Mend   This will trigger error for family check for this font. Not needed
   'Old Persian': 'OldPersian',  # Xpeo
   'Old North Arabian': 'OldNorArab',  # Narb
   'Caucasian Albanian': 'CaucAlban',  # Aghb
-  'Meroitic Hieroglyphs': 'MeroHiero',  # Mero
+  'Meroitic Hieroglyphs': 'Meroitic',  # Mero  changed 'MeroHiero' to  'Meroitic'. MeroHiero not valid family name
   'Meroitic Cursive': 'MeroCursiv',  # Merc
   'Inscriptional Pahlavi': 'InsPahlavi',  # Phli
   'Old South Arabian': 'OldSouArab',  # Sarb
   'Psalter Pahlavi': 'PsaPahlavi',  # Phlp
-  'Meetei Mayek': 'MeetMayek',  # Mtei
+  'Meetei Mayek': 'MeeteiMayek',  # Mtei  MeetMayek will trigger error changed to MeeteiMayek
   'Hanifi Rohingya': 'HanifiRohg',  # Rohg
-  'Sora Sompeng': 'SoraSomp',  # Sora
+  #'Sora Sompeng': 'SoraSomp',  # Sora   This will trigger error for family check for this font. Not needed
   'Inscriptional Parthian': 'InsParthi',  # Prti
   'Pau Cin Hau': 'PauCinHau',  # Pauc
   'Old Hungarian': 'OldHung',  # Hung
-  'Masaram Gondi': 'MasaramGon',  # Gonm
-  'Gunjala Gondi': 'GunjalaGon',  # Gonj
+  #'Masaram Gondi': 'MasaramGon',  # Gonm    This will trigger error for family check for this font. Not needed
+  #'Gunjala Gondi': 'GunjalaGondi',  # Gonj  This will trigger error for family check for this font. Not needed
   'Zanabazar Square': 'Zanabazar',  # Zanb
   'Medefaidrin': 'Medfaidrin',  # Medf
 }
@@ -364,8 +365,11 @@ def _name_with_style(parts, name_style):
     return ' '.join(parts)
   # preemtively shorten script names
   short_parts = [_SHORT_SCRIPTS.get(n, n) for n in parts]
-  if name_style == 'short':
-    return ' '.join(_SHORT_NAMES.get(n, n) for n in short_parts)
+  if name_style == 'short': 
+    if parts[2] == 'Display': #special case for fonts contain 'display' as part of the original font name (NotoSansDisplay,NotoSerifDisplay)
+      return ' '.join(parts) 
+    else:
+      return ' '.join(_SHORT_NAMES.get(n, n) for n in short_parts)
   name = ' '.join(_VERY_SHORT_NAMES.get(n, n) for n in short_parts)
   if name_style != 'very short':  # 'extra short'
     name = name.replace(' ', '')
@@ -450,12 +454,14 @@ def _version_re(noto_font, phase):
       hint_ext = ''
       ttfautohint_tag = 'ttfautohint' if noto_font.is_hinted else ''
 
-  return r'^Version ([0-2])\.(\d{%d})%s(?:;.*%s.*)?$' % (
+  return r'^Version ([0-4])\.(\d{%d})%s(?:;.*%s.*)?$' % (
       sub_len, hint_ext, ttfautohint_tag)
 
 
-def _trademark(noto_font):
-  return '%s is a trademark of Google Inc.' % noto_font.family
+#trademark check will use regex to match with both LLC or Inc.
+def _trademark_re(noto_font):
+  GOOGLE_TRADEMARK_RE = r'^%s is a trademark of Google (?:LLC|Inc.)$' % noto_font.family
+  return GOOGLE_TRADEMARK_RE
 
 
 def _manufacturer(noto_font):
@@ -463,6 +469,10 @@ def _manufacturer(noto_font):
     return 'Adobe Systems Incorporated'
   if noto_font.manufacturer == 'Monotype':
     return 'Monotype Imaging Inc.'
+  if noto_font.manufacturer == 'Ek Type':
+    return 'Ek Type'
+  if noto_font.manufacturer == 'JamraPatel LLC':
+    return 'JamraPatel LLC'
   if noto_font.manufacturer == 'Khmertype':
     return 'Danh Hong'
   if noto_font.manufacturer == 'Google':
@@ -500,6 +510,16 @@ FAMILY_ID_TO_DESIGNER_KEY_P3 = {
 }
 
 def _designer(noto_font, phase):
+  if noto_font.manufacturer == 'Ek Type':
+      if noto_font.script in ['Gonm', 'Taml_Sup']:
+          return 'Ek Type & Mukund Gokhale'
+      else:
+          return 'Ek Type'
+  if noto_font.manufacturer == 'JamraPatel LLC':
+      if noto_font.script in ['Adlm']:
+          return 'Mark Jamra, Neil Patel'
+      else:
+          return 'Designed by JamraPatel LLC'
   if noto_font.manufacturer == 'Adobe':
     return '-'
   if noto_font.manufacturer == 'Monotype':
@@ -510,11 +530,28 @@ def _designer(noto_font, phase):
         return DESIGNER_STRINGS[designer_key]
     if noto_font.family == 'Noto':
       if noto_font.style == 'Serif' and noto_font.script in [
-          'Beng', 'Gujr', 'Knda', 'Mlym', 'Taml', 'Telu']:
-        return 'Indian Type Foundry'
-      if noto_font.script == 'Arab' and phase == 3:
-        return 'Nadine Chahine'
-      return 'Monotype Design Team'
+          'Beng', 'Gujr', 'Knda']:
+        return 'Juan Bruce, Universal Thirst, Indian Type Foundry and the Monotype Design Team.'
+      if noto_font.script in [
+          'Taml']:
+        return 'Indian Type Foundry, Tom Grace, and the Monotype Design Team'
+      if noto_font.script in [
+          'Telu', 'Knda', 'Guru']:
+        return 'Jelle Bosma - Monotype Design Team'
+      if phase == 3:
+          if noto_font.script == 'Tang':
+              return 'Julius Hui - Monotype Design Team'
+          if noto_font.script == 'Arab':
+              return 'Nadine Chahine - Monotype Design Team'
+          if noto_font.script == 'Deva':
+              return 'Universal Thirst, Indian Type Foundry and the Monotype Design Team'
+          if noto_font.script == 'Syrc':
+              return 'Patrick Giasson and the Monotype Design Team'
+          if noto_font.script == 'Mlym':
+              return 'Indian type Foundry, Jelle Bosma, Monotype Design Team'
+          if noto_font.script == 'Sora':
+              return 'Monotype Design Team. David Williams.'    
+          return 'Monotype Design Team'
     if noto_font.family in ['Arimo', 'Cousine', 'Tinos']:
       return 'Steve Matteson'
     raise ValueError('unknown family "%s"' % noto_font.family)
@@ -528,6 +565,10 @@ def _designer(noto_font, phase):
 def _designer_url(noto_font):
   if noto_font.manufacturer == 'Adobe':
     return 'http://www.adobe.com/type/'
+  if noto_font.manufacturer == 'Ek Type':
+    return 'http://www.ektype.in'
+  if noto_font.manufacturer == 'JamraPatel LLC':
+    return 'https://www.jamra-patel.com'
   if noto_font.manufacturer == 'Monotype':
     return 'http://www.monotype.com/studio'
   if noto_font.manufacturer == 'Khmertype':
@@ -546,6 +587,10 @@ def _description_re(noto_font, phase):
   if phase < 3:
     hint_prefix = 'Data %shinted.' % (
         '' if noto_font.is_hinted else 'un')
+  if noto_font.manufacturer == 'Ek Type':
+    return '-'
+  if noto_font.manufacturer == 'JamraPatel LLC':
+    return '-'
   else:
     # In phase 3 no hint prefix at all regardless of hinted or unhinted.
     hint_prefix = ''
@@ -553,9 +598,12 @@ def _description_re(noto_font, phase):
   designer = ''
   if noto_font.manufacturer == 'Monotype':
     if noto_font.family == 'Noto':
-      designer = 'Designed by Monotype design team.'
-      if hint_prefix:
-        hint_prefix += ' '
+      if noto_font.script == 'Sora':
+              designer = 'Designed by Monotype design team. David Williams.'
+      else:
+          designer = 'Designed by Monotype design team.'
+          if hint_prefix:
+              hint_prefix += ' '
     else:
       # Arimo, Tinos, and Cousine don't currently mention hinting in their
       # descriptions, but they probably should.
@@ -625,7 +673,7 @@ def name_table_data(noto_font, family_to_name_info, phase):
       version_re=_version_re(noto_font, phase),
       postscript_name=_postscript_name(
           family_parts, subfamily_parts, include_regular),
-      trademark=_trademark(noto_font),
+      trademark=_trademark_re(noto_font), # to use regex to match the trademark
       manufacturer=_manufacturer(noto_font),
       designer=_designer(noto_font, phase),
       description_re=_description_re(noto_font, phase),
