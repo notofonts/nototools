@@ -50,15 +50,15 @@ m[1][n * 4 + 3] = 1
 def printarr(m):
     for j in range(n * 4 + 4):
         for i in range(n * 4 + 4):
-            print '%6.1f' % m[j][i],
-        print ''
+            print('%6.1f' % m[j][i],)
+        print('')
 
 sys.output_line_width = 160
-#print array2string(m, precision = 3)
+#print(array2string(m, precision = 3)
 mi = la.inverse(m)
 #printarr(mi)
-print ''
+print(''
 for j in range(n + 1):
     for k in range(4):
-        print '%7.2f' % mi[j * 4 + k][(n / 2) * 4 + 2],
-    print ''
+        print('%7.2f' % mi[j * 4 + k][(n / 2) * 4 + 2],)
+    print('')

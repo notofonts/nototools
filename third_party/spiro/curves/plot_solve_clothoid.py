@@ -1,7 +1,7 @@
 import clothoid
 from math import *
 
-print '%!PS-Adobe'
+print('%!PS-Adobe'
 
 def integ_spiro(k0, k1, k2, k3, n = 4):
     th1 = k0
@@ -112,7 +112,7 @@ def solve_clothoid(th0, th1, verbose = False):
         e = (th1 - th0) + 2 * atan2(y, x) - .25 * k1
 	count_iter += 1
         if verbose:
-            print k0, k1, e
+            print(k0, k1, e)
         if abs(e) < 1e-9: break
         k1_old, e_old, k1 = k1, e, k1 + (k1_old - k1) * e / (e - e_old)
 
@@ -122,43 +122,43 @@ def plot_by_thp():
     count = 0
     for i in range(11):
 	thp = i * .1
-	print .5 + .05 * i, .5, .5, 'setrgbcolor'
-	print '.75 setlinewidth'
+	print(.5 + .05 * i, .5, .5, 'setrgbcolor')
+	print('.75 setlinewidth')
 	cmd = 'moveto'
 	for j in range(-40, 41):
 	    thm = j * .02
 	    k0, k1 = solve_clothoid(thp - thm, thp + thm, True)
 	    count += 1
 	    k1 = min(40, max(-40, k1))
-	    print 306 + 75 * thm, 396 - 10 * k1, cmd
+	    print(306 + 75 * thm, 396 - 10 * k1, cmd)
 	    cmd = 'lineto'
-	print 'stroke'
-	print '% count_iter = ', count_iter, 'for', count
+	print('stroke')
+	print('% count_iter = ', count_iter, 'for', count)
 
 def plot_by_thm():
-    print '.75 setlinewidth'
-    print 36, 396 - 350, 'moveto'
-    print 0, 700, 'rlineto stroke'
+    print('.75 setlinewidth')
+    print(36, 396 - 350, 'moveto')
+    print(0, 700, 'rlineto stroke')
     for i in range(-10, 10):
 	if i == 0: wid = 636
 	else: wid = 5
-	print 36, 396 - 10 * i, 'moveto', wid, '0 rlineto stroke'
+	print(36, 396 - 10 * i, 'moveto', wid, '0 rlineto stroke'
     cmd = 'moveto'
     thm = -.1
     for i in range(41):
 	thp = i * .1
 	k0, k1 = solve_clothoid(thp - thm, thp + thm)
-	print 36 + 150 * thp, 396 - 100 * k1, cmd
+	print(36 + 150 * thp, 396 - 100 * k1, cmd
 	cmd = 'lineto'
-    print 'stroke'
-    print '0 0 1 setrgbcolor'
+    print('stroke')
+    print('0 0 1 setrgbcolor')
     cmd = 'moveto'
     for i in range(41):
 	thp = i * .1
 	k1 = 12 * thm * cos(.5 * thp)
 	k1 = 12 * thm * (1 - (thp / pi) ** 3)
-	print 36 + 150 * thp, 396 - 100 * k1, cmd
+	print(36 + 150 * thp, 396 - 100 * k1, cmd
 	cmd = 'lineto'
-    print 'stroke'
+    print('stroke')
 
 plot_by_thp()

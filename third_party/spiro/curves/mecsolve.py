@@ -7,16 +7,16 @@ import numarray as N
 import numarray.linear_algebra as la
 
 def eps_prologue(x0, y0, x1, y1, draw_box = False):
-    print '%!PS-Adobe-3.0 EPSF'
-    print '%%BoundingBox:', x0, y0, x1, y1
-    print '%%EndComments'
-    print '%%EndProlog'
-    print '%%Page: 1 1'
+    print('%!PS-Adobe-3.0 EPSF')
+    print('%%BoundingBox:', x0, y0, x1, y1)
+    print('%%EndComments')
+    print('%%EndProlog')
+    print('%%Page: 1 1')
     if draw_box:
-        print x0, y0, 'moveto', x0, y1, 'lineto', x1, y1, 'lineto', x1, y0, 'lineto closepath stroke'
+        print(x0, y0, 'moveto', x0, y1, 'lineto', x1, y1, 'lineto', x1, y0, 'lineto closepath stroke')
 
 def eps_trailer():
-    print '%%EOF'
+    print('%%EOF')
 
 # One step of 4th-order Runge-Kutta numerical integration - update y in place
 def rk4(y, dydx, x, h, derivs):
@@ -122,10 +122,10 @@ def solve_mec(constraint_fnl):
     for i in range(20):
         k, lam1, lam2 = params
         xys, cost, x, y, th = run_elastica(-.5, .5, k, lam1, lam2)
-        #print i * .05, 'setgray'
+        #print(i * .05, 'setgray'
         #plot(xys)
         c1c, c2c, costc = constraint_fnl(cost, x, y, th)
-        print '% constraint_fnl =', c1c, c2c, 'cost =', costc
+        print('% constraint_fnl =', c1c, c2c, 'cost =', costc)
 
         dc1s = []
         dc2s = []
@@ -145,9 +145,9 @@ def solve_mec(constraint_fnl):
         xp = cross_prod(dc1s, dc2s)
         xp = N.divide(xp, sqrt(N.dot(xp, xp))) # Normalize to unit length
 
-        print '% dc1s =', dc1s
-        print '% dc2s =', dc2s
-        print '% xp =', xp
+        print('% dc1s =', dc1s)
+        print('% dc2s =', dc2s)
+        print('% xp =', xp)
         
         # Compute second derivative wrt orthogonal vec
         params1 = N.array(params)
@@ -156,30 +156,30 @@ def solve_mec(constraint_fnl):
         k, lam1, lam2 = params1
         xys, cost, x, y, th = run_elastica(-.5, .5, k, lam1, lam2)
         c1p, c2p, costp = constraint_fnl(cost, x, y, th)
-        print '% constraint_fnl+ =', c1p, c2p, 'cost =', costp
+        print('% constraint_fnl+ =', c1p, c2p, 'cost =', costp)
         params1 = N.array(params)
         for j in range(len(params)):
             params1[j] -= delta * xp[j]
         k, lam1, lam2 = params1
         xys, cost, x, y, th = run_elastica(-.5, .5, k, lam1, lam2)
         c1m, c2m, costm = constraint_fnl(cost, x, y, th)
-        print '% constraint_fnl- =', c1m, c2m, 'cost =', costm
+        print('% constraint_fnl- =', c1m, c2m, 'cost =', costm)
         d2cost = (costp + costm - 2 * costc) / (delta * delta)
         dcost = (costp - costm) / (2 * delta)
 
-        print '% dcost =', dcost, 'd2cost =', d2cost
+        print('% dcost =', dcost, 'd2cost =', d2cost)
         if d2cost < 0: d2cost = .1
         # Make Jacobian matrix to invert
         jm = N.array([dc1s, dc2s, [x * d2cost for x in xp]])
-        #print jm
+        #print(jm
         ji = la.inverse(jm)
-        #print ji
+        #print(ji
 
         dp = N.dot(ji, [c1c, c2c, dcost])
-        print '% dp =', dp
-        print '% [right]=', [c1c, c2c, dcost]
+        print('% dp =', dp)
+        print('% [right]=', [c1c, c2c, dcost])
         params -= dp * .1
-        print '%', params
+        print('%', params)
         sys.stdout.flush()
     return params
 
@@ -193,7 +193,7 @@ def solve_mec_3constr(constraint_fnl, n = 30, initparams = None):
         k, lam1, lam2 = params
         xys, cost, x, y, th = run_elastica(-.5, .5, k, lam1, lam2)
         c1c, c2c, c3c = constraint_fnl(cost, x, y, th)
-        print '% constraint_fnl =', c1c, c2c, c3c
+        print('% constraint_fnl =', c1c, c2c, c3c)
 
         dc1s = []
         dc2s = []
@@ -215,21 +215,21 @@ def solve_mec_3constr(constraint_fnl, n = 30, initparams = None):
 
         # Make Jacobian matrix to invert
         jm = N.array([dc1s, dc2s, dc3s])
-        #print jm
+        #print(jm
         ji = la.inverse(jm)
 
         dp = N.dot(ji, [c1c, c2c, c3c])
         if i < n/2: scale = .25
         else: scale = 1
         params -= scale * dp
-        print '%', params
+        print('%', params)
     return params
 
 def mk_ths_fnl(th0, th1):
     def fnl(cost, x, y, th):
         actual_th0 = atan2(y, x)
         actual_th1 = th - actual_th0
-        print '% x =', x, 'y =', y, 'hypot =', hypot(x, y)
+        print('% x =', x, 'y =', y, 'hypot =', hypot(x, y))
         return th0 - actual_th0, th1 - actual_th1, cost
     return fnl
 
@@ -265,7 +265,7 @@ def solve_mec_nested(th0, th1, fnl):
     f1, p = solve_mec_nested_inner(th0, th1, x1, fnl)
     f2, p = solve_mec_nested_inner(th0, th1, x2, fnl)
     for i in range(10):
-        print '%', x0, x1, x2, x3, ':', f1, f2
+        print('%', x0, x1, x2, x3, ':', f1, f2)
         if f2 < f1:
             x0, x1, x2 = x1, x2, R * x2 + C * x3
             f1 = f2
@@ -284,9 +284,9 @@ def solve_mec_nested(th0, th1, fnl):
 def plot(xys):
     cmd = 'moveto'
     for xy in xys:
-        print 306 + 200 * xy[0], 396 - 200 * xy[1], cmd
+        print(306 + 200 * xy[0], 396 - 200 * xy[1], cmd)
         cmd = 'lineto'
-    print 'stroke'
+    print('stroke')
 
 def mec_test():
     th0, th1 = 0, pi / 4
@@ -295,41 +295,41 @@ def mec_test():
     k, lam1, lam2 = params
     xys, cost, x, y, th = run_mec_cos(k, lam1, lam2, 1000)
     plot(xys)
-    print '% run_mec_cos:', cost, x, y, th
-    print '1 0 0 setrgbcolor'
+    print('% run_mec_cos:', cost, x, y, th)
+    print('1 0 0 setrgbcolor')
     xys, cost, x, y, th = run_elastica(-.5, .5, k, lam1, lam2)
-    print '%', xys
+    print('%', xys
     plot(xys)
-    print '% run_elastica:', cost, x, y, th
-    print 'showpage'
-    print '%', params
+    print('% run_elastica:', cost, x, y, th)
+    print('showpage')
+    print('%', params)
 
 def lenfig():
-    print '306 720 translate'
+    print('306 720 translate')
     th0, th1 = pi / 2, pi / 2
     for i in range(1, 10):
 	y = .1 * i + .003
 	fnl = mk_y_fnl(th0, th1, y)
 	params = solve_mec_3constr(fnl)
 	k, lam1, lam2 = params
-	print 'gsave 0.5 dup scale -306 -396 translate'
+	print('gsave 0.5 dup scale -306 -396 translate')
 	xys, cost, x, y, th = run_elastica(-2, 2, k, lam1, lam2, 100)
-        print 'gsave [2] 0 setdash'
+        print('gsave [2] 0 setdash')
 	plot(xys)
-        print 'grestore'
+        print('grestore')
 	xys, cost, x, y, th = run_elastica(-.5, .5, k, lam1, lam2, 100)
 	plot(xys)
-	print 'grestore'
-        print '% y =', y, 'params =', params
+	print('grestore')
+        print('% y =', y, 'params =', params)
         if lam2 < 0:
             mymaxk = k
         else:
             mymaxk = sqrt(k * k + 4 * lam2)
         lam = abs(lam2) / (mymaxk * mymaxk)
-        print '-200 0 moveto /Symbol 12 selectfont (l) show'
-        print '/Times-Roman 12 selectfont ( = %.4g) show' % lam
-	print '0 -70 translate'
-    print 'showpage'
+        print('-200 0 moveto /Symbol 12 selectfont (l) show')
+        print('/Times-Roman 12 selectfont ( = %.4g) show' % lam)
+	print('0 -70 translate')
+    print('showpage')
 
 def lenplot(figno, th0, th1):
     result = []
@@ -371,34 +371,34 @@ def lengraph(figno):
     x0 = 42
     xscale = 7.5 * 72
     y0 = 72
-    print '/Times-Roman 12 selectfont'
-    print '/ss 1.5 def'
-    print '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
-    print '.5 setlinewidth'
-    print x0, y0, 'moveto', xscale, '0 rlineto 0', yscale * ytic * ymax, 'rlineto', -xscale, '0 rlineto closepath stroke'
+    print('/Times-Roman 12 selectfont')
+    print('/ss 1.5 def')
+    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print('.5 setlinewidth')
+    print(x0, y0, 'moveto', xscale, '0 rlineto 0', yscale * ytic * ymax, 'rlineto', -xscale, '0 rlineto closepath stroke')
     for i in range(0, 11):
-        print x0 + .1 * i * xscale, y0, 'moveto 0 6 rlineto stroke'
-        print x0 + .1 * i * xscale, y0 + ytic * ymax * yscale, 'moveto 0 -6 rlineto stroke'
-        print x0 + .1 * i * xscale, y0 - 12, 'moveto'
-        print '(%.1g) dup stringwidth exch -.5 mul exch rmoveto show' % (.1 * i)
+        print(x0 + .1 * i * xscale, y0, 'moveto 0 6 rlineto stroke')
+        print(x0 + .1 * i * xscale, y0 + ytic * ymax * yscale, 'moveto 0 -6 rlineto stroke')
+        print(x0 + .1 * i * xscale, y0 - 12, 'moveto')
+        print('(%.1g) dup stringwidth exch -.5 mul exch rmoveto show' % (.1 * i))
     for i in range(0, 11):
-        print x0, y0 + ytic * i * yscale, 'moveto 6 0 rlineto stroke'
-        print x0 + xscale, y0 + ytic * i * yscale, 'moveto -6 0 rlineto stroke'
-        print x0 - 3, y0 + ytic * i * yscale - 3.5, 'moveto'
-        print '(%.2g) dup stringwidth exch neg exch rmoveto show' % (ytic * i)
-    print x0 + .25 * xscale, y0 - 24, 'moveto (chordlen / arclen) show'
-    print x0 - 14, y0 + ytic * ymax * yscale + 10, 'moveto /Symbol 12 selectfont (l) show'
+        print(x0, y0 + ytic * i * yscale, 'moveto 6 0 rlineto stroke')
+        print(x0 + xscale, y0 + ytic * i * yscale, 'moveto -6 0 rlineto stroke')
+        print(x0 - 3, y0 + ytic * i * yscale - 3.5, 'moveto'))
+        print('(%.2g) dup stringwidth exch neg exch rmoveto show' % (ytic * i))
+    print(x0 + .25 * xscale, y0 - 24, 'moveto (chordlen / arclen) show')
+    print(x0 - 14, y0 + ytic * ymax * yscale + 10, 'moveto /Symbol 12 selectfont (l) show')
     if figno in (1, 2):
-	print x0 + 2 / pi * xscale, y0 - 18, 'moveto'
-	print '(2/p) dup stringwidth exch -.5 mul exch rmoveto show'
-    print 'gsave [3] 0 setdash'
-    print x0, y0 + .25 * yscale, 'moveto', xscale, '0 rlineto stroke'
+	print(x0 + 2 / pi * xscale, y0 - 18, 'moveto')
+	print('(2/p) dup stringwidth exch -.5 mul exch rmoveto show')
+    print('gsave [3] 0 setdash')
+    print(x0, y0 + .25 * yscale, 'moveto', xscale, '0 rlineto stroke')
     if figno == 3:
-	print x0, y0 + .5 * yscale, 'moveto', xscale, '0 rlineto stroke'
+	print(x0, y0 + .5 * yscale, 'moveto', xscale, '0 rlineto stroke')
 	xinterest = .81153
-	print x0 + xinterest * xscale, y0, 'moveto 0', yscale * .5, 'rlineto stroke'
-    print 'grestore'
-    print '.75 setlinewidth'
+	print(x0 + xinterest * xscale, y0, 'moveto 0', yscale * .5, 'rlineto stroke')
+    print('grestore')
+    print('.75 setlinewidth')
     if 1:
 	if figno in (1, 2):
 	    costscale = .01 * yscale
@@ -407,31 +407,31 @@ def lengraph(figno):
         lenresult = lenplot(figno, th0, th1)
         cmd = 'moveto'
         for x, y, cost in lenresult:
-            print x0 + xscale * x, y0 + yscale * y, cmd
+            print(x0 + xscale * x, y0 + yscale * y, cmd)
             cmd = 'lineto'
-        print 'stroke'
+        print('stroke')
 	if figno in (2, 3):
             cmd = 'moveto'
             for x, y, cost in lenresult:
-                print x0 + xscale * x, y0 + costscale * cost, cmd
+                print(x0 + xscale * x, y0 + costscale * cost, cmd)
                 cmd = 'lineto'
-            print 'stroke'
+            print('stroke')
             cmd = 'moveto'
             for x, y, cost in lenresult:
-                print x0 + xscale * x, y0 + costscale * x * cost, cmd
+                print(x0 + xscale * x, y0 + costscale * x * cost, cmd)
                 cmd = 'lineto'
-            print 'stroke'
-            print '/Times-Roman 12 selectfont'
+            print('stroke')
+            print('/Times-Roman 12 selectfont')
 	    if figno == 2:
 		xlm, ylm = .75, 7
 		xls, yls = .42, 15
 	    elif figno == 3:
 		xlm, ylm = .6, 3
 		xls, yls = .37, 15
-            print x0 + xscale * xlm, y0 + costscale * ylm, 'moveto'
-            print '(MEC cost) show'
-            print x0 + xscale * xls, y0 + costscale * yls, 'moveto'
-            print '(SIMEC cost) show'
+            print(x0 + xscale * xlm, y0 + costscale * ylm, 'moveto')
+            print('(MEC cost) show')
+            print(x0 + xscale * xls, y0 + costscale * yls, 'moveto')
+            print('(SIMEC cost) show')
     if figno == 1:
         minis = [(.05, 5, -5),
              (.26, -40, 10),
@@ -465,10 +465,10 @@ def lengraph(figno):
         lam = abs(lam2) / (mymaxk * mymaxk)
         x = x0 + xscale * yy
         y = y0 + yscale * lam
-	print 'gsave %g %g translate circle fill' % (x, y)
-        print '%g %g translate 0.15 dup scale' % (xo, yo)
-        print '-306 -396 translate'
-        print '2 setlinewidth'
+	print('gsave %g %g translate circle fill' % (x, y))
+        print('%g %g translate 0.15 dup scale' % (xo, yo))
+        print('-306 -396 translate')
+        print('2 setlinewidth')
         if yy < .6 or yy > .61:
             s = 2
         elif yy == .6046:
@@ -476,34 +476,34 @@ def lengraph(figno):
         else:
             s = 5
 	xys, cost, x, y, th = run_elastica(-s, s, k, lam1, lam2, 100)
-        print 'gsave [10] 0 setdash'
+        print('gsave [10] 0 setdash')
 	plot(xys)
-        print 'grestore 6 setlinewidth'
+        print('grestore 6 setlinewidth')
 	xys, cost, x, y, th = run_elastica(-.5, .5, k, lam1, lam2, 100)
 	plot(xys)
-	print 'grestore'
+	print('grestore')
         
-    print 'showpage'
+    print('showpage')
     eps_trailer()
 
 def draw_axes(x0, y0, xscale, yscale, xmax, ymax, nx, ny):
-    print '.5 setlinewidth'
-    print '/Times-Roman 12 selectfont'
-    print x0, y0, 'moveto', xscale * xmax, '0 rlineto 0', yscale * ymax, 'rlineto', -xscale * xmax, '0 rlineto closepath stroke'
+    print('.5 setlinewidth')
+    print('/Times-Roman 12 selectfont')
+    print(x0, y0, 'moveto', xscale * xmax, '0 rlineto 0', yscale * ymax, 'rlineto', -xscale * xmax, '0 rlineto closepath stroke')
     xinc = (xmax * xscale * 1.) / nx
     yinc = (ymax * yscale * 1.) / ny
     for i in range(0, nx + 1):
         if i > 0 and i < nx + 1:
-            print x0 + xinc * i, y0, 'moveto 0 6 rlineto stroke'
-            print x0 + xinc * i, y0 + ymax * yscale, 'moveto 0 -6 rlineto stroke'
-        print x0 + xinc * i, y0 - 12, 'moveto'
-        print '(%.2g) dup stringwidth exch -.5 mul exch rmoveto show' % ((i * xmax * 1.) / nx)
+            print(x0 + xinc * i, y0, 'moveto 0 6 rlineto stroke')
+            print(x0 + xinc * i, y0 + ymax * yscale, 'moveto 0 -6 rlineto stroke')
+        print(x0 + xinc * i, y0 - 12, 'moveto')
+        print('(%.2g) dup stringwidth exch -.5 mul exch rmoveto show' % ((i * xmax * 1.) / nx))
     for i in range(0, ny + 1):
         if i > 0 and i < ny + 1:
-            print x0, y0 + yinc * i, 'moveto 6 0 rlineto stroke'
-            print x0 + xmax * xscale, y0 + yinc * i, 'moveto -6 0 rlineto stroke'
-        print x0 - 3, y0 + yinc * i - 3.5, 'moveto'
-        print '(%.2g) dup stringwidth exch neg exch rmoveto show' % ((i * ymax * 1.) / ny)
+            print(x0, y0 + yinc * i, 'moveto 6 0 rlineto stroke')
+            print(x0 + xmax * xscale, y0 + yinc * i, 'moveto -6 0 rlineto stroke')
+        print(x0 - 3, y0 + yinc * i - 3.5, 'moveto')
+        print('(%.2g) dup stringwidth exch neg exch rmoveto show' % ((i * ymax * 1.) / ny))
     
 
 def mecchord():
@@ -511,14 +511,14 @@ def mecchord():
     y0 = 72
     thscale = 150
     chscale = 400
-    print '.5 setlinewidth'
-    print '/ss 1.5 def'
-    print '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    print('.5 setlinewidth')
+    print('/ss 1.5 def')
+    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
     draw_axes(x0, y0, thscale, chscale, 3.2, 1, 16, 10)
-    print x0 + 1 * thscale, y0 - 28, 'moveto (angle) show'
-    print 'gsave', x0 - 32, y0 + .25 * chscale, 'translate'
-    print '90 rotate 0 0 moveto (chordlen / arclen) show'
-    print 'grestore'
+    print(x0 + 1 * thscale, y0 - 28, 'moveto (angle) show')
+    print('gsave', x0 - 32, y0 + .25 * chscale, 'translate')
+    print('90 rotate 0 0 moveto (chordlen / arclen) show')
+    print('grestore')
 
     cmd = 'moveto'
     for i in range(0, 67):
@@ -529,19 +529,19 @@ def mecchord():
             ch = hypot(x, y) / (2 * s)
         else:
             ch = 1
-        print '%', s, x, y, th, ch
-        print x0 + thscale * th / 2, y0 + ch * chscale, cmd
-        cmd = 'lineto'
-    print 'stroke'
+        print('%', s, x, y, th, ch)
+        print(x0 + thscale * th / 2, y0 + ch * chscale, cmd)
+        cmd = 'lineto')
+    print('stroke')
 
-    print 'gsave %g %g translate circle fill' % (x0 + thscale * th / 2, y0 + ch * chscale)
-    print '-30 15 translate 0.25 dup scale'
-    print '-306 -396 translate'
-    print '2 setlinewidth'
+    print('gsave %g %g translate circle fill' % (x0 + thscale * th / 2, y0 + ch * chscale))
+    print('-30 15 translate 0.25 dup scale')
+    print('-306 -396 translate')
+    print('2 setlinewidth')
     plot(xys)
-    print 'grestore'
+    print('grestore')
 
-    print 'gsave [2] 0 setdash'
+    print('gsave [2] 0 setdash')
     cmd = 'moveto'
     for i in range(0, 151):
         th = pi * i / 150.
@@ -549,27 +549,27 @@ def mecchord():
             ch = sin(th) / th
         else:
             ch = 1
-        print x0 + thscale * th, y0 + ch * chscale, cmd
+        print(x0 + thscale * th, y0 + ch * chscale, cmd
         cmd = 'lineto'
-    print 'stroke'
-    print 'grestore'
+    print('stroke'))
+    print('grestore')
 
     k0 = 4 * .4536 / (2 / pi)
     s = pi / (2 * k0)
     xys, cost, x, y, th = run_elastica(-s, s, k0, 0, 0, 100)
     th = pi
     ch = 2 / pi
-    print 'gsave %g %g translate circle fill' % (x0 + thscale * th / 2, y0 + ch * chscale)
-    print '30 15 translate 0.25 dup scale'
-    print '-306 -396 translate'
-    print '2 setlinewidth'
+    print('gsave %g %g translate circle fill' % (x0 + thscale * th / 2, y0 + ch * chscale))
+    print('30 15 translate 0.25 dup scale')
+    print('-306 -396 translate')
+    print('2 setlinewidth')
     plot(xys)
-    print 'grestore'
+    print('grestore')
 
-    print x0 + 1.25 * thscale, y0 + .55 * chscale, 'moveto (MEC) show'
-    print x0 + 2.3 * thscale, y0 + .35 * chscale, 'moveto (SIMEC) show'
+    print(x0 + 1.25 * thscale, y0 + .55 * chscale, 'moveto (MEC) show')
+    print(x0 + 2.3 * thscale, y0 + .35 * chscale, 'moveto (SIMEC) show')
 
-    print 'showpage'
+    print('showpage')
 
 def trymec(sm, sp):
     xys, thm, cost = run_elastica_half(abs(sm), 0, 1, 0, 10)
@@ -585,7 +585,7 @@ def trymec(sm, sp):
         yp = -yp
         thp = -thp
     chth = atan2(yp - ym, xp - xm)
-    #print xm, ym, xp, yp, chth, thm, thp
+    #print(xm, ym, xp, yp, chth, thm, thp)
     actual_th0 = chth - thm
     actual_th1 = thp - chth
     return actual_th0, actual_th1
@@ -602,17 +602,17 @@ def findmec_old(th0, th1):
         guess_avth = .5 * (sp + sm) * (sp - sm)
         guess_th0 = .5 * (guess_avth - guess_dth)
         guess_th1 = .5 * (guess_avth + guess_dth)
-        print sm, sp, actual_th0, actual_th1, guess_th0, guess_th1
+        print(sm, sp, actual_th0, actual_th1, guess_th0, guess_th1)
 
 def mecplots():
-    print '2 dup scale'
-    print '-153 -296 translate'
+    print('2 dup scale')
+    print('-153 -296 translate')
     scale = 45
-    print '0.25 setlinewidth'
-    print 306 - scale * pi/2, 396, 'moveto', 306 + scale * pi/2, 396, 'lineto stroke'
-    print 306, 396 - scale * pi/2, 'moveto', 306, 396 + scale * pi/2, 'lineto stroke'
-    print '/ss .5 def'
-    print '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    print('0.25 setlinewidth')
+    print(306 - scale * pi/2, 396, 'moveto', 306 + scale * pi/2, 396, 'lineto stroke')
+    print(306, 396 - scale * pi/2, 'moveto', 306, 396 + scale * pi/2, 'lineto stroke')
+    print('/ss .5 def')
+    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
 
     tic = .1
     maj = 5
@@ -624,29 +624,29 @@ def mecplots():
         for j in range(i, r1):
             sp = j * tic + 1e-3
             th0, th1 = trymec(sm, sp)
-            print '%', sm, sp, th0, th1
-            print 306 + scale * th0, 396 + scale * th1, cmd
+            print('%', sm, sp, th0, th1)
+            print(306 + scale * th0, 396 + scale * th1, cmd)
             cmd = 'lineto'
-        print 'stroke'
+        print('stroke')
     for j in range(r0, r1, maj):
         sp = j * tic + 1e-3
         cmd = 'moveto'
         for i in range(0, j + 1):
             sm = i * tic
             th0, th1 = trymec(sm, sp)
-            print '%', sm, sp, th0, th1
-            print 306 + scale * th0, 396 + scale * th1, cmd
+            print('%', sm, sp, th0, th1)
+            print(306 + scale * th0, 396 + scale * th1, cmd)
             cmd = 'lineto'
-        print 'stroke'
+        print('stroke')
 
     for i in range(r0, r1, maj):
         sm = i * tic
         for j in range(i, r1, maj):
             sp = j * tic + 1e-3
             th0, th1 = trymec(sm, sp)
-            print 'gsave'
-            print 306 + scale * th0, 596 + scale * th1, 'translate'
-            print 'circle fill'
+            print('gsave')
+            print(306 + scale * th0, 596 + scale * th1, 'translate')
+            print('circle fill')
             uscale = 3
             xys, thm, cost = run_elastica_half(abs(sm), 0, 1, 0, 100)
             x0, y0 = xys[-1][0], xys[-1][1]
@@ -658,15 +658,15 @@ def mecplots():
                 x1, y1 = -x1, -y1
             cmd = 'moveto'
             for xy in xys:
-                print xy[0] * uscale, xy[1] * uscale, cmd
+                print(xy[0] * uscale, xy[1] * uscale, cmd)
                 cmd = 'lineto'
-            print 'stroke'
-            print '1 0 0 setrgbcolor'
-            print x0 * uscale, y0 * uscale, 'moveto'
-            print x1 * uscale, y1 * uscale, 'lineto stroke'
-            print 'grestore'
+            print('stroke')
+            print('1 0 0 setrgbcolor')
+            print(x0 * uscale, y0 * uscale, 'moveto')
+            print(x1 * uscale, y1 * uscale, 'lineto stroke')
+            print('grestore')
 
-    print 'showpage'
+    print('showpage')
 
 def findmec(th0, th1):
     delta = 1e-3
@@ -685,7 +685,7 @@ def findmec(th0, th1):
 
         err = c1c * c1c + c2c * c2c
         if 0:
-            print '%findmec', sm, sp, ath0, ath1, err
+            print('%findmec', sm, sp, ath0, ath1, err
             sys.stdout.flush()
 
         if err < 1e-9:
@@ -728,42 +728,42 @@ def findmec(th0, th1):
 def mecrange(figtype):
     scale = 130
     eps_prologue(50, 110, 570, 630)
-    print -50, 0, 'translate'
-    print '0.5 setlinewidth'
+    print(-50, 0, 'translate')
+    print('0.5 setlinewidth')
     thlmin, thlmax = -pi/2, 2.4
     thrmin, thrmax = -2.2, pi / 2 + .2
-    print 306 + scale * thlmin, 396, 'moveto', 306 + scale * thlmax, 396, 'lineto stroke'
-    print 306, 396 + scale * thrmin, 'moveto', 306, 396 + scale * thrmax, 'lineto stroke'
+    print(306 + scale * thlmin, 396, 'moveto', 306 + scale * thlmax, 396, 'lineto stroke')
+    print(306, 396 + scale * thrmin, 'moveto', 306, 396 + scale * thrmax, 'lineto stroke')
 
-    print 'gsave [2] 0 setdash'
-    print 306, 396 + scale * pi / 2, 'moveto'
-    print 306 + scale * thlmax, 396 + scale * pi / 2, 'lineto stroke'
-    print 306 + scale * thlmin, 396 - scale * pi / 2, 'moveto'
-    print 306 + scale * thlmax, 396 - scale * pi / 2, 'lineto stroke'
-    print 306 + scale * pi / 2, 396 + scale * thrmin, 'moveto'
-    print 306 + scale * pi / 2, 396 + scale * thrmax, 'lineto stroke'
-    print 'grestore'
+    print('gsave [2] 0 setdash')
+    print(306, 396 + scale * pi / 2, 'moveto')
+    print(306 + scale * thlmax, 396 + scale * pi / 2, 'lineto stroke')
+    print(306 + scale * thlmin, 396 - scale * pi / 2, 'moveto')
+    print(306 + scale * thlmax, 396 - scale * pi / 2, 'lineto stroke')
+    print(306 + scale * pi / 2, 396 + scale * thrmin, 'moveto')
+    print(306 + scale * pi / 2, 396 + scale * thrmax, 'lineto stroke')
+    print('grestore')
 
-    print 306 + 3, 396 + scale * thrmax - 10, 'moveto'
-    print '/Symbol 12 selectfont (q) show'
-    print 0, -2, 'rmoveto'
-    print '/Times-Italic 9 selectfont (right) show'
+    print(306 + 3, 396 + scale * thrmax - 10, 'moveto')
+    print('/Symbol 12 selectfont (q) show')
+    print(0, -2, 'rmoveto')
+    print('/Times-Italic 9 selectfont (right) show')
 
-    print 306 - 18, 396 + scale * pi / 2 - 4, 'moveto'
-    print '/Symbol 12 selectfont (p/2) show'
-    print 306 + scale * 2.2, 396 - scale * pi / 2 + 2, 'moveto'
-    print '/Symbol 12 selectfont (-p/2) show'
+    print(306 - 18, 396 + scale * pi / 2 - 4, 'moveto')
+    print('/Symbol 12 selectfont (p/2) show')
+    print(306 + scale * 2.2, 396 - scale * pi / 2 + 2, 'moveto')
+    print('/Symbol 12 selectfont (-p/2) show')
 
-    print 306 + scale * pi/2 + 2, 396 + scale * thrmax - 10, 'moveto'
-    print '/Symbol 12 selectfont (p/2) show'
+    print(306 + scale * pi/2 + 2, 396 + scale * thrmax - 10, 'moveto')
+    print('/Symbol 12 selectfont (p/2) show')
 
-    print 306 + scale * 2.2, 396 + 6, 'moveto'
-    print '/Symbol 12 selectfont (q) show'
-    print 0, -2, 'rmoveto'
-    print '/Times-Italic 9 selectfont (left) show'
+    print(306 + scale * 2.2, 396 + 6, 'moveto')
+    print('/Symbol 12 selectfont (q) show')
+    print(0, -2, 'rmoveto')
+    print('/Times-Italic 9 selectfont (left) show')
 
-    print '/ss 0.8 def'
-    print '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    print('/ss 0.8 def')
+    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
     cmd = 'moveto'
     for i in range(0, 201):
         th = (i * .005 - .75 )* pi
@@ -780,22 +780,22 @@ def mecrange(figtype):
         r = (rmin + rmax) * .5
         th0 = r * cos(th)
         th1 = r * sin(th)
-        print '%', r, th, th0, th1
-        print 306 + scale * th0, 396 + scale * th1, cmd
+        print('%', r, th, th0, th1)
+        print(306 + scale * th0, 396 + scale * th1, cmd)
         cmd = 'lineto'
         sys.stdout.flush()
-    print 'stroke'
+    print('stroke')
     sys.stdout.flush()
         
     for i in range(-11, 12):
         for j in range(-11, i + 1):
             th0, th1 = i * .196, j * .196
-            print '%', th0, th1
+            print('%', th0, th1)
             params = findmec(th0, th1)
             if params != None:
                 sm, sp = params
-                print 'gsave'
-                print 306 + scale * th0, 396 + scale * th1, 'translate'
+                print('gsave')
+                print(306 + scale * th0, 396 + scale * th1, 'translate')
                 uscale = 22
                 k0, lam1, lam2 = justify_mec(sm, sp)
                 xys, cost, x, y, th = run_elastica(-.5, .5, k0, lam1, lam2)
@@ -805,34 +805,34 @@ def mecrange(figtype):
                 ch = hypot(dx, dy)
                 chth = atan2(dy, dx)
                 if figtype == 'mecrange':
-                    print 'circle fill'
+                    print('circle fill')
                     s = uscale * sin(chth) / ch
                     c = uscale * cos(chth) / ch
                     h = -xys[0][0] * s + xys[0][1] * c
                     for xy in xys:
-                        print xy[0] * c + xy[1] * s, h + xy[0] * s - xy[1] * c, cmdm
+                        print(xy[0] * c + xy[1] * s, h + xy[0] * s - xy[1] * c, cmdm)
                         cmdm = 'lineto'
                 elif figtype == 'mecrangek':
                     ds = 1. / (len(xys) - 1)
                     sscale = 13. / ch
                     kscale = 3 * ch
-                    print 'gsave .25 setlinewidth'
-                    print sscale * -.5, 0, 'moveto', sscale, 0, 'rlineto stroke'
-                    print 'grestore'
+                    print('gsave .25 setlinewidth')
+                    print(sscale * -.5, 0, 'moveto', sscale, 0, 'rlineto stroke')
+                    print('grestore')
                     for l in range(len(xys)):
-                        print sscale * (ds * l - 0.5), kscale * xys[l][2], cmdm
+                        print(sscale * (ds * l - 0.5), kscale * xys[l][2], cmdm)
                         cmdm = 'lineto'
-                print 'stroke'
-                print 'grestore'
+                print('stroke')
+                print('grestore')
             sys.stdout.flush()
-    print 'showpage'
+    print('showpage')
     eps_trailer()
 
 # given sm, sp in [0, 1, 0] mec, return params for -0.5..0.5 segment
 def justify_mec(sm, sp):
     sc = (sm + sp) * 0.5
     xys, thc, cost = run_elastica_half(sc, 0, 1, 0, 100)
-    print '% sc =', sc, 'thc =', thc
+    print('% sc =', sc, 'thc =', thc)
     k0, lam1, lam2 = xys[-1][2], cos(thc), -sin(thc)
     ds = sp - sm
     k0 *= ds

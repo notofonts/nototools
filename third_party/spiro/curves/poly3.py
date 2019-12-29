@@ -29,7 +29,7 @@ def int_3spiro_poly(ks, n):
         km1 = ((.5 * k3 * sm + k2) * sm + k1) * ds
         km2 = (k3 * sm + k2) * ds * ds
         km3 = k3 * ds * ds * ds
-        #print km0, km1, km2, km3
+        #print(km0, km1, km2, km3)
         u = 1 - km0 * km0 / 24
         v = km1 / 24
 
@@ -59,7 +59,7 @@ def calc_thk(ks):
     th1 = (.5 * ks[0] + .125 * ks[1] + 1./48 * ks[2] + 1./384 * ks[3]) - ch_th
     k0 = chord * (ks[0] - .5 * ks[1] + .125 * ks[2] - 1./48 * ks[3])
     k1 = chord * (ks[0] + .5 * ks[1] + .125 * ks[2] + 1./48 * ks[3])
-    #print '%', (-.5 * ks[0] + .125 * ks[1] - 1./48 * ks[2] + 1./384 * ks[3]), (.5 * ks[0] + .125 * ks[1] + 1./48 * ks[2] + 1./384 * ks[3]), ch_th
+    #print('%', (-.5 * ks[0] + .125 * ks[1] - 1./48 * ks[2] + 1./384 * ks[3]), (.5 * ks[0] + .125 * ks[1] + 1./48 * ks[2] + 1./384 * ks[3]), ch_th)
     return th0, th1, k0, k1
 
 def calc_k1k2(ks):
@@ -82,14 +82,14 @@ def plot(ks):
     cmd = "moveto"
     for j in range(len(pts)):
         x, y = pts[j]
-        print 306 + 300 * x, 400 + 300 * y, cmd
+        print(306 + 300 * x, 400 + 300 * y, cmd)
         cmd = "lineto"
-    print "stroke"
+    print("stroke")
     x, y = pts[0]
-    print 306 + 300 * x, 400 + 300 * y, "moveto"
+    print(306 + 300 * x, 400 + 300 * y, "moveto")
     x, y = pts[-1]
-    print 306 + 300 * x, 400 + 300 * y, "lineto .5 setlinewidth stroke"
-    print "showpage"
+    print(306 + 300 * x, 400 + 300 * y, "lineto .5 setlinewidth stroke")
+    print("showpage")
 
 def solve_3spiro(th0, th1, k0, k1):
     ks = [0, 0, 0, 0]
@@ -103,7 +103,7 @@ def solve_3spiro(th0, th1, k0, k1):
         ks[1] += (dth1 - dth0) * 15 + (dk0 - dk1) * 1.5
         ks[2] += (dth0 + dth1) * -12 + (dk0 + dk1) * 6
         ks[3] += (dth0 - dth1) * 360 + (dk1 - dk0) * 60
-        #print '% ks =', ks
+        #print('% ks =', ks)
     return ks
 
 def iter_spline(pts, ths, ks):
@@ -139,10 +139,10 @@ if __name__ == '__main__':
     ks = [0, 0, 0, 0.01]
     #plot(ks)
     thk = calc_thk(ks)
-    print '%', thk
+    print('%', thk)
     
     ks = solve_3spiro(0, 0, 0, 0.001)
-    print '% thk =', calc_thk(ks)
+    print('% thk =', calc_thk(ks))
     #plot(ks)
-    print '%', ks
-    print calc_k1k2(ks)
+    print('%', ks)
+    print(calc_k1k2(ks))

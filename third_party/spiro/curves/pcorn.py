@@ -152,7 +152,7 @@ class Curve:
             pseg = self.segs[(i + len(self.segs) - 1) % len(self.segs)]
             seg = self.segs[i]
             th = clothoid.mod_2pi(pseg.chth + pseg.th1 - (seg.chth - seg.th0))
-            print '% pseg', pseg.chth + pseg.th1, 'seg', seg.chth - seg.th0
+            print('% pseg', pseg.chth + pseg.th1, 'seg', seg.chth - seg.th0)
             pisline = pseg.k0 == 0 and pseg.k1 == 0
             sisline = seg.k0 == 0 and seg.k1 == 0
             if fabs(th) > 1e-3 or (pisline and not sisline) or (sisline and not pisline):

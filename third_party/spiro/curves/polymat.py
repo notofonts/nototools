@@ -54,11 +54,11 @@ m[1][n * 4 + 3] = 1
 def printarr(m):
     for j in range(n * 4 + 4):
         for i in range(n * 4 + 4):
-            print '%6.1f' % m[j][i],
-        print ''
+            print('%6.1f' % m[j][i],)
+        print('')
 
 sys.output_line_width = 160
-#print array2string(m, precision = 3)
+#print(array2string(m, precision = 3))
 mi = la.inverse(m)
 #printarr(mi)
 
@@ -105,21 +105,21 @@ def plot_path(path, th, k):
         xt = x0 - u * pts[0][0] + v * pts[0][1]
         yt = y0 - u * pts[0][1] - v * pts[0][0]
         for x, y in pts:
-            print xt + u * x - v * y, yt + u * y + v * x, cmd
+            print(xt + u * x - v * y, yt + u * y + v * x, cmd)
             cmd = 'lineto'
         if t1 == 'v':
             j += 2
         else:
             j += 1
-    print 'stroke'
+    print('stroke')
     if 0:
         j = 0
         for i in range(len(path)):
             x0, y0, t0 = path[i]
-            print 'gsave', x0, y0, 'translate'
-            print ' ', th[j] * 180 / pi, 'rotate'
-            print '  -50 0 moveto 50 0 lineto stroke'
-            print 'grestore'
+            print('gsave', x0, y0, 'translate')
+            print(' ', th[j] * 180 / pi, 'rotate')
+            print('  -50 0 moveto 50 0 lineto stroke')
+            print('grestore')
             j += 1
 
 def plot_ks(path, th, k):
@@ -150,22 +150,22 @@ def plot_ks(path, th, k):
         pside = poly3.int_3spiro_poly(ksp, 64)
         ksm = (ks[0] * -.5, ks[1] * .25, ks[2] * -.125, ks[3] * .0625)
         mside = poly3.int_3spiro_poly(ksm, 64)
-        print '%', x0, y0, k0, k1
-        print "% ks = ", ks
+        print('%', x0, y0, k0, k1)
+        print("% ks = ", ks)
         l = 2 * chord_len / hypot(pside[-1][0] + mside[-1][0], pside[-1][1] + mside[-1][1])
         for i in range(100):
             s = .01 * i - 0.5
             kp = poly3.eval_cubic(ks[0], ks[1], .5 * ks[2], 1./6 * ks[3], s)
             kp /= l
-            print x + xscale * l * (s + .5), yo + yscale * kp, cmd
+            print(x + xscale * l * (s + .5), yo + yscale * kp, cmd)
             cmd = 'lineto'
         x += xscale * l
         if t1 == 'v':
             j += 2
         else:
             j += 1
-    print 'stroke'
-    print xo, yo, 'moveto', x, yo, 'lineto stroke'
+    print('stroke')
+    print(xo, yo, 'moveto', x, yo, 'lineto stroke')
 
 def make_error_vec(path, th, k):
     if path[0][2] == '{': closed = 0
@@ -209,14 +209,14 @@ def make_error_vec(path, th, k):
         elif t1 == 'c':
             v[2 * j1] += k2r
 
-        print "% left k'", k1l, "k''", k2l, "right k'", k1r, "k''", k2r
+        print("% left k'", k1l, "k''", k2l, "right k'", k1r, "k''", k2r)
         if t1 == 'v':
             j += 2
         else:
             j += 1
-    print '% error vector:'
+    print('% error vector:')
     for i in range(n):
-        print '%  ', v[2 * i], v[2 * i + 1]
+        print('%  ', v[2 * i], v[2 * i + 1])
     return v
 
 def add_k1l(m, row, col, col1, l, s):
@@ -320,7 +320,7 @@ def solve(path):
         th = fit_arc(x, y) + atan2(dy, dx)
         bend_angle = mod_2pi(atan2(y2 - y1, x2 - x1) - atan2(y1 - y0, x1 - x0))
         k = 2 * bend_angle/(hypot(y2 - y1, x2 - x1) + hypot(y1 - y0, x1 - x0))
-        print '% bend angle', bend_angle, 'k', k
+        print('% bend angle', bend_angle, 'k', k)
         if t1 == ']':
             th = atan2(y1 - y0, x1 - x0)
             k = 0
@@ -332,8 +332,8 @@ def solve(path):
     if not closed:
         nominal_th.append(atan2(dys[-1], dxs[-1]))
         nominal_k.append(0)
-    print '%', nominal_th
-    print '0 0 1 setrgbcolor .5 setlinewidth'
+    print('%', nominal_th)
+    print('0 0 1 setrgbcolor .5 setlinewidth')
     plot_path(path, nominal_th, nominal_k)
     plot_ks(path, nominal_th, nominal_k)
     th = nominal_th[:]
@@ -342,26 +342,26 @@ def solve(path):
     for i in range(n):
         ev = make_error_vec(path, th, k)
         m = make_matrix(path, th, k)
-        #print m
-        #print 'inverse:'
-        #print la.inverse(m)
+        #print(m)
+        #print('inverse:')
+        #print(la.inverse(m))
         v = dot(la.inverse(m), ev)
-        #print v
+        #print(v)
         for j in range(len(path)):
             th[j] += 1. * v[2 * j]
             k[j] -= 1. * .5 * v[2 * j + 1]
         if i == n - 1:
-            print '0 0 0 setrgbcolor 1 setlinewidth'
+            print('0 0 0 setrgbcolor 1 setlinewidth')
         elif i == 0:
-            print '1 0 0 setrgbcolor'
+            print('1 0 0 setrgbcolor')
         elif i == 1:
-            print '0 0.5 0 setrgbcolor'
+            print('0 0.5 0 setrgbcolor')
         elif i == 2:
-            print '0.3 0.3 0.3 setrgbcolor'
+            print('0.3 0.3 0.3 setrgbcolor')
         plot_path(path, th, k)
         plot_ks(path, th, k)
-    print '% th:', th
-    print '% k:', k
+    print('% th:', th)
+    print('% k:', k)
 
 path = [(100, 100, 'o'), (200, 250, 'o'), (350, 225, 'o'),
          (450, 350, 'c'), (450, 200, 'o'), (300, 100, 'o')]
@@ -396,4 +396,4 @@ if 0:
     path.append((650, 450, 'c'))
 
 solve(path)
-print 'showpage'
+print('showpage')

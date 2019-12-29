@@ -11,6 +11,6 @@ for ln in file(sys.argv[1]).xreadlines():
         glyphmap[name].append(pgmf)
 for name in glyphmap.iterkeys():
     cmd = '~/garden/font/blend ' + ' '.join(glyphmap[name]) + ' | pnmtopng > ' + name + '.png'
-    print cmd
+    print(cmd)
     os.system(cmd)
 

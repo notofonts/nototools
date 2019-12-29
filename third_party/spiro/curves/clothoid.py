@@ -43,14 +43,14 @@ def solve_clothoid(th0, th1, verbose = False):
     k1 = 6 * (th1 - th0)
     error = (th1 - th0) - compute_dth(k0, k1)
     if verbose:
-        print k0, k1, error
+        print(k0, k1, error)
 
     k1_old, error_old = k1, error
     # second guess based on d(dth)/dk1 ~ 1/6
     k1 += 6 * error
     error = (th1 - th0) - compute_dth(k0, k1)
     if verbose:
-        print k0, k1, error
+        print(k0, k1, error)
 
     # secant method
     for i in range(10):
@@ -58,9 +58,9 @@ def solve_clothoid(th0, th1, verbose = False):
         k1_old, error_old, k1 = k1, error, k1 + (k1_old - k1) * error / (error - error_old)
         error = (th1 - th0) - compute_dth(k0, k1)
         if verbose:
-            print k0, k1, error
+            print(k0, k1, error)
 
     return k0, k1
 
 if __name__ == '__main__':
-    print solve_clothoid(.06, .05, True)
+    print(solve_clothoid(.06, .05, True))

@@ -2,7 +2,7 @@ import x3
 from math import *
 
 def my_callback(cmd, what, arg, more):
-    print cmd, what, arg
+    print(cmd, what, arg)
 
 class bez:
     def __init__(self):
