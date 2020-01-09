@@ -18,7 +18,7 @@ ifeq ($(TARGET),win32)
   X3_LIBS = -lgdi32
 endif
 
-PY_INCL := -I$(shell python -c "import distutils.sysconfig; print distutils.sysconfig.get_python3_inc()")
+PY_INCL := -I$(shell python -c "import distutils.sysconfig; print distutils.sysconfig.get_python_inc()")
 
 CFLAGS = -g -Wall -fPIC -I.. $(PY_INCL) -D$(X3_PLAT) $(X3_INCL)
 LDFLAGS = -g
