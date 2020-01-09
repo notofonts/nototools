@@ -18,7 +18,7 @@ ifeq ($(TARGET),win32)
   X3_LIBS = -lgdi32
 endif
 
-PY_INCL := -I$(shell python3 -c "import distutils.sysconfig; print distutils.sysconfig.get_python3_inc()")
+PY_INCL := -I$(shell python -c "import distutils.sysconfig; print distutils.sysconfig.get_python3_inc()")
 
 CFLAGS = -g -Wall -fPIC -I.. $(PY_INCL) -D$(X3_PLAT) $(X3_INCL)
 LDFLAGS = -g
@@ -28,7 +28,7 @@ x3.so:	x3.o x3$(TARGET).o x3common.o
 	gcc $(SHARED_FLAG) $^ $(X3_LIBS) -o $@
 
 x3.c:	x3.pyx
-	python32.4-pyrexc $<
+	python-pyrexc $<
 
 x3$(TARGET).o:	../x3$(TARGET).c
 	$(CC) -c $(CFLAGS) -o $@ $<
