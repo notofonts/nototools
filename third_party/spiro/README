@@ -13,7 +13,7 @@ make
 
 It requires Gtk2 and cairo.
 
-The curves/ subdirectory contains python3 utilities for manipulating
+The curves/ subdirectory contains python utilities for manipulating
 curves, including a Bezier optimizer.
 
 The font/ subdirectory contains tools for segmenting scans and
