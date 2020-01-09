@@ -25,10 +25,10 @@ make install NO_GETTEXT=1
 hash git
 
 # patch lookup path so our python in /usr/local/lib can find pango in /usr/lib
-cat << EOF >> /usr/local/lib/python2.7/sitecustomize.py
+cat << EOF >> /usr/local/lib/python3.7/sitecustomize.py
 import sys
-sys.path.append('/usr/lib/python2.7/dist-packages')
-sys.path.append('/usr/lib/python2.7/dist-packages/gtk-2.0')
+sys.path.append('/usr/lib/python3.7/dist-packages')
+sys.path.append('/usr/lib/python3.7/dist-packages/gtk-2.0')
 EOF
 
 # for harfbuzz
