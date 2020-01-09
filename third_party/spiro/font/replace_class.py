@@ -1,4 +1,4 @@
-#!/usr/bin/env python33
+#!/usr/bin/env python
 
 import sys
 srfile = file(sys.argv[1])
