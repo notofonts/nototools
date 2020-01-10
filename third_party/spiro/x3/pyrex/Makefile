@@ -28,7 +28,7 @@ x3.so:	x3.o x3$(TARGET).o x3common.o
 	gcc $(SHARED_FLAG) $^ $(X3_LIBS) -o $@
 
 x3.c:	x3.pyx
-	python2.4-pyrexc $<
+	python-pyrexc $<
 
 x3$(TARGET).o:	../x3$(TARGET).c
 	$(CC) -c $(CFLAGS) -o $@ $<
