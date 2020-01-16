@@ -502,7 +502,7 @@ def plot_nodes(nodes, segs):
         print('grestore')
 
 def prologue():
-    print('/ss 2 def'
+    print('/ss 2 def')
     print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
     print('/poly {'
     print('    dup false exch {'
