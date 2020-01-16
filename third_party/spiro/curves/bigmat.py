@@ -504,7 +504,7 @@ def plot_nodes(nodes, segs):
 def prologue():
     print('/ss 2 def')
     print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
-    print('/poly {'
+    print('/poly {')
     print('    dup false exch {'
     print('        0 3 index 2 index { lineto } { moveto } ifelse pop true'
     print('        360.0 2 index div rotate'
