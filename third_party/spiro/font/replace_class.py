@@ -11,4 +11,4 @@ for line in srfile.xreadlines():
 for line in sys.stdin.xreadlines():
     fn, clas = line.split()
     if table.has_key(clas):
-        print fn, table[clas]
+        print(fn, table[clas])

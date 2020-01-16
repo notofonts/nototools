@@ -132,7 +132,7 @@ def inversedot_woodbury(m, v):
     for i in range(n):
         for j in range(max(-7, -i), min(4, n - i)):
             a[i, j + 7] = m[i, i + j]
-    print a
+    print(a)
     al, indx, d = band.bandec(a, 7, 3)
     VtZ = identity(4, Float)
     Z = zeros((n, 4), Float)
@@ -146,10 +146,10 @@ def inversedot_woodbury(m, v):
         #Z[:,i] = u
         for j in range(4):
             VtZ[j, i] += u[n - 4 + j]
-    print Z
-    print VtZ
+    print(Z)
+    print(VtZ)
     H = la.inverse(VtZ)
-    print H
+    print(H)
     band.banbks(a, 7, 3, al, indx, v)
     return(v - dot(Z, dot(H, v[n - 4:])))
 
@@ -170,7 +170,7 @@ def inversedot(m, v):
         for j in range(n - 4, n):
             if m[i, j] != 0:
                 cyclic = True
-    print '% cyclic:', cyclic
+    print('% cyclic:', cyclic)
     if not cyclic:
         a = zeros((n, 11), Float)
         for i in range(n):
@@ -184,7 +184,7 @@ def inversedot(m, v):
                 else: sys.stdout.write('  ')
             sys.stdout.write('\n')
         al, indx, d = band.bandec(a, 5, 5)
-        print a
+        print(a)
         band.banbks(a, 5, 5, al, indx, v)
         return v
     else:
@@ -196,7 +196,7 @@ def inversedot(m, v):
             u[i] = v[i % n]
             for j in range(-7, 4):
                 a[i, j + 7] = m[i % n, (i + j + 7 * n) % n]
-        #print a
+        #print(a)
         if 1:
             for i in range(bign):
                 sys.stdout.write('% ')
@@ -205,15 +205,15 @@ def inversedot(m, v):
                     elif a[i, j] < 0: sys.stdout.write('- ')
                     else: sys.stdout.write('  ')
                 sys.stdout.write('\n')
-        #print u
+        #print(u)
         al, indx, d = band.bandec(a, 5, 5)
         band.banbks(a, 5, 5, al, indx, u)
-        #print u
+        #print(u)
         return u[n + 2: 2 * n + 2]
 
 def iter(segs, nodes):
     n, jincs = count_vec(nodes)
-    print '%', jincs
+    print('%', jincs)
     v = zeros(n, Float)
     m = zeros((n, n), Float)
     for i in range(len(segs)):
@@ -227,10 +227,10 @@ def iter(segs, nodes):
         seg = segs[i]
 
         derivs = seg.compute_pderivs()
-        print '%derivs:', derivs
+        print('%derivs:', derivs)
 
         jinc = jincs[i]   # the number of params on this seg
-        print '%', t0, t1, jinc, j0
+        print('%', t0, t1, jinc, j0)
 
         # The constraints are laid out as follows:
         #   constraints that cross the node on the left
@@ -289,7 +289,7 @@ def iter(segs, nodes):
             jk0r = jj + 1
             jj += 2
 
-        print '%', jthl, jk0l, jk1l, jk2l, jthr, jk0r, jk1r, jk2r
+        print('%', jthl, jk0l, jk1l, jk2l, jthr, jk0r, jk1r, jk2r)
 
         if jthl >= 0:
             v[jthl] += thscale * (nodes[i].th - seg.endl[0])
@@ -367,7 +367,7 @@ def iter(segs, nodes):
 
         j += jinc
         j0 = j1
-    #print m
+    #print(m)
     dk = inversedot(m, v)
     dkmul = 1
     j = 0
@@ -433,23 +433,23 @@ def plot_path(segs, nodes, tol = 1.0, show_cpts = False):
             up, vp = scale / (1.5 * n_subdiv) * cos(thp), scale / (1.5 * n_subdiv) * sin(thp)
             if s == -.5:
                 if cmd == 'moveto':
-                    print xp, yp, 'moveto'
+                    print(xp, yp, 'moveto')
                     cmd = 'curveto'
             else:
                 if show_cpts:
                     cpts.append((xlast + ulast, ylast + vlast))
                     cpts.append((xp - up, yp - vp))
-                print xlast + ulast, ylast + vlast, xp - up, yp - vp, xp, yp, 'curveto'
+                print(xlast + ulast, ylast + vlast, xp - up, yp - vp, xp, yp, 'curveto')
             xlast, ylast, ulast, vlast = xp, yp, up, vp
             s += 1. / n_subdiv
         if t1 == 'v':
             j += 2
         else:
             j += 1
-    print 'stroke'
+    print('stroke')
     if show_cpts:
         for x, y in cpts:
-            print 'gsave 0 0 1 setrgbcolor', x, y, 'translate circle fill grestore'
+            print('gsave 0 0 1 setrgbcolor', x, y, 'translate circle fill grestore')
 
 def plot_ks(segs, nodes, xo, yo, xscale, yscale):
     j = 0
@@ -465,70 +465,70 @@ def plot_ks(segs, nodes, xo, yo, xscale, yscale):
         chord, ch_th = poly3.integ_chord(ks)
         l = chord/segs[i].chord
         k0 = l * poly3.eval_cubic(ks[0], ks[1], .5 * ks[2], 1./6 * ks[3], -.5)
-        print x, yo + yscale * k0, cmd
+        print(x, yo + yscale * k0, cmd)
         cmd = 'lineto'
         k3 = l * poly3.eval_cubic(ks[0], ks[1], .5 * ks[2], 1./6 * ks[3], .5)
         k1 = k0 + l/3 * (ks[1] - 0.5 * ks[2] + .125 * ks[3])
         k2 = k3 - l/3 * (ks[1] + 0.5 * ks[2] + .125 * ks[3])
-        print x + xscale / l / 3., yo + yscale * k1
-        print x + 2 * xscale / l / 3., yo + yscale * k2
-        print x + xscale / l, yo + yscale * k3, 'curveto'
+        print(x + xscale / l / 3., yo + yscale * k1)
+        print(x + 2 * xscale / l / 3., yo + yscale * k2)
+        print(x + xscale / l, yo + yscale * k3, 'curveto')
         x += xscale / l
         if t1 == 'v':
             j += 2
         else:
             j += 1
-    print 'stroke'
-    print xo, yo, 'moveto', x, yo, 'lineto stroke'
+    print('stroke')
+    print(xo, yo, 'moveto', x, yo, 'lineto stroke')
 
 def plot_nodes(nodes, segs):
     for i in range(len(nodes)):
         n = nodes[i]
-        print 'gsave', n.x, n.y, 'translate'
+        print('gsave', n.x, n.y, 'translate')
         if n.ty in ('c', '[', ']'):
             th = segs[i].th - segs[i].endl[0]
             if n.ty == ']': th += pi
-            print 180 * th / pi, 'rotate'
+            print(180 * th / pi, 'rotate')
         if n.ty == 'o':
-            print 'circle fill'
+            print('circle fill')
         elif n.ty == 'c':
-            print '3 4 poly fill'
+            print('3 4 poly fill')
         elif n.ty in ('v', '{', '}'):
-            print '45 rotate 3 4 poly fill'
+            print('45 rotate 3 4 poly fill')
         elif n.ty in ('[', ']'):
-            print '0 -3 moveto 0 0 3 90 270 arc fill'
+            print('0 -3 moveto 0 0 3 90 270 arc fill')
         else:
-            print '5 3 poly fill'
-        print 'grestore'
+            print('5 3 poly fill')
+        print('grestore')
 
 def prologue():
-    print '/ss 2 def'
-    print '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
-    print '/poly {'
-    print '    dup false exch {'
-    print '        0 3 index 2 index { lineto } { moveto } ifelse pop true'
-    print '        360.0 2 index div rotate'
-    print '    } repeat pop pop pop'
-    print '} bind def'
+    print('/ss 2 def')
+    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print('/poly {')
+    print('    dup false exch {')
+    print('        0 3 index 2 index { lineto } { moveto } ifelse pop true')
+    print('        360.0 2 index div rotate')
+    print('    } repeat pop pop pop')
+    print('} bind def')
 
 def run_path(path, show_iter = False, n = 10, xo = 36, yo = 550, xscale = .25, yscale = 2000, pl_nodes = True):
     segs, nodes = setup_path(path)
-    print '.5 setlinewidth'
+    print('.5 setlinewidth')
     for i in range(n):
         if i == n - 1:
-            print '0 0 0 setrgbcolor 1 setlinewidth'
+            print('0 0 0 setrgbcolor 1 setlinewidth')
         elif i == 0:
-            print '1 0 0 setrgbcolor'
+            print('1 0 0 setrgbcolor')
         elif i == 1:
-            print '0 0.5 0 setrgbcolor'
+            print('0 0.5 0 setrgbcolor'
         elif i == 2:
-            print '0.3 0.3 0.3 setrgbcolor'
+            print('0.3 0.3 0.3 setrgbcolor')
         norm = iter(segs, nodes)
-        print '% norm =', norm
+        print('% norm =', norm)
         if show_iter or i == n - 1:
-            #print '1 0 0 setrgbcolor'
+            #print('1 0 0 setrgbcolor')
             #plot_path(segs, nodes, tol = 5)
-            #print '0 0 0 setrgbcolor'
+            #print('0 0 0 setrgbcolor')
             plot_path(segs, nodes, tol = 1.0)
             plot_ks(segs, nodes, xo, yo, xscale, yscale)
     if pl_nodes:

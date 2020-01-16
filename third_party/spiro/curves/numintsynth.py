@@ -37,15 +37,15 @@ def add(poly0, poly1, nmax):
 
 def pr(str):
     if tex:
-        print str, '\\\\'
+        print(str, '\\\\')
     else:
-        print '\t' + str + ';'
+        print('\t' + str + ';')
 
 def prd(str):
     if tex:
-        print str, '\\\\'
+        print(str, '\\\\')
     else:
-        print '\tdouble ' + str + ';'
+        print('\tdouble ' + str + ';')
 
 def polymul(p0, p1, degree, basename, suppress_odd = False):
     result = []
@@ -122,7 +122,7 @@ def mkspiro(degree):
     for i in range(1, degree - 1):
         tmp = []
         tcoef = coef
-        #print tlast
+        #print(tlast)
         for j in range(len(tlast)):
             c = tcoef / (j + 1)
             if (j % 2) == 0 and tlast[j] != None:

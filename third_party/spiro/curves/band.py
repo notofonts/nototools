@@ -74,12 +74,12 @@ if __name__ == '__main__':
         a[i, 0] = 1
         a[i, 1] = 2
         a[i, 2] = 1
-    print a
+    print(a)
     al, indx, d = bandec(a, 1, 1)
-    print a
-    print al
-    print indx
+    print(a)
+    print(al)
+    print(indx)
     b = zeros(10, Float)
     b[5] = 1
     banbks(a, 1, 1, al, indx, b)
-    print b
+    print(b)

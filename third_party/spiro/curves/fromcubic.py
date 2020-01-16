@@ -14,7 +14,7 @@ def read_bz(f):
         s = l.split()
         if len(s) > 0:
             cmd = s[-1]
-            #print s[:-1], cmd
+            #print(s[:-1], cmd
             if cmd == 'm':
                 sp = []
                 result.append(sp)
@@ -37,24 +37,24 @@ def plot_bzs(bzs, z0, scale, fancy = False):
         for i in range(len(sp)):
             bz = sp[i]
             tocubic.plot_bz(bz, z0, scale, i == 0)
-        print 'stroke'
+        print('stroke'
         if fancy:
             for i in range(len(sp)):
                 bz = sp[i]
 
                 x0, y0 = z0[0] + scale * bz[0][0], z0[1] + scale * bz[0][1]
-                print 'gsave', x0, y0, 'translate circle fill grestore'
+                print('gsave', x0, y0, 'translate circle fill grestore')
                 if len(bz) == 4:
                     x1, y1 = z0[0] + scale * bz[1][0], z0[1] + scale * bz[1][1]
                     x2, y2 = z0[0] + scale * bz[2][0], z0[1] + scale * bz[2][1]
                     x3, y3 = z0[0] + scale * bz[3][0], z0[1] + scale * bz[3][1]
-                    print 'gsave 0.5 setlinewidth', x0, y0, 'moveto'
-                    print x1, y1, 'lineto stroke'
-                    print x2, y2, 'moveto'
-                    print x3, y3, 'lineto stroke grestore'
-                    print 'gsave', x1, y1, 'translate 0.75 dup scale circle fill grestore'
-                    print 'gsave', x2, y2, 'translate 0.75 dup scale circle fill grestore'
-                    print 'gsave', x3, y3, 'translate 0.75 dup scale circle fill grestore'
+                    print('gsave 0.5 setlinewidth', x0, y0, 'moveto')
+                    print(x1, y1, 'lineto stroke')
+                    print(x2, y2, 'moveto')
+                    print(x3, y3, 'lineto stroke grestore')
+                    print('gsave', x1, y1, 'translate 0.75 dup scale circle fill grestore')
+                    print('gsave', x2, y2, 'translate 0.75 dup scale circle fill grestore')
+                    print('gsave', x3, y3, 'translate 0.75 dup scale circle fill grestore')
             
         
 
@@ -68,7 +68,7 @@ def measure_bz_cloth(seg, bz, n = 100):
         ds = hypot(dx, dy)
         s = ys[0] * arclen_ratio
         dscore = ds * (tocubic.mod_2pi(atan2(dy, dx) - seg.th(s)) ** 2)
-        #print s, atan2(dy, dx),  seg.th(s)
+        #print(s, atan2(dy, dx),  seg.th(s)
         return [ds, dscore]
     dt = 1./n
     t = 0
@@ -126,14 +126,14 @@ def plot_segs(segs):
     for i in range(len(segs)):
         seg = segs[i]
         if i == 0:
-            print seg.z0[0], seg.z0[1], 'moveto'
-        print seg.z1[0], seg.z1[1], 'lineto'
-    print 'stroke'
+            print(seg.z0[0], seg.z0[1], 'moveto')
+        print(seg.z1[0], seg.z1[1], 'lineto')
+    print('stroke')
     for i in range(len(segs)):
         seg = segs[i]
         if i == 0:
-            print 'gsave', seg.z0[0], seg.z0[1], 'translate circle fill grestore'
-        print 'gsave', seg.z1[0], seg.z1[1], 'translate circle fill grestore'
+            print('gsave', seg.z0[0], seg.z0[1], 'translate circle fill grestore')
+        print('gsave', seg.z1[0], seg.z1[1], 'translate circle fill grestore')
 
 import sys
 
@@ -144,27 +144,27 @@ def test_to_pcorn():
         thresh = .1 ** i
         segs = cubic_bz_to_pcorn(bz, thresh)
         plot_segs(segs)
-        print >> sys.stderr, thresh, len(segs)
-        print '0 20 translate'
+        print(>> sys.stderr, thresh, len(segs))
+        print('0 20 translate')
 
 if __name__ == '__main__':
     f = file(sys.argv[1])
     bzs = read_bz(f)
     rsps = bzs_to_pcorn(bzs, 1)
-    #print rsps
+    #print(rsps
     tocubic.plot_prolog()
-    print 'grestore'
-    print '1 -1 scale 0 -720 translate'
-    print '/ss 1.5 def'
-    print '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    print('grestore')
+    print('1 -1 scale 0 -720 translate')
+    print('/ss 1.5 def')
+    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
     tot = 0
     for segs in rsps:
         curve = pcorn.Curve(segs)
         #curve = offset.offset(curve, 10)
-        print '%', curve.arclen
-        print '%', curve.sstarts
+        print('%', curve.arclen)
+        print('%', curve.sstarts)
         if 0:
-            print 'gsave 1 0 0 setrgbcolor'
+            print('gsave 1 0 0 setrgbcolor')
             cmd = 'moveto'
             for i in range(100):
                 s = i * .01 * curve.arclen
@@ -172,9 +172,9 @@ if __name__ == '__main__':
                 th = curve.th(s)
                 sth = 5 * sin(th)
                 cth = 5 * cos(th)
-                print x, y, cmd
+                print(x, y, cmd
                 cmd = 'lineto'
-            print 'closepath stroke grestore'
+            print('closepath stroke grestore')
         for i in range(100):
             s = i * .01 * curve.arclen
             x, y = curve.xy(s)
@@ -182,27 +182,27 @@ if __name__ == '__main__':
             sth = 5 * sin(th)
             cth = 5 * cos(th)
             if 0:
-                print x - cth, y - sth, 'moveto'
-                print x + cth, y + sth, 'lineto stroke'
+                print(x - cth, y - sth, 'moveto')
+                print(x + cth, y + sth, 'lineto stroke')
         if 1:
             for s in curve.find_breaks():
-                print 'gsave 0 1 0 setrgbcolor'
+                print('gsave 0 1 0 setrgbcolor')
                 x, y = curve.xy(s)
-                print x, y, 'translate 2 dup scale circle fill'
-                print 'grestore'
+                print(x, y, 'translate 2 dup scale circle fill')
+                print('grestore')
         #plot_segs(segs)
 
-        print 'gsave 0 0 0 setrgbcolor'
+        print('gsave 0 0 0 setrgbcolor')
         optim = 3
         thresh = 1e-2
         new_bzs = tocubic.pcorn_curve_to_bzs(curve, optim, thresh)
         tot += len(new_bzs)
         plot_bzs([new_bzs], (0, 0), 1, True)
-        print 'grestore'
-    print 'grestore'
-    print '/Helvetica 12 selectfont'
-    print '36 720 moveto (thresh=%g optim=%d) show' % (thresh, optim)
-    print '( tot segs=%d) show' % tot
-    print 'showpage'
+        print('grestore')
+    print('grestore')
+    print('/Helvetica 12 selectfont')
+    print('36 720 moveto (thresh=%g optim=%d) show' % (thresh, optim))
+    print('( tot segs=%d) show' % tot)
+    print('showpage')
 
     #plot_bzs(bzs, (100, 100), 1)

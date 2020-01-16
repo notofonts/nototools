@@ -39,9 +39,9 @@ for j in range(y):
             ofn = pref + '%04d.pgm' % ix
             of = file(ofn, 'w')
             active[ix] = of
-            print >> of, 'P5'
-            print >> of, r[2] - r[0], r[3] - r[1]
-            print >> of, '255'
+            print(>> of, 'P5')
+            print(>> of, r[2] - r[0], r[3] - r[1)
+            print(>> of, '255')
     buf = inf.read(x)
     for ix, of in active.items():
         r = rects[ix]
