@@ -43,18 +43,18 @@ def add(poly0, poly1, nmax):
     return Poly(p0, coeffs)
 
 
-def pr(str):
+def pr(string):
     if tex:
-        print(str, '\\\\')
+        print(string, '\\\\')
     else:
-        print('\t' + str + ';')
+        print('\t' + string + ';')
 
 
-def prd(str):
+def prd(string):
     if tex:
-        print(str, '\\\\')
+        print(string, '\\\\')
     else:
-        print('\tdouble ' + str + ';')
+        print('\tdouble ' + string + ';')
 
 
 def polymul(p0, p1, degree, basename, suppress_odd=False):
@@ -70,7 +70,7 @@ def polymul(p0, p1, degree, basename, suppress_odd=False):
         if not terms:
             result.append(None)
         else:
-            var = basename % i
+            var = basename % i  # type: str
             if (j % 2 == 0) or not suppress_odd:
                 prd(var + ' = ' + ' + '.join(terms))
             result.append(var)
@@ -102,7 +102,7 @@ def polysquare(p0, degree, basename):
         if not terms:
             result.append(None)
         else:
-            var = basename % i
+            var = basename % i  # type: str
             prd(var + ' = ' + ' + '.join(terms))
             result.append(var)
     return result
@@ -148,20 +148,20 @@ def mkspiro(degree):
                     tmp.append(cstr + ' * ' + tlast[j])
             tcoef *= .5
         if tmp:
-            sign = ('+', '-')[(i / 2) % 2]
+            sign = ('+', '-')[(i // 2) % 2]
             var = ('u', 'v')[i % 2]
             if tex:
                 if i == 1:
                     pref = ''
                 else:
                     pref = sign + ' '
-                str = pref + (' ' + sign + ' ').join(tmp)
+                string = pref + (' ' + sign + ' ').join(tmp)
             else:
-                str = var + ' ' + sign + '= ' + ' + '.join(tmp)
+                string = var + ' ' + sign + '= ' + ' + '.join(tmp)
             if var == 'u':
-                us.append(str)
+                us.append(string)
             else:
-                vs.append(str)
+                vs.append(string)
         if i < degree - 1:
             if tex:
                 basename = 't_{%d%%d}' % (i + 1)

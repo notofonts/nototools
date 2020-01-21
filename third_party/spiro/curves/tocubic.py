@@ -331,7 +331,7 @@ def pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh, nmax=None):
             break
         r = s1
         l = s0 + .001 * (s1 - s0)
-        for i in range(10):
+        for _ in range(10):
             smid = 0.5 * (l + r)
             zmid = curve.xy(smid)
             bz, score = fit_cubic(z0, zmid, smid - s0, th_fn_inner, 0)
@@ -479,7 +479,7 @@ def plot_errors_2d(t0, t1, as_ppm):
                 rr = g0 + sc * cos(color_th)
                 gg = g0 + sc * cos(color_th + 2 * pi / 3)
                 bb = g0 + sc * cos(color_th - 2 * pi / 3)
-                sys.stdout.write(struct.pack('3B', rr, gg, bb))
+                print(struct.pack('3B', rr, gg, bb), end="")
             else:
                 print(a, b, score)
         if not as_ppm:

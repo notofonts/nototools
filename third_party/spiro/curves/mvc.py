@@ -69,7 +69,7 @@ def descend(params, fnl):
         best = fnl(params, i, True)
         bestparams = params
         for j in range(2 * len(params)):
-            ix = j / 2
+            ix = j // 2
             sign = 1 - 2 * (ix & 1)
             newparams = params[:]
             newparams[ix] += delta * sign
