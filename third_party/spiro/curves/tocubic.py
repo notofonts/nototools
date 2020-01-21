@@ -3,11 +3,25 @@
 # Some conventions: points are (x, y) pairs. Cubic Bezier segments are
 # lists of four points.
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 
-from math import *
+from math import floor
+from math import sin
+from math import cos
+from math import sqrt
+from math import hypot
+from math import log
+from math import atan2
+from math import pi
+import struct
 
 import pcorn
+import cornu
+
 
 def pt_wsum(points, wts):
     x, y = 0, 0
@@ -16,9 +30,10 @@ def pt_wsum(points, wts):
         y += points[i][1] * wts[i]
     return x, y
 
+
 # Very basic spline primitives
 def bz_eval(bz, t):
-    degree = len(bz) - 1 
+    degree = len(bz) - 1
     mt = 1 - t
     if degree == 3:
         return pt_wsum(bz, [mt * mt * mt, 3 * mt * mt * t, 3 * mt * t * t, t * t * t])
@@ -27,18 +42,20 @@ def bz_eval(bz, t):
     elif degree == 1:
         return pt_wsum(bz, [mt, t])
 
+
 def bz_deriv(bz):
     degree = len(bz) - 1
     return [(degree * (bz[i + 1][0] - bz[i][0]), degree * (bz[i + 1][1] - bz[i][1])) for i in range(degree)]
 
-def bz_arclength(bz, n = 10):
+
+def bz_arclength(bz, n=10):
     # We're just going to integrate |z'| over the parameter [0..1].
     # The integration algorithm here is eqn 4.1.14 from NRC2, and is
     # chosen for simplicity. Likely adaptive and/or higher-order
     # algorithms would be better, but this should be good enough.
     # Convergence should be quartic in n.
-    wtarr = (3./8, 7./6, 23./24)
-    dt = 1./n
+    wtarr = (3. / 8, 7. / 6, 23. / 24)
+    dt = 1. / n
     s = 0
     dbz = bz_deriv(bz)
     for i in range(0, n + 1):
@@ -53,31 +70,35 @@ def bz_arclength(bz, n = 10):
         s += wt * ds
     return s * dt
 
+
 # One step of 4th-order Runge-Kutta numerical integration - update y in place
 def rk4(y, dydx, x, h, derivs):
     hh = h * .5
-    h6 = h * (1./6)
+    h6 = h * (1. / 6)
     xh = x + hh
     yt = []
     for i in range(len(y)):
-	yt.append(y[i] + hh * dydx[i])
-    dyt = derivs(xh, yt)
+        yt.append(y[i] + hh * dydx[i])
+        dyt = derivs(xh, yt)
     for i in range(len(y)):
-	yt[i] = y[i] + hh * dyt[i]
-    dym = derivs(xh, yt)
+        yt[i] = y[i] + hh * dyt[i]
+        dym = derivs(xh, yt)
     for i in range(len(y)):
-	yt[i] = y[i] + h * dym[i]
-	dym[i] += dyt[i]
-    dyt = derivs(x + h, yt)
+        yt[i] = y[i] + h * dym[i]
+        dym[i] += dyt[i]
+        dyt = derivs(x + h, yt)
     for i in range(len(y)):
-	y[i] += h6 * (dydx[i] + dyt[i] + 2 * dym[i])
+        y[i] += h6 * (dydx[i] + dyt[i] + 2 * dym[i])
 
-def bz_arclength_rk4(bz, n = 10):
+
+def bz_arclength_rk4(bz, n=10):
     dbz = bz_deriv(bz)
+
     def arclength_deriv(x, ys):
         dx, dy = bz_eval(dbz, x)
         return [hypot(dx, dy)]
-    dt = 1./n
+
+    dt = 1. / n
     t = 0
     ys = [0]
     for i in range(n):
@@ -85,6 +106,7 @@ def bz_arclength_rk4(bz, n = 10):
         rk4(ys, dydx, t, dt, arclength_deriv)
         t += dt
     return ys[0]
+
 
 # z0 and z1 are start and end points, resp.
 # th0 and th1 are the initial and final tangents, measured in the
@@ -102,7 +124,7 @@ def fit_cubic_arclen(z0, z1, arclen, th0, th1, aab):
         bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
               (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s = bz_arclength_rk4(bz)
-        if (abs(arclen - actual_s) < 1e-12):
+        if abs(arclen - actual_s) < 1e-12:
             break
         a = (armlen + darmlen) * aab
         b = (armlen + darmlen) - a
@@ -110,7 +132,7 @@ def fit_cubic_arclen(z0, z1, arclen, th0, th1, aab):
               (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s2 = bz_arclength_rk4(bz)
         ds = (actual_s2 - actual_s) / darmlen
-        #print '% armlen = ', armlen
+        # print('% armlen = ', armlen)
         if ds == 0:
             break
         armlen += (arclen - actual_s) / ds
@@ -120,12 +142,14 @@ def fit_cubic_arclen(z0, z1, arclen, th0, th1, aab):
           (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
     return bz
 
+
 def mod_2pi(th):
     u = th / (2 * pi)
     return 2 * pi * (u - floor(u + 0.5))
 
-def measure_bz(bz, arclen, th_fn, n = 1000):
-    dt = 1./n
+
+def measure_bz(bz, arclen, th_fn, n=1000):
+    dt = 1. / n
     dbz = bz_deriv(bz)
     s = 0
     score = 0
@@ -136,15 +160,18 @@ def measure_bz(bz, arclen, th_fn, n = 1000):
         score += ds * (mod_2pi(atan2(dy, dx) - th_fn(s)) ** 2)
     return score
 
-def measure_bz_rk4(bz, arclen, th_fn, n = 10):
+
+def measure_bz_rk4(bz, arclen, th_fn, n=10):
     dbz = bz_deriv(bz)
+
     def measure_derivs(x, ys):
         dx, dy = bz_eval(dbz, x)
         ds = hypot(dx, dy)
         s = ys[0]
         dscore = ds * (mod_2pi(atan2(dy, dx) - th_fn(s)) ** 2)
         return [ds, dscore]
-    dt = 1./n
+
+    dt = 1. / n
     t = 0
     ys = [0, 0]
     for i in range(n):
@@ -153,13 +180,14 @@ def measure_bz_rk4(bz, arclen, th_fn, n = 10):
         t += dt
     return ys[1]
 
+
 # th_fn() is a function that takes an arclength from the start point, and
 # returns an angle - thus th_fn(0) and th_fn(arclen) are the initial and
 # final tangents.
 # z0, z1, and arclen are as fit_cubic_arclen
-def fit_cubic(z0, z1, arclen, th_fn, fast = 1):
+def fit_cubic(z0, z1, arclen, th_fn, fast=1):
     chord = hypot(z1[0] - z0[0], z1[1] - z0[1])
-    if (arclen < 1.000001 * chord):
+    if arclen < 1.000001 * chord:
         return [z0, z1], 0
     th0 = th_fn(0)
     th1 = th_fn(arclen)
@@ -178,7 +206,7 @@ def fit_cubic(z0, z1, arclen, th_fn, fast = 1):
                 aab = aabmin + (aabmax - aabmin) * j / jmax
             bz = fit_cubic_arclen(z0, z1, arclen, th0, th1, aab)
             score = measure_bz_rk4(bz, arclen, th_fn)
-            print '% aab =', aab, 'score =', score
+            print('% aab =', aab, 'score =', score)
             sys.stdout.flush()
             if j == 0 or score < best_score:
                 best_score = score
@@ -187,27 +215,30 @@ def fit_cubic(z0, z1, arclen, th_fn, fast = 1):
         daab = .06 * (aabmax - aabmin)
         aabmin = max(0, best_aab - daab)
         aabmax = min(1, best_aab + daab)
-        print '%--- best_aab =', best_aab
+        print('%--- best_aab =', best_aab)
     return best_bz, best_score
 
-def plot_prolog():
-    print '%!PS'
-    print '/m { moveto } bind def'
-    print '/l { lineto } bind def'
-    print '/c { curveto } bind def'
-    print '/z { closepath } bind def'
 
-def plot_bz(bz, z0, scale, do_moveto = True):
+def plot_prolog():
+    print('%!PS')
+    print('/m { moveto } bind def')
+    print('/l { lineto } bind def')
+    print('/c { curveto } bind def')
+    print('/z { closepath } bind def')
+
+
+def plot_bz(bz, z0, scale, do_moveto=True):
     x0, y0 = z0
     if do_moveto:
-        print bz[0][0] * scale + x0, bz[0][1] * scale + y0, 'm'
+        print(bz[0][0] * scale + x0, bz[0][1] * scale + y0, 'm')
     if len(bz) == 4:
         x1, y1 = bz[1][0] * scale + x0, bz[1][1] * scale + y0
         x2, y2 = bz[2][0] * scale + x0, bz[2][1] * scale + y0
         x3, y3 = bz[3][0] * scale + x0, bz[3][1] * scale + y0
-        print x1, y1, x2, y2, x3, y3, 'c'
+        print(x1, y1, x2, y2, x3, y3, 'c')
     elif len(bz) == 2:
-        print bz[1][0] * scale + x0, bz[1][1] * scale + y0, 'l'
+        print(bz[1][0] * scale + x0, bz[1][1] * scale + y0, 'l')
+
 
 def test_bz_arclength():
     bz = [(0, 0), (.5, 0), (1, 0.5), (1, 1)]
@@ -218,36 +249,39 @@ def test_bz_arclength():
         n = 1 << i
         err = bz_arclength(bz, n) - ans
         err_rk = bz_arclength_rk4(bz, n) - ans
-        print n, err, last / err, err_rk, lastrk / err_rk
+        print(n, err, last / err, err_rk, lastrk / err_rk)
         last = err
         lastrk = err_rk
+
 
 def test_fit_cubic_arclen():
     th = pi / 4
     arclen = th / sin(th)
     bz = fit_cubic_arclen((0, 0), (1, 0), arclen, th, th, .5)
-    print '%', bz
+    print('%', bz)
     plot_bz(bz, (100, 400), 500)
-    print 'stroke'
-    print 'showpage'
+    print('stroke')
+    print('showpage')
+
 
 # -- cornu fitting
 
-import cornu
 
 def cornu_to_cubic(t0, t1):
     def th_fn(s):
         return (s + t0) ** 2
+
     y0, x0 = cornu.eval_cornu(t0)
     y1, x1 = cornu.eval_cornu(t1)
     bz, score = fit_cubic((x0, y0), (x1, y1), t1 - t0, th_fn, 0)
     return bz, score
 
+
 def test_draw_cornu():
     plot_prolog()
     thresh = 1e-6
-    print '/ss 1.5 def'
-    print '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    print('/ss 1.5 def')
+    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
     s0 = 0
     imax = 200
     x0, y0, scale = 36, 100, 500
@@ -259,40 +293,45 @@ def test_draw_cornu():
             plot_bz(bz, (x0, y0), scale, s0 == 0)
             bzs.append(bz)
             s0 = s
-    print 'stroke'
+    print('stroke')
     for i in range(len(bzs)):
         bz = bzs[i]
         bx0, by0 = x0 + bz[0][0] * scale, y0 + bz[0][1] * scale
         bx1, by1 = x0 + bz[1][0] * scale, y0 + bz[1][1] * scale
         bx2, by2 = x0 + bz[2][0] * scale, y0 + bz[2][1] * scale
         bx3, by3 = x0 + bz[3][0] * scale, y0 + bz[3][1] * scale
-        print 'gsave 0 0 1 setrgbcolor .5 setlinewidth'
-        print bx0, by0, 'moveto', bx1, by1, 'lineto stroke'
-        print bx2, by2, 'moveto', bx3, by3, 'lineto stroke'
-        print 'grestore'
-        print 'gsave', bx0, by0, 'translate circle fill grestore'
-        print 'gsave', bx1, by1, 'translate .5 dup scale circle fill grestore'
-        print 'gsave', bx2, by2, 'translate .5 dup scale circle fill grestore'
-        print 'gsave', bx3, by3, 'translate circle fill grestore'
+        print('gsave 0 0 1 setrgbcolor .5 setlinewidth')
+        print(bx0, by0, 'moveto', bx1, by1, 'lineto stroke')
+        print(bx2, by2, 'moveto', bx3, by3, 'lineto stroke')
+        print('grestore')
+        print('gsave', bx0, by0, 'translate circle fill grestore')
+        print('gsave', bx1, by1, 'translate .5 dup scale circle fill grestore')
+        print('gsave', bx2, by2, 'translate .5 dup scale circle fill grestore')
+        print('gsave', bx3, by3, 'translate circle fill grestore')
+
 
 # -- fitting of piecewise cornu curves
 
-def pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh, nmax = None):
+
+def pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh, nmax=None):
     result = []
-    if s0 == s1: return [], 0
+    if s0 == s1:
+        return [], 0
     while s0 < s1:
         def th_fn_inner(s):
-            if s > s1: s = s1
+            if s > s1:
+                s = s1
             return curve.th(s0 + s, s == 0)
+
         z0 = curve.xy(s0)
         z1 = curve.xy(s1)
         bz, score = fit_cubic(z0, z1, s1 - s0, th_fn_inner, 0)
-        if score < thresh or nmax != None and len(result) == nmax - 1:
+        if score < thresh or nmax is not None and len(result) == nmax - 1:
             result.append(bz)
             break
         r = s1
         l = s0 + .001 * (s1 - s0)
-        for i in range(10):
+        for _ in range(10):
             smid = 0.5 * (l + r)
             zmid = curve.xy(smid)
             bz, score = fit_cubic(z0, zmid, smid - s0, th_fn_inner, 0)
@@ -300,22 +339,23 @@ def pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh, nmax = None):
                 r = smid
             else:
                 l = smid
-        print '% s0=', s0, 'smid=', smid, 'actual score =', score
+        print('% s0=', s0, 'smid=', smid, 'actual score =', score)
         result.append(bz)
         s0 = smid
-    print '% last actual score=', score
+    print('% last actual score=', score)
     return result, score
+
 
 def pcorn_segment_to_bzs_optim(curve, s0, s1, thresh, optim):
     result, score = pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh)
     bresult, bscore = result, score
     if len(result) > 1 and optim > 2:
         nmax = len(result)
-        gamma = 1./6
+        gamma = 1. / 6
         l = score
         r = thresh
         for i in range(5):
-            tmid = (0.5 * (l ** gamma + r ** gamma)) ** (1/gamma)
+            tmid = (0.5 * (l ** gamma + r ** gamma)) ** (1 / gamma)
             result, score = pcorn_segment_to_bzs_optim_inner(curve, s0, s1, tmid, nmax)
             if score < tmid:
                 l = max(l, score)
@@ -327,14 +367,17 @@ def pcorn_segment_to_bzs_optim(curve, s0, s1, thresh, optim):
                 bresult, bscore = result, max(score, tmid)
     return result
 
-def pcorn_segment_to_bzs(curve, s0, s1, optim = 0, thresh = 1e-3):
+
+def pcorn_segment_to_bzs(curve, s0, s1, optim=0, thresh=1e-3):
     if optim >= 2:
         return pcorn_segment_to_bzs_optim(curve, s0, s1, thresh, optim)
     z0 = curve.xy(s0)
     z1 = curve.xy(s1)
     fast = (optim == 0)
+
     def th_fn(s):
         return curve.th(s0 + s, s == 0)
+
     bz, score = fit_cubic(z0, z1, s1 - s0, th_fn, fast)
     if score < thresh:
         return [bz]
@@ -344,12 +387,13 @@ def pcorn_segment_to_bzs(curve, s0, s1, optim = 0, thresh = 1e-3):
         result.extend(pcorn_segment_to_bzs(curve, smid, s1, optim, thresh))
         return result
 
-def pcorn_curve_to_bzs(curve, optim = 3, thresh = 1e-3):
+
+def pcorn_curve_to_bzs(curve, optim=3, thresh=1e-3):
     result = []
     extrema = curve.find_extrema()
     extrema.extend(curve.find_breaks())
     extrema.sort()
-    print '%', extrema
+    print('%', extrema)
     for i in range(len(extrema)):
         s0 = extrema[i]
         if i == len(extrema) - 1:
@@ -359,7 +403,6 @@ def pcorn_curve_to_bzs(curve, optim = 3, thresh = 1e-3):
         result.extend(pcorn_segment_to_bzs(curve, s0, s1, optim, thresh))
     return result
 
-import struct
 
 def fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab):
     chord = hypot(z1[0] - z0[0], z1[1] - z0[1])
@@ -373,7 +416,7 @@ def fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab):
         bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
               (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s = bz_arclength_rk4(bz)
-        if (abs(arclen - actual_s) < 1e-12):
+        if abs(arclen - actual_s) < 1e-12:
             break
         a = (armlen + darmlen) * aab
         b = (armlen + darmlen) - a
@@ -381,7 +424,7 @@ def fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab):
               (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s2 = bz_arclength_rk4(bz)
         ds = (actual_s2 - actual_s) / darmlen
-        #print '% armlen = ', armlen
+        # print('% armlen = ', armlen)
         armlen += (arclen - actual_s) / ds
     a = armlen * aab
     b = armlen - a
@@ -389,15 +432,18 @@ def fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab):
           (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
     return bz, a, b
 
+
 def plot_errors_2d(t0, t1, as_ppm):
     xs = 1024
     ys = 1024
     if as_ppm:
-        print 'P6'
-        print xs, ys
-        print 255
+        print('P6')
+        print(xs, ys)
+        print(255)
+
     def th_fn(s):
         return (s + t0) ** 2
+
     y0, x0 = cornu.eval_cornu(t0)
     y1, x1 = cornu.eval_cornu(t1)
     z0 = (x0, y0)
@@ -414,10 +460,12 @@ def plot_errors_2d(t0, t1, as_ppm):
         for x in range(xs):
             a = .8 * chord * x / xs
             bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-              (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+                  (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
             s_bz = bz_arclength(bz, 10)
+
             def th_fn_scaled(s):
                 return (s * arclen / s_bz + t0) ** 2
+
             score = measure_bz_rk4(bz, arclen, th_fn_scaled, 10)
             if as_ppm:
                 ls = -log(score)
@@ -431,15 +479,17 @@ def plot_errors_2d(t0, t1, as_ppm):
                 rr = g0 + sc * cos(color_th)
                 gg = g0 + sc * cos(color_th + 2 * pi / 3)
                 bb = g0 + sc * cos(color_th - 2 * pi / 3)
-                sys.stdout.write(struct.pack('3B', rr, gg, bb))
+                print(struct.pack('3B', rr, gg, bb), end="")
             else:
-                print a, b, score
+                print(a, b, score)
         if not as_ppm:
-            print
+            print()
+
 
 def plot_arclen(t0, t1):
     def th_fn(s):
         return (s + t0) ** 2
+
     y0, x0 = cornu.eval_cornu(t0)
     y1, x1 = cornu.eval_cornu(t1)
     z0 = (x0, y0)
@@ -451,11 +501,12 @@ def plot_arclen(t0, t1):
     for i in range(101):
         aab = i * .01
         bz, a, b = fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab)
-        print a, b
+        print(a, b)
+
 
 if __name__ == '__main__':
-    #test_bz_arclength()
+    # test_bz_arclength()
     test_draw_cornu()
-    #run_one_cornu_seg()
-    #plot_errors_2d(.5, 1.0, False)
-    #plot_arclen(.5, 1.0)
+    # run_one_cornu_seg()
+    # plot_errors_2d(.5, 1.0, False)
+    # plot_arclen(.5, 1.0)

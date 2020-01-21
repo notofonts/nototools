@@ -1,9 +1,14 @@
 # offset curve of piecewise cornu curves
 
-from math import *
+from __future__ import absolute_import
+
+from math import sin
+from math import cos
+from math import atan2
 
 import pcorn
 from clothoid import mod_2pi
+
 
 def seg_offset(seg, d):
     th0 = seg.th(0)

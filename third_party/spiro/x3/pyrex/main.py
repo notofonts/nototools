@@ -1,25 +1,33 @@
+from __future__ import absolute_import
+from __future__ import print_function
+
 import x3
 
+
 def my_callback(cmd, what, arg, more):
-    print cmd, what, arg
+    print(cmd, what, arg)
+
 
 class my_viewclient:
     def key(self, name, mods, code):
-        print name, mods, code
+        print(name, mods, code)
         return 1
+
     def mouse(self, buttons, mods, x, y):
-        print buttons, mods, x, y
+        print(buttons, mods, x, y)
+
     def draw(self, dc):
-        print 'rect:', dc.rect
+        print('rect:', dc.rect)
         dc.moveto(0, 0)
         dc.lineto(100, 100)
-        print dc.currentpoint()
+        print(dc.currentpoint())
         dc.stroke()
         dc.selectfont("Nimbus Sans L", 0, 0)
         dc.setfontsize(12)
         dc.moveto(50, 10)
         dc.showtext(u"\u00a1hello, world!")
-        print dc.textextents(u"\u00a1hello, world!")
+        print(dc.textextents(u"\u00a1hello, world!"))
+
 
 win = x3.window(0, "foo", my_callback)
 

@@ -1,4 +1,9 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from math import *
+
 
 def plot_elastica(a, c):
     s = 500
@@ -12,18 +17,19 @@ def plot_elastica(a, c):
         x = .001
     try:
         for i in range(1000):
-            print 6 + s * x, 200 + s * y, cmd
+            print(6 + s * x, 200 + s * y, cmd)
             cmd = 'lineto'
             x += dx
             if 1 and c * c > 2 * a * a:
-                print (c * c - x * x) * (x * x - g * g)
+                print((c * c - x * x) * (x * x - g * g))
                 dy = dx * (x * x - .5 * c * c - .5 * g * g) / sqrt((c * c - x * x) * (x * x - g * g))
             else:
-                dy = dx * (a * a - c * c + x * x)/sqrt((c * c - x * x) * (2 * a * a - c * c + x * x))
+                dy = dx * (a * a - c * c + x * x) / sqrt((c * c - x * x) * (2 * a * a - c * c + x * x))
             y += dy
-    except ValueError, e:
+    except ValueError:
         pass
-    print 'stroke'
+    print('stroke')
+
 
 plot_elastica(1, 0)
-print 'showpage'
+print('showpage')
