@@ -26,7 +26,6 @@ import collections
 import itertools
 import json
 import math
-import os
 from os import path
 import re
 import subprocess
@@ -40,7 +39,6 @@ from fontTools.misc import arrayTools
 from fontTools.misc import bezierTools
 from fontTools.pens import basePen
 
-from nototools import cldr_data
 from nototools import cmap_data
 from nototools import font_data
 from nototools import lint_config
@@ -52,6 +50,7 @@ from nototools import opentype_data
 from nototools import render
 from nototools import tool_utils
 from nototools import unicode_data
+from nototools.py23 import unichr
 
 try:
     from future_builtins import filter
@@ -730,7 +729,7 @@ def check_font(font_props, filename_error,
 
         needed_chars = _get_required_chars(
             noto_font, noto_phase, 'cmap/script_required')
-        if needed_chars == None:
+        if needed_chars is None:
             return
 
         # TODO: also check character coverage against Unicode blocks for
@@ -752,7 +751,7 @@ def check_font(font_props, filename_error,
     def _check_unexpected_chars(cmap, char_filter):
         expected_chars = _get_required_chars(
             noto_font, noto_phase, 'cmap/unexpected')
-        if expected_chars == None:
+        if expected_chars is None:
             return
         unexpected_chars = set(cmap) - expected_chars
         if char_filter and unexpected_chars:
@@ -1501,7 +1500,7 @@ def check_font(font_props, filename_error,
         for cp in sorted(cps_with_variants):
             data = unicode_data.get_variant_data(cp)
             for sel, _, ctx in sorted(data):
-                line = unichr(cp) + unichr(sel);
+                line = unichr(cp) + unichr(sel)
                 if ctx == 0:
                     any_strs.append(line)
                     continue
@@ -1780,7 +1779,7 @@ def check_font(font_props, filename_error,
                         expect_width(cp, space_width)
             else:
                 if tab_char in cmap or nbsp_char in cmap:
-                    space_width = get_horizontal_advance(space_char);
+                    space_width = get_horizontal_advance(space_char)
                     if tab_char in cmap:
                         # see https://www.microsoft.com/typography/otspec/recom.htm
                         expect_width(tab_char, space_width)
@@ -1815,7 +1814,7 @@ def check_font(font_props, filename_error,
                 if not get_horizontal_advance(cp):
                     warn("advances/spacing_marks", "Advances",
                          "The spacing mark %s (%04x) should have a non-zero advance." % (
-                             unichr(cp), cp));
+                             unichr(cp), cp))
 
     def check_stems(cmap):
         if not 'glyf' in font:

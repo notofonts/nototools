@@ -35,7 +35,6 @@ from PIL import Image
 import re
 from io import BytesIO
 import subprocess
-import tempfile
 
 import booleanOperations
 from defcon import Glyph
@@ -45,6 +44,7 @@ from fontTools.pens.pointPen import PointToSegmentPen
 
 from nototools.glyph_area_pen import GlyphAreaPen
 from nototools import hb_input
+from nototools.py23 import unichr
 
 GDEF_UNDEF = 0
 GDEF_MARK = 3
@@ -249,7 +249,7 @@ class ShapeDiffFinder:
             booleanOperations.xor(list(glyph_a), list(glyph_b), pen)
             area = abs(area_pen.pop())
             if area:
-                mismatched[name] = (area)
+                mismatched[name] = area
 
         stats = self.stats['compared']
         for name, area in mismatched.items():

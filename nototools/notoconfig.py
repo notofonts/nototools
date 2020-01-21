@@ -27,7 +27,6 @@ Formerly these were a single repository so the paths could all be reached
 from a single root, but that is no longer the case.
 """
 
-import os
 from os import path
 
 _ERR_MSG = """

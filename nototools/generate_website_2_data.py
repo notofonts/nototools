@@ -32,20 +32,16 @@ import locale
 import os
 from os import path
 import shutil
-import subprocess
-import xml.etree.cElementTree as ElementTree
-
-from fontTools import ttLib
 
 from nototools import cldr_data
 from nototools import coverage
 from nototools import create_image
-from nototools import extra_locale_data
 from nototools import lang_data
 from nototools import notoconfig
 from nototools import noto_fonts
 from nototools import tool_utils
 from nototools import unicode_data
+from nototools.py23 import unichr
 
 TOOLS_DIR = notoconfig.noto_tools()
 FONTS_DIR = notoconfig.noto_fonts()
@@ -162,7 +158,7 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
         hebr_lang_scrs.remove(lang_scr)
         print('removed %s from sans-hebr' % lang_scr)
         if not hebr_lang_scrs:
-          break;
+          break
 
   # ja patches:
   # - we generate all permutations of ja, including ja-Kana and
@@ -176,7 +172,7 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
         jpan_lang_scrs.remove(lang_scr)
         print('removed %s from sans-jpan' % lang_scr)
         if not jpan_lang_scrs:
-          break;
+          break
 
   for f, ls in sorted(family_id_to_lang_scrs.items()):
     if not ls:
@@ -265,7 +261,7 @@ def get_family_id_to_lang_scr_to_sample_key(family_id_to_lang_scrs,
             family_id, len(lang_scr_to_sample_key)))
         family_id_to_lang_scr_to_sample_key[family_id] = lang_scr_to_sample_key
 
-    return (family_id_to_lang_scr_to_sample_key, sample_key_to_info)
+    return family_id_to_lang_scr_to_sample_key, sample_key_to_info
 
 
 def get_family_id_to_regions(family_id_to_lang_scr_to_sample_key):
@@ -621,7 +617,7 @@ _DEBUG_KEYS = frozenset([
     ])
 
 def check_debug(debug):
-  if debug == None:
+  if debug is None:
     return frozenset()
   elif not debug:
     return _DEBUG_KEYS
@@ -1495,7 +1491,7 @@ def main():
     parser.add_argument('--debug',
                         help='types of information to dump during build',
                         nargs='*')
-    args = parser.parse_args();
+    args = parser.parse_args()
 
     repo_info = get_repo_info(args.no_repo_check)
 

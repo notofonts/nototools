@@ -162,7 +162,7 @@ def main(argv):
     for line_bounds, text_piece in exceeding_lines:
         print(text_piece.encode('UTF-8'), line_bounds)
 
-    # print test_all_combinations(3, font_file_name, ymin, ymax)
+    # print(test_all_combinations(3, font_file_name, ymin, ymax))
 
 
 if __name__ == '__main__':

@@ -23,7 +23,6 @@ import array
 import os
 from os import path
 import re
-import sys
 
 from fontTools import ttLib
 

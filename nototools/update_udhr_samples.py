@@ -278,7 +278,7 @@ def fix_index(bcp_to_codes):
       continue
 
     fixes = BCP_FIXES[k]
-    fixes_keys = set(fixes.keys());
+    fixes_keys = set(fixes.keys())
     unused_fixes = fixes_keys - v
     unknown_codes = v - fixes_keys
     if unused_fixes:
@@ -550,7 +550,7 @@ def get_bcp_to_sample(src_dir, bcp_to_code):
 bcp_script_re = re.compile(r'^(?:[A-Z][a-z]{3}|\d{3})$')
 def get_bcp_script(bcp):
   """Return the script portion of the bcp tag if it exists, or None."""
-  parts = bcp.split('-');
+  parts = bcp.split('-')
   if len(parts) == 1:
     return None
   return parts[1] if bcp_script_re.match(parts[1]) else None
@@ -586,7 +586,7 @@ def check_bcp_sample(bcp, sample):
     raise Exception('no script for %s' % bcp)
 
   required, accepted = accept_scripts(script) # unicode scripts
-  allowed = set(['Zyyy']) # common is ok
+  allowed = {'Zyyy'}  # common is ok
   if required:
     allowed |= required
   if accepted:
@@ -722,7 +722,7 @@ def get_script_histogram(utext):
     if script == 'Zinh':
       continue
     if script not in result:
-      result[script] = [1, set([cp])]
+      result[script] = [1, {cp}]
     else:
       r = result[script]
       r[0] += 1

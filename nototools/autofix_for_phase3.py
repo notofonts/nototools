@@ -312,7 +312,7 @@ def autohint_font(src, dst, script, dry_run):
     print('Warning: no hinting information for %s, script %s' % (src, script))
     return
 
-  if code == None:
+  if code is None:
     print('Warning: unable to autohint %s' % src)
     return
 
@@ -401,7 +401,7 @@ def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
 
   relfont = _get_release_font(f, rel_dir)
   expected_font_revision = get_new_version(font, relfont, version)
-  if expected_font_revision != None:
+  if expected_font_revision is not None:
     font_revision = font_data.printable_font_revision(font, 3)
     if font_revision != expected_font_revision:
       _alert('revision', font_revision, expected_font_revision)

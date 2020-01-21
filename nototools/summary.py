@@ -22,7 +22,6 @@ import argparse
 import os
 import os.path
 import re
-import sys
 
 from fontTools import ttLib
 
@@ -65,7 +64,7 @@ def summarize_file(root, path):
   # Adobe fonts use 3 digits, so the default from printable_font_revision of 2
   # is insufficient.
   # Assume that the name from the name table is accurate, and use it instead.
-  version_string = noto_lint.font_version(font);
+  version_string = noto_lint.font_version(font)
   match = re.match(r'Version (\d+\.\d+)', version_string)
   if match:
     version = match.group(1)
@@ -77,7 +76,7 @@ def summarize_file(root, path):
   num_chars = len(cmap)
   font.close()
 
-  return (relpath, version, full_name, size, num_glyphs, num_chars, cmap, table_info)
+  return relpath, version, full_name, size, num_glyphs, num_chars, cmap, table_info
 
 def summarize(root, name=None):
   result = []

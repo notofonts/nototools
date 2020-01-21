@@ -69,7 +69,7 @@ def _invert_script_to_chars(script_to_chars):
 class CmapOps(object):
   def __init__(self, script_to_chars=None, log_events=False, log_details=False,
                undefined_exceptions = None):
-    if script_to_chars == None:
+    if script_to_chars is None:
       self._script_to_chars = {}
     else:
       self._script_to_chars = {
@@ -407,7 +407,7 @@ def _reassign_common(cmap_ops):
   cmap_ops.phase('reassign common')
   for cp in cmap_ops.script_chars('Zyyy'):
     primary_script = _primary_script_for_block(unicode_data.block(cp))
-    if primary_script != None and primary_script != 'Zyyy':
+    if primary_script is not None and primary_script != 'Zyyy':
       cmap_ops.ensure_script(primary_script)
       cmap_ops.add(cp, primary_script)
       cmap_ops.remove(cp, 'Zyyy')
@@ -917,7 +917,7 @@ def _generate_script_extra(script_to_chars):
         continue
       name = unicode_data.name(cp, '<unnamed">')
       if cp not in chars:
-        if block == None:
+        if block is None:
           print("'%s': tool_utils.parse_int_ranges(\"\"\"" % script)
         cp_block = unicode_data.block(cp)
         if cp_block != block:
@@ -925,7 +925,7 @@ def _generate_script_extra(script_to_chars):
           print('  # %s' % block)
         print('  %04X # %s' % (cp, name))
         chars.add(cp)
-    if block != None:
+    if block is not None:
       print('  """),')
 
 # maintained using 'regen_script_required' fn
@@ -2629,7 +2629,7 @@ def _regen_script_required():
     scripts -= set(from_scripts)
   # keep extra script data, e.g. 'Aran'
   scripts.update(set(script_to_comment_and_data.keys()))
-  scripts -= set(['Zinh', 'Zyyy', 'Zzzz'])
+  scripts -= {'Zinh', 'Zyyy', 'Zzzz'}
 
   for script in sorted(scripts):
     if script in _MERGED_SCRIPTS_BY_TARGET:
@@ -2816,9 +2816,9 @@ def _assign_programming_lang_symbols(cmap_ops):
     for cp in cps:
       if unicode_data.mirrored(cp):
         mirrored_glyph = unicode_data.bidi_mirroring_glyph(cp)
-        if mirrored_glyph != None:
+        if mirrored_glyph is not None:
           mirrored_cps.add(mirrored_glyph)
-    cps |= (mirrored_cps)
+    cps |= mirrored_cps
 
   # some characters we want to preserve in symbols despite adding them
   # to math.
@@ -2981,14 +2981,14 @@ def _assign_symbols_from_groups(cmap_ops):
       while ix < len(ranges):
         open_p = ranges.find('(', ix)
         if open_p < 0:
-          if parts != None:
+          if parts is not None:
             parts.append(ranges[ix:].strip())
           break
         close_p = ranges.find(')', open_p+1)
         if close_p < 0:
           raise Exception(
               'unclosed paren in ranges on line %d "%s"' % (lineix, line))
-        if parts == None:
+        if parts is None:
           parts = []
         parts.append(ranges[ix:open_p])
         ix = close_p + 1
@@ -3001,7 +3001,7 @@ def _assign_symbols_from_groups(cmap_ops):
         sys.stderr.write(err + '\n')
         sys.stderr.write(cols[2] + '\n')
         sys.stderr.write('problem on %d "%s"\n' % (lineix, line))
-        raise err
+        raise
       if len(cps) > 50:
         sys.stderr.write('large range (%d) on %d "%s"\n' % (
             len(cps), lineix, line))
@@ -3023,7 +3023,7 @@ def _assign_mono(cmap_ops):
 
   cp437_cps = unicode_data.codeset('cp437')
   cmap_ops.phase('assign cp437 to mono')
-  assert cp437_cps != None
+  assert cp437_cps is not None
   cmap_ops.add_all(cp437_cps, 'MONO')
 
   # for variant zero
@@ -3199,7 +3199,7 @@ def _assign_basic(cmap_ops):
   """Add NUL, CR, Space, NBS to all scripts."""
   basic_chars = frozenset([0x0, 0x0D, 0x20, 0xA0])
   cmap_ops.phase('assign basic')
-  scripts_to_add = set(cmap_ops.all_scripts()) - set(['EXCL'])
+  scripts_to_add = set(cmap_ops.all_scripts()) - {'EXCL'}
   cmap_ops.add_all_to_all(basic_chars, scripts_to_add)
 
 
@@ -3214,7 +3214,7 @@ def build_script_to_chars(log_level):
   script_to_chars = unicode_data.create_script_to_chars()
 
   # Bitcoin is not in our unicode 9 data yet, allow it to be set anyway.
-  temp_defined = set([0x20bf])
+  temp_defined = {0x20bf}
 
   cmap_ops = CmapOps(
       script_to_chars, log_events=log_events, log_details=log_details,

@@ -112,7 +112,7 @@ def _get_script_required(
     needed_chars -= noto_data.get_characters_not_needed(script, noto_phase)
 
   if not unicode_only:
-    needed_chars |= set([0, 0xd, 0x20])
+    needed_chars |= {0, 0xd, 0x20}
 
   if verbose:
     sys.stderr.write(script + '\n')

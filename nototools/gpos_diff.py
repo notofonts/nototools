@@ -104,7 +104,7 @@ class GposDiffFinder:
         self._parse_anchor_info(rx, '+', self.text_b, unmatched, mismatched)
 
         res = ['%d differences in mark class definitions' % len(unmatched)]
-        unmatched = unmatched.items()
+        unmatched = list(unmatched.items())
         # (('+', 'uni0325', '@uni0323_6'), (0, -30))
         # Sort order:
         # 1. Glyph class

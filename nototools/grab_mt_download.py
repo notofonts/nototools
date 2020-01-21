@@ -42,13 +42,10 @@ built by this tool.
 
 __author__ = "dougfelt@google.com (Doug Felt)"
 
-import argparse
 from io import BytesIO
 import os
 import os.path
 import re
-import shutil
-import sys
 import zipfile
 
 from fontTools import ttLib

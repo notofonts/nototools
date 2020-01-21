@@ -199,13 +199,14 @@ class FontCondition(object):
     def test_in(lhs, rhs):
       return lhs in rhs
     def test_like(lhs, rhs):
-      return rhs.search(lhs) != None
+      return rhs.search(lhs) is not None
+
     def test_is_not(lhs, rhs):
       return lhs != rhs
     def test_not_in(lhs, rhs):
       return lhs not in rhs
     def test_not_like(lhs, rhs):
-      return rhs.search(lhs) == None
+      return rhs.search(lhs) is None
 
     return {
       '<': test_lt,
@@ -554,7 +555,7 @@ class TestSpec(object):
 
   def enable(self, tag, relation=None, arg_type=None, arg=None):
     tags = self._get_tag_set(tag)
-    if relation != None:
+    if relation is not None:
       if len(tags) > 1:
         raise ValueError('options cannot be applied to multiple tags')
       tag = next(iter(tags))
@@ -672,10 +673,10 @@ class LintTests(object):
         else:
           lines.append(tag)
     if self.run_log:
-      lines.add('run:')
+      lines.append('run:')
       lines.append('  ' + t for t in self.run_log)
     if self.skip_log:
-      lines.add('skipped:')
+      lines.append('skipped:')
       lines.append('  ' + t for t in self.skip_log)
     return '\n'.join(lines)
 

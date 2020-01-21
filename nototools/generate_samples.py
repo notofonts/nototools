@@ -121,9 +121,9 @@ def prev_cp(ustr, index):
   if index == 0:
     return None
   cp = ord(ustr[index - 1])
-  if cp >= 0xdc00 and cp <= 0xe000 and index > 1:  # high surrogate
+  if 0xdc00 <= cp <= 0xe000 and index > 1:  # high surrogate
     pcp = ord(ustr[index - 2])
-    if pcp >= 0xd800 and pcp < 0xdc00:  # low surrogate
+    if 0xd800 <= pcp < 0xdc00:  # low surrogate
       return index - 2, surrogate_pair_to_cp(pcp, cp)
   return index - 1, cp
 
@@ -135,9 +135,9 @@ def next_cp(ustr, index):
   if index >= limit:
     return None
   cp = ord(ustr[index])
-  if cp >= 0xd800 and cp < 0xdc00 and index < limit - 1:  # low surrogate
+  if 0xd800 <= cp < 0xdc00 and index < limit - 1:  # low surrogate
     ncp = ord(ustr[index + 1])
-    if ncp >= 0xdc00 and ncp < 0xe000:  # high surrogate
+    if 0xdc00 <= ncp < 0xe000:  # high surrogate
       return index + 2, surrogate_pair_to_cp(cp, ncp)
   return index + 1, cp
 

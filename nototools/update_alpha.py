@@ -51,9 +51,9 @@ class RedirectStdout(object):
     sys.stdout = self._stdout
     try:
       file.close()
-    except e:
+    except Exception:
       if not etype:
-        raise e
+        raise
     # else raise the original exception
 
 def push_to_noto_alpha(alphadir, srcdir, dry_run):
@@ -155,7 +155,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
   #                       stderr=subprocess.STDOUT)
 
   with open(checkin_msg_file) as f:
-    checkin_msg = f.read().strip();
+    checkin_msg = f.read().strip()
 
   print('%s\n-----\n%s\n-----' % ('dry run' if dry_run else 'summary', checkin_msg))
   if not dry_run:

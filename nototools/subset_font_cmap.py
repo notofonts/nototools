@@ -21,7 +21,6 @@ from os import path
 
 from fontTools import subset
 
-from nototools import coverage
 from nototools import font_data
 from nototools import swat_license
 from nototools import tool_utils

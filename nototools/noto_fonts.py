@@ -27,7 +27,6 @@ from nototools import cldr_data
 from nototools import coverage
 from nototools import font_data
 from nototools import lang_data
-from nototools import notoconfig
 from nototools import noto_data
 from nototools import tool_utils
 from nototools import unicode_data
@@ -201,7 +200,7 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto',
   is_mono = mono == 'Mono'
 
   if width not in [None, '', 'Condensed', 'SemiCondensed', 'ExtraCondensed']:
-    sys.stderr.write('noto_fonts: Unexpected width "%s"\n' % (width))
+    sys.stderr.write('noto_fonts: Unexpected width "%s"\n' % width)
     if width in ['SemiCond', 'Narrow']:
       width = 'SemiCondensed'
     elif width == 'Cond':

@@ -25,11 +25,6 @@ import os
 import os.path
 import re
 import shutil
-import zipfile
-
-from fontTools import ttLib
-
-import notoconfig
 
 
 def grab_files(dst, files, src_vendor, name_date_re, extract_fn):

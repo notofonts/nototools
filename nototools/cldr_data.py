@@ -180,7 +180,7 @@ def _parse_supplemental_data():
                  'only has [%s]') % (
                      lang, script, ', '.join(sorted(lang_scripts))))
         if len(lang_scripts) == 1:
-          replacement = set([script])
+          replacement = {script}
           if _DEBUG:
             print('replacing %s with %s' % (lang_scripts, replacement))
           _LANG_TO_SCRIPTS[lang] = replacement
@@ -584,7 +584,7 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
       exemplars.extend(unicode_set_string_to_list(tag.text))
     except Exception as e:
       print('failed parse of %s' % cldr_file_path)
-      raise e
+      raise
     break
 
   _exemplar_from_file_cache[cldr_file_path] = exemplars
@@ -662,7 +662,7 @@ def loc_tag_to_lsrv(loc_tag):
         script = get_likely_script(lang)
       except KeyError:
         pass
-  return (lang, script, region, variant)
+  return lang, script, region, variant
 
 
 def lsrv_to_loc_tag(lsrv):
@@ -706,7 +706,7 @@ def get_lang_scr_to_lit_pops():
   """
   if not _lang_scr_to_lit_pops:
     _init_lang_scr_to_lit_pops()
-  return _lang_scr_to_lit_pops;
+  return _lang_scr_to_lit_pops
 
 
 def lang_scr_to_lit_pops(lang_scr):
@@ -752,13 +752,13 @@ def main():
       '-nx', '--no_extra', help='turn off extra locale data',
       action='store_true')
 
-  args = parser.parse_args();
+  args = parser.parse_args()
   if args.debug:
     _DEBUG = True
   if args.no_extra:
     _USE_EXTRA_LOCALE_DATA = False
 
-  if args.region_to_lang != None:
+  if args.region_to_lang is not None:
     print('region to lang+script')
     regions = args.region_to_lang or sorted(known_regions())
     for r in regions:
@@ -766,7 +766,7 @@ def main():
       for ls in sorted(region_to_lang_scripts(r)):
         print('  %s' % ls)
 
-  if args.lang_to_region != None:
+  if args.lang_to_region is not None:
     print('lang to region')
     langs = args.lang_to_region or sorted(known_langs())
     for l in langs:
@@ -774,7 +774,7 @@ def main():
       for r in sorted(lang_to_regions(l)):
         print('  %s' % r)
 
-  if args.lang_to_script != None:
+  if args.lang_to_script is not None:
     print('lang to script')
     langs = args.lang_to_script or sorted(known_langs())
     for l in langs:

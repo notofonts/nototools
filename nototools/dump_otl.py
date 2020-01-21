@@ -163,14 +163,14 @@ def dump_gsub_subtable(lookup_type, subtable):
 #        assert (max(subtable.ClassDef.classDefs.values())
 #                <= subtable.SubClassSetCount)
 #        assert len(subtable.SubClassSet) == subtable.SubClassSetCount
-#        print subtable.Coverage.glyphs
-#        print subtable.ClassDef.classDefs
+#        print(subtable.Coverage.glyphs)
+#        print(subtable.ClassDef.classDefs)
 #        for index in range(subtable.SubClassSetCount):
 #            sub_class = subtable.SubClassSet[index]
 #            if sub_class:
-#                print index, vars(sub_class)
+#                print(index, vars(sub_class))
 #            else:
-#                print index, sub_class
+#                print(index, sub_class)
 
     elif lookup_type == 5 and subtable.Format == 3:
         print_contextual_substitution(
@@ -200,7 +200,7 @@ def dump_gsub_subtable(lookup_type, subtable):
     else:
         print_indented('# type=%d format=%d not supported yet' % (
             lookup_type, subtable.Format))
-#    print vars(subtable)
+#    print(vars(subtable))
 
 
 def printable_value_record(value_record):

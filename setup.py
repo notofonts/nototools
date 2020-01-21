@@ -22,7 +22,7 @@ setup(name='nototools',
       install_requires=[
           'fontTools',
           # On Mac OS X these need to be installed with homebrew
-          # 'cairo',
+          # 'cairo',
           # 'pango',
           # 'pygtk',
           # 'imagemagick'

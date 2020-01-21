@@ -983,7 +983,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--continue', help="continue with existing built objects",
                         action='store_true', dest='continuing')
-    args = parser.parse_args();
+    args = parser.parse_args()
 
     # 'continue' is useful for debugging the build process.  some zips take a
     # long time to build, and this lets the process be restarted and catch up
@@ -1046,11 +1046,11 @@ def main():
             generate_sample_images(output_object)
 
         # Drop presently unused features
-        for family in output_object['family'].itervalues():
+        for family in output_object['family'].values():
             del family['category']
             del family['css']
             del family['ranges']
-        for language in output_object['lang'].itervalues():
+        for language in output_object['lang'].values():
             del language['rtl']
             if 'sample' in language:
                 del language['sample']

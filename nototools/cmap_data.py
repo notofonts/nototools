@@ -123,7 +123,7 @@ def _build_tree(cmap_data, pretty=False):
   """Create an xml 'cmapdata' element for the CmapData object."""
   root = ET.Element('cmapdata')
   def opt_append(elem):
-    if elem != None:
+    if elem is not None:
       root.append(elem)
   opt_append(_build_meta(cmap_data.meta))
   opt_append(_build_table(cmap_data.table))
@@ -197,7 +197,7 @@ def create_table_from_map(script_to_cmap):
     name = noto_fonts.script_name_for_report(script)
     count = len(cmap)
     cp_ranges = tool_utils.write_int_ranges(cmap)
-    if xcmap == None:
+    if xcmap is None:
       xcount = -1
       xcp_ranges = ''
     else:

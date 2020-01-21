@@ -36,7 +36,7 @@ def report_set_differences(name_to_cpset, out=sys.stderr):
     common = None
     if len(name_to_cpset) > 1:
       for name, cpset in name_to_cpset.items():
-        if common == None:
+        if common is None:
           common = cpset.copy()
         else:
           common &= cpset

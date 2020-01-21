@@ -28,6 +28,7 @@ from nototools import noto_fonts
 from nototools import unicode_data
 from nototools.glyph_area_pen import GlyphAreaPen
 from nototools.unittests import layout
+from nototools.py23 import unichr
 
 
 def get_rendered_char_height(font_filename, font_size, char, target='mono'):

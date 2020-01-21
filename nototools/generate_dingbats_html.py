@@ -26,11 +26,11 @@ from fontTools.pens.boundsPen import BoundsPen
 
 from os import path
 
-from nototools import cmap_data
 from nototools import font_data
 from nototools import tool_utils
 from nototools import unicode_data
 from nototools.py23 import basestring
+from nototools.py23 import unichr
 
 """Generate html comparison of codepoints in various fonts."""
 
@@ -276,7 +276,7 @@ def _load_codelist(codelist_spec, data_dir, codelistfile_map):
     if not path.isfile(fullpath):
       raise Exception('codelist file "%s" not found' % codelist_spec)
     codelist = codelistfile_map.get(fullpath)
-    if codelist == None:
+    if codelist is None:
       codelist = CodeList.fromfile(fullpath)
       codelistfile_map[codelist_spec] = codelist
   return codelist
@@ -403,12 +403,12 @@ class CodeTableTarget(Target):
       header_parts = ['<tr class="head"><th>CP']
       for key, _ in self.used_fonts:
         header_parts.append('<th>' + key)
-      if metrics != None:
+      if metrics is not None:
         header_parts.append('<th>lsb<th>mid<th>rsb<th>wid<th>cy')
       header_parts.append('<th>Age<th>Name')
       return ''.join(header_parts)
 
-    if metrics != None:
+    if metrics is not None:
       # the metrics apply to the rightmost font
       fontname = self.used_fonts[-1][1][0][0]
       if fontname:
@@ -453,7 +453,7 @@ class CodeTableTarget(Target):
         else:
           line.append('<td>&nbsp;')
       name = _flagged_name(cp, flag_sets)
-      if metrics != None:
+      if metrics is not None:
         cp_metrics = _get_cp_metrics(metrics_font, cp) if metrics_font else None
         if cp_metrics:
           lsb, rsb, wid, adv, cy = cp_metrics
@@ -644,7 +644,7 @@ def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
         codes = codes_or_spec
       else:
         # replace the spec with the actual codes
-        if codes_or_spec == None:
+        if codes_or_spec is None:
           # we only know about '_emoji_' and '_math_'
           if exp == '_emoji_':
             codes = (
@@ -791,7 +791,7 @@ def _read_target_data_from_file(filename):
     """Extend or update info[index], possibly using defines"""
     if len(info) <= index:
       info.append(fallback)
-    elif info[index] != None:
+    elif info[index] is not None:
       item = info[index]
       if item in defines:
         items = defines[item]
@@ -1093,7 +1093,7 @@ def _read_flag_data_from_file(filename):
         elif flag_in_str == 'not in':
           flag_in = False
         else:
-          raise Exceeption(
+          raise Exception(
               'found "%s" but expected \'in\' or \'not in\'' % flag_in_str)
         flag_expr = m.group(3)
         flag_info.append([flag_name, flag_in, flag_expr])
@@ -1137,7 +1137,7 @@ def generate_html(
 
   template = string.Template(_HTML_HEADER_TEMPLATE)
   styles = _generate_styles(fonts, relpath)
-  mstyles = _METRICS_STYLES if metrics != None else ''
+  mstyles = _METRICS_STYLES if metrics is not None else ''
   contextfont = _CONTEXT_FONT if context else 'sansserif'
   outfile.write(template.substitute(
       title=title, styles=styles, mstyles=mstyles, contextfont=contextfont) + '\n')
@@ -1217,7 +1217,7 @@ def _call_generate(
     outfile, fmt, data_dir, font_spec, target_spec, flag_spec, title=None,
     context=None, metrics=None):
   data_dir = path.realpath(path.abspath(data_dir))
-  if metrics != None:
+  if metrics is not None:
     if metrics == '-':
       metrics = {}
     else:
