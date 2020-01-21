@@ -1412,7 +1412,7 @@ def _load_unicode_emoji_variants():
           ('all of' if skipped == read else skipped, read))
   except IOError as e:
     if e.errno != 2:
-      raise e
+      raise
 
   _emoji_variants_proposed = frozenset(emoji_variants)
 
@@ -1535,7 +1535,7 @@ def _load_proposed_emoji_data():
   except IOError as e:
     if e.errno != 2:
       # not file not found, rethrow
-      raise e
+      raise
 
   _proposed_emoji_data_cps = frozenset(_proposed_emoji_data.keys())
 

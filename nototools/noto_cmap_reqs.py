@@ -3001,7 +3001,7 @@ def _assign_symbols_from_groups(cmap_ops):
         sys.stderr.write(err + '\n')
         sys.stderr.write(cols[2] + '\n')
         sys.stderr.write('problem on %d "%s"\n' % (lineix, line))
-        raise err
+        raise
       if len(cps) > 50:
         sys.stderr.write('large range (%d) on %d "%s"\n' % (
             len(cps), lineix, line))

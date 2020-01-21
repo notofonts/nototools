@@ -584,7 +584,7 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
       exemplars.extend(unicode_set_string_to_list(tag.text))
     except Exception as e:
       print('failed parse of %s' % cldr_file_path)
-      raise e
+      raise
     break
 
   _exemplar_from_file_cache[cldr_file_path] = exemplars
