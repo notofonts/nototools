@@ -141,6 +141,7 @@ NotoSansEgyptianHieroglyphs
 NotoSansGlagolitic
 NotoSansGothic
 NotoSansGrantha
+NotoSerifGrantha
 NotoSansGunjalaGondi
 NotoSansHanunoo
 NotoSansHatran
@@ -211,6 +212,13 @@ NotoSansTaiTham
 NotoSansTaiViet
 NotoSansTangut
 NotoSansTifinagh
+NotoSansTifinaghAPT
+NotoSansTifinaghAgrawImazighen
+NotoSansTifinaghAhaggar
+NotoSansTifinaghHawad
+NotoSansTifinaghRhissaIxa
+NotoSansTifinaghSIL
+NotoSansTifinaghTawellemmet
 NotoSansUgaritic
 NotoSansVai
 NotoSansYi
