@@ -19,7 +19,7 @@ class my_viewclient:
         dc.setfontsize(12)
         dc.moveto(50, 10)
         dc.showtext(u"\u00a1hello, world!")
-        print(dc.textextents(u"\u00a1hello, world!")(
+        print(dc.textextents(u"\u00a1hello, world!"))
 
 win = x3.window(0, "foo", my_callback)
 
