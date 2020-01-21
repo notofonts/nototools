@@ -725,7 +725,7 @@ def _load_emoji_data():
       emoji_set.update(range(start, end + 1))
 
   # allow our legacy use of handshake and wrestlers with skin tone modifiers
-  emoji_sets['Emoji_Modifier_Base'] |= set([0x1f91d, 0x1f93c])
+  emoji_sets['Emoji_Modifier_Base'] |= {0x1f91d, 0x1f93c}
 
   _presentation_default_emoji = frozenset(
       emoji_sets['Emoji_Presentation'])
@@ -1100,7 +1100,7 @@ def get_emoji_in_group(group, subgroup=None):
   result = None
   for seq, (index, g, sg, _) in _emoji_group_data.items():
     if g == group:
-      if result == None:
+      if result is None:
         result = []
       if subgroup and sg != subgroup:
         continue
@@ -1463,7 +1463,7 @@ def _load_variant_data():
       if not line:
         continue
 
-      tokens = line.split(';');
+      tokens = line.split(';')
       cp, var = tokens[0].split(' ')
       cp = int(cp, 16)
       varval = int(var, 16)
@@ -1535,7 +1535,7 @@ def _load_proposed_emoji_data():
   except IOError as e:
     if e.errno != 2:
       # not file not found, rethrow
-      raise e;
+      raise e
 
   _proposed_emoji_data_cps = frozenset(_proposed_emoji_data.keys())
 
@@ -1665,7 +1665,7 @@ def alt_names(cp):
 
 
 if __name__ == '__main__':
-  all_sequences = sorted(get_emoji_sequences());
+  all_sequences = sorted(get_emoji_sequences())
   for k in all_sequences:
     if not get_emoji_group_data(k):
       print('no data:', seq_to_string(k))

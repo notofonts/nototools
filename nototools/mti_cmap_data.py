@@ -167,7 +167,7 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
     ]
     cps = tool_utils.parse_int_ranges(rd.ranges)
     xranges = getattr(rd, 'xranges', None)
-    if xranges != None:
+    if xranges is not None:
       xcps = frozenset(tool_utils.parse_int_ranges(xranges))
       cps |= xcps
     else:
@@ -206,8 +206,7 @@ def _check_scripts(scripts):
   have_unknown = False
   if scripts:
     all_scripts = unicode_data.all_scripts()
-    all_scripts = all_scripts | set(
-        ['CJK', 'EXCL', 'LGC', 'MONO', 'MUSIC', 'SYM2', 'Zsye'])
+    all_scripts = all_scripts | {'CJK', 'EXCL', 'LGC', 'MONO', 'MUSIC', 'SYM2', 'Zsye'}
     for s in scripts:
       if s not in all_scripts:
         sys.stderr.write('unknown script:\n', s)

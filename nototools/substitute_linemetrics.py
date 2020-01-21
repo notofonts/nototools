@@ -39,16 +39,10 @@ def main(arg=None):
 
 
 def read_line_metrics(font):
-    metrics = {}
-    metrics['ascent'] = font['hhea'].ascent
-    metrics['descent'] = font['hhea'].descent
-    metrics['usWinAscent'] = font['OS/2'].usWinAscent
-    metrics['usWinDescent'] = font['OS/2'].usWinDescent
-    metrics['sTypoAscender'] = font['OS/2'].sTypoAscender
-    metrics['sTypoDescender'] = font['OS/2'].sTypoDescender
-    metrics['sxHeight'] = font['OS/2'].sxHeight
-    metrics['sCapHeight'] = font['OS/2'].sCapHeight
-    metrics['sTypoLineGap'] = font['OS/2'].sTypoLineGap
+    metrics = {'ascent': font['hhea'].ascent, 'descent': font['hhea'].descent, 'usWinAscent': font['OS/2'].usWinAscent,
+               'usWinDescent': font['OS/2'].usWinDescent, 'sTypoAscender': font['OS/2'].sTypoAscender,
+               'sTypoDescender': font['OS/2'].sTypoDescender, 'sxHeight': font['OS/2'].sxHeight,
+               'sCapHeight': font['OS/2'].sCapHeight, 'sTypoLineGap': font['OS/2'].sTypoLineGap}
     return metrics
 
 

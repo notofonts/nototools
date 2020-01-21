@@ -177,7 +177,7 @@ files = [
 def build_valid_filenames(files=files, directory=directory):
     files = list(files)
     directory = directory.rstrip('/')
-    if directory == '' or directory == None:
+    if directory == '' or directory is None:
         directory = '.'
     valid_files = []
     for f in files:

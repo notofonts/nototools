@@ -139,7 +139,7 @@ def get_bumped_version(ttfont, is_hinted=None):
   major_version = m.group(1)
   minor_version = m.group(2)
   print('old version: "%s"' % version)
-  if is_hinted == None:
+  if is_hinted is None:
     is_hinted = not bool(m.group(3))
     print('computed hinted = %s' % is_hinted)
 

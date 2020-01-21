@@ -219,7 +219,7 @@ def write_glyph_image(im, glyph_header_only, fd):
 def _next_file_header(it):
     def get_val(k):
         regex = r'>\s*%s:\s*(.*)\s*$' % k
-        line = it.next()
+        line = next(it)
         m = re.match(regex, line)
         if not m:
             raise Exception('regex %s failed to match "%s"' % (k, line))
@@ -232,7 +232,7 @@ def _next_file_header(it):
 
 
 def _next_glyph_image(it, file_header):
-    glyph_header = it.next().strip()
+    glyph_header = next(it).strip()
     m = _glyph_header_re.match(glyph_header)
     if not m:
         raise Exception('could not match glyph header "%s"' % glyph_header)
@@ -245,7 +245,7 @@ def _next_glyph_image(it, file_header):
     image = GlyphImage(file_header, index, adv, frame)
     row_base = 0
     for i in range(image.frame.h):
-        line = it.next().rstrip()
+        line = next(it).rstrip()
         assert (line.startswith(':'))
         ix = 0
         row_data = line[1:]

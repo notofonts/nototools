@@ -27,8 +27,6 @@ in which case only one input file is allowed."""
 import argparse
 import os
 from os import path
-import re
-import sys
 
 from fontTools import ttLib
 from fontTools.ttLib.tables import _c_m_a_p

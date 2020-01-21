@@ -127,7 +127,7 @@ def _list_range(
     script_names = '(none)'
   elif _is_empty_scripts(scripts):
     num_scripts = 0
-    script_names = iter(scripts).next()
+    script_names = next(iter(scripts))
   else:
     num_scripts = len(scripts)
     if scripts == all_scripts and scripts != only_scripts:
@@ -294,7 +294,7 @@ def main():
   start = min(ranges)
   end = max(ranges)
   if end > 0x10ffff:
-    end = 0x10ffff;
+    end = 0x10ffff
   limit = end + 1
 
   if args.scripts:

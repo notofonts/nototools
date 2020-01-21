@@ -18,11 +18,9 @@
 """Update cldr data under third_party from local svn snapshot."""
 
 import argparse
-import contextlib
 import os
 import shutil
 import string
-import subprocess
 
 from nototools import notoconfig
 from nototools import tool_utils

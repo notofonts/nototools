@@ -22,15 +22,11 @@ import collections
 import locale
 import os
 from os import path
-import re
-import shutil
-import xml.etree.cElementTree as ElementTree
 
 from nototools.py23 import unichr
 from nototools import cldr_data
 from nototools import create_image
 from nototools import extra_locale_data
-from nototools import notoconfig
 from nototools import tool_utils
 from nototools import unicode_data
 
@@ -424,7 +420,7 @@ def generate_sample_for_script(script, loc_map):
   num_locales = len(loc_map)
 
   if num_locales == 1:
-    tag, info = loc_map.items().next()
+    tag, info = next(loc_map.items())
     exemplars = info[2]
     ex_len = len(exemplars)
     info = '%s (1 locale)\nfrom exemplars for %s (%s%d chars)' % (

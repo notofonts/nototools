@@ -23,13 +23,13 @@ from nototools import noto_fonts
 
 def print_names(families):
   """Write the names of the families in sorted order."""
-  family_names = [family.name for family in families.itervalues()]
+  family_names = [family.name for family in families.values()]
   for name in sorted(family_names):
     print(name)
 
 
 def check_cp(families, cp):
-  return set([family.name for family in families.itervalues() if cp in family.charset])
+  return set([family.name for family in families.values() if cp in family.charset])
 
 
 def codepoints(cp_list):
@@ -39,7 +39,7 @@ def codepoints(cp_list):
       low, high = cp.split('-')
       low = int(low, 16)
       high = int(high, 16)
-      if (low > high):
+      if low > high:
         temp = low
         low = high
         high = temp
@@ -91,7 +91,7 @@ def run(args, families):
 
     cps = codepoints(args.each)
     print('families that contain any of %s, by cp' % to_ranges_str(cps))
-    for family in families.itervalues():
+    for family in families.values():
       family_cps = family.charset & cps
       for cp in family_cps:
         cp_to_families[cp].add(family.name)
@@ -125,7 +125,7 @@ def run(args, families):
           if family in result:
             result[family].add(cp)
           else:
-            result[family] = set([cp])
+            result[family] = {cp}
       else:
         missing.add(cp)
     if result:
@@ -137,7 +137,7 @@ def run(args, families):
   if args.all:
     cps = sorted(codepoints(args.all))
     print('families that contain all of %s' % to_ranges_str(cps))
-    result = set([family.name for family in families.itervalues()])
+    result = set([family.name for family in families.values()])
     for cp in cps:
       family_names = check_cp(families, cp)
       result &= family_names

@@ -67,11 +67,11 @@ def _get_stylenames(styles):
   width_names = _WIDTH_KEY_TO_NAMES.get(width_key)
   slope_names = _SLOPE_KEY_TO_NAMES.get(slope_key)
   err_msg = []
-  if weight_names == None:
+  if weight_names is None:
     err_msg.append('bad weight key "%s"' % weight_key)
-  if width_names == None:
+  if width_names is None:
     err_msg.append('bad width key "%s"' % width_key)
-  if slope_names == None:
+  if slope_names is None:
     err_msg.append('bad slope key "%s"' % slope_key)
   if err_msg:
     raise ValueError(', '.join(err_msg))
@@ -126,7 +126,7 @@ def _for_all_familynames(namefile, fn):
       # regex.
       if name[0] == '-':
         raise ValueError('Looks like a bad style tag: "%s"' % name)
-      if styles == None:
+      if styles is None:
         raise ValueError('Styles must be set before first familyname.')
 
       fn(name, styles)

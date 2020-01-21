@@ -425,7 +425,7 @@ def _postscript_name(preferred_family, preferred_subfamily, include_regular):
   result = re.sub('CJK(JP|KR|SC|TC)', repl_fn, result)
 
   if len(result) > 63:
-    sys.stderr.write('postscript name longer than 63 characters:\n"%s"\n' % (result))
+    sys.stderr.write('postscript name longer than 63 characters:\n"%s"\n' % result)
   return result
 
 

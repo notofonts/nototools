@@ -42,7 +42,7 @@ _DEFAULT_COMPARE_OPTIONS = CompareOptions(None, None, False, False)
 
 def compare_cmaps(base_cps, target_cps, opts=None):
   """Returns a tuple of added, removed."""
-  if opts == None:
+  if opts is None:
     opts = _DEFAULT_COMPARE_OPTIONS
   only_cps, except_cps, no_additions, no_removals = opts
   if only_cps:
@@ -162,7 +162,7 @@ def _print_detailed(cps, inverted_target=None):
 
     show_undefined(undefined_start, undefined_end)
     undefined_start, undefined_end = -1, -1
-    extensions = unicode_data.script_extensions(cp) - set([script])
+    extensions = unicode_data.script_extensions(cp) - {script}
     if extensions:
       extensions = ' (script %s)' % ', '.join(sorted(extensions))
     else:

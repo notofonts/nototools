@@ -48,12 +48,9 @@ Noto directory.
 
 __author__ = "dougfelt@google.com (Doug Felt)"
 
-import argparse
 import os
 import os.path
 import re
-import shutil
-import sys
 import zipfile
 
 from nototools import notoconfig

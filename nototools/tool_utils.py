@@ -254,7 +254,7 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
   fixes, but do want to be able to regenerate the samples if we get new source
   data.
   """
-  files_not_under_version_control = [];
+  files_not_under_version_control = []
   protected_files = []
   tool_generated_files = []
   for f in sorted(os.listdir(path.join(repo, subdir))):
@@ -314,7 +314,7 @@ def git_is_clean(repo, print_errors=False):
         ['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
     if subprocess.call(
         ['git', 'diff-files', '--quiet', '--ignore-submodules', '--']):
-      if (print_errors):
+      if print_errors:
         print('There are unstaged changes:')
         capture_and_show_errors(
             ['git', 'diff-files', '--name-status', '-r', '--ignore-submodules',
@@ -323,7 +323,7 @@ def git_is_clean(repo, print_errors=False):
     if subprocess.call(
         ['git', 'diff-index', '--cached', '--quiet', 'HEAD',
          '--ignore-submodules', '--']):
-      if (print_errors):
+      if print_errors:
         print('There are uncommitted changes:')
         capture_and_show_errors(
             ['git', 'diff-index', '--cached', '--name-status', '-r', 'HEAD',
@@ -410,7 +410,7 @@ def parse_int_ranges(
 
   def _add_segment(prev_str, suffix, is_range):
     slen = len(suffix)
-    if prev_str == None:
+    if prev_str is None:
       next_str = suffix
       next_val = int(next_str, base)
     else:
@@ -479,7 +479,7 @@ def parse_int_ranges(
       if x >= 0:
         line = line[:x]
       return line.strip()
-    join_char = ' ' if sep == None else sep
+    join_char = ' ' if sep is None else sep
     range_string = join_char.join(
         filter(
             None,
@@ -556,7 +556,7 @@ def setup_logging(loglevel, quiet_ttx=True):
   except:
     loglevel = getattr(logging, loglevel.upper(), loglevel)
   if not isinstance(loglevel, int):
-    print ('Could not set log level, should be one of debug, info, warning, '
+    print('Could not set log level, should be one of debug, info, warning, '
            'error, critical, or a numeric value')
     return
   logging.basicConfig(level=loglevel)

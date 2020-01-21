@@ -163,7 +163,7 @@ def write_compare_data(gic_data, fd):
 
 def read_compare_data(filepath):
     def check_match(regex, it):
-        line = it.next()
+        line = next(it)
         m = re.match(regex, line)
         if not m:
             raise Exception('regex "%s" failed to match "%s"' % (regex, line))
@@ -180,7 +180,7 @@ def read_compare_data(filepath):
             return val
 
         vals = [get_val(k) for k in GlyphImageFontData._fields]
-        assert it.next().strip() == ']'
+        assert next(it).strip() == ']'
 
         return GlyphImageFontData._make(vals)
 
@@ -189,7 +189,7 @@ def read_compare_data(filepath):
         count = int(m.group(1))
         data = [None] * count
         for i in range(count):
-            ix, adv, cp, name = (v.strip() for v in it.next().split(';'))
+            ix, adv, cp, name = (v.strip() for v in next(it).split(';'))
             adv = int(adv)
             cp = int(cp, 16) if cp != '' else -1
             data[i] = (adv, cp, name)
@@ -214,7 +214,7 @@ def read_compare_data(filepath):
 
         pair_data = [None] * count
         for i in range(count):
-            pair_data[i] = get_pairdata(it.next())
+            pair_data[i] = get_pairdata(next(it))
 
         return GlyphImagePairData(max_frame, pair_data)
 

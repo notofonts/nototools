@@ -26,11 +26,6 @@ This will start with a canned list of languages for now. We could
 generate a more comprehensive list from our data.
 """
 
-import collections
-
-import os
-from os import path
-
 from nototools import cldr_data
 from nototools import noto_fonts
 

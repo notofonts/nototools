@@ -27,6 +27,18 @@ from nototools import noto_lint
 from nototools import summary
 from nototools import tool_utils
 
+
+def cmp(x, y):
+    """
+    Replacement for built-in function cmp that was removed in Python 3
+
+    Compare the two objects x and y and return an integer according to
+    the outcome. The return value is negative if x < y, zero if x == y
+    and strictly positive if x > y.
+    """
+
+    return (x > y) - (x < y)
+
 def summary_to_map(summary_list):
   result = {}
   for tuple in summary_list:
@@ -82,7 +94,8 @@ def compare_table_info(base_info, target_info):
     if not target_info.get(k):
       removed.append(k)
 
-  biggest_deltas.sort(lambda lhs,rhs: -cmp(abs(lhs[1]), abs(rhs[1])) or
+  biggest_deltas.sort(
+    lambda lhs, rhs: -cmp(abs(lhs[1]), abs(rhs[1])) or
                       cmp(lhs[0], rhs[0]))
   del biggest_deltas[5:]
 

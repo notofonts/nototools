@@ -34,7 +34,7 @@ from nototools import ttc_utils
 from nototools import unicode_data
 
 from fontTools import ttLib
-from fontTools.ttLib.tables import otTables
+
 
 def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
   """Add hyphen-minus glyphs to fonts that need it.

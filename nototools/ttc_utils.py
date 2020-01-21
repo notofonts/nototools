@@ -18,7 +18,6 @@
 
 import argparse
 import collections
-import os
 from os import path
 import struct
 import subprocess

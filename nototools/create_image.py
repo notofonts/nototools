@@ -27,6 +27,7 @@ import string
 
 from nototools import notoconfig
 from nototools.py23 import basestring
+from nototools.py23 import unichr
 
 import cairo
 import pango
@@ -246,7 +247,7 @@ def create_svg(text, output_path, **kwargs):
 
     setup_fonts_conf()
 
-    params = make_drawparams(**kwargs);
+    params = make_drawparams(**kwargs)
     temp_surface = cairo.SVGSurface(None, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
@@ -263,7 +264,7 @@ def create_png(text, output_path, **kwargs):
 
     setup_fonts_conf()
 
-    params = make_drawparams(**kwargs);
+    params = make_drawparams(**kwargs)
     temp_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 

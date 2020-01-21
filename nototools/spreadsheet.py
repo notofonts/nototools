@@ -20,7 +20,6 @@ SPREADSHEET_NAME = ('Noto Project Status (Phase II)- go-noto - '
 
 import argparse
 import csv
-import os
 from os import path
 import re
 

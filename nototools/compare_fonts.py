@@ -18,7 +18,6 @@
 inspiration."""
 
 import argparse
-import os
 from os import path
 import re
 
@@ -156,7 +155,7 @@ class FontCompare(object):
     test_value = getattr(test_obj, attr)
     if target_value == test_value:
       return None
-    return (attr, test_value, target_value)
+    return attr, test_value, target_value
 
   def _check_attributes(self, target_obj, test_obj, attr_list):
     result = []

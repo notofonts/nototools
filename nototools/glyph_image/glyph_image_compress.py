@@ -107,7 +107,7 @@ def rle2(data):
             j = i + 1
             while j < nlim and data[j] == v:
                 j += 1
-            # print 'run of %d at %d len %d' % (v, i, j - i)
+            # print('run of %d at %d len %d' % (v, i, j - i))
             output.append(base + j - i - 1)
             i = j
     return output
@@ -271,7 +271,7 @@ def _test(image_file):
             print('failed to expand rle2 data, %s' % msg)
         else:
             enc_rle2 = base64_encode(rle2_data)
-            # print (wrap_str(enc_rle2, 80))
+            # print(wrap_str(enc_rle2, 80))
             temp = base64_decode(enc_rle2)
             enc_rle2_ok, msg = compare_rle(temp, rle2_data)
 

@@ -27,12 +27,7 @@ when known).  Other functions return the set of scripts and the set of
 lang_scripts (that have english names).
 """
 
-import argparse
 import collections
-import os
-from os import path
-import re
-import sys
 
 from nototools import cldr_data
 from nototools import unicode_data
@@ -186,12 +181,12 @@ def _create_script_to_default_lang(lang_script_data):
         _log('no default lang for script %s' % script)
         langs = script_to_used[script]
         if langs:
-          default_lang = iter(langs).next()
+          default_lang = next(iter(langs))
           _log('using used lang %s from %s' % (default_lang, langs))
         else:
           langs = script_to_unused[script]
           if langs:
-            default_lang = iter(langs).next()
+            default_lang = next(iter(langs))
             _log('using unused lang %s from %s' % (default_lang, langs))
           else:
             _log('defaulting to \'und\'')
@@ -217,9 +212,9 @@ def _create_lang_script_to_names(lang_script_data):
   for lang in lang_script_data:
     used, unused = lang_script_data[lang]
     if len(used) == 1:
-      exclude_script = iter(used).next()
+      exclude_script = next(iter(used))
     elif not used and len(unused) == 1:
-      exclude_script = iter(unused).next()
+      exclude_script = next(iter(unused))
     else:
       exclude_script = ''
 

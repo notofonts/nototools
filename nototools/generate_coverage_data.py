@@ -18,7 +18,6 @@ import argparse
 import collections
 import datetime
 from os import path
-import sys
 
 from nototools import cmap_data
 from nototools import coverage
