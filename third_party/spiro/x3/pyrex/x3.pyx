@@ -181,7 +181,7 @@ cdef class x3dc_wrap:
 
     property rect:
         def __get__(self):
-            return (self.dc.x, self.dc.y, self.dc.width, self.dc.height)
+            return self.dc.x, self.dc.y, self.dc.width, self.dc.height
 
     def moveto(self, double x, double y):
         x3moveto(self.dc, x, y)
@@ -197,7 +197,7 @@ cdef class x3dc_wrap:
         cdef double x
         cdef double y
         x3getcurrentpoint(self.dc, &x, &y)
-        return (x, y)
+        return x, y
     def setrgba(self, double r, double g, double b, double a):
         x3setrgba(self.dc, (dbl_to_byte(r) << 24) |
                   (dbl_to_byte(g) << 16) |

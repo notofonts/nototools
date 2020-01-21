@@ -35,9 +35,9 @@ def add(poly0, poly1, nmax):
     coeffs = []
     for i in range(n):
         c = 0
-        if i >= poly0.p0 - p0 and i < lp0 + poly0.p0 - p0:
+        if poly0.p0 - p0 <= i < lp0 + poly0.p0 - p0:
             c += poly0.coeffs[i + p0 - poly0.p0]
-        if i >= poly1.p0 - p0 and i < lp1 + poly1.p0 - p0:
+        if poly1.p0 - p0 <= i < lp1 + poly1.p0 - p0:
             c += poly1.coeffs[i + p0 - poly1.p0]
         coeffs.append(c)
     return Poly(p0, coeffs)
@@ -65,9 +65,9 @@ def polymul(p0, p1, degree, basename, suppress_odd=False):
             if j < len(p0) and i - j < len(p1):
                 t0 = p0[j]
                 t1 = p1[i - j]
-                if t0 != None and t1 != None:
+                if t0 is not None and t1 is not None:
                     terms.append(t0 + mulsym + t1)
-        if terms == []:
+        if not terms:
             result.append(None)
         else:
             var = basename % i
@@ -85,7 +85,7 @@ def polysquare(p0, degree, basename):
             if i - j < len(p0):
                 t0 = p0[j]
                 t1 = p0[i - j]
-                if t0 != None and t1 != None:
+                if t0 is not None and t1 is not None:
                     terms.append(t0 + mulsym + t1)
         if len(terms) >= 1:
             if tex and len(terms) == 1:
@@ -94,12 +94,12 @@ def polysquare(p0, degree, basename):
                 terms = ['2' + mulsym + '(' + ' + '.join(terms) + ')']
         if (i % 2) == 0:
             t = p0[i / 2]
-            if t != None:
+            if t is not None:
                 if tex:
                     terms.append(t + '^2')
                 else:
                     terms.append(t + mulsym + t)
-        if terms == []:
+        if not terms:
             result.append(None)
         else:
             var = basename % i
@@ -147,7 +147,7 @@ def mkspiro(degree):
                         cstr = '(1./%d)' % int(.5 + (1. / c))
                     tmp.append(cstr + ' * ' + tlast[j])
             tcoef *= .5
-        if tmp != []:
+        if tmp:
             sign = ('+', '-')[(i / 2) % 2]
             var = ('u', 'v')[i % 2]
             if tex:

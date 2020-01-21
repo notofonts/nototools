@@ -40,7 +40,7 @@ class bez:
                     self.hit = i
         elif button == -1:
             self.hit = None
-        elif self.hit != None:
+        elif self.hit is not None:
             self.coords[self.hit] = (x, y)
             self.view.dirty()
 

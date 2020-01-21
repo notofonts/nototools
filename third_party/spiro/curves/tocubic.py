@@ -326,7 +326,7 @@ def pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh, nmax=None):
         z0 = curve.xy(s0)
         z1 = curve.xy(s1)
         bz, score = fit_cubic(z0, z1, s1 - s0, th_fn_inner, 0)
-        if score < thresh or nmax != None and len(result) == nmax - 1:
+        if score < thresh or nmax is not None and len(result) == nmax - 1:
             result.append(bz)
             break
         r = s1
