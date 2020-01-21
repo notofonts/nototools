@@ -16,7 +16,7 @@ def eps_prologue(x0, y0, x1, y1, draw_box = False):
         print(x0, y0, 'moveto', x0, y1, 'lineto', x1, y1, 'lineto', x1, y0, 'lineto closepath stroke')
 
 def eps_trailer():
-    print('%%EOF'
+    print('%%EOF')
 
 def fit_cubic_superfast(z0, z1, arclen, th0, th1, aab):
     chord = hypot(z1[0] - z0[0], z1[1] - z0[1])
