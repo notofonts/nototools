@@ -42,7 +42,7 @@ def fix_font(source_filename):
             assert record.platEncID == 1
             assert record.langID == 0x0409
             encoding = 'UTF-16BE'
-        value = unicode(record.string, encoding)
+        value = record.string.decode(encoding)
         if record.nameID == 3:
             original_version = value[:value.index(';')]
             new_version = original_version + '1'

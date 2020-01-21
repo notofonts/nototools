@@ -18,7 +18,7 @@ import argparse
 import codecs
 import re
 
-from nototools.py23 import unichr, unicode
+from nototools.py23 import unichr
 
 """Generate samples from a description file."""
 
@@ -108,12 +108,6 @@ sequences within an group.
 # constants
 _LEAD_OFFSET = 0xD800 - (0x10000 >> 10)
 _SURROGATE_OFFSET = 0x10000 - (0xD800 << 10) - 0xDC00
-
-
-def cp_to_str(cp):
-  if cp < 0x10000:
-    return unichr(cp)
-  return unicode(r'\U%08X' % cp, encoding='unicode_escape')
 
 
 def surrogate_pair_to_cp(low, high):
@@ -292,11 +286,7 @@ def _unescape(arg):
     if unival > 0x10ffff:
       error = 'Unicode escape value too large: "%X"' % unival
       raise ValueError(error)
-    if unival < 0x10000:
-      prefix = unichr(unival)
-    else:
-      prefix = unicode(
-          '\\U%08X' % unival, encoding='unicode_escape', errors='strict')
+    prefix = unichr(unival)
     return prefix + esc_val[esc_len:]
 
   return _UNICODE_ESCAPE_RE.sub(sub, arg)
@@ -349,7 +339,7 @@ def _segments_to_strings(segments, prefix, result):
   segments = segments[1:]
   if type(segment) == tuple:
     for cp in range(segment[0], segment[1] + 1):
-      _segments_to_strings(segments, prefix + cp_to_str(cp), result)
+      _segments_to_strings(segments, prefix + unichr(cp), result)
   else:
     _segments_to_strings(segments, prefix + segment, result)
 

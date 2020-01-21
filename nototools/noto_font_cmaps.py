@@ -20,7 +20,6 @@ import argparse
 import collections
 import sys
 
-from nototools.py23 import unicode
 from nototools import cmap_data
 from nototools import lint_config
 from nototools import noto_fonts
@@ -133,7 +132,7 @@ def main():
   if args.outfile:
     cmap_data.write_cmap_data_file(cmapdata, args.outfile, pretty=True)
   else:
-    print(unicode(cmap_data.write_cmap_data(cmapdata, pretty=True), "utf-8"))
+    print(cmap_data.write_cmap_data(cmapdata, pretty=True).decode("utf-8"))
 
 
 if __name__ == "__main__":

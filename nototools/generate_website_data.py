@@ -36,7 +36,7 @@ import xml.etree.cElementTree as ElementTree
 
 from fontTools import ttLib
 
-from nototools.py23 import unichr, unicode
+from nototools.py23 import unichr
 from nototools import coverage
 from nototools import create_image
 from nototools import extra_locale_data
@@ -298,7 +298,7 @@ def get_exemplar(language, script):
 def get_sample_from_sample_file(language, script):
     filepath = path.join(SAMPLE_TEXT_DIR, language+'-'+script+'.txt')
     if path.exists(filepath):
-        return unicode(open(filepath).read().strip(), 'UTF-8')
+        return open(filepath).read().strip().decode('UTF-8')
     return None
 
 

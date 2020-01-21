@@ -17,7 +17,6 @@
 """Merges Noto fonts."""
 import os.path
 import tempfile
-from nototools.py23 import unicode
 
 from fontTools import merge
 from fontTools import ttLib
@@ -253,7 +252,7 @@ def main():
             first_font = source_fonts[0]
             if first_font != merge_target:
                 for name_record in font['name'].names:
-                    name = unicode(name_record.string, 'UTF-16BE')
+                    name = name_record.string.decode('UTF-16BE')
                     name = name.replace(make_font_name(first_font),
                                         make_font_name(merge_target))
                     name = name.replace(make_puncless_font_name(first_font),

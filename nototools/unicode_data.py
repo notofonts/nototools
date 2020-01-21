@@ -126,7 +126,7 @@ def name(char, *args):
   Raises a ValueError exception if the character is undefined, unless an
   extra argument is given, in which case it will return that argument.
   """
-  if type(char) is int:
+  if isinstance(char, int):
     char = unichr(char)
   # First try and get the name from unidata, which is faster and supports
   # CJK and Hangul automatic names
@@ -275,7 +275,7 @@ UNISCRIBE_USED_IGNORABLES = frozenset([0x115f, 0x1160, 0x3164, 0xffa0])
 def is_default_ignorable(char):
   """Returns true if the character has the Default_Ignorable property."""
   load_data()
-  if type(char) in [str, unicode]:
+  if isinstance(char, (str, unicode)):
     char = ord(char)
   return char in _core_properties_data["Default_Ignorable_Code_Point"]
 
@@ -287,7 +287,7 @@ def default_ignorables():
 def is_defined(char):
   """Returns true if the character is defined in the Unicode Standard."""
   load_data()
-  if type(char) in [str, unicode]:
+  if isinstance(char, (str, unicode)):
     char = ord(char)
   return char in _defined_characters
 
@@ -300,7 +300,7 @@ def is_private_use(char):
 def mirrored(char):
   """Returns 1 if the characters is bidi mirroring, 0 otherwise."""
   load_data()
-  if type(char) in [str, unicode]:
+  if isinstance(char, (str, unicode)):
     char = ord(char)
   return int(char in _bidi_mirroring_characters)
 
@@ -308,7 +308,7 @@ def mirrored(char):
 def bidi_mirroring_glyph(char):
   """Returns the bidi mirroring glyph property of a character."""
   load_data()
-  if type(char) in [str, unicode]:
+  if isinstance(char, (str, unicode)):
     char = ord(char)
   try:
     return _bidi_mirroring_glyph_data[char]
@@ -323,7 +323,7 @@ def mirrored_chars():
 def indic_positional_category(char):
   """Returns the Indic positional category of a character."""
   load_data()
-  if type(char) in [str, unicode]:
+  if isinstance(char, (str, unicode)):
     char = ord(char)
   try:
     return _indic_positional_data[char]
@@ -334,7 +334,7 @@ def indic_positional_category(char):
 def indic_syllabic_category(char):
   """Returns the Indic syllabic category of a character."""
   load_data()
-  if type(char) in [str, unicode]:
+  if isinstance(char, (str, unicode)):
     char = ord(char)
   try:
     return _bidi_syllabic_data[char]

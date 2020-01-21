@@ -30,7 +30,7 @@ def internal_font_name(font):
         identifier = (record.nameID, record.platformID,
                       record.platEncID, record.langID)
         if identifier in [(4, 3, 1, 0x409), (4, 3, 0, 0x409)]:
-            return unicode(record.string, 'UTF-16BE')
+            return record.string.decode('UTF-16BE')
 
 
 def print_indented(output_string, indents=1):
