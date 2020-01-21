@@ -37,7 +37,7 @@ def plot_bzs(bzs, z0, scale, fancy = False):
         for i in range(len(sp)):
             bz = sp[i]
             tocubic.plot_bz(bz, z0, scale, i == 0)
-        print('stroke'
+        print('stroke')
         if fancy:
             for i in range(len(sp)):
                 bz = sp[i]
