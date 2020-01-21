@@ -1,3 +1,5 @@
+# TODO: This code was not compatible with python > 2.4. Is it still required?
+
 # Solver based on direct Newton solving of 4 parameters for each curve
 # segment
 

@@ -5,17 +5,27 @@
 #
 # Thus, \kappa(s) = k0 + k1 s + 1/2 k2 s^2 + 1/6 k3 s^3
 
-from math import *
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from math import atan2
+from math import sin
+from math import cos
+from math import hypot
+from math import pi
+
 
 def eval_cubic(a, b, c, d, x):
     return ((d * x + c) * x + b) * x + a
+
 
 # integrate over s = [0, 1]
 def int_3spiro_poly(ks, n):
     x, y = 0, 0
     th = 0
     ds = 1.0 / n
-    th1, th2, th3, th4 = ks[0], .5 * ks[1], (1./6) * ks[2], (1./24) * ks[3]
+    th1, th2, th3, th4 = ks[0], .5 * ks[1], (1. / 6) * ks[2], (1. / 24) * ks[3]
     k0, k1, k2, k3 = ks[0] * ds, ks[1] * ds, ks[2] * ds, ks[3] * ds
     s = 0
     result = [(x, y)]
@@ -25,11 +35,11 @@ def int_3spiro_poly(ks, n):
         cth = cos(th)
         sth = sin(th)
 
-        km0 = ((1./6 * k3 * sm + .5 * k2) * sm + k1) * sm + k0
+        km0 = ((1. / 6 * k3 * sm + .5 * k2) * sm + k1) * sm + k0
         km1 = ((.5 * k3 * sm + k2) * sm + k1) * ds
         km2 = (k3 * sm + k2) * ds * ds
         km3 = k3 * ds * ds * ds
-        #print km0, km1, km2, km3
+        # print(km0, km1, km2, km3)
         u = 1 - km0 * km0 / 24
         v = km1 / 24
 
@@ -44,7 +54,8 @@ def int_3spiro_poly(ks, n):
 
     return result
 
-def integ_chord(k, n = 64):
+
+def integ_chord(k, n=64):
     ks = (k[0] * .5, k[1] * .25, k[2] * .125, k[3] * .0625)
     xp, yp = int_3spiro_poly(ks, n)[-1]
     ks = (k[0] * -.5, k[1] * .25, k[2] * -.125, k[3] * .0625)
@@ -52,15 +63,17 @@ def integ_chord(k, n = 64):
     dx, dy = .5 * (xp + xm), .5 * (yp + ym)
     return hypot(dx, dy), atan2(dy, dx)
 
+
 # Return th0, th1, k0, k1 for given params
 def calc_thk(ks):
     chord, ch_th = integ_chord(ks)
-    th0 = ch_th - (-.5 * ks[0] + .125 * ks[1] - 1./48 * ks[2] + 1./384 * ks[3])
-    th1 = (.5 * ks[0] + .125 * ks[1] + 1./48 * ks[2] + 1./384 * ks[3]) - ch_th
-    k0 = chord * (ks[0] - .5 * ks[1] + .125 * ks[2] - 1./48 * ks[3])
-    k1 = chord * (ks[0] + .5 * ks[1] + .125 * ks[2] + 1./48 * ks[3])
-    #print '%', (-.5 * ks[0] + .125 * ks[1] - 1./48 * ks[2] + 1./384 * ks[3]), (.5 * ks[0] + .125 * ks[1] + 1./48 * ks[2] + 1./384 * ks[3]), ch_th
+    th0 = ch_th - (-.5 * ks[0] + .125 * ks[1] - 1. / 48 * ks[2] + 1. / 384 * ks[3])
+    th1 = (.5 * ks[0] + .125 * ks[1] + 1. / 48 * ks[2] + 1. / 384 * ks[3]) - ch_th
+    k0 = chord * (ks[0] - .5 * ks[1] + .125 * ks[2] - 1. / 48 * ks[3])
+    k1 = chord * (ks[0] + .5 * ks[1] + .125 * ks[2] + 1. / 48 * ks[3])
+    # print('%', (-.5 * ks[0] + .125 * ks[1] - 1./48 * ks[2] + 1./384 * ks[3]), (.5 * ks[0] + .125 * ks[1] + 1./48 * ks[2] + 1./384 * ks[3]), ch_th)
     return th0, th1, k0, k1
+
 
 def calc_k1k2(ks):
     chord, ch_th = integ_chord(ks)
@@ -69,7 +82,8 @@ def calc_k1k2(ks):
     k2l = chord * chord * chord * (ks[2] - .5 * ks[3])
     k2r = chord * chord * chord * (ks[2] + .5 * ks[3])
     return k1l, k1r, k2l, k2r
-    
+
+
 def plot(ks):
     ksp = (ks[0] * .5, ks[1] * .25, ks[2] * .125, ks[3] * .0625)
     pside = int_3spiro_poly(ksp, 64)
@@ -82,14 +96,15 @@ def plot(ks):
     cmd = "moveto"
     for j in range(len(pts)):
         x, y = pts[j]
-        print 306 + 300 * x, 400 + 300 * y, cmd
+        print(306 + 300 * x, 400 + 300 * y, cmd)
         cmd = "lineto"
-    print "stroke"
+    print("stroke")
     x, y = pts[0]
-    print 306 + 300 * x, 400 + 300 * y, "moveto"
+    print(306 + 300 * x, 400 + 300 * y, "moveto")
     x, y = pts[-1]
-    print 306 + 300 * x, 400 + 300 * y, "lineto .5 setlinewidth stroke"
-    print "showpage"
+    print(306 + 300 * x, 400 + 300 * y, "lineto .5 setlinewidth stroke")
+    print("showpage")
+
 
 def solve_3spiro(th0, th1, k0, k1):
     ks = [0, 0, 0, 0]
@@ -103,11 +118,13 @@ def solve_3spiro(th0, th1, k0, k1):
         ks[1] += (dth1 - dth0) * 15 + (dk0 - dk1) * 1.5
         ks[2] += (dth0 + dth1) * -12 + (dk0 + dk1) * 6
         ks[3] += (dth0 - dth1) * 360 + (dk1 - dk0) * 60
-        #print '% ks =', ks
+        # print('% ks =', ks)
     return ks
+
 
 def iter_spline(pts, ths, ks):
     pass
+
 
 def solve_vee():
     kss = []
@@ -127,7 +144,8 @@ def solve_vee():
             k0l[j], k1r[j], k2l[j], k2r[j] = calc_k1k2(kss[j])
         for j in range(len(kss) - 1):
             dth = thl[j + 1] + thr[j]
-            if j == 5: dth += .1
+            if j == 5:
+                dth += .1
             dk0 = k0l[j + 1] - k0r[j]
             dk1 = k1l[j + 1] - k1r[j]
             dk2 = k2l[j + 1] - k2r[j]
@@ -137,12 +155,12 @@ if __name__ == '__main__':
     k0 = pi * 3
     ks = [0, k0, -2 * k0, 0]
     ks = [0, 0, 0, 0.01]
-    #plot(ks)
+    # plot(ks)
     thk = calc_thk(ks)
-    print '%', thk
-    
+    print('%', thk)
+
     ks = solve_3spiro(0, 0, 0, 0.001)
-    print '% thk =', calc_thk(ks)
-    #plot(ks)
-    print '%', ks
-    print calc_k1k2(ks)
+    print('% thk =', calc_thk(ks))
+    # plot(ks)
+    print('%', ks)
+    print(calc_k1k2(ks))

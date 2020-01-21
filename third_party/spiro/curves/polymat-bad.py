@@ -1,3 +1,5 @@
+# TODO: This code was not compatible with python > 2.4. Is it still required?
+
 from Numeric import *
 import LinearAlgebra as la
 import sys
