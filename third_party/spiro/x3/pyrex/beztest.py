@@ -1,13 +1,19 @@
+from __future__ import absolute_import
+from __future__ import print_function
+
 import x3
-from math import *
+from math import hypot
+
 
 def my_callback(cmd, what, arg, more):
-    print cmd, what, arg
+    print(cmd, what, arg)
+
 
 class bez:
     def __init__(self):
         self.coords = [(10, 10), (200, 10), (300, 200), (400, 100)]
         self.hit = None
+
     def draw(self, dc):
         coords = self.coords
         dc.setrgba(0, 0, 0.5, 1)
@@ -26,6 +32,7 @@ class bez:
         for x, y in coords:
             dc.rectangle(x - 3, y - 3, 6, 6)
             dc.fill()
+
     def mouse(self, button, mods, x, y):
         if button == 1:
             for i in range(4):
@@ -36,6 +43,7 @@ class bez:
         elif self.hit != None:
             self.coords[self.hit] = (x, y)
             self.view.dirty()
+
 
 win = x3.window(0, "beztest", my_callback)
 
