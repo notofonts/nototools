@@ -16,8 +16,8 @@
 
 
 import glob
-from os import path
 import unittest
+from os import path
 
 from fontTools import ttLib
 import freetype
@@ -27,8 +27,8 @@ from nototools import font_data
 from nototools import noto_fonts
 from nototools import unicode_data
 from nototools.glyph_area_pen import GlyphAreaPen
-from nototools.unittests import layout
 from nototools.py23 import unichr
+from nototools.unittests import layout
 
 
 def get_rendered_char_height(font_filename, font_size, char, target='mono'):

@@ -4,15 +4,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from math import hypot
-from math import atan2
 import sys
+from math import atan2
+from math import hypot
 
-import clothoid
 import pcorn
 import tocubic
-
-import offset
 
 
 def read_bz(f):

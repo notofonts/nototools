@@ -20,17 +20,17 @@
 import argparse
 import collections
 import os
-from os import path
 import re
+from os import path
+
+from fontTools import misc
+from fontTools import ttLib
 
 from nototools import autofix_for_release
 from nototools import cldr_data
 from nototools import font_data
 from nototools import noto_fonts
 from nototools import ttc_utils
-
-from fontTools import ttLib
-from fontTools import misc
 
 _COPYRIGHT_ID = 0
 _VERSION_ID = 5

@@ -26,10 +26,10 @@ differences via a returned string.
 """
 
 
-from collections import defaultdict
 import re
 import subprocess
 import tempfile
+from collections import defaultdict
 
 
 class GposDiffFinder:

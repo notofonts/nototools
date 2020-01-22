@@ -42,16 +42,15 @@ import argparse
 import collections
 import datetime
 import glob
-from os import path
 import re
 import sys
+from os import path
+from xml.etree import ElementTree as ET
 
 from nototools import cldr_data
 from nototools import noto_fonts
 from nototools import tool_utils
 from nototools import unicode_data
-
-from xml.etree import ElementTree as ET
 
 # Standard values used in Noto fonts.
 

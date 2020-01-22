@@ -34,8 +34,8 @@ import shutil
 import subprocess
 import sys
 
-from nototools import notoconfig
 from nototools import compare_summary
+from nototools import notoconfig
 
 
 class RedirectStdout(object):

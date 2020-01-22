@@ -17,8 +17,8 @@
 """Extract cmap data from mti phase 3 spreadsheet."""
 
 import argparse
-from os import path
 import sys
+from os import path
 
 from nototools import cmap_data
 from nototools import tool_utils

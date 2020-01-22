@@ -17,9 +17,9 @@
 import argparse
 import collections
 import os
-from os import path
 import re
 import sys
+from os import path
 
 from fontTools import ttLib
 

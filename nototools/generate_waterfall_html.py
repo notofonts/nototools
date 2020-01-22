@@ -19,9 +19,9 @@
 import argparse
 import codecs
 import os
-from os import path
 import re
 import shutil
+from os import path
 
 from nototools import lang_data
 from nototools import noto_fonts

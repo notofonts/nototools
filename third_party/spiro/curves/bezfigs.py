@@ -3,14 +3,13 @@ from __future__ import division
 from __future__ import print_function
 
 import sys
-from math import sin
 from math import cos
 from math import hypot
-
-import fromcubic
-import tocubic
+from math import sin
 
 import cornu
+import fromcubic
+import tocubic
 
 
 def eps_prologue(x0, y0, x1, y1, draw_box=False):

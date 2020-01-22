@@ -21,14 +21,13 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 import argparse
 import array
 import os
-from os import path
 import re
+from os import path
 
 from fontTools import ttLib
 
 from nototools import font_data
 from nototools import notoconfig
-
 
 NOTO_URL = "http://www.google.com/get/noto/"
 

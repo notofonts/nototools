@@ -18,9 +18,9 @@
 
 import argparse
 import collections
-from os import path
 import struct
 import subprocess
+from os import path
 
 from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
 

@@ -53,8 +53,8 @@ import os.path
 import re
 import zipfile
 
-from nototools import notoconfig
 from nototools import grab_download
+from nototools import notoconfig
 
 
 def unzip_to_directory_tree(drop_dir, filepath):

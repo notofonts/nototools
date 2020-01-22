@@ -18,8 +18,8 @@
 inspiration."""
 
 import argparse
-from os import path
 import re
+from os import path
 
 from fontTools import ttLib
 

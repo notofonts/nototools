@@ -20,20 +20,20 @@ import argparse
 import codecs
 import glob
 import os
-from os import path
 import shutil
 import tempfile
+from os import path
 
-from nototools.py23 import unichr
-from nototools import subset
+from fontTools import ttLib
+
 from nototools import coverage
 from nototools import fix_khmer_and_lao_coverage as merger
 from nototools import font_data
+from nototools import subset
 from nototools import tool_utils
 from nototools import ttc_utils
 from nototools import unicode_data
-
-from fontTools import ttLib
+from nototools.py23 import unichr
 
 
 def patch_hyphen(srcdir, dstdir, copy_unchanged=True):

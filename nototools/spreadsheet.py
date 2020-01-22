@@ -19,8 +19,8 @@ SPREADSHEET_NAME = 'Noto Project Status (Phase II)- go-noto - ' 'Unicode-Monotyp
 
 import argparse
 import csv
-from os import path
 import re
+from os import path
 
 from fontTools import ttLib
 

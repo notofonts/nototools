@@ -19,12 +19,11 @@
 import argparse
 import sys
 
+from nototools import cmap_data
 from nototools import lint_config
 from nototools import noto_data
 from nototools import opentype_data
 from nototools import unicode_data
-from nototools import cmap_data
-
 
 _PHASE_TWO_SCRIPTS = """
   Arab, Aran, Armi, Armn, Avst, Bali, Bamu, Batk, Beng, Brah, Bugi, Buhd, Cans,

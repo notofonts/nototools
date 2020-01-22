@@ -22,9 +22,9 @@ import json
 import os
 import subprocess
 
-from nototools import font_caching
-
 from fontTools.pens.boundsPen import BoundsPen
+
+from nototools import font_caching
 
 
 def min_with_none(first, second):

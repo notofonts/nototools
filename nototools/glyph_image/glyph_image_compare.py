@@ -18,11 +18,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-"""Generate comparison data for two glyph image files.
-
-This takes two sets of glyph image data, creates pairs of images, and
-writes those image comparisons to an output dir."""
-
 import argparse
 import collections
 import re
@@ -33,9 +28,14 @@ from fontTools import ttLib
 
 from nototools import font_data
 from nototools import tool_utils
-
-from nototools.glyph_image import glyph_image_pair
 from nototools.glyph_image import glyph_image
+from nototools.glyph_image import glyph_image_pair
+
+
+"""Generate comparison data for two glyph image files.
+
+This takes two sets of glyph image data, creates pairs of images, and
+writes those image comparisons to an output dir."""
 
 
 def select_named_pairs(pair_data):

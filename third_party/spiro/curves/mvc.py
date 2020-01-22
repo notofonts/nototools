@@ -2,14 +2,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from math import sin
+import array
+import random
+import sys
+from math import atan2
 from math import cos
 from math import hypot
-from math import atan2
 from math import pi
-import array
-import sys
-import random
+from math import sin
 
 
 def run_mvc(k, k1, k2, k3, C, n=100, do_print=False):

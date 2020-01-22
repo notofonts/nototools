@@ -28,17 +28,19 @@ __author__ = "roozbeh@google.com (Roozbeh Pournader) and " "cibu@google.com (Cib
 import codecs
 import collections
 import os
-from os import path
 import re
+from os import path
 
-from nototools.py23 import unichr, unicode, basestring
+from nototools import tool_utils  # parse_int_ranges
+from nototools.py23 import basestring
+from nototools.py23 import unichr
+from nototools.py23 import unicode
 
 try:
     import unicodedata2 as unicodedata  # Unicode 8 compliant native lib
 except ImportError:
     import unicodedata  # Python's internal library
 
-from nototools import tool_utils  # parse_int_ranges
 
 # Update this when we update the base version data we use
 UNICODE_VERSION = 12.0

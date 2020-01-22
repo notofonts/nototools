@@ -7,19 +7,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import struct
 import sys
-
-from math import floor
-from math import sin
+from math import atan2
 from math import cos
-from math import sqrt
+from math import floor
 from math import hypot
 from math import log
-from math import atan2
 from math import pi
-import struct
+from math import sin
+from math import sqrt
 
-import pcorn
 import cornu
 
 

@@ -14,11 +14,10 @@
 
 import collections
 import datetime
+from xml.etree import ElementTree as ET
 
 from nototools import noto_fonts  # for script_name_for_report
 from nototools import tool_utils
-
-from xml.etree import ElementTree as ET
 
 """Functions for reading/writing cmap data in xml format.
 

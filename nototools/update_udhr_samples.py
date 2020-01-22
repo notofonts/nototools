@@ -27,17 +27,17 @@ import difflib
 import os
 import re
 import shutil
+import xml.etree.ElementTree as ET
+
+from nototools import generate_website_data
+from nototools import tool_utils
+from nototools import unicode_data
 
 try:
     from urllib.request import urlretrieve
 except:
     from urllib import urlretrieve
 
-import xml.etree.ElementTree as ET
-
-from nototools import generate_website_data
-from nototools import tool_utils
-from nototools import unicode_data
 
 DIR_URL = 'http://unicode.org/udhr/d'
 UDHR_XML_ZIP_NAME = 'udhr_xml.zip'

@@ -17,19 +17,20 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import argparse
+import sys
+from os import path
+
+from nototools import cmap_data
+from nototools import tool_utils
+
+
 """
 Generate lists of codepoints prefixed with 'u' or 'uni' from cmap data file.
 
 Occasionally the designers want data in this format to create lists of files
 for their tools, so let's just save this script.
 """
-
-import argparse
-from os import path
-import sys
-
-from nototools import cmap_data
-from nototools import tool_utils
 
 
 def glyphstr(cp):

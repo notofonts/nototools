@@ -19,8 +19,8 @@ import argparse
 import codecs
 import csv
 import math
-from os import path
 import sys
+from os import path
 
 from nototools import generate_coverage_data
 from nototools import tool_utils

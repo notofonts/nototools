@@ -18,12 +18,11 @@ import argparse
 import collections
 import datetime
 from os import path
+from xml.etree import ElementTree as ET
 
 from nototools import cmap_data
 from nototools import coverage
 from nototools import tool_utils
-
-from xml.etree import ElementTree as ET
 
 """Generate a coverage.xml file listing the codepoints covered by
 a font family plus a name."""

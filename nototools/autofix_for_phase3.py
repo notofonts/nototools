@@ -28,18 +28,17 @@ hinted.  We also put more info into the version string.
 import argparse
 import datetime
 import os
-from os import path
 import re
 import subprocess
+from os import path
 
 from fontTools import ttLib
 
-from nototools.py23 import basestring
 from nototools import font_data
 from nototools import noto_data
 from nototools import noto_fonts
 from nototools import tool_utils
-
+from nototools.py23 import basestring
 
 _new_version_re = re.compile(r'^(?:keep|[12]\.\d{3})$')
 

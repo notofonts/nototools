@@ -20,11 +20,10 @@ import collections
 import re
 import string
 import sys
+from os import path
 
 from fontTools import ttLib
 from fontTools.pens.boundsPen import BoundsPen
-
-from os import path
 
 from nototools import font_data
 from nototools import tool_utils

@@ -16,15 +16,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-"""Utilities for rle-style compression on glyph image data."""
-
-# Not really better than zip compression, as it turns out.  This is
-# not currently used.
-
 import argparse
 from os import path
 
 from nototools.glyph_image import glyph_image
+
+"""Utilities for rle-style compression on glyph image data."""
+
+# Not really better than zip compression, as it turns out.  This is
+# not currently used.
 
 
 # basic idea here is that most runs are of white or black, so only rle-encode

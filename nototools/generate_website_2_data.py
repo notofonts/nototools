@@ -19,8 +19,6 @@
 
 from __future__ import division
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
-
 import argparse
 import codecs
 import collections
@@ -30,18 +28,21 @@ import glob
 import json
 import locale
 import os
-from os import path
 import shutil
+from os import path
 
 from nototools import cldr_data
 from nototools import coverage
 from nototools import create_image
 from nototools import lang_data
-from nototools import notoconfig
 from nototools import noto_fonts
+from nototools import notoconfig
 from nototools import tool_utils
 from nototools import unicode_data
 from nototools.py23 import unichr
+
+__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+
 
 TOOLS_DIR = notoconfig.noto_tools()
 FONTS_DIR = notoconfig.noto_fonts()

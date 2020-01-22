@@ -18,6 +18,18 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import argparse
+import collections
+import sys
+import time
+from os import path
+
+from fontTools import ttLib
+from PIL import Image
+
+from nototools import font_data
+from nototools.glyph_image import glyph_image
+
 """Find a good pairing of glyph images.
 
 This uses the Hungarian matching algorithm, which takes a matrix of
@@ -37,18 +49,6 @@ Before we start we exclude images already matched based on codepoint, as
 we expect this is the intended pairing of those glyphs.  We also exclude
 images that are an exact match, if any."""
 
-import argparse
-import collections
-import sys
-import time
-from os import path
-
-from fontTools import ttLib
-from PIL import Image
-
-from nototools import font_data
-
-from nototools.glyph_image import glyph_image
 
 PairInfo = collections.namedtuple(
     'PairInfo', 'base_path base_hash target_path target_hash cp_pairs ' 'pri_pairs alt_base_pairs, alt_target_pairs'

@@ -17,6 +17,14 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+import argparse
+import shutil
+from os import path
+from string import Template
+
+from nototools import tool_utils
+from nototools.glyph_image import glyph_image_compare
+
 """Generate html that lets you browse the results from glyph_image_compare.
 
 The glyph image compare tool takes information on two sets of glyphs from
@@ -50,14 +58,6 @@ and an html file is created along with supporting .js and .css files.
 $ ./generate_glyph_image_compare_html.py -i compdir -o htmldir/filename.html
 """
 
-import argparse
-import shutil
-from os import path
-from string import Template
-
-from nototools import tool_utils
-
-from nototools.glyph_image import glyph_image_compare
 
 _TEMPLATE = """<!DOCTYPE html>
 <html lang='en'>

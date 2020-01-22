@@ -19,6 +19,7 @@
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import sys
+
 from nototools.py23 import unichr
 
 

@@ -18,9 +18,9 @@
 
 __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
-from nototools import opentype_data
-
 from fontTools.ttLib.tables._n_a_m_e import NameRecord
+
+from nototools import opentype_data
 
 
 def get_name_records(font):

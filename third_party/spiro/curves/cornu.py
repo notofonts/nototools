@@ -1,11 +1,10 @@
 from __future__ import absolute_import
 from __future__ import division
 
-from math import sin
 from math import cos
-from math import sqrt
 from math import pi
-
+from math import sin
+from math import sqrt
 
 # implementation adapted from cephes
 

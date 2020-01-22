@@ -10,10 +10,10 @@ from __future__ import division
 from __future__ import print_function
 
 from math import atan2
-from math import sin
 from math import cos
 from math import hypot
 from math import pi
+from math import sin
 
 
 def eval_cubic(a, b, c, d, x):

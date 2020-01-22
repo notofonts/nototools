@@ -23,13 +23,12 @@ import locale
 import os
 from os import path
 
-from nototools.py23 import unichr
 from nototools import cldr_data
 from nototools import create_image
 from nototools import extra_locale_data
 from nototools import tool_utils
 from nototools import unicode_data
-
+from nototools.py23 import unichr
 
 try:
     from icu import Locale, Collator

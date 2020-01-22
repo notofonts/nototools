@@ -31,19 +31,19 @@ large errors.
 from __future__ import division
 
 import os
-from PIL import Image
 import re
-from io import BytesIO
 import subprocess
+from io import BytesIO
 
 import booleanOperations
 from defcon import Glyph
 from fontTools.pens.basePen import BasePen
-from fontTools.ttLib import TTFont
 from fontTools.pens.pointPen import PointToSegmentPen
+from fontTools.ttLib import TTFont
+from PIL import Image
 
-from nototools.glyph_area_pen import GlyphAreaPen
 from nototools import hb_input
+from nototools.glyph_area_pen import GlyphAreaPen
 from nototools.py23 import unichr
 
 GDEF_UNDEF = 0

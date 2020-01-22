@@ -21,13 +21,13 @@ Replicating the sample text they describe can be a bit tedious.  This
 lets you interactively search characters in the font by name to assemble
 a string and save it to a file."""
 
-from builtins import input
 import argparse
 import codecs
+from builtins import input
 
-from nototools.py23 import unichr
 from nototools import coverage
 from nototools import unicode_data
+from nototools.py23 import unichr
 
 
 def _help():

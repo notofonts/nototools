@@ -20,7 +20,6 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 from fontTools import ttLib
 
-
 _font_cache = {}
 
 

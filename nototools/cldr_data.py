@@ -17,13 +17,14 @@
 import argparse
 import collections
 import os
-from os import path
 import re
-from nototools import unicode_data
 import xml.etree.cElementTree as ElementTree
+from os import path
 
-from nototools.py23 import unichr, unicode
 from nototools import extra_locale_data
+from nototools import unicode_data
+from nototools.py23 import unichr
+from nototools.py23 import unicode
 
 TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')

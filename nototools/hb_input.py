@@ -13,7 +13,8 @@
 # limitations under the License.
 
 
-from __future__ import division, print_function
+from __future__ import division
+from __future__ import print_function
 
 from nototools import summary
 from nototools.py23 import unichr

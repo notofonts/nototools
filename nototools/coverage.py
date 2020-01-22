@@ -19,13 +19,13 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 
 import argparse
 import codecs
-from os import path
 import re
+from os import path
 
 from fontTools import ttLib
 
-from nototools import unicode_data
 from nototools import lint_config
+from nototools import unicode_data
 from nototools.py23 import unichr
 
 

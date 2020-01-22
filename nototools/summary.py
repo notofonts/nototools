@@ -25,8 +25,8 @@ import re
 
 from fontTools import ttLib
 
-from nototools import noto_lint
 from nototools import font_data
+from nototools import noto_lint
 
 
 def get_largest_cmap(font):

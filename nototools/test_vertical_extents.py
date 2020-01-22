@@ -37,10 +37,10 @@ import re
 import sys
 import xml.etree.ElementTree
 
-from nototools.py23 import unichr
 from nototools import coverage
 from nototools import font_caching
 from nototools import render
+from nototools.py23 import unichr
 
 
 def _regular_expression_from_set(character_set):

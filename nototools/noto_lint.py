@@ -27,26 +27,26 @@ import collections
 import itertools
 import json
 import math
-from os import path
 import re
 import subprocess
 import sys
 import tempfile
+from os import path
 
 from fontTools import subset
 from fontTools import ttLib
-from fontTools.ttLib.tables import otTables
 from fontTools.misc import arrayTools
 from fontTools.misc import bezierTools
 from fontTools.pens import basePen
+from fontTools.ttLib.tables import otTables
 
 from nototools import cmap_data
 from nototools import font_data
 from nototools import lint_config
-from nototools import notoconfig
 from nototools import noto_data
 from nototools import noto_fonts
 from nototools import noto_names
+from nototools import notoconfig
 from nototools import opentype_data
 from nototools import render
 from nototools import tool_utils

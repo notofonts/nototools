@@ -19,8 +19,6 @@
 
 from __future__ import division
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
-
 import argparse
 import codecs
 import collections
@@ -28,21 +26,24 @@ import csv
 import json
 import locale
 import os
-from os import path
 import re
 import shutil
 import subprocess
 import xml.etree.cElementTree as ElementTree
+from os import path
 
 from fontTools import ttLib
 
-from nototools.py23 import unichr
 from nototools import coverage
 from nototools import create_image
 from nototools import extra_locale_data
 from nototools import font_data
-from nototools import unicode_data
 from nototools import tool_utils
+from nototools import unicode_data
+from nototools.py23 import unichr
+
+__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+
 
 # CJK_DIR is in newnoto/noto-cjk
 # license is at this root

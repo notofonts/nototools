@@ -42,15 +42,15 @@ import argparse
 import collections
 import sys
 
-from nototools.py23 import unichr
 from nototools import cldr_data
 from nototools import cmap_data
-from nototools import compare_cmap_data
 from nototools import collect_cldr_punct
+from nototools import compare_cmap_data
 from nototools import noto_data
 from nototools import opentype_data
 from nototools import tool_utils
 from nototools import unicode_data
+from nototools.py23 import unichr
 
 _MERGED_SCRIPTS_BY_TARGET = {
     'CJK': 'Bopo Hang Hani Hans Hant Hira Jpan Kana Kore'.split(),

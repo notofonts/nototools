@@ -30,7 +30,9 @@ import logging
 import os
 import sys
 
-from nototools import gpos_diff, gsub_diff, shape_diff
+from nototools import gpos_diff
+from nototools import gsub_diff
+from nototools import shape_diff
 
 logger = logging.getLogger('notodiff')
 

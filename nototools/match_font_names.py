@@ -8,8 +8,8 @@ The name list is the same as that used to swat file versions."""
 
 import argparse
 import os
-from os import path
 import re
+from os import path
 
 from nototools import tool_utils
 

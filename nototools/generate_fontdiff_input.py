@@ -23,6 +23,7 @@ Each glyph will be put on its own line in the output HTML.
 import sys
 
 from fontTools import ttLib
+
 from nototools import hb_input
 
 

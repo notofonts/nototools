@@ -20,8 +20,8 @@ import argparse
 import collections
 
 from nototools import cmap_data
-from nototools import unicode_data
 from nototools import tool_utils
+from nototools import unicode_data
 
 _MISSING_SCRIPTS = frozenset(['<MISSING>'])
 _OMITTED_SCRIPTS = frozenset(['(omitted)'])

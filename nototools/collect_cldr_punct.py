@@ -23,14 +23,14 @@ If cldr specifies characters here, we want to require it in the fonts."""
 import collections
 import glob
 import os
-from os import path
 import sys
 import xml.etree.cElementTree as ET
+from os import path
 
-from nototools.py23 import unichr
 from nototools import cldr_data
 from nototools import tool_utils
 from nototools import unicode_data
+from nototools.py23 import unichr
 
 TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
