@@ -16,7 +16,6 @@ from fontTools.pens.areaPen import AreaPen
 
 
 class GlyphAreaPen(AreaPen):
-
     def pop(self):
         value = self.value
         self.value = 0

@@ -18,6 +18,7 @@ import json
 
 from nototools import render
 
+
 def _run_harfbuzz(text, font, language, extra_parameters=None):
     """Run harfbuzz on some text and return the shaped list."""
     try:
@@ -25,12 +26,13 @@ def _run_harfbuzz(text, font, language, extra_parameters=None):
         extra_parameters = extra_parameters.split(' ')
     except AttributeError:
         pass
-    hb_output = render.run_harfbuzz_on_text(
-        text, font, language, extra_parameters)
+    hb_output = render.run_harfbuzz_on_text(text, font, language, extra_parameters)
     return json.loads(hb_output)
 
 
 _advance_cache = {}
+
+
 def get_advances(text, font, extra_parameters=None):
     """Get a list of horizontal advances for text rendered in a font."""
     try:
@@ -45,6 +47,8 @@ def get_advances(text, font, extra_parameters=None):
 
 
 _shape_cache = {}
+
+
 def get_glyphs(text, font, extra_parameters=None):
     """Get a list of shaped glyphs for text rendered in a font."""
     try:

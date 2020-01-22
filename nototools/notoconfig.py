@@ -49,27 +49,29 @@ If you use any of the other noto repos, add similar lines for 'noto_emoji',
 _values = {}
 _config_path = None  # so we know
 
+
 def _setup():
-  """The config consists of lines of the form <name> = <value>.
+    """The config consists of lines of the form <name> = <value>.
   values will hold a mapping from the <name> to value.
   Blank lines and lines starting with '#' are ignored."""
-  global _config_path
+    global _config_path
 
-  paths = [path.expanduser('~/.notoconfig'), '/usr/local/share/noto/config']
-  for configfile in paths:
-    if path.exists(configfile):
-      with open(configfile, "r") as f:
-        for line in f:
-          line = line.strip()
-          if not line or line.startswith('#'):
-            continue
-          k, v = line.split('=', 1)
-          _values[k.strip()] = v.strip()
-      _config_path = configfile
-      break
-  # This needs to be silent.  It causes a makefile error in noto-emoji,
-  # which expects stdout to consist only of the output of a python
-  # script it runs.
+    paths = [path.expanduser('~/.notoconfig'), '/usr/local/share/noto/config']
+    for configfile in paths:
+        if path.exists(configfile):
+            with open(configfile, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    k, v = line.split('=', 1)
+                    _values[k.strip()] = v.strip()
+            _config_path = configfile
+            break
+    # This needs to be silent.  It causes a makefile error in noto-emoji,
+    # which expects stdout to consist only of the output of a python
+    # script it runs.
+
 
 _setup()
 
@@ -79,44 +81,52 @@ _setup()
 # require it.  But if you run code that calls noto_tools and provides no
 # default, we assume you do require it and raise an exception.
 
+
 def noto_tools(default=''):
-  """Local path to nototools git repo.  If this is called, we require config
+    """Local path to nototools git repo.  If this is called, we require config
   to be set up."""
-  result = _values.get('noto_tools', default)
-  if result:
-    return result
-  raise Exception(_ERR_MSG)
+    result = _values.get('noto_tools', default)
+    if result:
+        return result
+    raise Exception(_ERR_MSG)
+
 
 def noto_fonts(default=''):
-  """Local path to noto-font git repo"""
-  return _values.get('noto_fonts', default)
+    """Local path to noto-font git repo"""
+    return _values.get('noto_fonts', default)
+
 
 def noto_cjk(default=''):
-  """Local path to noto-cjk git repo"""
-  return _values.get('noto_cjk', default)
+    """Local path to noto-cjk git repo"""
+    return _values.get('noto_cjk', default)
+
 
 def noto_emoji(default=''):
-  """Local path to noto-emoji git repo"""
-  return _values.get('noto_emoji', default)
+    """Local path to noto-emoji git repo"""
+    return _values.get('noto_emoji', default)
+
 
 def noto_source(default=''):
-  """Local path to noto-source git repo"""
-  return _values.get('noto_source', default)
+    """Local path to noto-source git repo"""
+    return _values.get('noto_source', default)
+
 
 def noto_fonts_alpha(default=''):
-  """Local path to noto-fonts-alpha git repo"""
-  return _values.get('noto_fonts_alpha', default)
+    """Local path to noto-fonts-alpha git repo"""
+    return _values.get('noto_fonts_alpha', default)
+
 
 def get(key, default=''):
-  return _values.get(key, default)
+    return _values.get(key, default)
+
 
 if __name__ == '__main__':
-  keyset = set(_values.keys())
-  if not keyset:
-    print('no keys defined, probably no notoconfig file was found.')
-  else:
-    wid = max(len(k) for k in keyset)
-    fmt = '%%%ds: %%s' % wid
-    for k in sorted(keyset):
-      print(fmt % (k, get(k)))
-    print('config: %s' % _config_path)
+    keyset = set(_values.keys())
+    if not keyset:
+        print('no keys defined, probably no notoconfig file was found.')
+    else:
+        wid = max(len(k) for k in keyset)
+        fmt = '%%%ds: %%s' % wid
+        for k in sorted(keyset):
+            print(fmt % (k, get(k)))
+        print('config: %s' % _config_path)

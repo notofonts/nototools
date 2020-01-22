@@ -22,16 +22,18 @@ import sys
 
 from fontTools import ttLib
 
+
 def scale_font(font, factor):
     """Scales a font by a factor like 0.95 to make it 5% smaller."""
     head_table = font['head']
-    head_table.unitsPerEm = int(round(head_table.unitsPerEm/float(factor)))
+    head_table.unitsPerEm = int(round(head_table.unitsPerEm / float(factor)))
+
 
 def main(argv):
     font = ttLib.TTFont(argv[2])
     scale_font(font, float(argv[1]))
     font.save(argv[3])
 
+
 if __name__ == "__main__":
     main(sys.argv)
-

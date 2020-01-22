@@ -39,7 +39,7 @@ def rle(data):
         v = data[i]
         i += 1
         output.append(v)
-        if v == 0 or v == 0xff:
+        if v == 0 or v == 0xFF:
             j = i
             nlim = min(i + 255, lim)
             while j < nlim and data[j] == v:
@@ -57,7 +57,7 @@ def expand_rle(compressed_data):
         v = compressed_data[i]
         i += 1
         output.append(v)
-        if v == 0 or v == 0xff:
+        if v == 0 or v == 0xFF:
             c = compressed_data[i]
             i += 1
             while c > 0:
@@ -94,11 +94,11 @@ def rle2(data):
     lim = len(data)
     while i < lim:
         v = data[i]
-        if not (v == 0 or v == 0xff):
+        if not (v == 0 or v == 0xFF):
             output.append(v / 2)
             i += 1
         else:
-            if v == 0xff:
+            if v == 0xFF:
                 nlim = min(i + 32, lim)
                 base = 128
             else:
@@ -120,7 +120,7 @@ def expand_rle2(compressed_data):
             output.append(v * 2 if v else 1)
         elif v < 160:
             for i in range(v - 127):
-                output.append(0xff)
+                output.append(0xFF)
         else:
             for i in range(v - 159):
                 output.append(0)
@@ -134,7 +134,7 @@ def compare_rle2(expanded_data, original_data):
         return False, 'original len %d, expanded len %d' % (olen, elen)
     for i in range(olen):
         v = original_data[i]
-        if v == 0 or v == 0xff:
+        if v == 0 or v == 0xFF:
             if expanded_data[i] != v:
                 return False, 'mismatch %d at %d' % (v, i)
         else:
@@ -144,8 +144,7 @@ def compare_rle2(expanded_data, original_data):
     return True, None
 
 
-_base64_enc = \
-    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'
+_base64_enc = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'
 _base64_inv = [None] * 128
 for i, c in enumerate(_base64_enc):
     _base64_inv[ord(c)] = i
@@ -158,8 +157,8 @@ def base64_encode(data):
         v0, v1, v2 = triple[:3]
         output.append(_base64_enc[v0 >> 2])
         output.append(_base64_enc[((v0 & 3) << 4) + (v1 >> 4)])
-        output.append(_base64_enc[((v1 & 0xf) << 2) + (v2 >> 6)])
-        output.append(_base64_enc[v2 & 0x3f])
+        output.append(_base64_enc[((v1 & 0xF) << 2) + (v2 >> 6)])
+        output.append(_base64_enc[v2 & 0x3F])
 
     def add_final_triple(short_triple):
         vals = len(short_triple)
@@ -172,11 +171,11 @@ def base64_encode(data):
             output.append('=')
         else:
             v2 = short_triple[2] if vals > 2 else 0
-            output.append(_base64_enc[((v1 & 0xf) << 2) + (v2 >> 6)])
+            output.append(_base64_enc[((v1 & 0xF) << 2) + (v2 >> 6)])
             if vals == 2:
                 output.append('=')
             else:
-                output.append(_base64_enc[v2 & 0x3f])
+                output.append(_base64_enc[v2 & 0x3F])
 
     lim = int(len(data) / 3) * 3
     for i in range(0, lim, 3):
@@ -199,10 +198,10 @@ def base64_decode(encoded_data):
         v = n << 2
         n = val(quad[1])
         temp[0] = v + (n >> 4)
-        v = (n << 4) & 0xff
+        v = (n << 4) & 0xFF
         n = val(quad[2])
         temp[1] = v + (n >> 2)
-        v = (n << 6) & 0xff
+        v = (n << 6) & 0xFF
         n = val(quad[3])
         temp[2] = v + n
         output.extend(temp)
@@ -213,7 +212,7 @@ def base64_decode(encoded_data):
         n = val(quad[1])
         output.append(v + (n >> 4))
         if len(quad) > 2 and quad[2] != '=':
-            v = (n << 4) & 0xff
+            v = (n << 4) & 0xFF
             n = val(quad[2])
             output.append(v + (n >> 2))
             if len(quad) > 3:
@@ -232,11 +231,11 @@ def base64_decode(encoded_data):
 
 
 def wrap_str(s, wrap_len):
-    return '\n'.join(s[i:i + wrap_len] for i in range(0, len(s), wrap_len))
+    return '\n'.join(s[i : i + wrap_len] for i in range(0, len(s), wrap_len))
 
 
 def _test_b64():
-    test_data = [0xe6, 0xd5, 0xc4, 0xb3]
+    test_data = [0xE6, 0xD5, 0xC4, 0xB3]
     for i in range(len(test_data)):
         temp = test_data[i:]
         enc = base64_encode(temp)
@@ -311,23 +310,19 @@ def default_compress(input_file, output_file, comp):
         elif ext == '.b64':
             comp = False
         else:
-            raise Exception(
-                'don\'t know whether to compress/decompress %s' % input_file)
+            raise Exception('don\'t know whether to compress/decompress %s' % input_file)
 
     if output_file is None:
         if comp:
             if ext == '.b64':
-                raise Exception(
-                    'won\'t compress already compressed file %s' % input_file)
+                raise Exception('won\'t compress already compressed file %s' % input_file)
             elif ext == '.txt':
                 output_file = base + '.b64'
             else:
                 output_file = input_file + '.b64'
         else:
             if ext == '.txt':
-                raise Exception(
-                    'won\'t uncompress uncompressed file %s' % input_file
-                )
+                raise Exception('won\'t uncompress uncompressed file %s' % input_file)
             elif ext == '.b64':
                 output_file = base + '.txt'
             else:
@@ -348,23 +343,12 @@ def default_compress(input_file, output_file, comp):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input_file', help='glyph image file to input', metavar='file', required=True)
+    parser.add_argument('-o', '--output_file', help='file to output', metavar='file')
     parser.add_argument(
-        '-i', '--input_file', help='glyph image file to input', metavar='file',
-        required=True)
-    parser.add_argument(
-        '-o', '--output_file', help='file to output', metavar='file')
-    parser.add_argument(
-        '-c',
-        '--compress',
-        help='compress (based on input extension)',
-        type=bool,
-        nargs='?',
-        const=True,
-        metavar='tf'
+        '-c', '--compress', help='compress (based on input extension)', type=bool, nargs='?', const=True, metavar='tf'
     )
-    parser.add_argument(
-        '-t', '--test', help='run test compression on input file',
-        action='store_true')
+    parser.add_argument('-t', '--test', help='run test compression on input file', action='store_true')
     args = parser.parse_args()
 
     if args.test:

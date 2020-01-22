@@ -40,7 +40,8 @@ _SIL_LICENSE = (
     'Version 1.1. This Font Software is distributed on an "AS IS" '
     'BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express '
     'or implied. See the SIL Open Font License for the specific language, '
-    'permissions and limitations governing your use of this Font Software.')
+    'permissions and limitations governing your use of this Font Software.'
+)
 
 _SIL_LICENSE_URL = "http://scripts.sil.org/OFL"
 
@@ -54,7 +55,7 @@ def fix_revision(font):
 
     accuracy = len(minor_version)
     font_revision = font_data.printable_font_revision(font, accuracy)
-    expected_font_revision = major_version+'.'+minor_version
+    expected_font_revision = major_version + '.' + minor_version
     if font_revision != expected_font_revision:
         font['head'].fontRevision = float(expected_font_revision)
         print('Fixed fontRevision to %s' % expected_font_revision)
@@ -95,6 +96,7 @@ NAME_CORRECTIONS = {
 
 TRADEMARK_TEMPLATE = u'%s is a trademark of Google Inc.'
 
+
 def fix_name_table(font):
     """Fix copyright and reversed values in the 'name' table."""
     modified = False
@@ -119,8 +121,7 @@ def fix_name_table(font):
                 break
         if record != name_records[name_id]:
             font_data.set_name_record(font, name_id, record)
-            print('Updated name table record #%d from "%s" to "%s"' % (
-                name_id, oldrecord, record))
+            print('Updated name table record #%d from "%s" to "%s"' % (name_id, oldrecord, record))
             modified = True
 
     trademark_names = ['Noto', 'Arimo', 'Tinos', 'Cousine']
@@ -210,12 +211,20 @@ def drop_tables(font, tables):
 
 TABLES_TO_DROP = [
     # FontForge internal tables
-    'FFTM', 'PfEd',
+    'FFTM',
+    'PfEd',
     # Microsoft VOLT internatl tables
-    'TSI0', 'TSI1', 'TSI2', 'TSI3',
-    'TSI5', 'TSID', 'TSIP', 'TSIS',
+    'TSI0',
+    'TSI1',
+    'TSI2',
+    'TSI3',
+    'TSI5',
+    'TSID',
+    'TSIP',
+    'TSIS',
     'TSIV',
 ]
+
 
 def fix_path(file_path, is_hinted):
     file_path = re.sub(r'_(?:un)?hinted', '', file_path)
@@ -248,8 +257,7 @@ def fix_os2_unicoderange(font):
         old_bitmap_string = font_data.unicoderange_bitmap_to_string(os2_bitmap)
         font_data.set_os2_unicoderange_bitmap(font, expected_bitmap)
         bitmap_string = font_data.unicoderange_bitmap_to_string(expected_bitmap)
-        print('Change unicoderanges from:\n  %s\nto:\n  %s' % (
-            old_bitmap_string, bitmap_string))
+        print('Change unicoderanges from:\n  %s\nto:\n  %s' % (old_bitmap_string, bitmap_string))
         return True
     return False
 
@@ -293,7 +301,7 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
     modified |= fix_os2_unicoderange(font)
     # leave line gap for non-noto fonts alone, metrics are more constrained there
     if font_data.font_name(font).find('Noto') != -1:
-      modified |= fix_linegap(font)
+        modified |= fix_linegap(font)
 
     tables_to_drop = TABLES_TO_DROP
     if not is_hinted:
@@ -328,7 +336,7 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
             if path.splitext(file)[1] not in ['.ttf', '.ttc', '.otf']:
                 continue
             src_file = path.join(root, file)
-            file_path = src_file[len(src_root)+1:] # +1 to ensure no leading slash.
+            file_path = src_file[len(src_root) + 1 :]  # +1 to ensure no leading slash.
             if not name_rx.search(file_path):
                 continue
             is_hinted = root.endswith('/hinted') or '_hinted' in file
@@ -340,14 +348,14 @@ def main():
     default_dst_root = notoconfig.values.get('autofix')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('name_pat', help='regex for files to fix, '
-                        'searches relative path from src root')
-    parser.add_argument('--src_root', help='root of src files (default %s)' %
-                        default_src_root, default=default_src_root)
-    parser.add_argument('--dst_root', help='root of destination (default %s)' %
-                        default_dst_root, default=default_dst_root)
-    parser.add_argument('--save_unmodified', help='save even unmodified files',
-                        action='store_true')
+    parser.add_argument('name_pat', help='regex for files to fix, ' 'searches relative path from src root')
+    parser.add_argument(
+        '--src_root', help='root of src files (default %s)' % default_src_root, default=default_src_root
+    )
+    parser.add_argument(
+        '--dst_root', help='root of destination (default %s)' % default_dst_root, default=default_dst_root
+    )
+    parser.add_argument('--save_unmodified', help='save even unmodified files', action='store_true')
     args = parser.parse_args()
 
     if not args.src_root:

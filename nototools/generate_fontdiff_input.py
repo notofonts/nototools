@@ -42,8 +42,7 @@ def main(font_path_a, font_path_b, specimen_path):
             text = text.replace(old, new)
         style = ''
         if features:
-            style = (' style="font-feature-settings: %s;"' %
-                     ', '.join("'%s'" % f for f in features))
+            style = ' style="font-feature-settings: %s;"' % ', '.join("'%s'" % f for f in features)
         out_lines.append('<p%s>%s</p>' % (style, text))
     out_lines.append('</html>')
     out_text = '\n'.join(out_lines)

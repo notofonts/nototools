@@ -31,15 +31,14 @@ def fit_cubic_superfast(z0, z1, arclen, th0, th1, aab):
     chord = hypot(z1[0] - z0[0], z1[1] - z0[1])
     cth0, sth0 = cos(th0), sin(th0)
     cth1, sth1 = -cos(th1), -sin(th1)
-    armlen = .66667 * arclen
+    armlen = 0.66667 * arclen
     a = armlen * aab
     b = armlen - a
-    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-          (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
     return bz
 
 
-def fit_cubic(z0, z1, arclen, th_fn, fast, aabmin=0, aabmax=1.):
+def fit_cubic(z0, z1, arclen, th_fn, fast, aabmin=0, aabmax=1.0):
     chord = hypot(z1[0] - z0[0], z1[1] - z0[1])
     if arclen < 1.000001 * chord:
         return [z0, z1], 0
@@ -67,7 +66,7 @@ def fit_cubic(z0, z1, arclen, th_fn, fast, aabmin=0, aabmax=1.):
                 best_score = score
                 best_aab = aab
                 best_bz = bz
-        daab = .06 * (aabmax - aabmin)
+        daab = 0.06 * (aabmax - aabmin)
         aabmin = max(0, best_aab - daab)
         aabmax = min(1, best_aab + daab)
         print('%--- best_aab =', best_aab)
@@ -80,10 +79,10 @@ def cornu_to_cubic(t0, t1, figno):
         aabmax = 0.4
     elif figno == 2:
         aabmin = 0.5
-        aabmax = 1.
+        aabmax = 1.0
     else:
         aabmin = 0
-        aabmax = 1.
+        aabmax = 1.0
     fast = 0
     if figno == 3:
         fast = 1
@@ -119,7 +118,7 @@ def plot_k_of_bz(bz):
         cmd = 'lineto'
 
         dsdx = arclength_deriv(t, ss)
-        tocubic.rk4(ss, dsdx, t, .01, arclength_deriv)
+        tocubic.rk4(ss, dsdx, t, 0.01, arclength_deriv)
         t += dt
     print('stroke')
 
@@ -138,7 +137,7 @@ def simple_bez():
     tocubic.plot_prolog()
     print('/ss 1.5 def')
     print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
-    bz, score = cornu_to_cubic(.5, 1.1, 2)
+    bz, score = cornu_to_cubic(0.5, 1.1, 2)
     fromcubic.plot_bzs([[bz]], (-400, 100), 1000, True)
     print('stroke')
     print('/Times-Roman 12 selectfont')
@@ -159,10 +158,10 @@ def fast_bez(figno):
     tocubic.plot_prolog()
     print('/ss 1.5 def')
     print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
-    bz, score = cornu_to_cubic(.5, 1.1, figno)
+    bz, score = cornu_to_cubic(0.5, 1.1, figno)
     fromcubic.plot_bzs([[bz]], (-400, 100), 1000, True)
     print('stroke')
-    plot_k_nominal(.5, 1.1)
+    plot_k_nominal(0.5, 1.1)
     plot_k_of_bz(bz)
     print('showpage')
     eps_trailer()
@@ -174,16 +173,16 @@ def bezfig(s1):
     tocubic.plot_prolog()
     print('/ss 1.5 def')
     print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
-    bz, score = cornu_to_cubic(.5, 0.85, 1)
+    bz, score = cornu_to_cubic(0.5, 0.85, 1)
     fromcubic.plot_bzs([[bz]], (-400, 0), 1000, True)
     print('stroke')
-    plot_k_nominal(.5, 0.85)
+    plot_k_nominal(0.5, 0.85)
     plot_k_of_bz(bz)
-    bz, score = cornu_to_cubic(.5, 0.85, 2)
+    bz, score = cornu_to_cubic(0.5, 0.85, 2)
     fromcubic.plot_bzs([[bz]], (-400, 100), 1000, True)
     print('stroke')
     print('gsave 0 50 translate')
-    plot_k_nominal(.5, .85)
+    plot_k_nominal(0.5, 0.85)
     plot_k_of_bz(bz)
     print('grestore')
     print('showpage')

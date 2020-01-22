@@ -22,6 +22,7 @@ from nototools import opentype_data
 
 from fontTools.ttLib.tables._n_a_m_e import NameRecord
 
+
 def get_name_records(font):
     """Get a font's 'name' table records as a dictionary of Unicode strings."""
     name_table = font['name']
@@ -88,17 +89,19 @@ def set_name_record(font, record_id, value, addIfMissing=''):
 
     if records_to_drop:
         font['name'].names = [
-            record for record_number, record in enumerate(names)
-            if record_number not in records_to_drop]
+            record for record_number, record in enumerate(names) if record_number not in records_to_drop
+        ]
 
 
 def get_os2_unicoderange_bitmap(font):
     """Get an integer bitmap representing the UnicodeRange fields in the os/2 table."""
     os2_table = font['OS/2']
-    return (os2_table.ulUnicodeRange1 |
-           os2_table.ulUnicodeRange2 << 32 |
-           os2_table.ulUnicodeRange3 << 64 |
-           os2_table.ulUnicodeRange4 << 96)
+    return (
+        os2_table.ulUnicodeRange1
+        | os2_table.ulUnicodeRange2 << 32
+        | os2_table.ulUnicodeRange3 << 64
+        | os2_table.ulUnicodeRange4 << 96
+    )
 
 
 def set_os2_unicoderange_bitmap(font, bitmap):
@@ -170,12 +173,11 @@ def printable_font_revision(font, accuracy=2):
     """Returns the font revision as a string from the 'head' table."""
     font_revision = font['head'].fontRevision
     font_revision_int = int(font_revision)
-    font_revision_frac = int(
-        round((font_revision - font_revision_int) * 10**accuracy))
+    font_revision_frac = int(round((font_revision - font_revision_int) * 10 ** accuracy))
 
     font_revision_int = str(font_revision_int)
     font_revision_frac = str(font_revision_frac).zfill(accuracy)
-    return font_revision_int+'.'+font_revision_frac
+    return font_revision_int + '.' + font_revision_frac
 
 
 def get_cmap(font):
@@ -183,8 +185,7 @@ def get_cmap(font):
     cmap_table = font['cmap']
     cmaps = {}
     for table in cmap_table.tables:
-        if (table.format, table.platformID, table.platEncID) in [
-            (4, 3, 1), (12, 3, 10)]:
+        if (table.format, table.platformID, table.platEncID) in [(4, 3, 1), (12, 3, 10)]:
             cmaps[table.format] = table.cmap
     if 12 in cmaps:
         return cmaps[12]
@@ -203,6 +204,7 @@ def get_variation_sequence_cmap(font):
 
 
 UNICODE_CMAPS = {(4, 0, 3), (4, 3, 1), (12, 3, 10)}
+
 
 def delete_from_cmap(font, chars):
     """Delete all characters in a list from the cmap tables of a font."""

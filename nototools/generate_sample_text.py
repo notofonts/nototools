@@ -34,8 +34,8 @@ def main(argv):
         if '-' in arg:
             hyphen_index = arg.index('-')
             code1 = char_rep_to_code(arg[:hyphen_index])
-            code2 = char_rep_to_code(arg[hyphen_index+1:])
-            chars += range(code1, code2+1)
+            code2 = char_rep_to_code(arg[hyphen_index + 1 :])
+            chars += range(code1, code2 + 1)
         else:
             chars.append(char_rep_to_code(arg))
     chars = u' '.join([unichr(code) for code in chars])

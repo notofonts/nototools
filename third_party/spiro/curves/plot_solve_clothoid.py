@@ -14,13 +14,13 @@ print('%!PS-Adobe')
 
 def integ_spiro(k0, k1, k2, k3, n=4):
     th1 = k0
-    th2 = .5 * k1
-    th3 = (1. / 6) * k2
-    th4 = (1. / 24) * k3
-    ds = 1. / n
+    th2 = 0.5 * k1
+    th3 = (1.0 / 6) * k2
+    th4 = (1.0 / 24) * k3
+    ds = 1.0 / n
     ds2 = ds * ds
     ds3 = ds2 * ds
-    s = .5 * ds - .5
+    s = 0.5 * ds - 0.5
 
     k0 *= ds
     k1 *= ds
@@ -36,15 +36,15 @@ def integ_spiro(k0, k1, k2, k3, n=4):
             km1 = k1 * ds
             km2 = k2 * ds2
         else:
-            km0 = (((1. / 6) * k3 * s + .5 * k2) * s + k1) * s + k0
-            km1 = ((.5 * k3 * s + k2) * s + k1) * ds
+            km0 = (((1.0 / 6) * k3 * s + 0.5 * k2) * s + k1) * s + k0
+            km1 = ((0.5 * k3 * s + k2) * s + k1) * ds
             km2 = (k3 * s + k2) * ds2
         km3 = k3 * ds3
 
         t1_1 = km0
-        t1_2 = .5 * km1
-        t1_3 = (1. / 6) * km2
-        t1_4 = (1. / 24) * km3
+        t1_2 = 0.5 * km1
+        t1_3 = (1.0 / 6) * km2
+        t1_4 = (1.0 / 24) * km3
         t2_2 = t1_1 * t1_1
         t2_3 = 2 * (t1_1 * t1_2)
         t2_4 = 2 * (t1_1 * t1_3) + t1_2 * t1_2
@@ -79,15 +79,15 @@ def integ_spiro(k0, k1, k2, k3, n=4):
         t9_10 = t8_8 * t1_2 + t8_9 * t1_1
         t10_10 = t8_8 * t2_2
         u = 1
-        u -= (1. / 24) * t2_2 + (1. / 160) * t2_4 + (1. / 896) * t2_6 + (1. / 4608) * t2_8
-        u += (1. / 1920) * t4_4 + (1. / 10752) * t4_6 + (1. / 55296) * t4_8 + (1. / 270336) * t4_10
-        u -= (1. / 322560) * t6_6 + (1. / 1658880) * t6_8 + (1. / 8110080) * t6_10
-        u += (1. / 92897280) * t8_8 + (1. / 454164480) * t8_10
+        u -= (1.0 / 24) * t2_2 + (1.0 / 160) * t2_4 + (1.0 / 896) * t2_6 + (1.0 / 4608) * t2_8
+        u += (1.0 / 1920) * t4_4 + (1.0 / 10752) * t4_6 + (1.0 / 55296) * t4_8 + (1.0 / 270336) * t4_10
+        u -= (1.0 / 322560) * t6_6 + (1.0 / 1658880) * t6_8 + (1.0 / 8110080) * t6_10
+        u += (1.0 / 92897280) * t8_8 + (1.0 / 454164480) * t8_10
         u -= 2.4464949595157930e-11 * t10_10
-        v = (1. / 12) * t1_2 + (1. / 80) * t1_4
-        v -= (1. / 480) * t3_4 + (1. / 2688) * t3_6 + (1. / 13824) * t3_8 + (1. / 67584) * t3_10
-        v += (1. / 53760) * t5_6 + (1. / 276480) * t5_8 + (1. / 1351680) * t5_10
-        v -= (1. / 11612160) * t7_8 + (1. / 56770560) * t7_10
+        v = (1.0 / 12) * t1_2 + (1.0 / 80) * t1_4
+        v -= (1.0 / 480) * t3_4 + (1.0 / 2688) * t3_6 + (1.0 / 13824) * t3_8 + (1.0 / 67584) * t3_10
+        v += (1.0 / 53760) * t5_6 + (1.0 / 276480) * t5_8 + (1.0 / 1351680) * t5_10
+        v -= (1.0 / 11612160) * t7_8 + (1.0 / 56770560) * t7_10
         v += 2.4464949595157932e-10 * t9_10
         if n == 1:
             x = u
@@ -115,12 +115,12 @@ def solve_clothoid(th0, th1, verbose=False):
     k1_old = 0
     e_old = th1 - th0
     k0 = th0 + th1
-    k1 = 6 * (1 - ((.5 / pi) * k0) ** 3) * e_old
+    k1 = 6 * (1 - ((0.5 / pi) * k0) ** 3) * e_old
 
     # secant method
     for i in range(10):
         x, y = integ_spiro(k0, k1, 0, 0)
-        e = (th1 - th0) + 2 * atan2(y, x) - .25 * k1
+        e = (th1 - th0) + 2 * atan2(y, x) - 0.25 * k1
         count_iter += 1
         if verbose:
             print(k0, k1, e)
@@ -134,12 +134,12 @@ def solve_clothoid(th0, th1, verbose=False):
 def plot_by_thp():
     count = 0
     for i in range(11):
-        thp = i * .1
-        print(.5 + .05 * i, .5, .5, 'setrgbcolor')
+        thp = i * 0.1
+        print(0.5 + 0.05 * i, 0.5, 0.5, 'setrgbcolor')
         print('.75 setlinewidth')
         cmd = 'moveto'
         for j in range(-40, 41):
-            thm = j * .02
+            thm = j * 0.02
             k0, k1 = solve_clothoid(thp - thm, thp + thm, True)
             count += 1
             k1 = min(40, max(-40, k1))
@@ -160,9 +160,9 @@ def plot_by_thm():
             wid = 5
         print(36, 396 - 10 * i, 'moveto', wid, '0 rlineto stroke')
     cmd = 'moveto'
-    thm = -.1
+    thm = -0.1
     for i in range(41):
-        thp = i * .1
+        thp = i * 0.1
         k0, k1 = solve_clothoid(thp - thm, thp + thm)
         print(36 + 150 * thp, 396 - 100 * k1, cmd)
         cmd = 'lineto'
@@ -170,8 +170,8 @@ def plot_by_thm():
     print('0 0 1 setrgbcolor')
     cmd = 'moveto'
     for i in range(41):
-        thp = i * .1
-        k1 = 12 * thm * cos(.5 * thp)
+        thp = i * 0.1
+        k1 = 12 * thm * cos(0.5 * thp)
         k1 = 12 * thm * (1 - (thp / pi) ** 3)
         print(36 + 150 * thp, 396 - 100 * k1, cmd)
         cmd = 'lineto'

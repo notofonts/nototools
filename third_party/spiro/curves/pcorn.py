@@ -51,8 +51,8 @@ class Segment(object):
             k1 = 1e-6  # hack
         if k1 != 0:
             sqrk1 = sqrt(2 * abs(k1))
-            t0 = (k0 - .5 * k1) / sqrk1
-            t1 = (k0 + .5 * k1) / sqrk1
+            t0 = (k0 - 0.5 * k1) / sqrk1
+            t1 = (k0 + 0.5 * k1) / sqrk1
             (y0, x0) = cornu.eval_cornu(t0)
             (y1, x1) = cornu.eval_cornu(t1)
             chord_th = atan2(y1 - y0, x1 - x0)
@@ -88,8 +88,7 @@ class Segment(object):
             sqrk1 = sqrt(2 * abs(k1))
             t = (k0 + u * k1) / sqrk1
             (y, x) = cornu.eval_cornu(t)
-            return [self.x0 + self.mxx * x + self.mxy * y,
-                    self.y0 + self.myx * x + self.myy * y]
+            return [self.x0 + self.mxx * x + self.mxy * y, self.y0 + self.myx * x + self.myy * y]
 
     def find_extrema(self):
         # find solutions of th(s) = 0 mod pi/2
@@ -106,7 +105,7 @@ class Segment(object):
         result = []
         for i in range(n0, n1, signum):
             th = pi / 2 * (i + 0.5 * (signum + 1))
-            a = .5 * self.k1
+            a = 0.5 * self.k1
             b = self.k0
             c = self.thmid - th
             if a == 0:

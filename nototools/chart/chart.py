@@ -13,7 +13,6 @@ def clamp(x, Min, Max):
 
 
 class Color:
-
     def __init__(self, rgb):
         self.rgb = rgb
 
@@ -25,7 +24,6 @@ class Color:
 
 
 class Font:
-
     def __init__(self, fontfile):
         self.filename = fontfile
         self.ttfont = ttLib.TTFont(fontfile)
@@ -36,8 +34,7 @@ class Font:
 
     def get_cairo_font_face(self):
         if self.cairo_font_face is None:
-            self.cairo_font_face = pycairoft.create_cairo_font_face_for_file(
-                self.filename)
+            self.cairo_font_face = pycairoft.create_cairo_font_face_for_file(self.filename)
         return self.cairo_font_face
 
     def __repr__(self):
@@ -46,14 +43,15 @@ class Font:
 
 def assign_colors(fonts):
     import colorsys
+
     n = len(fonts)
     mult = (n - 1) // 2
-    darkness = .3
+    darkness = 0.3
     for i, font in enumerate(fonts):
-        pos = (i * mult / float(n)) % 1.
-        rgb = colorsys.hsv_to_rgb(pos, 1., darkness)
-        luma = .3 * rgb[0] + .59 * rgb[1] + .11 * rgb[2]
-        adj = .3 - luma
+        pos = (i * mult / float(n)) % 1.0
+        rgb = colorsys.hsv_to_rgb(pos, 1.0, darkness)
+        luma = 0.3 * rgb[0] + 0.59 * rgb[1] + 0.11 * rgb[2]
+        adj = 0.3 - luma
         rgb = [c + adj for c in rgb]
         font.color = Color(rgb)
 
@@ -71,10 +69,10 @@ for font in fonts:
 NUM_COLS = 128
 FONT_SIZE = 5
 PADDING = 0.3
-BOX_WIDTH = PADDING * .6
+BOX_WIDTH = PADDING * 0.6
 CELL_SIZE = FONT_SIZE + 2 * PADDING
 MARGIN = 1 * FONT_SIZE
-LABEL_WIDTH = 8 * FONT_SIZE / 2.
+LABEL_WIDTH = 8 * FONT_SIZE / 2.0
 
 rows = set([u // NUM_COLS * NUM_COLS for u in charset])
 num_rows = len(rows)
@@ -82,7 +80,7 @@ num_rows = len(rows)
 width = NUM_COLS * CELL_SIZE + 2 * (2 * MARGIN + LABEL_WIDTH)
 height = num_rows * CELL_SIZE + 2 * MARGIN
 
-print("Generating %s at %.3gx%.3gin" % (outfile, width / 72., height / 72.))
+print("Generating %s at %.3gx%.3gin" % (outfile, width / 72.0, height / 72.0))
 if outfile.endswith(".pdf"):
     surface = cairo.PDFSurface(outfile, width, height)
 elif outfile.endswith(".ps"):
@@ -133,8 +131,7 @@ for stage in range(2):
                     ascent, descent, font_height, max_x_adv, max_y_adv = cr.font_extents()
                     utf8 = unichr(char).encode('utf-8')
                     x1, y1, width, height, xadv, yadv = cr.text_extents(utf8)
-                    cr.move_to(FONT_SIZE * .5 - (x1 + .5 * width),
-                               FONT_SIZE * .5 - (-ascent + descent) * .5)
+                    cr.move_to(FONT_SIZE * 0.5 - (x1 + 0.5 * width), FONT_SIZE * 0.5 - (-ascent + descent) * 0.5)
                     cr.show_text(utf8)
 
                     cr.restore()

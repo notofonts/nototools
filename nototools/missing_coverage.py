@@ -27,49 +27,53 @@ from nototools import unicode_data
 
 
 def _covered_cps(cmap_file):
-  all_cps = set()
-  tree = cmap_data.read_cmap_data_file(cmap_file)
-  for rowdata in tree.table.rows:
-    if rowdata.script == 'EXCL':
-      continue
-    cps = tool_utils.parse_int_ranges(rowdata.ranges)
-    all_cps |= cps
-  return all_cps
+    all_cps = set()
+    tree = cmap_data.read_cmap_data_file(cmap_file)
+    for rowdata in tree.table.rows:
+        if rowdata.script == 'EXCL':
+            continue
+        cps = tool_utils.parse_int_ranges(rowdata.ranges)
+        all_cps |= cps
+    return all_cps
 
 
 def show_cps_by_block(cps):
-  print('%d missing codepoints' % len(cps))
-  block = None
-  for cp in sorted(cps):
-    new_block = unicode_data.block(cp)
-    if new_block != block:
-      print('# %s' % new_block)
-      block = new_block
-    print('%5s %s' % ('%04x' % cp, unicode_data.name(cp)))
+    print('%d missing codepoints' % len(cps))
+    block = None
+    for cp in sorted(cps):
+        new_block = unicode_data.block(cp)
+        if new_block != block:
+            print('# %s' % new_block)
+            block = new_block
+        print('%5s %s' % ('%04x' % cp, unicode_data.name(cp)))
 
 
 def display_missing(cmap_file):
-  print('Checking data in %s' % cmap_file)
-  filename = tool_utils.resolve_path(cmap_file)
-  cps = _covered_cps(filename)
-  defined_cps = unicode_data.defined_characters(version=9.0)
-  omitted = cmap_block_coverage._OMITTED
-  expected_cps = defined_cps - omitted
-  missing_cps = expected_cps - cps
-  show_cps_by_block(missing_cps)
+    print('Checking data in %s' % cmap_file)
+    filename = tool_utils.resolve_path(cmap_file)
+    cps = _covered_cps(filename)
+    defined_cps = unicode_data.defined_characters(version=9.0)
+    omitted = cmap_block_coverage._OMITTED
+    expected_cps = defined_cps - omitted
+    missing_cps = expected_cps - cps
+    show_cps_by_block(missing_cps)
 
 
 def main():
-  default_cmap_name = 'data/noto_cmap_phase3.xml'
+    default_cmap_name = 'data/noto_cmap_phase3.xml'
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '-f', '--filename', help='cmap data file (default %s)' %
-      default_cmap_name, default=default_cmap_name,  metavar='file')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-f',
+        '--filename',
+        help='cmap data file (default %s)' % default_cmap_name,
+        default=default_cmap_name,
+        metavar='file',
+    )
+    args = parser.parse_args()
 
-  display_missing(args.filename)
+    display_missing(args.filename)
 
 
 if __name__ == '__main__':
-  main()
+    main()

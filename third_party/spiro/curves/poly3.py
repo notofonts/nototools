@@ -25,7 +25,7 @@ def int_3spiro_poly(ks, n):
     x, y = 0, 0
     th = 0
     ds = 1.0 / n
-    th1, th2, th3, th4 = ks[0], .5 * ks[1], (1. / 6) * ks[2], (1. / 24) * ks[3]
+    th1, th2, th3, th4 = ks[0], 0.5 * ks[1], (1.0 / 6) * ks[2], (1.0 / 24) * ks[3]
     k0, k1, k2, k3 = ks[0] * ds, ks[1] * ds, ks[2] * ds, ks[3] * ds
     s = 0
     result = [(x, y)]
@@ -35,8 +35,8 @@ def int_3spiro_poly(ks, n):
         cth = cos(th)
         sth = sin(th)
 
-        km0 = ((1. / 6 * k3 * sm + .5 * k2) * sm + k1) * sm + k0
-        km1 = ((.5 * k3 * sm + k2) * sm + k1) * ds
+        km0 = ((1.0 / 6 * k3 * sm + 0.5 * k2) * sm + k1) * sm + k0
+        km1 = ((0.5 * k3 * sm + k2) * sm + k1) * ds
         km2 = (k3 * sm + k2) * ds * ds
         km3 = k3 * ds * ds * ds
         # print(km0, km1, km2, km3)
@@ -56,38 +56,38 @@ def int_3spiro_poly(ks, n):
 
 
 def integ_chord(k, n=64):
-    ks = (k[0] * .5, k[1] * .25, k[2] * .125, k[3] * .0625)
+    ks = (k[0] * 0.5, k[1] * 0.25, k[2] * 0.125, k[3] * 0.0625)
     xp, yp = int_3spiro_poly(ks, n)[-1]
-    ks = (k[0] * -.5, k[1] * .25, k[2] * -.125, k[3] * .0625)
+    ks = (k[0] * -0.5, k[1] * 0.25, k[2] * -0.125, k[3] * 0.0625)
     xm, ym = int_3spiro_poly(ks, n)[-1]
-    dx, dy = .5 * (xp + xm), .5 * (yp + ym)
+    dx, dy = 0.5 * (xp + xm), 0.5 * (yp + ym)
     return hypot(dx, dy), atan2(dy, dx)
 
 
 # Return th0, th1, k0, k1 for given params
 def calc_thk(ks):
     chord, ch_th = integ_chord(ks)
-    th0 = ch_th - (-.5 * ks[0] + .125 * ks[1] - 1. / 48 * ks[2] + 1. / 384 * ks[3])
-    th1 = (.5 * ks[0] + .125 * ks[1] + 1. / 48 * ks[2] + 1. / 384 * ks[3]) - ch_th
-    k0 = chord * (ks[0] - .5 * ks[1] + .125 * ks[2] - 1. / 48 * ks[3])
-    k1 = chord * (ks[0] + .5 * ks[1] + .125 * ks[2] + 1. / 48 * ks[3])
+    th0 = ch_th - (-0.5 * ks[0] + 0.125 * ks[1] - 1.0 / 48 * ks[2] + 1.0 / 384 * ks[3])
+    th1 = (0.5 * ks[0] + 0.125 * ks[1] + 1.0 / 48 * ks[2] + 1.0 / 384 * ks[3]) - ch_th
+    k0 = chord * (ks[0] - 0.5 * ks[1] + 0.125 * ks[2] - 1.0 / 48 * ks[3])
+    k1 = chord * (ks[0] + 0.5 * ks[1] + 0.125 * ks[2] + 1.0 / 48 * ks[3])
     # print('%', (-.5 * ks[0] + .125 * ks[1] - 1./48 * ks[2] + 1./384 * ks[3]), (.5 * ks[0] + .125 * ks[1] + 1./48 * ks[2] + 1./384 * ks[3]), ch_th)
     return th0, th1, k0, k1
 
 
 def calc_k1k2(ks):
     chord, ch_th = integ_chord(ks)
-    k1l = chord * chord * (ks[1] - .5 * ks[2] + .125 * ks[3])
-    k1r = chord * chord * (ks[1] + .5 * ks[2] + .125 * ks[3])
-    k2l = chord * chord * chord * (ks[2] - .5 * ks[3])
-    k2r = chord * chord * chord * (ks[2] + .5 * ks[3])
+    k1l = chord * chord * (ks[1] - 0.5 * ks[2] + 0.125 * ks[3])
+    k1r = chord * chord * (ks[1] + 0.5 * ks[2] + 0.125 * ks[3])
+    k2l = chord * chord * chord * (ks[2] - 0.5 * ks[3])
+    k2r = chord * chord * chord * (ks[2] + 0.5 * ks[3])
     return k1l, k1r, k2l, k2r
 
 
 def plot(ks):
-    ksp = (ks[0] * .5, ks[1] * .25, ks[2] * .125, ks[3] * .0625)
+    ksp = (ks[0] * 0.5, ks[1] * 0.25, ks[2] * 0.125, ks[3] * 0.0625)
     pside = int_3spiro_poly(ksp, 64)
-    ksm = (ks[0] * -.5, ks[1] * .25, ks[2] * -.125, ks[3] * .0625)
+    ksm = (ks[0] * -0.5, ks[1] * 0.25, ks[2] * -0.125, ks[3] * 0.0625)
     mside = int_3spiro_poly(ksm, 64)
     mside.reverse()
     for i in range(len(mside)):
@@ -114,7 +114,7 @@ def solve_3spiro(th0, th1, k0, k1):
         dth1 = th1 - th1_a
         dk0 = k0 - k0_a
         dk1 = k1 - k1_a
-        ks[0] += (dth0 + dth1) * 1.5 + (dk0 + dk1) * -.25
+        ks[0] += (dth0 + dth1) * 1.5 + (dk0 + dk1) * -0.25
         ks[1] += (dth1 - dth0) * 15 + (dk0 - dk1) * 1.5
         ks[2] += (dth0 + dth1) * -12 + (dk0 + dk1) * 6
         ks[3] += (dth0 - dth1) * 360 + (dk1 - dk0) * 60
@@ -145,7 +145,7 @@ def solve_vee():
         for j in range(len(kss) - 1):
             dth = thl[j + 1] + thr[j]
             if j == 5:
-                dth += .1
+                dth += 0.1
             dk0 = k0l[j + 1] - k0r[j]
             dk1 = k1l[j + 1] - k1r[j]
             dk2 = k2l[j + 1] - k2r[j]

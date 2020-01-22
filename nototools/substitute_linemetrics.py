@@ -20,13 +20,16 @@ from argparse import ArgumentParser
 
 def main(arg=None):
     parser = ArgumentParser()
-    parser.add_argument('source',
-        help='Path to font whose line metrics will be replaced.')
-    parser.add_argument('linemetrics',
-        help='Path to font whose line metrics will be used.')
-    parser.add_argument('-o', '--output', dest='output', default='output.ttf',
+    parser.add_argument('source', help='Path to font whose line metrics will be replaced.')
+    parser.add_argument('linemetrics', help='Path to font whose line metrics will be used.')
+    parser.add_argument(
+        '-o',
+        '--output',
+        dest='output',
+        default='output.ttf',
         help='Path to output font file. The line metrics of output are\
-        extracted from <linemetrics> and all other data are copied from <source>')
+        extracted from <linemetrics> and all other data are copied from <source>',
+    )
     args = parser.parse_args(arg)
     font = TTFont(args.linemetrics)
     metrics = read_line_metrics(font)
@@ -39,10 +42,17 @@ def main(arg=None):
 
 
 def read_line_metrics(font):
-    metrics = {'ascent': font['hhea'].ascent, 'descent': font['hhea'].descent, 'usWinAscent': font['OS/2'].usWinAscent,
-               'usWinDescent': font['OS/2'].usWinDescent, 'sTypoAscender': font['OS/2'].sTypoAscender,
-               'sTypoDescender': font['OS/2'].sTypoDescender, 'sxHeight': font['OS/2'].sxHeight,
-               'sCapHeight': font['OS/2'].sCapHeight, 'sTypoLineGap': font['OS/2'].sTypoLineGap}
+    metrics = {
+        'ascent': font['hhea'].ascent,
+        'descent': font['hhea'].descent,
+        'usWinAscent': font['OS/2'].usWinAscent,
+        'usWinDescent': font['OS/2'].usWinDescent,
+        'sTypoAscender': font['OS/2'].sTypoAscender,
+        'sTypoDescender': font['OS/2'].sTypoDescender,
+        'sxHeight': font['OS/2'].sxHeight,
+        'sCapHeight': font['OS/2'].sCapHeight,
+        'sTypoLineGap': font['OS/2'].sTypoLineGap,
+    }
     return metrics
 
 

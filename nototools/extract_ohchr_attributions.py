@@ -76,152 +76,165 @@ from nototools import tool_utils
 
 
 class ParseOhchr(html.HTMLParser):
-  def __init__(self, trace=False):
-    html.HTMLParser.__init__(self)
-    self.trace = trace
-    self.result_list = []
-    self.restart()
+    def __init__(self, trace=False):
+        html.HTMLParser.__init__(self)
+        self.trace = trace
+        self.result_list = []
+        self.restart()
 
-  def restart(self):
-    self.margin = ''
-    self.state = 'before_table'
-    self.tag_stack = []
-    self.collect_lang = False
-    self.collect_source = False
-    self.ohchr_code = ''
-    self.lang_name = ''
-    self.source_name = ''
-
-  def results(self):
-    return self.result_list
-
-  def indent(self):
-    self.margin += '  '
-
-  def outdent(self):
-    if not self.margin:
-      print('*** cannot outdent ***')
-    else:
-      self.margin = self.margin[:-2]
-
-  def get_attr(self, attr_list, attr_id):
-    for t in attr_list:
-      if t[0] == attr_id:
-        return t[1]
-    return None
-
-  def handle_starttag(self, tag, attrs):
-    if tag not in ['link', 'meta', 'area', 'img', 'br']:
-      if self.trace:
-        print(self.margin + tag + '>')
-      self.tag_stack.append((tag, self.getpos()))
-      self.indent()
-    elif self.trace:
-      print(self.margin + tag)
-
-    if self.state == 'before_table' and tag == 'table':
-      table_id = self.get_attr(attrs, 'id')
-      if table_id == 'ohchr_alldata':
-        self.state = 'in_table'
-    elif self.state == 'in_table':
-      if tag == 'tr':
+    def restart(self):
+        self.margin = ''
+        self.state = 'before_table'
+        self.tag_stack = []
+        self.collect_lang = False
+        self.collect_source = False
         self.ohchr_code = ''
         self.lang_name = ''
         self.source_name = ''
-      elif tag == 'a':
-        a_id = self.get_attr(attrs, 'id')
-        if a_id and a_id.endswith('_hpLangTitleID'):
-          ohchr_code = self.get_attr(attrs, 'href')
-          ix = ohchr_code.rfind('=')
-          self.ohchr_code = ohchr_code[ix+1:]
-          self.collect_lang = True
-      elif tag == 'span':
-        span_id = self.get_attr(attrs, 'id')
-        if span_id and span_id.endswith('_lblSourceID'):
-          self.collect_source = True
-      elif tag == 'td':
-        self.collect_lang = False
-        self.collect_source = False
 
-  def handle_endtag(self, tag):
-    while self.tag_stack:
-      prev_tag, prev_pos = self.tag_stack.pop()
-      self.outdent()
-      if tag != prev_tag:
+    def results(self):
+        return self.result_list
+
+    def indent(self):
+        self.margin += '  '
+
+    def outdent(self):
+        if not self.margin:
+            print('*** cannot outdent ***')
+        else:
+            self.margin = self.margin[:-2]
+
+    def get_attr(self, attr_list, attr_id):
+        for t in attr_list:
+            if t[0] == attr_id:
+                return t[1]
+        return None
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in ['link', 'meta', 'area', 'img', 'br']:
+            if self.trace:
+                print(self.margin + tag + '>')
+            self.tag_stack.append((tag, self.getpos()))
+            self.indent()
+        elif self.trace:
+            print(self.margin + tag)
+
+        if self.state == 'before_table' and tag == 'table':
+            table_id = self.get_attr(attrs, 'id')
+            if table_id == 'ohchr_alldata':
+                self.state = 'in_table'
+        elif self.state == 'in_table':
+            if tag == 'tr':
+                self.ohchr_code = ''
+                self.lang_name = ''
+                self.source_name = ''
+            elif tag == 'a':
+                a_id = self.get_attr(attrs, 'id')
+                if a_id and a_id.endswith('_hpLangTitleID'):
+                    ohchr_code = self.get_attr(attrs, 'href')
+                    ix = ohchr_code.rfind('=')
+                    self.ohchr_code = ohchr_code[ix + 1 :]
+                    self.collect_lang = True
+            elif tag == 'span':
+                span_id = self.get_attr(attrs, 'id')
+                if span_id and span_id.endswith('_lblSourceID'):
+                    self.collect_source = True
+            elif tag == 'td':
+                self.collect_lang = False
+                self.collect_source = False
+
+    def handle_endtag(self, tag):
+        while self.tag_stack:
+            prev_tag, prev_pos = self.tag_stack.pop()
+            self.outdent()
+            if tag != prev_tag:
+                if self.trace:
+                    print('no close tag for %s at %s' % (prev_tag, prev_pos))
+            else:
+                break
         if self.trace:
-          print('no close tag for %s at %s' % (prev_tag, prev_pos))
-      else:
-        break
-    if self.trace:
-      print(self.margin + '<')
-    if self.state == 'in_table':
-      if tag == 'table':
-        self.state = 'after_table'
-      elif tag == 'tr':
-        if self.ohchr_code:
-          self.lang_name = re.sub(r'\s+', ' ', self.lang_name).strip()
-          self.source_name = re.sub(r'\s+', ' ', self.source_name).strip()
-          if not self.source_name:
-            self.source_name = '(no attribution)'
-          self.result_list.append((self.ohchr_code, self.lang_name, self.source_name))
-          self.ohchr_code = ''
-          self.lang_name = ''
-          self.source_name = ''
+            print(self.margin + '<')
+        if self.state == 'in_table':
+            if tag == 'table':
+                self.state = 'after_table'
+            elif tag == 'tr':
+                if self.ohchr_code:
+                    self.lang_name = re.sub(r'\s+', ' ', self.lang_name).strip()
+                    self.source_name = re.sub(r'\s+', ' ', self.source_name).strip()
+                    if not self.source_name:
+                        self.source_name = '(no attribution)'
+                    self.result_list.append((self.ohchr_code, self.lang_name, self.source_name))
+                    self.ohchr_code = ''
+                    self.lang_name = ''
+                    self.source_name = ''
 
-  def handle_data(self, data):
-    if self.collect_lang:
-      self.lang_name += data
-    elif self.collect_source:
-      self.source_name += data
-    pass
+    def handle_data(self, data):
+        if self.collect_lang:
+            self.lang_name += data
+        elif self.collect_source:
+            self.source_name += data
+        pass
+
 
 def get_ohchr_status(ohchr_code, lang, attrib):
-  """Decide the status based on the attribution text.
+    """Decide the status based on the attribution text.
 
   'original' are in the public domain and need no attribution.
   'UN' are official UN translations and should be attributed as such.
   'other' are not official UN translations and should be attributed as such."""
 
-  if ohchr_code in ['eng', 'frn', 'spn', 'rus', 'chn', 'arz']:
-    return 'original'
-  if (attrib.find('United Nations') != -1 or
-      attrib.find('High Commissioner for Human Rights') != -1):
-    return 'UN'
-  return 'other'
+    if ohchr_code in ['eng', 'frn', 'spn', 'rus', 'chn', 'arz']:
+        return 'original'
+    if attrib.find('United Nations') != -1 or attrib.find('High Commissioner for Human Rights') != -1:
+        return 'UN'
+    return 'other'
+
 
 def parse_ohchr_html_file(htmlfile, outfile):
-  parser = ParseOhchr(False)
-  with open(htmlfile) as f:
-    parser.feed(f.read())
+    parser = ParseOhchr(False)
+    with open(htmlfile) as f:
+        parser.feed(f.read())
 
-  lines = []
-  for ohchr_code, lang, attrib in parser.results():
-    s = get_ohchr_status(ohchr_code, lang, attrib)
-    lines.append('\t'.join([ohchr_code, s, lang, attrib]))
-  data = '\n'.join(lines) + '\n'
+    lines = []
+    for ohchr_code, lang, attrib in parser.results():
+        s = get_ohchr_status(ohchr_code, lang, attrib)
+        lines.append('\t'.join([ohchr_code, s, lang, attrib]))
+    data = '\n'.join(lines) + '\n'
 
-  print('outfile: "%s"' % outfile)
-  if not outfile or outfile == '-':
-    print(data)
-  else:
-    with open(outfile, 'w') as f:
-      f.write(data)
+    print('outfile: "%s"' % outfile)
+    if not outfile or outfile == '-':
+        print(data)
+    else:
+        with open(outfile, 'w') as f:
+            f.write(data)
+
 
 def main():
-  default_input = '[tools]/third_party/ohchr/ohchr_all.html'
-  default_output = '[tools]/third_party/ohchr/attributions.tsv'
+    default_input = '[tools]/third_party/ohchr/ohchr_all.html'
+    default_output = '[tools]/third_party/ohchr/attributions.tsv'
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--src', help='input ohchr html file (default %s)' % default_input,
-                      default=default_input, metavar='file', dest='htmlfile')
-  parser.add_argument('--dst', help='output tsv file (default %s)' % default_output,
-                      default=default_output, metavar='file', dest='outfile')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--src',
+        help='input ohchr html file (default %s)' % default_input,
+        default=default_input,
+        metavar='file',
+        dest='htmlfile',
+    )
+    parser.add_argument(
+        '--dst',
+        help='output tsv file (default %s)' % default_output,
+        default=default_output,
+        metavar='file',
+        dest='outfile',
+    )
+    args = parser.parse_args()
 
-  htmlfile = tool_utils.resolve_path(args.htmlfile)
-  outfile = tool_utils.resolve_path(args.outfile)
+    htmlfile = tool_utils.resolve_path(args.htmlfile)
+    outfile = tool_utils.resolve_path(args.outfile)
 
-  parse_ohchr_html_file(htmlfile, outfile)
+    parse_ohchr_html_file(htmlfile, outfile)
+
 
 if __name__ == '__main__':
     main()

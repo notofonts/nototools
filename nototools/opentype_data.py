@@ -22,6 +22,8 @@ __author__ = 'roozbeh@google.com (Roozbeh Pournader)'
 from nototools import unicode_data
 
 OMPL = {}
+
+
 def _set_ompl():
     """Set up OMPL.
 
@@ -32,8 +34,7 @@ def _set_ompl():
     global OMPL
     unicode_data.load_data()
     bmg_data = unicode_data._bidi_mirroring_glyph_data
-    OMPL = {char:bmg for (char, bmg) in bmg_data.items()
-            if float(unicode_data.age(char)) <= 5.1}
+    OMPL = {char: bmg for (char, bmg) in bmg_data.items() if float(unicode_data.age(char)) <= 5.1}
 
 
 ZWSP = [0x200B]
@@ -245,6 +246,7 @@ _unicoderange_data = """0\tBasic Latin\t0000-007F
 
 ur_data = []
 ur_bucket_info = [[] for i in range(128)]
+
 
 def _setup_unicoderange_data():
     """The unicoderange data used in the os/2 table consists of slightly under

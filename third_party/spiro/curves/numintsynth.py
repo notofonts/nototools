@@ -130,7 +130,7 @@ def mkspiro(degree):
         prd(tp[3] + ' = (1./6) * km2')
         prd(tp[4] + ' = (1./24) * km3')
     tlast = tp
-    coef = 1.
+    coef = 1.0
     for i in range(1, degree - 1):
         tmp = []
         tcoef = coef
@@ -139,14 +139,14 @@ def mkspiro(degree):
             c = tcoef / (j + 1)
             if (j % 2) == 0 and tlast[j] is not None:
                 if tex:
-                    tmp.append('\\frac{%s}{%.0f}' % (tlast[j], 1. / c))
+                    tmp.append('\\frac{%s}{%.0f}' % (tlast[j], 1.0 / c))
                 else:
                     if c < 1e-9:
                         cstr = '%.16e' % c
                     else:
-                        cstr = '(1./%d)' % int(.5 + (1. / c))
+                        cstr = '(1./%d)' % int(0.5 + (1.0 / c))
                     tmp.append(cstr + ' * ' + tlast[j])
-            tcoef *= .5
+            tcoef *= 0.5
         if tmp:
             sign = ('+', '-')[(i // 2) % 2]
             var = ('u', 'v')[i % 2]
@@ -178,7 +178,7 @@ def mkspiro(degree):
                 tnext = polymul(t2l, t2, degree - 1, basename)
             t2l = tlast
             tlast = tnext
-        coef /= (i + 1)
+        coef /= i + 1
     if tex:
         pr(' '.join(us))
         pr(' '.join(vs))

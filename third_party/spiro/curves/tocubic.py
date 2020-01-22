@@ -54,8 +54,8 @@ def bz_arclength(bz, n=10):
     # chosen for simplicity. Likely adaptive and/or higher-order
     # algorithms would be better, but this should be good enough.
     # Convergence should be quartic in n.
-    wtarr = (3. / 8, 7. / 6, 23. / 24)
-    dt = 1. / n
+    wtarr = (3.0 / 8, 7.0 / 6, 23.0 / 24)
+    dt = 1.0 / n
     s = 0
     dbz = bz_deriv(bz)
     for i in range(0, n + 1):
@@ -64,7 +64,7 @@ def bz_arclength(bz, n=10):
         elif i > n - 3:
             wt = wtarr[n - i]
         else:
-            wt = 1.
+            wt = 1.0
         dx, dy = bz_eval(dbz, i * dt)
         ds = hypot(dx, dy)
         s += wt * ds
@@ -73,8 +73,8 @@ def bz_arclength(bz, n=10):
 
 # One step of 4th-order Runge-Kutta numerical integration - update y in place
 def rk4(y, dydx, x, h, derivs):
-    hh = h * .5
-    h6 = h * (1. / 6)
+    hh = h * 0.5
+    h6 = h * (1.0 / 6)
     xh = x + hh
     yt = []
     for i in range(len(y)):
@@ -98,7 +98,7 @@ def bz_arclength_rk4(bz, n=10):
         dx, dy = bz_eval(dbz, x)
         return [hypot(dx, dy)]
 
-    dt = 1. / n
+    dt = 1.0 / n
     t = 0
     ys = [0]
     for i in range(n):
@@ -116,20 +116,18 @@ def fit_cubic_arclen(z0, z1, arclen, th0, th1, aab):
     chord = hypot(z1[0] - z0[0], z1[1] - z0[1])
     cth0, sth0 = cos(th0), sin(th0)
     cth1, sth1 = -cos(th1), -sin(th1)
-    armlen = .66667 * chord
+    armlen = 0.66667 * chord
     darmlen = 1e-6 * armlen
     for i in range(10):
         a = armlen * aab
         b = armlen - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-              (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s = bz_arclength_rk4(bz)
         if abs(arclen - actual_s) < 1e-12:
             break
         a = (armlen + darmlen) * aab
         b = (armlen + darmlen) - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-              (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s2 = bz_arclength_rk4(bz)
         ds = (actual_s2 - actual_s) / darmlen
         # print('% armlen = ', armlen)
@@ -138,8 +136,7 @@ def fit_cubic_arclen(z0, z1, arclen, th0, th1, aab):
         armlen += (arclen - actual_s) / ds
     a = armlen * aab
     b = armlen - a
-    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-          (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
     return bz
 
 
@@ -149,12 +146,12 @@ def mod_2pi(th):
 
 
 def measure_bz(bz, arclen, th_fn, n=1000):
-    dt = 1. / n
+    dt = 1.0 / n
     dbz = bz_deriv(bz)
     s = 0
     score = 0
     for i in range(n):
-        dx, dy = bz_eval(dbz, (i + .5) * dt)
+        dx, dy = bz_eval(dbz, (i + 0.5) * dt)
         ds = dt * hypot(dx, dy)
         s += ds
         score += ds * (mod_2pi(atan2(dy, dx) - th_fn(s)) ** 2)
@@ -171,7 +168,7 @@ def measure_bz_rk4(bz, arclen, th_fn, n=10):
         dscore = ds * (mod_2pi(atan2(dy, dx) - th_fn(s)) ** 2)
         return [ds, dscore]
 
-    dt = 1. / n
+    dt = 1.0 / n
     t = 0
     ys = [0, 0]
     for i in range(n):
@@ -194,7 +191,7 @@ def fit_cubic(z0, z1, arclen, th_fn, fast=1):
     imax = 4
     jmax = 10
     aabmin = 0
-    aabmax = 1.
+    aabmax = 1.0
     if fast:
         imax = 1
         jmax = 0
@@ -212,7 +209,7 @@ def fit_cubic(z0, z1, arclen, th_fn, fast=1):
                 best_score = score
                 best_aab = aab
                 best_bz = bz
-        daab = .06 * (aabmax - aabmin)
+        daab = 0.06 * (aabmax - aabmin)
         aabmin = max(0, best_aab - daab)
         aabmax = min(1, best_aab + daab)
         print('%--- best_aab =', best_aab)
@@ -241,7 +238,7 @@ def plot_bz(bz, z0, scale, do_moveto=True):
 
 
 def test_bz_arclength():
-    bz = [(0, 0), (.5, 0), (1, 0.5), (1, 1)]
+    bz = [(0, 0), (0.5, 0), (1, 0.5), (1, 1)]
     ans = bz_arclength_rk4(bz, 2048)
     last = 1
     lastrk = 1
@@ -257,7 +254,7 @@ def test_bz_arclength():
 def test_fit_cubic_arclen():
     th = pi / 4
     arclen = th / sin(th)
-    bz = fit_cubic_arclen((0, 0), (1, 0), arclen, th, th, .5)
+    bz = fit_cubic_arclen((0, 0), (1, 0), arclen, th, th, 0.5)
     print('%', bz)
     plot_bz(bz, (100, 400), 500)
     print('stroke')
@@ -287,7 +284,7 @@ def test_draw_cornu():
     x0, y0, scale = 36, 100, 500
     bzs = []
     for i in range(1, imax):
-        s = sqrt(i * .1)
+        s = sqrt(i * 0.1)
         bz, score = cornu_to_cubic(s0, s)
         if score > (s - s0) * thresh or i == imax - 1:
             plot_bz(bz, (x0, y0), scale, s0 == 0)
@@ -318,6 +315,7 @@ def pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh, nmax=None):
     if s0 == s1:
         return [], 0
     while s0 < s1:
+
         def th_fn_inner(s):
             if s > s1:
                 s = s1
@@ -330,7 +328,7 @@ def pcorn_segment_to_bzs_optim_inner(curve, s0, s1, thresh, nmax=None):
             result.append(bz)
             break
         r = s1
-        l = s0 + .001 * (s1 - s0)
+        l = s0 + 0.001 * (s1 - s0)
         for _ in range(10):
             smid = 0.5 * (l + r)
             zmid = curve.xy(smid)
@@ -351,7 +349,7 @@ def pcorn_segment_to_bzs_optim(curve, s0, s1, thresh, optim):
     bresult, bscore = result, score
     if len(result) > 1 and optim > 2:
         nmax = len(result)
-        gamma = 1. / 6
+        gamma = 1.0 / 6
         l = score
         r = thresh
         for i in range(5):
@@ -373,7 +371,7 @@ def pcorn_segment_to_bzs(curve, s0, s1, optim=0, thresh=1e-3):
         return pcorn_segment_to_bzs_optim(curve, s0, s1, thresh, optim)
     z0 = curve.xy(s0)
     z1 = curve.xy(s1)
-    fast = (optim == 0)
+    fast = optim == 0
 
     def th_fn(s):
         return curve.th(s0 + s, s == 0)
@@ -408,28 +406,25 @@ def fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab):
     chord = hypot(z1[0] - z0[0], z1[1] - z0[1])
     cth0, sth0 = cos(th0), sin(th0)
     cth1, sth1 = -cos(th1), -sin(th1)
-    armlen = .66667 * chord
+    armlen = 0.66667 * chord
     darmlen = 1e-6 * armlen
     for i in range(10):
         a = armlen * aab
         b = armlen - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-              (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s = bz_arclength_rk4(bz)
         if abs(arclen - actual_s) < 1e-12:
             break
         a = (armlen + darmlen) * aab
         b = (armlen + darmlen) - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-              (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
         actual_s2 = bz_arclength_rk4(bz)
         ds = (actual_s2 - actual_s) / darmlen
         # print('% armlen = ', armlen)
         armlen += (arclen - actual_s) / ds
     a = armlen * aab
     b = armlen - a
-    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-          (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
     return bz, a, b
 
 
@@ -456,11 +451,10 @@ def plot_errors_2d(t0, t1, as_ppm):
     cth1, sth1 = -cos(th1), -sin(th1)
 
     for y in range(ys):
-        b = .8 * chord * (ys - y - 1) / ys
+        b = 0.8 * chord * (ys - y - 1) / ys
         for x in range(xs):
-            a = .8 * chord * x / xs
-            bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a),
-                  (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+            a = 0.8 * chord * x / xs
+            bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
             s_bz = bz_arclength(bz, 10)
 
             def th_fn_scaled(s):
@@ -499,7 +493,7 @@ def plot_arclen(t0, t1):
     th0 = th_fn(0)
     th1 = th_fn(arclen)
     for i in range(101):
-        aab = i * .01
+        aab = i * 0.01
         bz, a, b = fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab)
         print(a, b)
 

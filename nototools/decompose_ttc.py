@@ -34,6 +34,6 @@ def main(argv):
             font = ttLib.TTFont(font_file_name, fontNumber=font_number)
             font.save('%s-part%d' % (font_file_name, font_number))
 
+
 if __name__ == '__main__':
     main(sys.argv)
-

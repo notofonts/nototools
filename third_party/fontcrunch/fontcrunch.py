@@ -34,8 +34,7 @@ else:
 from fontTools import ttLib
 from fontTools.ttLib.tables import _g_l_y_f
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), os.pardir, 'spiro', 'curves'))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, 'spiro', 'curves'))
 import fromcubic
 import tocubic
 import pcorn
@@ -81,7 +80,7 @@ def raise_to_cubic(bzs):
         r = []
         for bz in sp:
             if len(bz) == 3:
-                r.append((bz[0], lerppt(2. / 3, bz[0], bz[1]), lerppt(2. / 3, bz[2], bz[1]), bz[2]))
+                r.append((bz[0], lerppt(2.0 / 3, bz[0], bz[1]), lerppt(2.0 / 3, bz[2], bz[1]), bz[2]))
             else:
                 r.append(bz)
         result.append(r)
@@ -298,7 +297,7 @@ def plot_tt(bzs, orig=None, style='redcyan'):
     scale = 0.25
     if orig:
         print('0 1 1 0 setcmykcolor')
-        fancy = (style == 'redcyan')
+        fancy = style == 'redcyan'
         plot_tt_raw(orig, fancy)
     if style == 'redcyan':
         print('1 0 0 0 setcmykcolor')

@@ -55,94 +55,95 @@ from nototools import notoconfig
 
 
 def write_data_to_file(data, root, subdir, filename):
-  dstdir = os.path.join(root, subdir)
-  if not os.path.exists(dstdir):
-    os.mkdir(dstdir)
-  with open(os.path.join(dstdir, filename), 'wb') as f:
-    f.write(data)
-  print('extracted \'%s\' into %s' % (filename, subdir))
+    dstdir = os.path.join(root, subdir)
+    if not os.path.exists(dstdir):
+        os.mkdir(dstdir)
+    with open(os.path.join(dstdir, filename), 'wb') as f:
+        f.write(data)
+    print('extracted \'%s\' into %s' % (filename, subdir))
 
 
 def unzip_to_directory_tree(drop_dir, filepath):
-  hint_rx = re.compile(r'_((?:un)?hinted)/(.+)')
-  plain_rx = re.compile(r'[^/]+')
-  zf = zipfile.ZipFile(filepath, 'r')
-  print('extracting files from %s to %s' % (filepath, drop_dir))
-  count = 0
-  mapped_names = []
-  unmapped = []
-  for name in zf.namelist():
-    # skip names representing portions of the path
-    if name.endswith('/'):
-      continue
-    # get the blob
-    try:
-      data = zf.read(name)
-    except KeyError:
-      print('did not find %s in zipfile' % name)
-      continue
+    hint_rx = re.compile(r'_((?:un)?hinted)/(.+)')
+    plain_rx = re.compile(r'[^/]+')
+    zf = zipfile.ZipFile(filepath, 'r')
+    print('extracting files from %s to %s' % (filepath, drop_dir))
+    count = 0
+    mapped_names = []
+    unmapped = []
+    for name in zf.namelist():
+        # skip names representing portions of the path
+        if name.endswith('/'):
+            continue
+        # get the blob
+        try:
+            data = zf.read(name)
+        except KeyError:
+            print('did not find %s in zipfile' % name)
+            continue
 
-    result = hint_rx.search(name)
-    if result:
-      # we know where it goes
-      subdir = result.group(1)
-      filename = result.group(2)
-      write_data_to_file(data, drop_dir, subdir, filename)
-      count += 1
-      continue
+        result = hint_rx.search(name)
+        if result:
+            # we know where it goes
+            subdir = result.group(1)
+            filename = result.group(2)
+            write_data_to_file(data, drop_dir, subdir, filename)
+            count += 1
+            continue
 
-    result = plain_rx.match(name)
-    if not result:
-      print("subdir structure without hint/unhint: '%s'" % name)
-      continue
+        result = plain_rx.match(name)
+        if not result:
+            print("subdir structure without hint/unhint: '%s'" % name)
+            continue
 
-    # we have to figure out where it goes.
-    # if it's a .ttf file, we look for 'fpgm'
-    # and 'prep' and if they are present, we put
-    # it into hinted, else unhinted.
-    # if it's not a .ttf file, but it starts with
-    # the name of a .ttf file (sans suffix), we put
-    # it in the same subdir the .ttf file went into.
-    # else we put it at drop_dir (no subdir).
-    if name.endswith('.ttf'):
-      blobfile = BytesIO(data)
-      font = ttLib.TTFont(blobfile)
-      subdir = 'hinted' if font.get('fpgm') or font.get('prep') else 'unhinted'
-      write_data_to_file(data, drop_dir, subdir, name)
-      count += 1
+        # we have to figure out where it goes.
+        # if it's a .ttf file, we look for 'fpgm'
+        # and 'prep' and if they are present, we put
+        # it into hinted, else unhinted.
+        # if it's not a .ttf file, but it starts with
+        # the name of a .ttf file (sans suffix), we put
+        # it in the same subdir the .ttf file went into.
+        # else we put it at drop_dir (no subdir).
+        if name.endswith('.ttf'):
+            blobfile = BytesIO(data)
+            font = ttLib.TTFont(blobfile)
+            subdir = 'hinted' if font.get('fpgm') or font.get('prep') else 'unhinted'
+            write_data_to_file(data, drop_dir, subdir, name)
+            count += 1
 
-      basename = os.path.splitext(name)[0]
-      mapped_names.append((basename, subdir))
-      continue
+            basename = os.path.splitext(name)[0]
+            mapped_names.append((basename, subdir))
+            continue
 
-    # get to these later
-    unmapped.append((name, data))
+        # get to these later
+        unmapped.append((name, data))
 
-  # write the remainder
-  if unmapped:
-    for name, data in unmapped:
-      subdir = ''
-      for mapped_name, mapped_subdir in mapped_names:
-        if name.startswith(mapped_name):
-          subdir = mapped_subdir
-          break
-      write_data_to_file(data, drop_dir, subdir, name)
-      count += 1
+    # write the remainder
+    if unmapped:
+        for name, data in unmapped:
+            subdir = ''
+            for mapped_name, mapped_subdir in mapped_names:
+                if name.startswith(mapped_name):
+                    subdir = mapped_subdir
+                    break
+            write_data_to_file(data, drop_dir, subdir, name)
+            count += 1
 
-  print('extracted %d files' % count)
+    print('extracted %d files' % count)
 
 
 def main():
-  params = {
-      'default_srcdir': os.path.expanduser('~/Downloads'),
-      'default_dstdir': notoconfig._values.get('monotype_data'),
-      'default_regex': r'Noto.*_\d{8}.zip',
-  }
-  grab_download.invoke_main(
-      src_vendor='Monotype',
-      name_date_re= re.compile(r'(.*)_(\d{4})(\d{2})(\d{2})\.zip'),
-      extract_fn=unzip_to_directory_tree,
-      default_params=params)
+    params = {
+        'default_srcdir': os.path.expanduser('~/Downloads'),
+        'default_dstdir': notoconfig._values.get('monotype_data'),
+        'default_regex': r'Noto.*_\d{8}.zip',
+    }
+    grab_download.invoke_main(
+        src_vendor='Monotype',
+        name_date_re=re.compile(r'(.*)_(\d{4})(\d{2})(\d{2})\.zip'),
+        extract_fn=unzip_to_directory_tree,
+        default_params=params,
+    )
 
 
 if __name__ == "__main__":

@@ -78,7 +78,7 @@ def measure_bz_cloth(seg, bz, n=100):
         # print(s, atan2(dy, dx),  seg.th(s))
         return [ds, dscore]
 
-    dt = 1. / n
+    dt = 1.0 / n
     t = 0
     ys = [0, 0]
     for i in range(n):
@@ -151,7 +151,7 @@ def test_to_pcorn():
     C1 = 0.55228
     bz = [(100, 100), (100 + 400 * C1, 100), (500, 500 - 400 * C1), (500, 500)]
     for i in range(0, 13):
-        thresh = .1 ** i
+        thresh = 0.1 ** i
         segs = cubic_bz_to_pcorn(bz, thresh)
         plot_segs(segs)
         print(thresh, len(segs), file=sys.stderr)
@@ -178,7 +178,7 @@ if __name__ == '__main__':
             print('gsave 1 0 0 setrgbcolor')
             cmd = 'moveto'
             for i in range(100):
-                s = i * .01 * curve.arclen
+                s = i * 0.01 * curve.arclen
                 x, y = curve.xy(s)
                 th = curve.th(s)
                 sth = 5 * sin(th)
@@ -187,7 +187,7 @@ if __name__ == '__main__':
                 cmd = 'lineto'
             print('closepath stroke grestore')
         for i in range(100):
-            s = i * .01 * curve.arclen
+            s = i * 0.01 * curve.arclen
             x, y = curve.xy(s)
             th = curve.th(s)
             sth = 5 * sin(th)

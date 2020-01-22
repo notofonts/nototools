@@ -26,6 +26,7 @@ from fontTools import ttLib
 # Change name field 10 to mention we've changed the font
 # Change usWeight to 250
 
+
 def fix_font(source_filename):
     """Create a Windows-specific version of the font."""
     assert source_filename.endswith('.otf')
@@ -44,7 +45,7 @@ def fix_font(source_filename):
             encoding = 'UTF-16BE'
         value = record.string.decode(encoding)
         if record.nameID == 3:
-            original_version = value[:value.index(';')]
+            original_version = value[: value.index(';')]
             new_version = original_version + '1'
             new_value = value.replace(original_version, new_version, 1)
 
@@ -63,8 +64,7 @@ def fix_font(source_filename):
         elif record.nameID == 10:
             # record #10 appears to be the best place to put a change notice
             assert 'Google' not in value
-            new_value = value + ('; Changed by Google '
-                                 'to work around a bug in Windows')
+            new_value = value + ('; Changed by Google ' 'to work around a bug in Windows')
             record.string = new_value.encode(encoding)
 
     font['head'].fontRevision = float(new_version)
@@ -84,4 +84,3 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv)
-

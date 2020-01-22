@@ -58,8 +58,7 @@ def _regular_expression_from_set(character_set):
     return re.compile(regexp)
 
 
-def test_rendering(
-    data, font_file_name, min_allowed, max_allowed, language=None):
+def test_rendering(data, font_file_name, min_allowed, max_allowed, language=None):
     """Test the rendering of the input data in a given font.
     
     The input data is first filtered for sequences supported in the font.
@@ -67,7 +66,7 @@ def test_rendering(
     font_characters = coverage.character_set(font_file_name)
     # Hack to add ASCII digits, even if the font doesn't have them,
     # to keep potential frequency info in the input intact
-    font_characters |= set(range(ord('0'), ord('9')+1))
+    font_characters |= set(range(ord('0'), ord('9') + 1))
 
     supported_chars_regex = _regular_expression_from_set(font_characters)
 
@@ -77,12 +76,10 @@ def test_rendering(
 
     harfbuzz_input = '\n'.join(harfbuzz_input)
 
-    return render.test_text_vertical_extents(
-        harfbuzz_input, font_file_name, min_allowed, max_allowed, language)
+    return render.test_text_vertical_extents(harfbuzz_input, font_file_name, min_allowed, max_allowed, language)
 
 
-def test_rendering_from_file(
-    file_handle, font_file_name, min_allowed, max_allowed, language=None):
+def test_rendering_from_file(file_handle, font_file_name, min_allowed, max_allowed, language=None):
     """Test the rendering of the contents of a file for vertical extents.
     
     Supports both text files and XTB files.
@@ -107,12 +104,10 @@ def test_rendering_from_file(
 
     # Now, input_data is just a long string, with new lines as separators.
 
-    return test_rendering(
-        input_data, font_file_name, min_allowed, max_allowed, language)
+    return test_rendering(input_data, font_file_name, min_allowed, max_allowed, language)
 
 
-def test_all_combinations(
-    max_len, font_file_name, min_allowed, max_allowed, language=None):
+def test_all_combinations(max_len, font_file_name, min_allowed, max_allowed, language=None):
     """Tests the rendering of all combinations up to certain length."""
 
     font_characters = coverage.character_set(font_file_name)
@@ -121,13 +116,12 @@ def test_all_combinations(
     font_characters = sorted(font_characters)
 
     all_strings = []
-    for length in range(1, max_len+1):
+    for length in range(1, max_len + 1):
         all_combinations = itertools.product(font_characters, repeat=length)
         all_strings += [''.join(comb) for comb in all_combinations]
 
     test_data = '\n'.join(all_strings)
-    return test_rendering(
-        test_data, font_file_name, min_allowed, max_allowed, language)
+    return test_rendering(test_data, font_file_name, min_allowed, max_allowed, language)
 
 
 def _is_noto_ui_font(font_file_name):
@@ -156,8 +150,7 @@ def main(argv):
             ymin = max(ymin, -555)
             ymax = min(ymax, 2163)
 
-    exceeding_lines = test_rendering_from_file(
-        sys.stdin, font_file_name, ymin, ymax, language)
+    exceeding_lines = test_rendering_from_file(sys.stdin, font_file_name, ymin, ymax, language)
 
     for line_bounds, text_piece in exceeding_lines:
         print(text_piece.encode('UTF-8'), line_bounds)

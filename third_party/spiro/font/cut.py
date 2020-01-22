@@ -49,7 +49,7 @@ for j in range(y):
     buf = sys.stdin.read(x)
     for ix, of in active.items():
         r = rects[ix]
-        of.write(buf[r[0]:r[2]])
+        of.write(buf[r[0] : r[2]])
         if j == r[3] - 1:
             of.close()
             del active[ix]
