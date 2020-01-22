@@ -438,7 +438,7 @@ def get_font_properties_with_fallback(file_path, phase):
         return props, '' if props.script else 'script'
 
     basename = path.basename(file_path)
-    if not basename in HARD_CODED_FONT_INFO:
+    if basename not in HARD_CODED_FONT_INFO:
         return None, None
 
     style, script, ui, weight = HARD_CODED_FONT_INFO[basename]
@@ -518,7 +518,7 @@ def check_font(
 
         # Assumes "info" only and always comes at the end of
         # processing a file.
-        if category_name is "info":
+        if category_name == "info":
 
             def pluralize_errmsg(count, is_error=True):
                 msg = "error" if is_error else "warning"
@@ -574,7 +574,11 @@ def check_font(
         if not csv_flag:
             print_file_name()
 
-        err_type = 'Info' if category_name is "info" else "Error" if is_error else "Warning"
+        if category_name == "info":
+            err_type = 'Info'
+        else:
+            err_type = "Error" if is_error else "Warning"
+
         if csv_flag:
             names = []
             if font_props.weight != 'Regular' or not font_props.slope:
@@ -603,12 +607,12 @@ def check_font(
             print("%s <%s> %s" % (err_type[0], test_name, message.encode('UTF-8')))
         sys.stdout.flush()
 
-    _script_key_to_font_name = {
-        'Aran': 'Urdu',
-        'HST': 'Historic',
-        'LGC': None,
-        'Zsye': None,
-    }
+    # _script_key_to_font_name = {
+    #     'Aran': 'Urdu',
+    #     'HST': 'Historic',
+    #     'LGC': None,
+    #     'Zsye': None,
+    # }
 
     def _check_unused_names():
         # For now, just a warning, and we don't actually check if other tables use it.
@@ -956,7 +960,7 @@ def check_font(
 
         for cp in sorted(cps_with_variants):
             for sel, varcp, _ in sorted(unicode_data.get_variant_data(cp)):
-                if not sel in vs_cmap.uvsDict:
+                if sel not in vs_cmap.uvsDict:
                     warn(
                         "cmap/variants",
                         "Variants",
@@ -1154,7 +1158,7 @@ def check_font(
             OS2_SEL_BOLD_MASK = 1 << 5
             OS2_SEL_REGULAR_MASK = 1 << 6
             OS2_SEL_USE_TYPO_METRICS_MASK = 1 << 7
-            OS2_SEL_WWS_MASK = 1 << 8
+            # OS2_SEL_WWS_MASK = 1 << 8
             if os2_table.fsSelection & OS2_SEL_REGULAR_MASK:
                 if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
                     warn(
@@ -1255,7 +1259,7 @@ def check_font(
         glyph_set = font.getGlyphSet()
         for glyph_index in range(len(glyf_table.glyphOrder)):
             glyph_name = glyf_table.glyphOrder[glyph_index]
-            glyph = glyf_table[glyph_name]
+            # glyph = glyf_table[glyph_name]
             # Compute the ink's yMin and yMax
 
             ttglyph = glyph_set[glyph_name]
@@ -1580,7 +1584,7 @@ def check_font(
             if isinstance(params, otTables.FeatureParamsStylisticSet):
                 if not name_id_set:
                     name_id_set = {r.nameID for r in font['name'].names}
-                if not params.UINameID in name_id_set:
+                if params.UINameID not in name_id_set:
                     warn(
                         "complex/%s/ui_name_id" % gsub_or_gpos,
                         GSUB_OR_GPOS,
@@ -1796,7 +1800,7 @@ def check_font(
                     )
 
     def check_hints():
-        if not 'glyf' in font:
+        if 'glyf' not in font:
             return
 
         if not tests.check('hints'):
@@ -1967,7 +1971,7 @@ def check_font(
                     )
 
     def check_stems(cmap):
-        if not 'glyf' in font:
+        if 'glyf' not in font:
             return
 
         if not tests.check('stem'):

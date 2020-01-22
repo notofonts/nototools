@@ -79,10 +79,10 @@ class TTCFile(object):
         limit = offset + _sfntHeaderSize
         version, num_tables = struct.unpack(_sfntHeader, data[offset:limit])[:2]
         if version == 0x10000:
-            version_str = '1.0'
+            # version_str = '1.0'
             font_fmt = 'ttf'
         elif version == 0x4F54544F:
-            version_str = 'OTTO'
+            # version_str = 'OTTO'
             font_fmt = 'otf'
         else:
             raise ValueError('unrecognized sfnt version %x' % version)

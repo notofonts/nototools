@@ -126,7 +126,7 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     if 'nastaliq-aran' in family_id_to_lang_scrs:
         nastaliq_lang_scrs = family_id_to_lang_scrs['nastaliq-aran']
         for lang_scr in ['bal-Arab', 'hnd-Arab', 'hno-Arab', 'ks-Arab', 'lah-Arab', 'pa-Arab', 'skr-Arab', 'ur-Arab']:
-            if not lang_scr in lang_scrs:
+            if lang_scr not in lang_scrs:
                 print('Map nastaliq: %s not found' % lang_scr)
             else:
                 print('added %s to nastaliq' % lang_scr)
@@ -139,7 +139,7 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     if 'kufi-arab' in family_id_to_lang_scrs:
         kufi_lang_scrs = family_id_to_lang_scrs['kufi-arab']
         for lang_scr in ['ur-Arab', 'khw-Arab', 'ks-Arab']:
-            if not lang_scr in lang_scrs:
+            if lang_scr not in lang_scrs:
                 print('Patch kufi: %s not found' % lang_scr)
             else:
                 kufi_lang_scrs.remove(lang_scr)
@@ -153,7 +153,7 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     if 'sans-hebr' in family_id_to_lang_scrs:
         hebr_lang_scrs = family_id_to_lang_scrs['sans-hebr']
         for lang_scr in ['lad-Hebr']:
-            if not lang_scr in lang_scrs:
+            if lang_scr not in lang_scrs:
                 print('Patch lad: %s not found' % lang_scr)
             else:
                 hebr_lang_scrs.remove(lang_scr)
@@ -167,7 +167,7 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
     if 'sans-jpan' in family_id_to_lang_scrs:
         jpan_lang_scrs = family_id_to_lang_scrs['sans-jpan']
         for lang_scr in ['ja-Kana', 'ja-Hira']:
-            if not lang_scr in lang_scrs:
+            if lang_scr not in lang_scrs:
                 print('Patch jpan: %s not found' % lang_scr)
             else:
                 jpan_lang_scrs.remove(lang_scr)
@@ -669,7 +669,7 @@ def check_debug(debug):
         return _DEBUG_KEYS
 
     for key in debug:
-        if not key in _DEBUG_KEYS:
+        if key not in _DEBUG_KEYS:
             print('Bad debug key(s) found.  Keys are:\n  %s' % ('\n  '.join(sorted(_DEBUG_KEYS))))
             raise ValueError()
 
@@ -1161,7 +1161,7 @@ class WebGen(object):
         for family_id in sorted(family_id_to_lang_scr_to_sample_key):
             family = families[family_id]
             print('Generating images for %s...' % family.name)
-            default_lang = family_id_to_default_lang_scr[family_id]
+            # default_lang = family_id_to_default_lang_scr[family_id]
             lang_scr_to_sample_key = family_id_to_lang_scr_to_sample_key[family_id]
 
             # We don't know that rendering the same sample text with different
@@ -1243,7 +1243,11 @@ class WebGen(object):
 
                 filenames = glob.glob(path.join(CJK_DIR, base_name + '-*.otf'))
                 if not filenames:
-                    raise Exception('no file in %s matched "%s"' % (CJK_DIR, family_pat))
+                    raise Exception(
+                        'no file in %s matched "%s"' % (
+                            CJK_DIR, family_pat  # TODO: family_pat is not defined!  # noqa:F821
+                        )
+                    )
 
                 oldsize = sum(os.stat(f).st_size for f in filenames)
                 pairs = [readme_pair, (SIL_LICENSE_LOC, 'LICENSE_OFL.txt')]
@@ -1264,9 +1268,9 @@ class WebGen(object):
         def use_in_web(font):
             return (
                 not font.subset
-                and not font.fmt == 'ttc'
-                and not font.script in {'CJK', 'HST'}
-                and not font.family in {'Arimo', 'Cousine', 'Tinos'}
+                and font.fmt != 'ttc'
+                and font.script not in {'CJK', 'HST'}
+                and font.family not in {'Arimo', 'Cousine', 'Tinos'}
             )
 
         fonts = filter(use_in_web, noto_fonts.get_noto_fonts())
@@ -1301,7 +1305,7 @@ class WebGen(object):
         lang_scr_to_sample_infos = {}
         for lang_scr in sorted(all_lang_scrs):
             lang, script = lang_scr.split('-')
-            if not script in script_to_family_ids:
+            if script not in script_to_family_ids:
                 print('no family supports script in %s' % lang_scr)
                 continue
 
@@ -1375,7 +1379,7 @@ class WebGen(object):
         error_list = []
         for family in sorted(families.values()):
             family_id = family.family_id
-            if not family_id in family_id_to_lang_scr_to_sample_key:
+            if family_id not in family_id_to_lang_scr_to_sample_key:
                 error_list.append('no entry for family %s' % family_id)
                 continue
 
@@ -1389,14 +1393,14 @@ class WebGen(object):
                 if not sample_key:
                     error_list.append('no sample key for lang %s in family %s' % (lang_scr, sample_key))
                     continue
-                if not sample_key in sample_key_to_info:
+                if sample_key not in sample_key_to_info:
                     error_list.append('no sample for sample key: %s' % sample_key)
 
-            if not family_id in family_id_to_default_lang_scr:
+            if family_id not in family_id_to_default_lang_scr:
                 error_list.append('no default lang for family %s' % family_id)
                 continue
             default_lang_scr = family_id_to_default_lang_scr[family_id]
-            if not default_lang_scr in lang_scr_to_sample_key:
+            if default_lang_scr not in lang_scr_to_sample_key:
                 error_list.append('default lang %s not in samples for family %s' % (default_lang_scr, family_id))
 
         if error_list:
@@ -1488,7 +1492,6 @@ def get_repo_info(skip_checks):
             mtype, minfo = 'Tag', tag_name
         elif skip_checks:
             commit, date, subject = repo_head_commit
-            body = None
             mtype, minfo = 'Branch', repo_branch
         else:
             errors.append('noto-%s is not at a release tag' % repo_name)

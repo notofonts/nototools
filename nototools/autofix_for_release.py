@@ -330,7 +330,7 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
     src_root = path.abspath(src_root)
     dst_root = path.abspath(dst_root)
     name_rx = re.compile(name_pat)
-    for root, dirs, files in os.walk(src_root):
+    for root, _dirs, files in os.walk(src_root):
         for file in files:
             if path.splitext(file)[1] not in ['.ttf', '.ttc', '.otf']:
                 continue

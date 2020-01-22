@@ -72,7 +72,7 @@ def _build_text(name_map, initial_text=''):
             continue
 
         matches = []
-        for name, cp in sorted(name_map.items()):
+        for name, _ in sorted(name_map.items()):
             if line in name:
                 matches.append(name)
         if not matches:
@@ -135,7 +135,7 @@ def _get_char_names(charset):
         for cp in charset:
             try:
                 name = unicode_data.name(cp)
-            except:
+            except Exception:
                 name = None
             if not name or name == '<control>':
                 name = '%04x' % cp

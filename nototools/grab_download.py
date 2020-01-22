@@ -93,7 +93,7 @@ def matching_files_in_dir(src, namere):
     return filelist
 
 
-def invoke_main(src_vendor, name_date_re, extract_fn, default_params={}):
+def invoke_main(src_vendor, name_date_re, extract_fn, default_params={}):  # TODO: Mutable defaults!  # noqa:B006
     """Grab the files.
 
   src_vendor is a string, currently either Adobe or Monotype.

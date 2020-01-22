@@ -35,7 +35,7 @@ def report_set_differences(name_to_cpset, out=sys.stderr):
     while len(name_to_cpset):
         common = None
         if len(name_to_cpset) > 1:
-            for name, cpset in name_to_cpset.items():
+            for cpset in name_to_cpset.values():
                 if common is None:
                     common = cpset.copy()
                 else:
@@ -69,9 +69,9 @@ def font_cmap_data(paths):
     def use_in_web(font):
         return (
             not font.subset
-            and not font.fmt == 'ttc'
-            and not font.script in {'CJK', 'HST'}
-            and not font.family in {'Arimo', 'Cousine', 'Tinos'}
+            and font.fmt != 'ttc'
+            and font.script not in {'CJK', 'HST'}
+            and font.family not in {'Arimo', 'Cousine', 'Tinos'}
         )
 
     if not paths:

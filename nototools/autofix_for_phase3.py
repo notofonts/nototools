@@ -61,12 +61,12 @@ def _check_version_info(version_info):
     year = int(m.group(1))
     month = int(m.group(2))
     day = int(m.group(3))
-    commit_hash = m.group(4)
+    # commit_hash = m.group(4)
     today = datetime.date.today()
     if 2017 <= year:
         try:
             encoded_date = datetime.date(year, month, day)
-        except Exception as e:
+        except Exception:
             raise Exception('%04d-%02d-%02d in %s is not a valid date' % (year, month, day, version_info))
         if encoded_date > today:
             raise Exception('%s in %s is after the current date' % (encoded_date, version_info))
@@ -314,16 +314,16 @@ def autohint_font(src, dst, script, dry_run):
         print('dry run would autohint:\n  "%s"' % ' '.join(args))
         return
 
-    hinted_dir = tool_utils.ensure_dir_exists(path.dirname(dst))
+    tool_utils.ensure_dir_exists(path.dirname(dst))
     try:
         subprocess.check_call(args)
-    except Exception as e:
+    except Exception:
         print('### failed to autohint %s' % src)
         # we failed to autohint, let's continue anyway
         # however autohint will have left an empty file there, remove it.
         try:
             os.remove(dst)
-        except:
+        except Exception:
             pass
 
     print('wrote autohinted %s using %s' % (dst, code))

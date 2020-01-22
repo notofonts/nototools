@@ -69,7 +69,7 @@ class FontCompare(object):
         if not test_list:
             return FontCompare.test_names
 
-        enabled_tests = None
+        # enabled_tests = None
         failed = False
         for test in test_list:
             if test not in FontCompare.test_names:
@@ -349,7 +349,7 @@ class FontCompare(object):
 
         differences = []
         for cp in mark_glyphs:
-            if not cp in self.test_cmap:
+            if cp not in self.test_cmap:
                 continue
             target_glyph = self.target_cmap[cp]
             test_glyph = self.test_cmap[cp]
@@ -392,7 +392,7 @@ class FontCompare(object):
 
         differences = []
         for cp in self.target_chars:
-            if not cp in self.test_cmap:
+            if cp not in self.test_cmap:
                 continue
             target_glyph = self.target_cmap[cp]
             test_glyph = self.test_cmap[cp]

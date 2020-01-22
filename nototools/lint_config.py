@@ -114,7 +114,11 @@ def parse_int_ranges(range_string, is_hex=True, sep=' '):
             result.add(int(val, base))
             count += 1
     if len(result) != count:
-        raise ValueError('duplicate values in %s, expected count is %d but result is %s' % (hexlist, count, result))
+        raise ValueError(
+            'duplicate values in %s, expected count is %d but result is %s' % (
+                hexlist, count, result  # TODO: hexlist is not defined!  # noqa:F821
+            )
+        )
     return result
 
 
@@ -260,7 +264,7 @@ class FontCondition(object):
         self.version = version
 
     def modify(self, condition_name, fn_name, value):
-        if not condition_name in self.__dict__:
+        if condition_name not in self.__dict__:
             raise ValueError('FontCondition does not recognize: %s' % condition_name)
 
         if fn_name == '*':
@@ -517,7 +521,7 @@ class TestSpec(object):
 
     def _get_single_tag(self, tag):
         """Resolve tag to a single node"""
-        if not tag in self.tag_set:
+        if tag not in self.tag_set:
             unique_tag = None
             # try to find a unique tag with this as a segment
             for t in TestSpec.tag_set:

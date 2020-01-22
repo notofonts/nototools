@@ -38,6 +38,7 @@ a map from script to cpset and a TableData."""
 MetaData = collections.namedtuple('MetaData', 'date, program, args')
 TableData = collections.namedtuple('TableData', 'header, rows')
 CmapData = collections.namedtuple('CmapData', 'meta, table')
+NOW = datetime.date.today()
 
 
 def _prettify(root, indent=''):
@@ -149,7 +150,7 @@ def write_cmap_data(cmap_data, pretty=False):
     return ET.tostring(_build_tree(cmap_data, pretty).getroot(), encoding='utf-8')
 
 
-def create_metadata(program, args=None, date=datetime.date.today()):
+def create_metadata(program, args=None, date=NOW):
     """Create a MetaData object from the program, args, and date."""
     return MetaData(str(date), program, [] if not args else [(str(arg[0]), str(arg[1])) for arg in args])
 
@@ -212,7 +213,7 @@ def create_map_from_table(table):
 
 def _test():
     meta = create_metadata('test', [('this', 5), ('that', 12.3)])
-    table = create_table('foo,bar', ['1,5.3', '2,6.4',])
+    table = create_table('foo,bar', ['1,5.3', '2,6.4'])
     cmapdata = CmapData(meta, table)
     print(cmapdata)
     xml_text = write_cmap_data(cmapdata)

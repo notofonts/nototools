@@ -146,7 +146,7 @@ def generate_image_data(compare_data):
         if cp != -1 and cp not in cp_map:
             try:
                 name = unicode_data.name(cp)
-            except:
+            except Exception:
                 name = 'u%04X' % cp
             cp_map[cp] = name
 

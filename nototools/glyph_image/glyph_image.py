@@ -109,7 +109,7 @@ class GlyphImage(object):
             adv_r = min(mf.l + mf.w, dframe.l + dframe.w)
 
             dst_ix = (asc_t - dframe.t) * dframe.w + 0 - dframe.l
-            for y in range(dsc_b - asc_t):
+            for _ in range(dsc_b - asc_t):
                 data[dst_ix] = max(data[dst_ix], decorate)
                 dst_ix += dframe.w
 
@@ -130,9 +130,9 @@ class GlyphImage(object):
     def image_str(self):
         lines = []
         ix = 0
-        for y in range(self.frame.h):
+        for _ in range(self.frame.h):
             line = [':']
-            for x in range(self.frame.w):
+            for _ in range(self.frame.w):
                 val = self.data[ix]
                 ix += 1
                 line.append('  ' if val == 0 else '%02x' % val)
@@ -236,7 +236,7 @@ def _next_glyph_image(it, file_header):
     frame = Frame._make([int(a) for a in m.groups()[3:]])
     image = GlyphImage(file_header, index, adv, frame)
     row_base = 0
-    for i in range(image.frame.h):
+    for _ in range(image.frame.h):
         line = next(it).rstrip()
         assert line.startswith(':')
         ix = 0

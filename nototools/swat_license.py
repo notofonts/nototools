@@ -271,7 +271,7 @@ def _swat_font(noto_font, dst_root, dry_run):
     def update(name_id, new, newText=None):
         old = names.get(name_id)
         if new and (new != old):
-            if not dry_run and not '!!!' in new:
+            if not dry_run and '!!!' not in new:
                 font_data.set_name_record(ttfont, name_id, new, addIfMissing='win')
 
             label = _NAME_ID_LABELS[name_id]
@@ -318,16 +318,15 @@ def _swat_font(noto_font, dst_root, dry_run):
             _autofix['drop_hints'].append(noto_font.filepath)
     if autofix_for_release.drop_tables(ttfont, tables_to_drop):
         _autofix['drop_tables'].append(noto_font.filepath)
-    if noto_font.family == 'Noto':
-        if autofix_for_release.fix_linegap(ttfont):
-            _autofix['linegap'].append(noto_font.filepath)
+    if noto_font.family == 'Noto' and autofix_for_release.fix_linegap(ttfont):
+        _autofix['linegap'].append(noto_font.filepath)
     if autofix_for_release.fix_os2_unicoderange(ttfont):
         _autofix['os2_unicoderange'].append(noto_font.filepath)
 
     if dry_run:
         return
 
-    ttfont['head'].fontRevision = float_revision
+    ttfont['head'].fontRevision = float_revision  # TODO: Undefined variable float_revision  # noqa:F821
 
     dst_dir = path.dirname(dst_file)
     if not path.isdir(dst_dir):

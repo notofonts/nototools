@@ -100,7 +100,7 @@ STAGE_GLYPHS = 1
 for stage in range(2):
     cr.save()
     cr.translate(MARGIN, MARGIN)
-    for row, row_start in enumerate(sorted(rows)):
+    for row_start in sorted(rows):
         cr.translate(0, PADDING)
         cr.save()
 

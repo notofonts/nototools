@@ -77,7 +77,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
     font_paths = []
     added = 0
     updated = 0
-    for root, dirs, files in os.walk(srcdir):
+    for root, _dirs, files in os.walk(srcdir):
         for file in files:
             if file.endswith('.ttf'):
                 src_path = os.path.join(root, file)
@@ -120,7 +120,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
     # get date of the drop from srcdir
     result = re.search(r'\d{4}_\d{2}_\d{2}', srcdir)
     if not result:
-        raise ValuError('no date in ' + srcdir)
+        raise ValueError('no date in ' + srcdir)
     date_str = result.group().replace('_', '/')
 
     if added:

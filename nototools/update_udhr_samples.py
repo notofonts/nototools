@@ -35,7 +35,7 @@ from nototools import unicode_data
 
 try:
     from urllib.request import urlretrieve
-except:
+except ImportError:
     from urllib import urlretrieve
 
 
@@ -153,17 +153,17 @@ def parse_index(src_dir):
 # We also need to make sure we don't assign a new code that udhr already uses.
 
 BCP_FIXES = {
-    'acu-Latn': {'acu': 'acu-Latn', 'acu_1': None,},
-    'ak': {'ak_asante': 'ak', 'ak_fante': 'ak-fante',},
-    'chr-Cher': {'chr_cased': 'chr-Cher-cased', 'chr_uppercase': 'chr-Cher-monocase',},
-    'cjk-Latn': {'cjk': 'cjk-Latn', 'cjk_AO': 'cjk-Latn-AO',},
-    'ht-Latn': {'hat_popular': 'ht-Latn-popular', 'hat_kreyol': 'ht-Latn-kreyol',},
-    'hus-Latn': {'hus': 'hus-Latn', 'hva': None, 'hsf': None,},
-    'kg-Latn': {'kng': 'kg-Latn', 'kng_AO': 'kg-Latn-AO',},
-    'kmb-Latn': {'009': None, 'kmb': 'kmb-Latn',},
-    'la-Latn': {'lat': 'la-Latn', 'lat_1': None,},
-    'ln-Latn': {'lin_tones': 'ln-Latn', 'lin': None,},
-    'ny-Latn': {'nya_chinyanja': 'ny-Latn-chinyan', 'nya_chechewa': 'ny-Latn-chechewa',},  # max 8 chars in bcp47
+    'acu-Latn': {'acu': 'acu-Latn', 'acu_1': None},
+    'ak': {'ak_asante': 'ak', 'ak_fante': 'ak-fante'},
+    'chr-Cher': {'chr_cased': 'chr-Cher-cased', 'chr_uppercase': 'chr-Cher-monocase'},
+    'cjk-Latn': {'cjk': 'cjk-Latn', 'cjk_AO': 'cjk-Latn-AO'},
+    'ht-Latn': {'hat_popular': 'ht-Latn-popular', 'hat_kreyol': 'ht-Latn-kreyol'},
+    'hus-Latn': {'hus': 'hus-Latn', 'hva': None, 'hsf': None},
+    'kg-Latn': {'kng': 'kg-Latn', 'kng_AO': 'kg-Latn-AO'},
+    'kmb-Latn': {'009': None, 'kmb': 'kmb-Latn'},
+    'la-Latn': {'lat': 'la-Latn', 'lat_1': None},
+    'ln-Latn': {'lin_tones': 'ln-Latn', 'lin': None},
+    'ny-Latn': {'nya_chinyanja': 'ny-Latn-chinyan', 'nya_chechewa': 'ny-Latn-chechewa'},  # max 8 chars in bcp47
     'oc-Latn': {
         'lnc': 'oc-Latn',
         'auv': None,
@@ -173,13 +173,13 @@ BCP_FIXES = {
         'oci_4': None,
         'prv': None,
     },
-    'pov-Latn': {'008': None, 'pov': 'pov-Latn',},
-    'ro-Latn': {'ron_2006': 'ro-Latn', 'ron_1993': None, 'ron_1953': None,},
-    'rom-Latn': {'rmn': 'rom-Latn', 'rmn_1': None,},
-    'th-Thai': {'tha': 'th-Thai', 'tha2': None,},
-    'ts-Latn': {'tso_MZ': 'ts-Latn-MZ', 'tso_ZW': 'ts-Latn-ZW',},
-    'umb-Latn': {'011': None, 'umb': 'umb-Latn',},
-    'ur-Arab': {'urd': 'ur-Arab', 'urd_2': None,},
+    'pov-Latn': {'008': None, 'pov': 'pov-Latn'},
+    'ro-Latn': {'ron_2006': 'ro-Latn', 'ron_1993': None, 'ron_1953': None},
+    'rom-Latn': {'rmn': 'rom-Latn', 'rmn_1': None},
+    'th-Thai': {'tha': 'th-Thai', 'tha2': None},
+    'ts-Latn': {'tso_MZ': 'ts-Latn-MZ', 'tso_ZW': 'ts-Latn-ZW'},
+    'umb-Latn': {'011': None, 'umb': 'umb-Latn'},
+    'ur-Arab': {'urd': 'ur-Arab', 'urd_2': None},
 }
 
 
@@ -191,7 +191,6 @@ def fix_index(bcp_to_codes):
   We use this opportunity to validate the whitelist, and if there are
   any errors, we fail once we're finished."""
     errors = []
-    used_fixes = set()
     result = {}
     for k in sorted(bcp_to_codes):
         if k == 'und' or k.startswith('und-'):
@@ -340,7 +339,7 @@ def add_default_lang_script(bcp_to_code_attrib_sample):
 
     for lang_scr in sorted(options):
         print('%s options: %s' % (lang_scr, options[lang_scr]))
-        if not lang_scr in OPTION_MAP:
+        if lang_scr not in OPTION_MAP:
             errors.append('%s missing from option map' % lang_scr)
         elif not OPTION_MAP[lang_scr] in options[lang_scr]:
             errors.append('%s selected option for %s not available' % (lang_scr, OPTION_MAP[lang_scr]))
@@ -586,7 +585,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_
     sample_attrib_list = []
     sample_dir = tool_utils.ensure_dir_exists(sample_dir)
     count = 0
-    for bcp, (code, attrib, sample) in bcp_to_code_attrib_sample.items():
+    for bcp, (_code, attrib, sample) in bcp_to_code_attrib_sample.items():
         dst_file = '%s_udhr.txt' % bcp
         dst_path = os.path.join(sample_dir, dst_file)
         if in_repo and os.path.isfile(dst_path) and dst_file not in tool_samples:
@@ -709,8 +708,8 @@ def test_sample_scripts(sample_dir):
 
 def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
     """Report on differences between samples in base and target directories.
-  The trg_to_base_name fn takes a target file name and returns the source
-  file name to use in the comparisons."""
+      The trg_to_base_name fn takes a target file name and returns the source
+      file name to use in the comparisons."""
 
     if not os.path.isdir(base_dir):
         print('Original sample dir \'%s\' does not exist' % base_dir)
@@ -742,7 +741,6 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
             continue
 
         base_text = None
-        dst_text = None
         with codecs.open(base_path, 'r', 'utf8') as f:
             base_text = f.read()
         with codecs.open(trg_path, 'r', 'utf8') as f:

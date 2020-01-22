@@ -15,8 +15,6 @@
 # limitations under the License.
 """Get information from the status spreadsheet with MTI"""
 
-SPREADSHEET_NAME = 'Noto Project Status (Phase II)- go-noto - ' 'Unicode-Monotype (1).csv'
-
 import argparse
 import csv
 import re
@@ -27,11 +25,10 @@ from fontTools import ttLib
 from nototools import font_data
 from nototools import noto_fonts
 
+SPREADSHEET_NAME = 'Noto Project Status (Phase II)- go-noto - ' 'Unicode-Monotype (1).csv'
+
 
 def check_spreadsheet(src_file):
-    filenames = set()
-    prev_script_name = None
-    fontdata = {}
     filedata = {}
     with open(src_file) as csvfile:
         reader = csv.DictReader(csvfile)
@@ -85,12 +82,12 @@ def check_spreadsheet(src_file):
             # print('%s:\n--> %s\n--> %s' % (
             #    font, str((style, script, ui, weight)), fontname))
 
-            if not hinting in ['hinted', 'hinted (CFF)', 'unhinted']:
+            if hinting not in ['hinted', 'hinted (CFF)', 'unhinted']:
                 print('unrecognized hinting value \'%s\' on line %d (%s)' % (hinting, index, fontname))
                 continue
             hinted = 'hinted' if hinting in ['hinted', 'hinted (CFF)'] else 'unhinted'
 
-            if not status in [
+            if status not in [
                 'In finishing',
                 'Released w. lint errors',
                 'Approved & Released',

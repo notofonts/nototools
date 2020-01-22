@@ -33,7 +33,7 @@ def match_files(src_dir, names):
     src_dir = tool_utils.resolve_path(src_dir)
     print('# root: %s' % src_dir)
     name_re = _build_regex(names)
-    for root, dirs, files in os.walk(src_dir):
+    for root, _dirs, files in os.walk(src_dir):
         effective_root = root[len(src_dir) + 1 :]
         for f in files:
             if name_re.match(f):

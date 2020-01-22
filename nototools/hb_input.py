@@ -48,7 +48,7 @@ class HbInputGenerator(object):
         try:
             space_name = font['cmap'].tables[0].cmap[0x20]
             self.space_width = self.widths[space_name]
-        except:
+        except Exception:
             self.space_width = -1
 
     def all_inputs(self, warn=False):

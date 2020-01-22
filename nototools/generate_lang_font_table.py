@@ -22,8 +22,7 @@ Generate a csv with the following columns:
 - ui status (UI, <empty>)
 - font name
 
-This will start with a canned list of languages for now. We could 
-generate a more comprehensive list from our data.
+This will start with a canned list of languages for now. We could generate a more comprehensive list from our data.
 """
 
 from nototools import cldr_data
@@ -45,7 +44,7 @@ def accept_font(f):
         and f.weight == 'Regular'  # exclude Historic, tool limitation
         and f.width == 'Regular'  # to limit members of fonts
         and not f.slope  # to limit members of fonts, we don't
-        and f.fmt in ['ttf', 'otf']  #   care about weights
+        and f.fmt in ['ttf', 'otf']  # care about weights
         and (not f.is_cjk or f.subset)  # only support these formats
     )  # 'small' language-specific CJK subsets
 

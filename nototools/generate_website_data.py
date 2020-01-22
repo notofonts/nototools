@@ -897,9 +897,7 @@ def create_families_object(target_platform):
 
         font_list = []
         for font in members:
-            font_list.append(
-                {'style': css_style(font.style), 'weight': css_weight(font.weight),}
-            )
+            font_list.append({'style': css_style(font.style), 'weight': css_weight(font.weight)})
         if len(font_list) not in [1, 2, 4, 7]:
             print(key, font_list)
         assert len(font_list) in [1, 2, 4, 7]

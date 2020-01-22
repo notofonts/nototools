@@ -252,7 +252,7 @@ class TestNames(FontTest):
                 expected_name += ' ' + style
             self.assertEqual(records[3], self.expected_unique_id(family, style))
             self.assertEqual(records[4], expected_name)
-            self.assertFalse(records.has_key(18))
+            self.assertFalse(18 in records)
 
     def test_postscript_name(self):
         """Tests the postscript name."""

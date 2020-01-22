@@ -79,7 +79,7 @@ def preferred_script_name(script_key):
     # Returns the script_key if we have nothing else.
     try:
         return unicode_data.human_readable_script_name(script_key)
-    except:
+    except Exception:
         return cldr_data.get_english_script_name(script_key)
 
 

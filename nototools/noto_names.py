@@ -404,7 +404,7 @@ def _full_name(preferred_family, preferred_subfamily, include_regular):
 def _postscript_name(preferred_family, preferred_subfamily, include_regular):
     wws_family, wws_subfamily = _wws_parts(preferred_family, preferred_subfamily)
     # fix for names with punctuation
-    punct_re = re.compile("[\s'-]")
+    punct_re = re.compile(r"[\s'-]")
     result = ''.join(punct_re.sub('', p) for p in wws_family)
     tail = [n for n in wws_subfamily if n not in wws_family]
     if tail:

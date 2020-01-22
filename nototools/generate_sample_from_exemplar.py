@@ -35,7 +35,7 @@ try:
 
     print('will use icu locale-specific order')
     _HAVE_ICU = True
-except ImportError as e:
+except ImportError:
     print('will use default locale sort order')
     _HAVE_ICU = False
 
@@ -95,6 +95,7 @@ def get_script_to_exemplar_data_map():
             else:
                 no_latin = False
             # exclude exemplar strings, and restrict to letters and digits
+
             def accept_cp(cp):
                 if len(cp) != 1:
                     return False
@@ -237,7 +238,7 @@ def char_lang_info(num_locales, char_to_lang_map):
         num_shared_langs = len(char_to_lang_map[cp])
         if num_shared_langs >= len(hist):
             for shared_lang in char_to_lang_map[cp]:
-                if shared_lang not in loc_map:
+                if shared_lang not in loc_map:  # TODO: loc_map is undefined!  # noqa:F821
                     print('loc map does not have \'%s\'!' % shared_lang)
 
         freq_list.append((num_shared_langs, cp))
@@ -387,8 +388,6 @@ def sort_for_script(cp_list, script):
         print('cannot sort for script, no lang for %s' % script)
         return cp_list
     if _HAVE_ICU:
-        from icu import Locale, Collator
-
         loc = Locale(lang + '_' + script)
         col = Collator.createInstance(loc)
         return sorted(cp_list, cmp=col.compare)
@@ -518,7 +517,6 @@ def generate_samples(dstdir, imgdir, summary):
         dstdir = tool_utils.ensure_dir_exists(dstdir)
         print('writing files to %s' % dstdir)
 
-    verbose = summary
     script_map = get_script_to_exemplar_data_map()
     for script in sorted(script_map):
         sample, info = generate_sample_for_script(script, script_map[script])

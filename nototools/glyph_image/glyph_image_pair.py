@@ -120,7 +120,7 @@ class HungarianMatcher(object):
         if self.dbg:
             print('step 1')
         n = 0
-        for r in range(rows):
+        for _ in range(rows):
             lim = n + cols
             min_val = min(data[n:lim])
             for m in range(n, lim):
@@ -133,7 +133,7 @@ class HungarianMatcher(object):
             print('step 2')
         starred_cols = [False] * cols
         n = 0
-        for r in range(rows):
+        for _ in range(rows):
             m = n
             for c in range(cols):
                 if data[m] == 0 and not starred_cols[c]:
@@ -157,7 +157,7 @@ class HungarianMatcher(object):
         if self.dbg:
             print('step 3')
         n = 0
-        for r in range(rows):
+        for _ in range(rows):
             for c in range(cols):
                 if marked[n] == 1:
                     covered_cols[c] = True
@@ -441,7 +441,7 @@ def _get_image_diff_pairs(base_collection, base_unmatched, target_collection, ta
                 diff = diff_pool[(base_ix, target_ix)]
                 if best_diff is None or diff < best_diff[0]:
                     best_diff = (diff, base_ix)
-            except:
+            except Exception:
                 continue
         if best_diff:
             best_target_diffs[target_ix] = best_diff

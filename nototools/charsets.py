@@ -17,7 +17,7 @@
 
 # From http://www.microsoft.com/typography/otspec/wgl4.htm
 WGL4 = [
-    0x0020,  #   SPACE
+    0x0020,  #   SPACE  # noqa:E262
     0x0021,  # ! EXCLAMATION MARK
     0x0022,  # " QUOTATION MARK
     0x0023,  # # NUMBER SIGN

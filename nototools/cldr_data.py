@@ -117,10 +117,10 @@ def _parse_supplemental_data():
                 key = lang + '-' + territory
                 try:
                     likely_tuple = _LIKELY_SUBTAGS[key]
-                except:
+                except Exception:
                     try:
                         likely_tuple = _LIKELY_SUBTAGS[lang]
-                    except:
+                    except Exception:
                         # hmmm, language tag for territory not in likely subtags data
                         # filed bug with CLDR, for now patch fixes here
                         if lang in ['bsc', 'mfv', 'snf', 'tnr']:
@@ -231,7 +231,7 @@ def lang_to_regions(lang):
     _parse_supplemental_data()
     try:
         return _LANG_TO_REGIONS[lang]
-    except:
+    except Exception:
         return None
 
 
@@ -239,7 +239,7 @@ def lang_to_scripts(lang):
     _parse_supplemental_data()
     try:
         return _LANG_TO_SCRIPTS[lang]
-    except:
+    except Exception:
         return None
 
 
@@ -247,7 +247,7 @@ def region_to_lang_scripts(region_tag):
     _parse_supplemental_data()
     try:
         return _REGION_TO_LANG_SCRIPTS[region_tag]
-    except:
+    except Exception:
         return None
 
 
@@ -269,9 +269,9 @@ def get_likely_subtags(lang_tag):
             m = LSRV_RE.match(lang_tag)
             if not m:
                 if _DEBUG:
-                    print('regex did not match locale \'%s\'' % loc_tag)
+                    print('regex did not match locale \'%s\'' % loc_tag)  # TODO: loc_tag is undefined!  # noqa:F821
                 return result
-            lang = m.group(1)
+            # lang = m.group(1)
             script = m.group(2)
             region = m.group(3)
             variant = m.group(4)
@@ -554,7 +554,7 @@ def unicode_set_string_to_list(us_str):
 _exemplar_from_file_cache = {}
 
 
-def get_exemplar_from_file(cldr_file_path, types=['']):
+def get_exemplar_from_file(cldr_file_path, types=['']):  # TODO: mutable defaults!  # noqa:B006
     cache_key = cldr_file_path + '_'.join(sorted(types))
     try:
         return _exemplar_from_file_cache[cache_key]
@@ -574,7 +574,7 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
             typeval = tag.attrib['type']
         else:
             typeval = ''
-        if not typeval in types:
+        if typeval not in types:
             continue
         # TODO(dougfelt): when multiple types are used, append in fixed order
         # and don't rely on order in the xml file?
@@ -584,9 +584,9 @@ def get_exemplar_from_file(cldr_file_path, types=['']):
             def accept(s):
                 return len(s) > 1 or unicode_data.category(s)[0] in cat
 
-            exemplar_list = [s for s in unicode_set_string_to_list(tag.text) if accept(s)]
+            # exemplar_list = [s for s in unicode_set_string_to_list(tag.text) if accept(s)]
             exemplars.extend(unicode_set_string_to_list(tag.text))
-        except Exception as e:
+        except Exception:
             print('failed parse of %s' % cldr_file_path)
             raise
         break

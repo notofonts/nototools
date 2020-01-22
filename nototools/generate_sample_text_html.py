@@ -62,7 +62,7 @@ def generate_table(filename):
                         bcp_en = 'No name'
                     if bcp_en == 'Unknown Language' and sample_type == 'chars':
                         bcp_en = '(characters)'
-                except:
+                except Exception:
                     print('could not get english name for %s' % bcp)
                     bcp_en = bcp
 
@@ -89,7 +89,7 @@ def _get_script_to_samples():
         bcp, sample_type = base.split('_')
         try:
             lang, script, region, variant = cldr_data.loc_tag_to_lsrv(bcp)
-        except:
+        except Exception:
             print('bcp %s did not parse as lsrv' % bcp)
             continue
         if script == 'Latn':

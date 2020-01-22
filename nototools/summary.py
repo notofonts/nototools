@@ -99,13 +99,13 @@ def summarize(root, name=None):
 
 def print_tup(tup, short):
     def to_str(idx, val):
-        if idx == 7 and type(val) == type({}):
+        if idx == 7 and isinstance(val, dict):
             parts = []
             for tag in sorted(val):
                 parts.append('%s=%s' % (tag, val[tag][0]))
             result = ', '.join(parts)
         else:
-            if idx == 6 and type(val) == type(set()):
+            if idx == 6 and isinstance(val, set):
                 result = noto_lint.printable_unicode_range(val)
             else:
                 result = str(val)

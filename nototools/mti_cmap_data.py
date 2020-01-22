@@ -31,11 +31,9 @@ _SCRIPT_KEY_NAMES = [('SYM2', 'Symbols2')]
 
 def get_script_for_name(script_name):
     starred = False
-    added = False
     if script_name[-1] == '*':
         starred = True
         script_name = script_name[:-1]
-        added = True
     if script_name in ['LGC', 'MONO', 'MUSIC', 'SYM2']:
         return script_name, starred
 
@@ -95,7 +93,7 @@ def get_script_to_cmaps(csvdata):
                     data[i].add(int(v[:-1], 16))
                 else:
                     data[i].add(int(v, 16))
-            except:
+            except Exception:
                 raise ValueError('error in col %d of row %d: "%s"' % (i, n, v))
     return {script: (cmap, xcmap) for script, cmap, xcmap in zip(header, data, xdata)}
 

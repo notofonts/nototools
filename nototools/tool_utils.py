@@ -29,6 +29,8 @@ import zipfile
 
 from nototools import notoconfig
 
+CWD = os.getcwd()
+
 
 @contextlib.contextmanager
 def temp_chdir(path):
@@ -99,7 +101,7 @@ def _name_to_key(keyname):
     return keyname
 
 
-def short_path(somepath, basedir=os.getcwd()):
+def short_path(somepath, basedir=CWD):
     """Return a short version of somepath, either relative to one of the noto path
   shorthands or to the provided base directory (defaults to current).  For
   logging/debugging output of file paths."""
@@ -289,7 +291,7 @@ def git_get_branch(repo):
         with temp_chdir(repo):
             with open(os.devnull) as trash:
                 return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD'], stderr=trash).strip()
-    except:
+    except Exception:
         return '<not on any branch>'
 
 
@@ -548,7 +550,7 @@ def setup_logging(loglevel, quiet_ttx=True):
 
     try:
         loglevel = int(loglevel)
-    except:
+    except Exception:
         loglevel = getattr(logging, loglevel.upper(), loglevel)
     if not isinstance(loglevel, int):
         print('Could not set log level, should be one of debug, info, warning, ' 'error, critical, or a numeric value')
@@ -609,7 +611,7 @@ def collect_paths(dirs, files):
             if dirs[i] == '[noto]':
                 dirs[i] = None
                 dirs.extend(NOTO_FONT_PATHS)
-                dirs = filter(None, args.dirs)
+                dirs = filter(None, args.dirs)  # TODO: args is not defined!  # noqa:F821
                 break
         for d in dirs:
             d = resolve_path(d)

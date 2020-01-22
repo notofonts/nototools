@@ -134,7 +134,7 @@ def name(char, *args):
     # CJK and Hangul automatic names
     try:
         return unicodedata.name(char)
-    except ValueError as val_error:
+    except ValueError:
         cp = ord(char)
         load_data()
         if cp in _character_names_data:
@@ -344,7 +344,7 @@ def indic_syllabic_category(char):
     if isinstance(char, (str, unicode)):
         char = ord(char)
     try:
-        return _bidi_syllabic_data[char]
+        return _bidi_syllabic_data[char]  # TODO: This variable is not defined!  # noqa:F821
     except KeyError:
         return "Other"
 
@@ -404,7 +404,7 @@ def script_code(script_name):
     folded_script_name = _folded_script_name(script_name)
     try:
         return _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE[folded_script_name]
-    except:
+    except Exception:
         return _folded_script_name_to_code.get(folded_script_name, 'Zzzz')
 
 
@@ -761,6 +761,7 @@ EMOJI_SEQUENCE_TYPES = frozenset(
     ]
 )
 
+
 # Unicode 12 decided to be 'helpful' and included single emoji in the sequence
 # data, but unlike all the other data represents these in batches as XXXX..XXXX
 # rather than one per line.  We can't get name data for these so we can't
@@ -1104,7 +1105,7 @@ def get_emoji_in_group(group, subgroup=None):
   exist, and an empty list if subgroup does not exist in group."""
     _load_emoji_group_data()
     result = None
-    for seq, (index, g, sg, _) in _emoji_group_data.items():
+    for seq, (_index, g, sg, _) in _emoji_group_data.items():
         if g == group:
             if result is None:
                 result = []
@@ -1647,7 +1648,7 @@ def _load_namealiases_data():
             cp = int(m.group(1), 16)
             name = m.group(2).strip()
             name_type = m.group(3).strip()
-            if not name_type in ['correction', 'control', 'alternate', 'figment', 'abbreviation']:
+            if name_type not in ['correction', 'control', 'alternate', 'figment', 'abbreviation']:
                 raise Exception('unknown name type in "%s"' % line)
             if name_type == 'figment':
                 continue
@@ -1674,6 +1675,6 @@ if __name__ == '__main__':
 
     # dump some information for annotations
     for k in get_sorted_emoji_sequences(all_sequences):
-        age = get_emoji_sequence_age(k)
-        if age == 12:
+        age_val = get_emoji_sequence_age(k)
+        if age_val == 12:
             print(seq_to_string(k).replace('_', ' '), '#', get_emoji_sequence_name(k))

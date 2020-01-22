@@ -117,7 +117,7 @@ def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
     # does not affect other tables in the font.  There are no emoji presentation
     # variation sequences in the fonts.
 
-    def _remove_from_cmap(infile, outfile, exclude=[]):
+    def _remove_from_cmap(infile, outfile, exclude=[]):  # TODO: mutable defaults!  # noqa:B006
         font = ttLib.TTFont(infile)
         font_data.delete_from_cmap(font, exclude)
         font.save(outfile)

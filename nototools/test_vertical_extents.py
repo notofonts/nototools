@@ -60,7 +60,7 @@ def _regular_expression_from_set(character_set):
 
 def test_rendering(data, font_file_name, min_allowed, max_allowed, language=None):
     """Test the rendering of the input data in a given font.
-    
+
     The input data is first filtered for sequences supported in the font.
     """
     font_characters = coverage.character_set(font_file_name)
@@ -81,7 +81,7 @@ def test_rendering(data, font_file_name, min_allowed, max_allowed, language=None
 
 def test_rendering_from_file(file_handle, font_file_name, min_allowed, max_allowed, language=None):
     """Test the rendering of the contents of a file for vertical extents.
-    
+
     Supports both text files and XTB files.
     """
 

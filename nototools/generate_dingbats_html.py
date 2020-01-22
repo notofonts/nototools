@@ -568,7 +568,7 @@ def _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts):
         key, keyinfo = f
         if key in omit_fonts:
             continue
-        for name, _, cl in keyinfo:
+        for _name, _, cl in keyinfo:
             if any(cl.contains(cp) for cp in codes):
                 is_preferred = False
                 for i, k in enumerate(prefer_fonts):
@@ -855,7 +855,7 @@ def _flagged_name(cp, flag_sets):
   not in the set."""
     try:
         name = unicode_data.name(cp)
-    except:
+    except Exception:
         raise Exception('no name for %04X' % cp)
     flags = []
     for k, v in sorted(flag_sets.items()):

@@ -237,7 +237,7 @@ def printable_anchor(anchor):
         )
     else:
         print(vars(anchor))
-        assert False, "don't know about anchor format"
+        raise AssertionError("don't know about anchor format")
 
 
 def dump_marks(glyphs, records):

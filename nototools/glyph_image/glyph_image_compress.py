@@ -119,10 +119,10 @@ def expand_rle2(compressed_data):
         if v < 128:
             output.append(v * 2 if v else 1)
         elif v < 160:
-            for i in range(v - 127):
+            for _ in range(v - 127):
                 output.append(0xFF)
         else:
-            for i in range(v - 159):
+            for _ in range(v - 159):
                 output.append(0)
     return output
 
@@ -224,7 +224,7 @@ def base64_decode(encoded_data):
         while i < lim:
             add_quad(encoded_data[i:])
             i += 4
-    except:
+    except Exception:
         add_final_quad(encoded_data[i:])
 
     return output

@@ -38,7 +38,7 @@ CLDR_DIR = path.join(TOOLS_DIR, 'third_party', 'cldr')
 
 def _add_text(chars, text):
     skip = False
-    for i, cp in enumerate(text):
+    for cp in text:
         if cp == '{':
             skip = True
             continue
