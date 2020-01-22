@@ -67,7 +67,12 @@ def setup_fonts_conf():
         noto_font_dirs = []
         FONTS_DIR = notoconfig.noto_fonts()
         if FONTS_DIR:
-            noto_font_dirs.extend([path.join(FONTS_DIR, 'hinted'), path.join(FONTS_DIR, 'unhinted')])
+            noto_font_dirs.extend(
+                [
+                    path.join(FONTS_DIR, 'hinted'),
+                    path.join(FONTS_DIR, 'unhinted'),
+                ]
+            )
         CJK_DIR = notoconfig.noto_cjk()
         if CJK_DIR:
             noto_font_dirs.append(CJK_DIR)
@@ -78,7 +83,9 @@ def setup_fonts_conf():
 
         cache_dir = path.join(TOOLS_DIR, 'fontconfig')
         template = string.Template(_fonts_conf_template)
-        conf_text = template.substitute(font_dirs=font_dirs, cache_dir=cache_dir)
+        conf_text = template.substitute(
+            font_dirs=font_dirs, cache_dir=cache_dir
+        )
         try:
             with open(fonts_conf, 'w') as f:
                 f.write(conf_text)
@@ -126,8 +133,10 @@ class DrawParams:
 
 
 def make_drawparams(**kwargs):
-    """Create a DrawParams from kwargs, but converting weight, style, and stretch
-  from values from string to the pango value types if needed."""
+    """
+    Create a DrawParams from kwargs, but converting weight, style, and stretch
+    from values from string to the pango value types if needed.
+    """
     dp = DrawParams(**kwargs)
     dp.weight = _get_weight(kwargs.get('weight', 'normal'))
     dp.style = _get_style(kwargs.get('style', 'normal'))
@@ -215,7 +224,9 @@ def draw_on_surface(surface, text, params):
         numlines = layout.get_line_count()
         if params.maxheight < 0:
             if -params.maxheight < numlines:
-                startindex = layout.get_line_readonly(-params.maxheight).start_index
+                startindex = layout.get_line_readonly(
+                    -params.maxheight
+                ).start_index
                 layout.set_text(text[:startindex])
         else:
             ht = 0
@@ -236,7 +247,10 @@ def draw_on_surface(surface, text, params):
             print('Error: image overflows left bounds')
         if ovr:
             print('Error: image overflows right bounds')
-        print('extents: %s, width: %s, margin: %s' % (extents, params.width, params.horiz_margin))
+        print(
+            'extents: %s, width: %s, margin: %s'
+            % (extents, params.width, params.horiz_margin)
+        )
     top_usage = min(extents[0][1], extents[1][1], 0)
     bottom_usage = max(extents[0][3], extents[1][3])
 
@@ -260,7 +274,9 @@ def create_svg(text, output_path, **kwargs):
     temp_surface = cairo.SVGSurface(None, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
-    real_surface = cairo.SVGSurface(output_path, params.width, calculated_height)
+    real_surface = cairo.SVGSurface(
+        output_path, params.width, calculated_height
+    )
     print('writing', output_path)
     draw_on_surface(real_surface, text, params)
     real_surface.flush()
@@ -276,7 +292,9 @@ def create_png(text, output_path, **kwargs):
     temp_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
-    real_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, params.width, calculated_height)
+    real_surface = cairo.ImageSurface(
+        cairo.FORMAT_ARGB32, params.width, calculated_height
+    )
     draw_on_surface(real_surface, text, params)
     print('writing', output_path)
     real_surface.write_to_png(output_path)
@@ -362,7 +380,11 @@ def _get_weight(weight_name):
     return _weight_map.get(weight_name)
 
 
-_italic_map = {'italic': pango.STYLE_ITALIC, 'oblique': pango.STYLE_OBLIQUE, 'normal': pango.STYLE_NORMAL}
+_italic_map = {
+    'italic': pango.STYLE_ITALIC,
+    'oblique': pango.STYLE_OBLIQUE,
+    'normal': pango.STYLE_NORMAL,
+}
 
 
 def _get_style(style_name):
@@ -399,7 +421,9 @@ def _get_stretch(stretch_name):
     if isinstance(stretch_name, pango.Stretch):
         return stretch_name
     if not isinstance(stretch_name, basestring):
-        raise ValueError('unexpected stretch name type (%s)', type(stretch_name))
+        raise ValueError(
+            'unexpected stretch name type (%s)', type(stretch_name)
+        )
     if stretch_name not in _stretch_map:
         raise ValueError(
             'could not recognize stretch \'%s\'\naccepted values are %s'
@@ -408,13 +432,43 @@ def _get_stretch(stretch_name):
     return _stretch_map.get(stretch_name)
 
 
-def render_codes(file_name, code_list, font_name, weight_name, style_name, stretch_name, font_size, lang, ext):
+def render_codes(
+    file_name,
+    code_list,
+    font_name,
+    weight_name,
+    style_name,
+    stretch_name,
+    font_size,
+    lang,
+    ext,
+):
     text = u''.join([unichr(int(s, 16)) for s in code_list])
-    render_text(file_name, text, font_name, weight_name, style_name, stretch_name, font_size, lang, ext)
+    render_text(
+        file_name,
+        text,
+        font_name,
+        weight_name,
+        style_name,
+        stretch_name,
+        font_size,
+        lang,
+        ext,
+    )
 
 
 def render_text(
-    file_name, text, font_name, weight_name, style_name, stretch_name, font_size, lang, ext, maxheight=0, horiz_margin=0
+    file_name,
+    text,
+    font_name,
+    weight_name,
+    style_name,
+    stretch_name,
+    font_size,
+    lang,
+    ext,
+    maxheight=0,
+    horiz_margin=0,
 ):
     font = font_name or 'Noto Sans'
     font_size = font_size or 32
@@ -449,21 +503,60 @@ def render_text(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test', action='store_true', help='generate test images')
-    parser.add_argument('--codes', metavar='hex', nargs='+', help='list of hex codepoints to render')
-    parser.add_argument('--text', metavar='str', help='text to render, can include unicode escapes')
     parser.add_argument(
-        '--out', metavar='name', help='name of output file, leave empty to generate a name', default=None
+        '--test', action='store_true', help='generate test images'
     )
-    parser.add_argument('-f', '--font', metavar='name', help='name of noto font to use')
-    parser.add_argument('-b', '--bold', metavar='wt', help="pango weight name", default=None)
-    parser.add_argument('-i', '--italic', metavar='it', help="pango style name", default=None)
-    parser.add_argument('-st', '--stretch', metavar='st', help="stretch name", default=None)
-    parser.add_argument('-s', '--size', metavar='int', type=int, help='point size (default 32)', default=32)
-    parser.add_argument('-l', '--lang', metavar='lang', help='language code')
-    parser.add_argument('-t', '--type', metavar='ext', help='svg (default) or png', default='svg')
     parser.add_argument(
-        '-mh', '--maxheight', metavar='ht', help='0 ignore, <0 for num lines, ' 'else max height', default=0
+        '--codes',
+        metavar='hex',
+        nargs='+',
+        help='list of hex codepoints to render',
+    )
+    parser.add_argument(
+        '--text',
+        metavar='str',
+        help='text to render, can include unicode escapes',
+    )
+    parser.add_argument(
+        '--out',
+        metavar='name',
+        help='name of output file, leave empty to generate a name',
+        default=None,
+    )
+    parser.add_argument(
+        '-f', '--font', metavar='name', help='name of noto font to use'
+    )
+    parser.add_argument(
+        '-b', '--bold', metavar='wt', help="pango weight name", default=None
+    )
+    parser.add_argument(
+        '-i', '--italic', metavar='it', help="pango style name", default=None
+    )
+    parser.add_argument(
+        '-st', '--stretch', metavar='st', help="stretch name", default=None
+    )
+    parser.add_argument(
+        '-s',
+        '--size',
+        metavar='int',
+        type=int,
+        help='point size (default 32)',
+        default=32,
+    )
+    parser.add_argument('-l', '--lang', metavar='lang', help='language code')
+    parser.add_argument(
+        '-t',
+        '--type',
+        metavar='ext',
+        help='svg (default) or png',
+        default='svg',
+    )
+    parser.add_argument(
+        '-mh',
+        '--maxheight',
+        metavar='ht',
+        help='0 ignore, <0 for num lines, ' 'else max height',
+        default=0,
     )
     parser.add_argument(
         '-hm',

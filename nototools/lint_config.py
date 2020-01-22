@@ -16,16 +16,19 @@
 
 """Custom configuration of lint for font instances."""
 
-# The structure is a list of conditions and tests.  A condition says when to apply
-# the following test.  These are processed in order and are cumulative, and
+# The structure is a list of conditions and tests.
+# A condition says when to apply the following test.
+# These are processed in order and are cumulative, and
 # where there is a conflict the last instructions win.
 
-# Both conditions and tests can vary in specifity, a condition can for example simply
-# indicate all fonts by a vendor, or indicate a particuar version of a particular font.
+# Both conditions and tests can vary in specifity, a condition can
+# for example simply indicate all fonts by a vendor,
+# or indicate a particuar version of a particular font.
 
-# At the end of the day, we have a particular font, and want to know which tests to
-# run and which failures to ignore or report.  lint_config builds up a structure from
-# a customization file that allows this api.
+# At the end of the day, we have a particular font, and want to know
+# which tests to run and which failures to ignore or report.
+# lint_config builds up a structure from a customization file
+# that allows this api.
 
 import argparse
 import re
@@ -89,9 +92,11 @@ value_list: -- numbers or ranges separated by whitespace, no space around hyphen
 
 
 def parse_int_ranges(range_string, is_hex=True, sep=' '):
-    """Returns a set of ints from a string of numbers or ranges separated by sep.
-  A range is two values separated by hyphen with no intervening separator.
-  Result can be empty if range_string is empty."""
+    """
+    Returns a set of ints from a string of numbers or ranges separated by sep.
+    A range is two values separated by hyphen with no intervening separator.
+    Result can be empty if range_string is empty.
+    """
     result = set()
     count = 0
     base = 16 if is_hex else 10
@@ -115,16 +120,22 @@ def parse_int_ranges(range_string, is_hex=True, sep=' '):
             count += 1
     if len(result) != count:
         raise ValueError(
-            'duplicate values in %s, expected count is %d but result is %s' % (
-                hexlist, count, result  # TODO: hexlist is not defined!  # noqa:F821
+            'duplicate values in %s, expected count is %d but result is %s'
+            % (
+                hexlist,
+                count,
+                result,  # TODO: hexlist is not defined!  # noqa:F821
             )
         )
     return result
 
 
 def write_int_ranges(int_values, in_hex=True, sep=' '):
-    """From a set or list of ints, generate a string representation that can
-  be parsed by parse_int_ranges to return the original values (not order_preserving)."""
+    """
+    From a set or list of ints, generate a string representation that can
+    be parsed by parse_int_ranges to return the original values
+    (not order_preserving).
+    """
 
     if not int_values:
         return ''
@@ -159,14 +170,28 @@ class IntSetFilter(object):
     def __init__(self, accept_if_in, intset):
         self.accept_if_in = accept_if_in
         self.intset = intset
-        # print('IntSetFilter %s %s' % ('only' if accept_if_in else 'except', intset))
+        # print(
+        # 'IntSetFilter %s %s' % ('only' if accept_if_in else 'except', intset)
+        # )
 
     def accept(self, cp):
         return self.accept_if_in == (cp in self.intset)
 
 
 class FontInfo(object):
-    def __init__(self, filename, name, style, script, variant, weight, monospace, hinted, vendor, version):
+    def __init__(
+        self,
+        filename,
+        name,
+        style,
+        script,
+        variant,
+        weight,
+        monospace,
+        hinted,
+        vendor,
+        version,
+    ):
         self.filename = filename
         self.name = name
         self.style = style
@@ -249,9 +274,13 @@ class FontCondition(object):
         vendor=None,
         version=None,
     ):
-        """Each arg is either a string, or a pair of a fn of two args returning bool, and an object.
-    When the arg is a pair, the target string is passed to the fn as the first arg and the
-    second element of the pair is passed as the second arg."""
+        """
+        Each arg is either a string, or a pair of a fn of two args
+        returning bool, and an object.
+        When the arg is a pair,
+        the target string is passed to the fn as the first arg and the
+        second element of the pair is passed as the second arg.
+        """
 
         self.filename = filename
         self.name = name
@@ -265,7 +294,9 @@ class FontCondition(object):
 
     def modify(self, condition_name, fn_name, value):
         if condition_name not in self.__dict__:
-            raise ValueError('FontCondition does not recognize: %s' % condition_name)
+            raise ValueError(
+                'FontCondition does not recognize: %s' % condition_name
+            )
 
         if fn_name == '*':
             # no condition
@@ -314,7 +345,17 @@ class FontCondition(object):
         )
 
     def accepts(self, fontinfo):
-        for k in ['filename', 'name', 'style', 'script', 'variant', 'weight', 'hinted', 'vendor', 'version']:
+        for k in [
+            'filename',
+            'name',
+            'style',
+            'script',
+            'variant',
+            'weight',
+            'hinted',
+            'vendor',
+            'version',
+        ]:
             test = getattr(self, k, None)
             if test:
                 val = getattr(fontinfo, k, None)
@@ -348,7 +389,11 @@ class FontCondition(object):
                     cond_value = str(val)
             return '%s %s' % (cond_name, cond_value)
 
-        output = ['\n  %s: %s' % (k, value_str(v)) for k, v in self.__dict__.items() if v]
+        output = [
+            '\n  %s: %s' % (k, value_str(v))
+            for k, v in self.__dict__.items()
+            if v
+        ]
         return 'condition:%s' % ''.join(output)
 
 
@@ -479,9 +524,16 @@ class TestSpec(object):
     # 3: optional (with relation) value type regex, delimited by whitespace'
     # 4: optional '--' followed by comment to end of line
     def _process_data(data):
-        """data is a hierarchy of tags. any level down to root can be enabled or disabled.  this
-    builds a representation of the tag hierarchy from the text description."""
-        _data_line_re = re.compile(r'(\s*)([a-z0-9_]+)(?:\s+([^\s]+)\s+([^\s]+))?\s*(?:--\s*(.+)\s*)?$')
+        """
+        data is a hierarchy of tags. any level down to root
+        can be enabled or disabled.
+        this builds a representation of the tag hierarchy
+        from the text description.
+        """
+        _data_line_re = re.compile(
+            r'(\s*)([a-z0-9_]+)(?:\s+([^\s]+)\s+([^\s]+))?\s*'
+            r'(?:--\s*(.+)\s*)?$'
+        )
         tag_data = {}
         indent = (0, '', None)
         for line in data.splitlines():
@@ -533,7 +585,9 @@ class TestSpec(object):
                     if ix < len(t) and t[ix] not in '/_':
                         continue
                     if unique_tag:
-                        raise ValueError('multiple matches for partial tag %s' % tag)
+                        raise ValueError(
+                            'multiple matches for partial tag %s' % tag
+                        )
                     unique_tag = t
             if not unique_tag:
                 raise ValueError('unknown tag: %s' % tag)
@@ -541,7 +595,9 @@ class TestSpec(object):
         return tag
 
     def _get_tag_set(self, tag):
-        """Resolve tag to a single node, and return it and all of its descendants."""
+        """
+        Resolve tag to a single node, and return it and all of its descendants.
+        """
         if tag == '*':
             return TestSpec.tag_set
         tag = self._get_single_tag(tag)
@@ -569,16 +625,26 @@ class TestSpec(object):
         if not allowed_options[0]:
             raise ValueError('tag \'%s\' does not allow options' % tag)
         if not re.match(allowed_options[0], relation):
-            raise ValueError('tag \'%s\' does not allow relation \'%s\'' % (tag, relation))
+            raise ValueError(
+                'tag \'%s\' does not allow relation \'%s\'' % (tag, relation)
+            )
         if not re.match(allowed_options[1], arg_type):
-            raise ValueError('tag \'%s\' and relation \'%s\' does not allow arg type %s' % (tag, relation, arg_type))
+            raise ValueError(
+                'tag \'%s\' and relation \'%s\' does not allow arg type %s'
+                % (tag, relation, arg_type)
+            )
 
         if arg_type == 'cp' or arg_type == 'gid':
             is_hex = arg_type == 'cp'
             int_set = parse_int_ranges(arg, is_hex)
-            self.tag_options[tag] = (arg_type, IntSetFilter(relation != 'except', int_set))
+            self.tag_options[tag] = (
+                arg_type,
+                IntSetFilter(relation != 'except', int_set),
+            )
         else:
-            raise ValueError('illegal state - unrecognized arg_type \'%s\'' % arg_type)
+            raise ValueError(
+                'illegal state - unrecognized arg_type \'%s\'' % arg_type
+            )
 
     def enable(self, tag, relation=None, arg_type=None, arg=None):
         tags = self._get_tag_set(tag)
@@ -591,15 +657,24 @@ class TestSpec(object):
         tags |= self._get_ancestor_tag_set(tag)
         self.enabled_tags |= tags
 
-    tag_rx = re.compile(r'\s*([0-9a-z/_]+)(?:\s+(except|only)\s+(cp|gid)\s+(.*))?\s*$')
+    tag_rx = re.compile(
+        r'\s*([0-9a-z/_]+)(?:\s+(except|only)\s+(cp|gid)\s+(.*))?\s*$'
+    )
 
     def enable_tag(self, tag_seg):
         m = self.tag_rx.match(tag_seg)
         if not m:
             raise ValueError(
-                'TestSpec could not parse:\n  "%s"\n' 'expecting:\n  "<tag_name> except|only cp|gid <value>+"' % tag_seg
+                'TestSpec could not parse:\n  "%s"\n'
+                'expecting:\n  "<tag_name> except|only cp|gid <value>+"'
+                % tag_seg
             )
-        self.enable(m.group(1), relation=m.group(2), arg_type=m.group(3), arg=m.group(4))
+        self.enable(
+            m.group(1),
+            relation=m.group(2),
+            arg_type=m.group(3),
+            arg=m.group(4),
+        )
 
     def disable(self, tag):
         tags = self._get_tag_set(tag)
@@ -616,7 +691,10 @@ class TestSpec(object):
                 options[tag] = self.tag_options[tag]
 
     # TODO(dougfelt): remove modify_line if no longer used
-    line_rx = re.compile(r'\s*(enable|disable)\s+([0-9a-z/]+)(?:\s+(except|only)\s+(cp|gid)\s+(.*))?\s*')
+    line_rx = re.compile(
+        r'\s*(enable|disable)\s+([0-9a-z/]+)(?:\s+(except|only)\s+'
+        r'(cp|gid)\s+(.*))?\s*'
+    )
 
     def modify_line(self, line):
         m = self.line_rx.match(line)
@@ -674,8 +752,10 @@ class LintTests(object):
         return run
 
     def valuetype(self, tag):
-        """If the tag filters values, return the type of the value ('gid' or 'cp')
-    being filtered, or None."""
+        """
+        If the tag filters values, return the type of the value ('gid' or 'cp')
+        being filtered, or None.
+        """
         if tag in self.tag_filters:
             return self.tag_filters[tag][0]
         return None
@@ -728,7 +808,9 @@ class LintSpec(object):
         return LintTests(frozenset(result), options)
 
     def __repr__(self):
-        return '--- spec ---\n' + '\n--- spec ---\n'.join('%s\n%s' % spec for spec in self.specs)
+        return '--- spec ---\n' + '\n--- spec ---\n'.join(
+            '%s\n%s' % spec for spec in self.specs
+        )
 
 
 def parse_spec(spec, lint_spec=None):
@@ -784,14 +866,36 @@ def parse_spec_file(filename):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--tags', help='list all tags supported by the parser', action='store_true')
-    parser.add_argument('--comments', help='list tags with comments when present', action='store_true')
-    parser.add_argument('--filters', help='list tags with filters when present', action='store_true')
-    parser.add_argument('--spec', help='prints the syntax', action='store_true')
-    parser.add_argument('--parsefile', help='prints the parsed spec', metavar='spec')
+    parser.add_argument(
+        '--tags',
+        help='list all tags supported by the parser',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--comments',
+        help='list tags with comments when present',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--filters',
+        help='list tags with filters when present',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--spec', help='prints the syntax', action='store_true'
+    )
+    parser.add_argument(
+        '--parsefile', help='prints the parsed spec', metavar='spec'
+    )
     args = parser.parse_args()
 
-    if not (args.tags or args.comments or args.filters or args.spec or args.parsefile):
+    if not (
+        args.tags
+        or args.comments
+        or args.filters
+        or args.spec
+        or args.parsefile
+    ):
         print('nothing to do.')
         return
 

@@ -67,10 +67,18 @@ def generate(cmapdata, dst_dir, scripts, namepats):
     if len(scripts) != len(namepats):
         if len(namepats) != 1:
             raise ValueError(
-                'Have %d script%s but %d namepats' % (len(scripts), '' if len(scripts) == 1 else 's', len(namepats))
+                'Have %d script%s but %d namepats'
+                % (
+                    len(scripts),
+                    '' if len(scripts) == 1 else 's',
+                    len(namepats),
+                )
             )
         if '%s' not in namepats[0] and len(scripts) > 1:
-            raise ValueError('Have multiple scripts but single namepat "%s" has no substitution' % namepats[0])
+            raise ValueError(
+                'Have multiple scripts but single namepat "%s" '
+                'has no substitution' % namepats[0]
+            )
         namepats = [namepats[0]] * len(scripts)
 
     dst_dir = tool_utils.ensure_dir_exists(dst_dir)
@@ -96,13 +104,25 @@ def main():
         metavar='file',
     )
     parser.add_argument(
-        '-d', '--dest_dir', help='directory for output, (defaults to current ' 'directory)', metavar='dir', default='.'
+        '-d',
+        '--dest_dir',
+        help='directory for output, (defaults to current ' 'directory)',
+        metavar='dir',
+        default='.',
     )
-    parser.add_argument('-s', '--scripts', help='script ids of data to output', nargs='+', metavar='id', required=True)
+    parser.add_argument(
+        '-s',
+        '--scripts',
+        help='script ids of data to output',
+        nargs='+',
+        metavar='id',
+        required=True,
+    )
     parser.add_argument(
         '-n',
         '--namepats',
-        help='name patterns used to generate output ' 'filenames (default "cps_%%s.txt")',
+        help='name patterns used to generate output '
+        'filenames (default "cps_%%s.txt")',
         default=default_namepats,
         metavar='npat',
         nargs='+',

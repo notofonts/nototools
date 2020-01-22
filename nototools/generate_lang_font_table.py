@@ -22,7 +22,8 @@ Generate a csv with the following columns:
 - ui status (UI, <empty>)
 - font name
 
-This will start with a canned list of languages for now. We could generate a more comprehensive list from our data.
+This will start with a canned list of languages for now.
+We could generate a more comprehensive list from our data.
 """
 
 from nototools import cldr_data
@@ -59,7 +60,17 @@ def write_csv_header(outfile):
 
 def write_csv(outfile, lang, script, style, ui, members):
     if members:
-        outfile.write(','.join([lang, script, style, ui, noto_fonts.get_font_family_name(members[0].filepath)]))
+        outfile.write(
+            ','.join(
+                [
+                    lang,
+                    script,
+                    style,
+                    ui,
+                    noto_fonts.get_font_family_name(members[0].filepath),
+                ]
+            )
+        )
 
 
 with open('lang_to_font_table.csv', 'w') as outfile:
@@ -68,7 +79,9 @@ with open('lang_to_font_table.csv', 'w') as outfile:
         script = cldr_data.get_likely_script(lang)
         found_font = False
         for family in sorted(families, key=lambda f: f.name):
-            if script not in noto_fonts.script_key_to_scripts(family.rep_member.script):
+            if script not in noto_fonts.script_key_to_scripts(
+                family.rep_member.script
+            ):
                 continue
 
             found_font = True
@@ -77,8 +90,22 @@ with open('lang_to_font_table.csv', 'w') as outfile:
             non_ui_members = [m for m in members if not m.is_UI]
             assert len(ui_members) <= 1
             assert len(non_ui_members) <= 1
-            write_csv(outfile, lang, script, family.rep_member.style, '', non_ui_members)
-            write_csv(outfile, lang, script, family.rep_member.style, 'UI', ui_members)
+            write_csv(
+                outfile,
+                lang,
+                script,
+                family.rep_member.style,
+                '',
+                non_ui_members,
+            )
+            write_csv(
+                outfile,
+                lang,
+                script,
+                family.rep_member.style,
+                'UI',
+                ui_members,
+            )
 
         if not found_font:
             print('## no font found for lang %s' % lang)

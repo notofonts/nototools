@@ -26,7 +26,16 @@ class Segment(object):
         self.compute()
 
     def __repr__(self):
-        return '[' + repr(self.z0) + repr(self.z1) + ' ' + repr(self.th0) + ' ' + repr(self.th1) + ']'
+        return (
+            '['
+            + repr(self.z0)
+            + repr(self.z1)
+            + ' '
+            + repr(self.th0)
+            + ' '
+            + repr(self.th1)
+            + ']'
+        )
 
     def compute(self):
         dx = self.z1[0] - self.z0[0]
@@ -88,7 +97,10 @@ class Segment(object):
             sqrk1 = sqrt(2 * abs(k1))
             t = (k0 + u * k1) / sqrk1
             (y, x) = cornu.eval_cornu(t)
-            return [self.x0 + self.mxx * x + self.mxy * y, self.y0 + self.myx * x + self.myy * y]
+            return [
+                self.x0 + self.mxx * x + self.mxy * y,
+                self.y0 + self.myx * x + self.myy * y,
+            ]
 
     def find_extrema(self):
         # find solutions of th(s) = 0 mod pi/2
@@ -179,6 +191,10 @@ class Curve(object):
             print('% pseg', pseg.chth + pseg.th1, 'seg', seg.chth - seg.th0)
             pisline = pseg.k0 == 0 and pseg.k1 == 0
             sisline = seg.k0 == 0 and seg.k1 == 0
-            if fabs(th) > 1e-3 or (pisline and not sisline) or (sisline and not pisline):
+            if (
+                fabs(th) > 1e-3
+                or (pisline and not sisline)
+                or (sisline and not pisline)
+            ):
                 result.append(self.sstarts[i])
         return result

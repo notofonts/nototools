@@ -25,9 +25,17 @@ import string
 from nototools import notoconfig
 from nototools import tool_utils
 
-CLDR_SUBDIRS = ['common/main', 'common/properties', 'exemplars/main', 'seed/main']
+CLDR_SUBDIRS = [
+    'common/main',
+    'common/properties',
+    'exemplars/main',
+    'seed/main',
+]
 
-CLDR_FILES = ['common/supplemental/likelySubtags.xml', 'common/supplemental/supplementalData.xml']
+CLDR_FILES = [
+    'common/supplemental/likelySubtags.xml',
+    'common/supplemental/supplementalData.xml',
+]
 
 README_TEMPLATE = """URL: http://unicode.org/cldr/trac/export/$version/trunk
 Version: r$version $tag
@@ -43,7 +51,9 @@ No Modifications.
 
 
 def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
-    """Copy needed directories/files from cldr_repo to noto_repo/third_party/cldr."""
+    """
+    Copy needed directories/files from cldr_repo to noto_repo/third_party/cldr.
+    """
 
     noto_repo = os.path.abspath(noto_repo)
     cldr_repo = os.path.abspath(cldr_repo)
@@ -63,7 +73,9 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
     cldr_version = tool_utils.svn_get_version(cldr_repo)
 
     # prepare and create README.third_party
-    readme_text = string.Template(README_TEMPLATE).substitute(version=cldr_version, tag=cldr_tag)
+    readme_text = string.Template(README_TEMPLATE).substitute(
+        version=cldr_version, tag=cldr_tag
+    )
     with open(os.path.join(noto_cldr, 'README.third_party'), 'w') as f:
         f.write(readme_text)
 
@@ -96,14 +108,26 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--cldr', help='directory of local cldr svn repo (default %s)' % default_cldr, default=default_cldr
+        '--cldr',
+        help='directory of local cldr svn repo (default %s)' % default_cldr,
+        default=default_cldr,
     )
-    parser.add_argument('--update_cldr', help='update cldr before running', action='store_true')
-    parser.add_argument('--cldr_tag', help='tag name to use for cldr (default empty)', default='')
     parser.add_argument(
-        '--noto', help='directory of local noto git repo (default %s)' % default_noto, default=default_noto
+        '--update_cldr', help='update cldr before running', action='store_true'
     )
-    parser.add_argument('--branch', help='confirm current branch of noto git repo')
+    parser.add_argument(
+        '--cldr_tag',
+        help='tag name to use for cldr (default empty)',
+        default='',
+    )
+    parser.add_argument(
+        '--noto',
+        help='directory of local noto git repo (default %s)' % default_noto,
+        default=default_noto,
+    )
+    parser.add_argument(
+        '--branch', help='confirm current branch of noto git repo'
+    )
     args = parser.parse_args()
 
     if not args.cldr or not args.noto:
@@ -113,7 +137,10 @@ def main():
     if args.branch:
         cur_branch = tool_utils.git_get_branch(args.noto)
         if cur_branch != args.branch:
-            print("Expected branch '%s' but %s is in branch '%s'." % (args.branch, args.noto, cur_branch))
+            print(
+                "Expected branch '%s' but %s is in branch '%s'."
+                % (args.branch, args.noto, cur_branch)
+            )
             return
 
     update_cldr(args.noto, args.cldr, args.update_cldr, args.cldr_tag)

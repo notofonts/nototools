@@ -16,15 +16,23 @@ def plot_elastica(a, c):
     if c == 0:
         x = 0.001
     try:
-        for i in range(1000):
+        for _ in range(1000):
             print(6 + s * x, 200 + s * y, cmd)
             cmd = 'lineto'
             x += dx
             if 1 and c * c > 2 * a * a:
                 print((c * c - x * x) * (x * x - g * g))
-                dy = dx * (x * x - 0.5 * c * c - 0.5 * g * g) / sqrt((c * c - x * x) * (x * x - g * g))
+                dy = (
+                    dx
+                    * (x * x - 0.5 * c * c - 0.5 * g * g)
+                    / sqrt((c * c - x * x) * (x * x - g * g))
+                )
             else:
-                dy = dx * (a * a - c * c + x * x) / sqrt((c * c - x * x) * (2 * a * a - c * c + x * x))
+                dy = (
+                    dx
+                    * (a * a - c * c + x * x)
+                    / sqrt((c * c - x * x) * (2 * a * a - c * c + x * x))
+                )
             y += dy
     except ValueError:
         pass

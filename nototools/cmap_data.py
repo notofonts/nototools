@@ -143,16 +143,24 @@ def read_cmap_data(text):
 
 
 def write_cmap_data_file(cmap_data, filename, pretty=False):
-    _build_tree(cmap_data, pretty).write(filename, encoding='utf-8', xml_declaration=True)
+    _build_tree(cmap_data, pretty).write(
+        filename, encoding='utf-8', xml_declaration=True
+    )
 
 
 def write_cmap_data(cmap_data, pretty=False):
-    return ET.tostring(_build_tree(cmap_data, pretty).getroot(), encoding='utf-8')
+    return ET.tostring(
+        _build_tree(cmap_data, pretty).getroot(), encoding='utf-8'
+    )
 
 
 def create_metadata(program, args=None, date=NOW):
     """Create a MetaData object from the program, args, and date."""
-    return MetaData(str(date), program, [] if not args else [(str(arg[0]), str(arg[1])) for arg in args])
+    return MetaData(
+        str(date),
+        program,
+        [] if not args else [(str(arg[0]), str(arg[1])) for arg in args],
+    )
 
 
 def create_table(header, rows):
@@ -166,7 +174,10 @@ def create_table(header, rows):
     for row in rows:
         row = [t.strip() for t in row.split(',')]
         if len(row) != len(header):
-            raise ValueError('table has %d cols but row[%d] has %d' % (len(header), len(rowdatas), len(row)))
+            raise ValueError(
+                'table has %d cols but row[%d] has %d'
+                % (len(header), len(rowdatas), len(row))
+            )
         rowdatas.append(RowData(*row))
     return TableData(header=header, rows=rowdatas)
 
@@ -201,7 +212,11 @@ def create_table_from_map(script_to_cmap):
         else:
             xcount = len(xcmap)
             xcp_ranges = tool_utils.write_int_ranges(xcmap)
-        table_rows.append(RowData(script, name, str(count), cp_ranges, str(xcount), xcp_ranges))
+        table_rows.append(
+            RowData(
+                script, name, str(count), cp_ranges, str(xcount), xcp_ranges
+            )
+        )
     return TableData(table_header, table_rows)
 
 

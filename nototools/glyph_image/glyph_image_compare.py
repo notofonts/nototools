@@ -66,19 +66,27 @@ def select_named_pairs(pair_data):
 
 
 GlyphImageCompareData = collections.namedtuple(
-    'GlyphImageCompareData', 'base_fdata target_fdata base_gdata target_gdata pair_data'
+    'GlyphImageCompareData',
+    'base_fdata target_fdata base_gdata target_gdata pair_data',
 )
 GlyphImageFontData = collections.namedtuple(
-    'GlyphImageFontData', glyph_image.FileHeader._fields + ('codepoints', 'version')
+    'GlyphImageFontData',
+    glyph_image.FileHeader._fields + ('codepoints', 'version'),
 )
-GlyphImagePairData = collections.namedtuple('GlyphImagePairData', 'max_frame, pair_data')
+GlyphImagePairData = collections.namedtuple(
+    'GlyphImagePairData', 'max_frame, pair_data'
+)
 
 
-def create_compare_data(base_collection, target_collection, named_pairs, similarities, max_frame):
+def create_compare_data(
+    base_collection, target_collection, named_pairs, similarities, max_frame
+):
     def create_font_data(font, collection):
         cps = len(font_data.get_cmap(font))
         version = font_data.font_version(font)
-        return GlyphImageFontData._make(collection.file_header + (cps, version))
+        return GlyphImageFontData._make(
+            collection.file_header + (cps, version)
+        )
 
     def create_glyph_data(font, collection):
         glyphorder = font.getGlyphOrder()
@@ -111,7 +119,9 @@ def create_compare_data(base_collection, target_collection, named_pairs, similar
     target_gdata = create_glyph_data(target_font, target_collection)
 
     pair_data = create_pair_data()
-    return GlyphImageCompareData(base_fdata, target_fdata, base_gdata, target_gdata, pair_data)
+    return GlyphImageCompareData(
+        base_fdata, target_fdata, base_gdata, target_gdata, pair_data
+    )
 
 
 def write_compare_data(gic_data, fd):
@@ -125,7 +135,11 @@ def write_compare_data(gic_data, fd):
         print('> %s: %d' % (label, len(gdata)), file=fd)
         print('# index advance cp name', file=fd)
         for i, (adv, cp, g) in enumerate(gdata):
-            print('%d;%d;%s;%s' % (i, adv, '%04x' % cp if cp >= 0 else '', g or ''), file=fd)
+            print(
+                '%d;%d;%s;%s'
+                % (i, adv, '%04x' % cp if cp >= 0 else '', g or ''),
+                file=fd,
+            )
 
     def write_pair_data(label, pdata):
         print('> %s:' % label, file=fd)
@@ -135,7 +149,10 @@ def write_compare_data(gic_data, fd):
         for name, base, target, similarity in pdata.pair_data:
             base_str = '%d' % base if base >= 0 else ''
             target_str = '%d' % target if target >= 0 else ''
-            print('%s;%s;%s;%s' % (name, base_str, target_str, similarity), file=fd)
+            print(
+                '%s;%s;%s;%s' % (name, base_str, target_str, similarity),
+                file=fd,
+            )
 
     time = datetime.now()
     print('# %s' % time.strftime('%Y-%m-%d %H:%M:%S'), file=fd)
@@ -185,7 +202,9 @@ def read_compare_data(filepath):
         check_match(r'>\s*%s:\s*$' % label, it)
 
         m = check_match(r'>\s*max_frame:\s*(.+)\s*$', it)
-        max_frame = glyph_image.Frame._make([int(n.strip()) for n in m.group(1).split()])
+        max_frame = glyph_image.Frame._make(
+            [int(n.strip()) for n in m.group(1).split()]
+        )
 
         m = check_match(r'>\spairs:\s(\d+)\s*$', it)
         count = int(m.group(1))
@@ -210,7 +229,9 @@ def read_compare_data(filepath):
         base_gdata = read_gdata('base_gdata', it)
         target_gdata = read_gdata('target_gdata', it)
         pair_data = read_pairdata('pair_data', it)
-        return GlyphImageCompareData(base_fdata, target_fdata, base_gdata, target_gdata, pair_data)
+        return GlyphImageCompareData(
+            base_fdata, target_fdata, base_gdata, target_gdata, pair_data
+        )
 
 
 def write_compare_data_to_dir(gic_data, output_dir, name='compare_data.txt'):
@@ -219,7 +240,9 @@ def write_compare_data_to_dir(gic_data, output_dir, name='compare_data.txt'):
         write_compare_data(gic_data, f)
 
 
-def compare_collections(base_collection, target_collection, pair_data, output_dir):
+def compare_collections(
+    base_collection, target_collection, pair_data, output_dir
+):
     """Compares two glyph image collections, writing the result to output_dir.
     If pair data is provided, uses it, else uses glyph_image_pair to pair the
     glyphs in the two collections."""
@@ -229,23 +252,36 @@ def compare_collections(base_collection, target_collection, pair_data, output_di
 
     # Font names must be the same.  This might be too restrictive.
     if base_header.name != target_header.name:
-        print('base name is "%s" but target name is "%s"' % (base_header.name, target_header.name))
+        print(
+            'base name is "%s" but target name is "%s"'
+            % (base_header.name, target_header.name)
+        )
         print('aborting compare.')
         return
 
     # Image sizes must be the same.
     if base_header.size != target_header.size:
-        print('base font size is %d but target font size is %d' % (base_header.size, target_header.size))
+        print(
+            'base font size is %d but target font size is %d'
+            % (base_header.size, target_header.size)
+        )
         print('aborting compare.')
         return
 
     # Use glyph_image_pair to generate pair data if none was provided.
     if pair_data is None:
-        pair_data = glyph_image_pair.get_collection_pairs(base_collection, target_collection)
+        pair_data = glyph_image_pair.get_collection_pairs(
+            base_collection, target_collection
+        )
 
     named_pairs = select_named_pairs(pair_data)
 
-    max_frame = glyph_image.union_frames([base_collection.common_frame(True), target_collection.common_frame(True)])
+    max_frame = glyph_image.union_frames(
+        [
+            base_collection.common_frame(True),
+            target_collection.common_frame(True),
+        ]
+    )
     # only use height
     tall_frame = glyph_image.Frame(0, max_frame.t, 0, max_frame.h)
 
@@ -259,15 +295,21 @@ def compare_collections(base_collection, target_collection, pair_data, output_di
         tg = target_collection.image_dict.get(target_ix)
         frame = glyph_image.compute_frame(bg, tg, include_metrics=True)
         # ensure frame extends to max glyph ascent/descent, and add padding
-        frame = glyph_image.pad_frame(glyph_image.union_frames([frame, tall_frame]), 5)
-        image, match_pct = glyph_image.create_compare_image(bg, tg, frame, True)
+        frame = glyph_image.pad_frame(
+            glyph_image.union_frames([frame, tall_frame]), 5
+        )
+        image, match_pct = glyph_image.create_compare_image(
+            bg, tg, frame, True
+        )
         image_path = path.join(output_dir, name + '.png')
         image.save(image_path)
         match_pcts.append(match_pct)
 
     max_frame = glyph_image.pad_frame(max_frame, 5)
 
-    return create_compare_data(base_collection, target_collection, named_pairs, match_pcts, max_frame)
+    return create_compare_data(
+        base_collection, target_collection, named_pairs, match_pcts, max_frame
+    )
 
 
 def compare_files(base_file, target_file, image_dir):
@@ -281,14 +323,34 @@ def compare_files(base_file, target_file, image_dir):
 
     base_collection = glyph_image.read_file(base_file)
     target_collection = glyph_image.read_file(target_file)
-    return compare_collections(base_collection, target_collection, None, image_dir)
+    return compare_collections(
+        base_collection, target_collection, None, image_dir
+    )
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-b', '--base', help='base glyph image file', metavar='file', required=True)
-    parser.add_argument('-t', '--target', help='target glyph image file', metavar='file', required=True)
-    parser.add_argument('-o', '--output_dir', help='directory to write output into', metavar='dir', required=True)
+    parser.add_argument(
+        '-b',
+        '--base',
+        help='base glyph image file',
+        metavar='file',
+        required=True,
+    )
+    parser.add_argument(
+        '-t',
+        '--target',
+        help='target glyph image file',
+        metavar='file',
+        required=True,
+    )
+    parser.add_argument(
+        '-o',
+        '--output_dir',
+        help='directory to write output into',
+        metavar='dir',
+        required=True,
+    )
     args = parser.parse_args()
 
     gic_data = compare_files(args.base, args.target, args.output_dir)

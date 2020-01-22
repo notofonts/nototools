@@ -59,10 +59,15 @@ def get_script_to_exemplar_data_map():
             if not filename.endswith('.xml'):
                 continue
 
-            exemplar_list = cldr_data.get_exemplar_from_file(path.join(data_dir, filename))
+            exemplar_list = cldr_data.get_exemplar_from_file(
+                path.join(data_dir, filename)
+            )
             if not exemplar_list:
                 if _VERBOSE:
-                    print('  no exemplar list for %s' % path.join(data_dir, filename))
+                    print(
+                        '  no exemplar list for %s'
+                        % path.join(data_dir, filename)
+                    )
                 continue
 
             lsrv = cldr_data.loc_tag_to_lsrv(filename[:-4])
@@ -108,8 +113,8 @@ def get_script_to_exemplar_data_map():
 
             filtered_exemplar_list = filter(accept_cp, exemplar_list)
 
-            # some exemplar lists don't surround strings with curly braces, and end up
-            # with duplicate characters.  Flag these
+            # some exemplar lists don't surround strings with curly braces,
+            # and end up with duplicate characters.  Flag these
             exemplar_chars = set()
             dup_chars = set()
             fixed_exemplar_list = []
@@ -122,9 +127,21 @@ def get_script_to_exemplar_data_map():
             if len(dup_chars) > 0 and _VERBOSE:
                 print(
                     'duplicate exemplars in %s: %s'
-                    % (src, ', '.join([u'\u200e%s\u200e (%x)' % (cp, ord(cp)) for cp in dup_chars]))
+                    % (
+                        src,
+                        ', '.join(
+                            [
+                                u'\u200e%s\u200e (%x)' % (cp, ord(cp))
+                                for cp in dup_chars
+                            ]
+                        ),
+                    )
                 )
-            loc_to_exemplar_info[loc_tag] = (lsrv, src, tuple(fixed_exemplar_list))
+            loc_to_exemplar_info[loc_tag] = (
+                lsrv,
+                src,
+                tuple(fixed_exemplar_list),
+            )
 
     # supplement with extra locale data
     for loc_tag in extra_locale_data.EXEMPLARS:
@@ -152,7 +169,11 @@ def get_script_to_exemplar_data_map():
                 print('filtered some characters from %s' % src)
         else:
             filtered_exemplar_list = exemplar_list
-        loc_to_exemplar_info[loc_tag] = (lsrv, src, tuple(filtered_exemplar_list))
+        loc_to_exemplar_info[loc_tag] = (
+            lsrv,
+            src,
+            tuple(filtered_exemplar_list),
+        )
 
     return script_map
 
@@ -186,7 +207,12 @@ def show_rarely_used_char_info(script, loc_map, char_to_lang_map):
         if unique_chars:
             print(
                 '%s has %d unique chars: %s%s'
-                % (loc_tag, len(unique_chars), ' '.join(unique_chars[:100]), '...' if len(unique_chars) > 100 else '')
+                % (
+                    loc_tag,
+                    len(unique_chars),
+                    ' '.join(unique_chars[:100]),
+                    '...' if len(unique_chars) > 100 else '',
+                )
             )
         if dual_chars:
             print(
@@ -196,7 +222,14 @@ def show_rarely_used_char_info(script, loc_map, char_to_lang_map):
                     len(dual_chars),
                     ' '.join(dual_chars[:20]),
                     '...' if len(dual_chars) > 20 else '',
-                    ', '.join(sorted([loc.replace(script_tag, '') for loc in dual_shared_with])),
+                    ', '.join(
+                        sorted(
+                            [
+                                loc.replace(script_tag, '')
+                                for loc in dual_shared_with
+                            ]
+                        )
+                    ),
                 )
             )
         if triple_chars:
@@ -207,7 +240,14 @@ def show_rarely_used_char_info(script, loc_map, char_to_lang_map):
                     len(triple_chars),
                     ' '.join(triple_chars[:20]),
                     '...' if len(triple_chars) > 20 else '',
-                    ', '.join(sorted([loc.replace(script_tag, '') for loc in triple_shared_with])),
+                    ', '.join(
+                        sorted(
+                            [
+                                loc.replace(script_tag, '')
+                                for loc in triple_shared_with
+                            ]
+                        )
+                    ),
                 )
             )
         if not (unique_chars or dual_chars or triple_chars):
@@ -221,16 +261,22 @@ def get_char_to_lang_map(loc_map):
         exemplars = info[2]
         for cp in exemplars:
             if loc_tag in char_to_lang_map[cp]:
-                print('loc %s (from %s) already in char_to_lang_map for %s (%x)' % (loc_tag, info[1], cp, ord(cp)))
+                print(
+                    'loc %s (from %s) already in char_to_lang_map for %s (%x)'
+                    % (loc_tag, info[1], cp, ord(cp))
+                )
             else:
                 char_to_lang_map[cp].append(loc_tag)
     return char_to_lang_map
 
 
 def char_lang_info(num_locales, char_to_lang_map):
-    """Returns a tuple containing
-  - characters ordered by the number of langs that use them
-  - a list mapping number of shared langs to number of chars shared by those langs"""
+    """
+    Returns a tuple containing
+    - characters ordered by the number of langs that use them
+    - a list mapping number of shared langs to number of chars
+    shared by those langs
+    """
 
     freq_list = []
     hist = [0] * (num_locales + 1)
@@ -238,12 +284,17 @@ def char_lang_info(num_locales, char_to_lang_map):
         num_shared_langs = len(char_to_lang_map[cp])
         if num_shared_langs >= len(hist):
             for shared_lang in char_to_lang_map[cp]:
-                if shared_lang not in loc_map:  # TODO: loc_map is undefined!  # noqa:F821
+                if (
+                    shared_lang not in loc_map
+                ):  # TODO: loc_map is undefined!  # noqa:F821
                     print('loc map does not have \'%s\'!' % shared_lang)
 
         freq_list.append((num_shared_langs, cp))
         if num_shared_langs >= len(hist):
-            print('num shared langs is %d but size of hist is %d' % (num_shared_langs, len(hist)))
+            print(
+                'num shared langs is %d but size of hist is %d'
+                % (num_shared_langs, len(hist))
+            )
         hist[num_shared_langs] += 1
     freq_list.sort()
     return [cp for nl, cp in freq_list], hist
@@ -259,7 +310,10 @@ def show_char_use_info(script, chars_by_num_langs, char_to_lang_map):
         without_script_str = ', '.join(sorted(without_script))
         if count > limit:
             without_script_str += '...'
-        print(u'char %s\u200e (%x): %d %s' % (cp, ord(cp), count, without_script_str))
+        print(
+            u'char %s\u200e (%x): %d %s'
+            % (cp, ord(cp), count, without_script_str)
+        )
     print('total chars listed: %d' % len(char_to_lang_map))
 
 
@@ -317,7 +371,10 @@ _lang_for_script_map = {}
 
 
 def _init_lang_for_script_map():
-    locs_by_lit_pop = [loc for _, loc in cldr_data.get_lang_scrs_by_decreasing_global_lit_pop()]
+    locs_by_lit_pop = [
+        loc
+        for _, loc in cldr_data.get_lang_scrs_by_decreasing_global_lit_pop()
+    ]
     for t in locs_by_lit_pop:
         lsrv = cldr_data.loc_tag_to_lsrv(t)
         script = lsrv[1]
@@ -328,17 +385,22 @@ def _init_lang_for_script_map():
 
 
 def lang_for_script(script):
-    """Return the most common language for a script based on literate population."""
+    """
+    Return the most common language for a script based on literate population.
+    """
     # should use likely subtag data for this.
-    # the current code assumes all we want is lang -> script, I'd have to change
-    # it to map locale->locale. Right now I dont' get Hant -> zh_Hant, only
-    # Hant -> zh, which isn't good enough I think.
+    # the current code assumes all we want is lang -> script,
+    # I'd have to change it to map locale->locale.
+    # Right now I dont' get Hant -> zh_Hant, only Hant -> zh,
+    # which isn't good enough I think.
     if not _lang_for_script_map:
         _init_lang_for_script_map()
     return _lang_for_script_map.get(script)
 
 
-def select_rare_chars_for_loc(script, locs_with_rare_chars, shared_lang_threshold, char_to_lang_map):
+def select_rare_chars_for_loc(
+    script, locs_with_rare_chars, shared_lang_threshold, char_to_lang_map
+):
     """Return a list of 2-tuples of loc and selected rare chars,
   ordered by decreasing literate population of the locale."""
 
@@ -347,7 +409,10 @@ def select_rare_chars_for_loc(script, locs_with_rare_chars, shared_lang_threshol
         rarity_threshold_map[lang_tag] = shared_lang_threshold
 
     selected = []
-    locs_by_lit_pop = [loc for _, loc in cldr_data.get_lang_scrs_by_decreasing_global_lit_pop()]
+    locs_by_lit_pop = [
+        loc
+        for _, loc in cldr_data.get_lang_scrs_by_decreasing_global_lit_pop()
+    ]
     # examine locales in decreasing order of literate population
     for loc_tag in locs_by_lit_pop:
         if script not in loc_tag:
@@ -401,7 +466,9 @@ def addcase(sample, script):
     cased_sample = []
     for cp in sample:
         ucp = unicode_data.to_upper(cp)
-        if ucp != cp and ucp not in sample:  # Copt has cased chars paired in the block
+        if (
+            ucp != cp and ucp not in sample
+        ):  # Copt has cased chars paired in the block
             cased_sample.append(ucp)
     if cased_sample:
         cased_sample = ' '.join(cased_sample)
@@ -412,10 +479,11 @@ def addcase(sample, script):
 
 
 def _generate_excluded_characters():
-    # Some of these exclusions are desired, and some are reluctantly applied because
-    # Noto currently does not support some characters.  We use the generated
-    # data as fallback samples on a per-script and not per-font basis, which is also
-    # a problem.
+    # Some of these exclusions are desired,
+    # and some are reluctantly applied because
+    # Noto currently does not support some characters.
+    # We use the generated data as fallback samples on a per-script
+    # and not per-font basis, which is also a problem.
 
     # Religious characters
     # deva OM, Arabic pbuh, bismillah
@@ -472,7 +540,9 @@ def generate_sample_for_script(script, loc_map):
 
     # show_rarely_used_char_info(script, loc_map, char_to_lang_map)
 
-    chars_by_num_langs, num_langs_to_num_chars = char_lang_info(num_locales, char_to_lang_map)
+    chars_by_num_langs, num_langs_to_num_chars = char_lang_info(
+        num_locales, char_to_lang_map
+    )
 
     # show_char_use_info(chars_by_num_langs, char_to_lang_map)
 
@@ -481,27 +551,40 @@ def generate_sample_for_script(script, loc_map):
     # show_tiers(chars_by_num_langs, 3, 40)
 
     shared_lang_threshold = min(7, num_locales)
-    rare_chars, locs_with_rare_chars = get_rare_char_info(char_to_lang_map, shared_lang_threshold)
+    rare_chars, locs_with_rare_chars = get_rare_char_info(
+        char_to_lang_map, shared_lang_threshold
+    )
 
-    selected = select_rare_chars_for_loc(script, locs_with_rare_chars, shared_lang_threshold, char_to_lang_map)
+    selected = select_rare_chars_for_loc(
+        script, locs_with_rare_chars, shared_lang_threshold, char_to_lang_map
+    )
 
     # show_selected_rare_chars(selected)
-    chars_by_num_langs = [cp for cp in chars_by_num_langs if cp not in _EXCLUDE_CHARS]
+    chars_by_num_langs = [
+        cp for cp in chars_by_num_langs if cp not in _EXCLUDE_CHARS
+    ]
 
     chosen_chars = list(chars_by_num_langs)[-60:]
     rare_extension = []
     for _, chars in selected:
         avail_chars = [
-            cp for cp in chars if cp not in chosen_chars and cp not in rare_extension and cp not in _EXCLUDE_CHARS
+            cp
+            for cp in chars
+            if cp not in chosen_chars
+            and cp not in rare_extension
+            and cp not in _EXCLUDE_CHARS
         ]
-        rare_extension.extend(sorted(avail_chars)[:4])  # vietnamese dominates latin otherwise
+        rare_extension.extend(
+            sorted(avail_chars)[:4]
+        )  # vietnamese dominates latin otherwise
         if len(rare_extension) > 20:
             break
     chosen_chars = chosen_chars[: 60 - len(rare_extension)]
     chosen_chars.extend(rare_extension)
-    info = '%s (%d locales)\n' 'from most common exemplars plus chars specific to most-read languages' % (
-        script,
-        num_locales,
+    info = (
+        '%s (%d locales)\n'
+        'from most common exemplars plus chars specific to most-read languages'
+        % (script, num_locales,)
     )
     sample = ' '.join(sort_for_script(chosen_chars, script))
     sample = addcase(sample, script)
@@ -528,8 +611,18 @@ def generate_samples(dstdir, imgdir, summary):
         if imgdir:
             path = os.path.join(imgdir, 'und-%s_chars.png' % script)
             print('writing image %s.png' % script)
-            rtl = script in ['Adlm', 'Arab', 'Hebr', 'Nkoo', 'Syrc', 'Tfng', 'Thaa']
-            create_image.create_png(sample, path, font_size=34, line_spacing=40, width=800, rtl=rtl)
+            rtl = script in [
+                'Adlm',
+                'Arab',
+                'Hebr',
+                'Nkoo',
+                'Syrc',
+                'Tfng',
+                'Thaa',
+            ]
+            create_image.create_png(
+                sample, path, font_size=34, line_spacing=40, width=800, rtl=rtl
+            )
 
         if dstdir:
             filename = 'und-%s_chars.txt' % script
@@ -544,12 +637,27 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--dstdir', help='where to write samples (default %s)' % default_dstdir, default=default_dstdir, metavar='dir'
+        '--dstdir',
+        help='where to write samples (default %s)' % default_dstdir,
+        default=default_dstdir,
+        metavar='dir',
     )
-    parser.add_argument('--imgdir', help='if defined, generate images in this dir', metavar='dir')
-    parser.add_argument('--save', help='write sample files in dstdir', action='store_true')
-    parser.add_argument('--summary', help='output list of samples and how they were generated', action='store_true')
-    parser.add_argument('--verbose', help='print warnings and extra info', action='store_true')
+    parser.add_argument(
+        '--imgdir',
+        help='if defined, generate images in this dir',
+        metavar='dir',
+    )
+    parser.add_argument(
+        '--save', help='write sample files in dstdir', action='store_true'
+    )
+    parser.add_argument(
+        '--summary',
+        help='output list of samples and how they were generated',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--verbose', help='print warnings and extra info', action='store_true'
+    )
     args = parser.parse_args()
 
     if not args.save and not args.imgdir and not args.summary:
@@ -560,7 +668,9 @@ def main():
         global _VERBOSE
         _VERBOSE = True
 
-    generate_samples(args.dstdir if args.save else None, args.imgdir, args.summary)
+    generate_samples(
+        args.dstdir if args.save else None, args.imgdir, args.summary
+    )
 
 
 if __name__ == '__main__':

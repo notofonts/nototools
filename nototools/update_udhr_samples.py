@@ -59,7 +59,11 @@ def update_udhr(udhr_dir, fetch_dir, in_repo):
     zippath = os.path.join(fetch_dir, UDHR_XML_ZIP_NAME)
     tool_utils.check_file_exists(zippath)
 
-    if in_repo and os.path.isdir(udhr_dir) and not tool_utils.git_is_clean(udhr_dir):
+    if (
+        in_repo
+        and os.path.isdir(udhr_dir)
+        and not tool_utils.git_is_clean(udhr_dir)
+    ):
         raise ValueError('Please clean %s.' % udhr_dir)
 
     if os.path.isdir(udhr_dir):
@@ -79,15 +83,17 @@ def update_udhr(udhr_dir, fetch_dir, in_repo):
 
 
 def parse_index(src_dir):
-    """Parse the index.xml file in src_dir and return a map from bcp to a set of
-  file codes, and a map from file code to ohchr code.
+    """
+    Parse the index.xml file in src_dir and return a map from bcp to a set of
+    file codes, and a map from file code to ohchr code.
 
-  Skip files at stages 1 (missing) or 2 (not started). Stage 3 files have
-  article 1, which is what we want.  Stage 4 and 5 are ok, the vast majority are
-  unreviewed (4).
+    Skip files at stages 1 (missing) or 2 (not started). Stage 3 files have
+    article 1, which is what we want.
+    Stage 4 and 5 are ok, the vast majority are unreviewed (4).
 
-  In some cases more than one file is mapped to the same bcp47 code, this gets
-  dealt with in fix_index."""
+    In some cases more than one file is mapped to the same bcp47 code,
+    this gets dealt with in fix_index.
+    """
 
     tree = ET.parse(os.path.join(src_dir, 'index.xml'))
     bcp_to_codes = collections.defaultdict(set)
@@ -136,8 +142,8 @@ def parse_index(src_dir):
 # same bcp47 code.
 #
 # In some cases, we pick just the one code to use, more or less arbitrarily.
-# In other cases, we use multiple codes by adding a region or variant tag to the
-# shared bcp47 code.
+# In other cases, we use multiple codes by adding a region
+# or variant tag to the shared bcp47 code.
 #
 # This map contains all the bcp47 codes that we expect udhr assigns to multple
 # files.  For each file we either assign a code, or None if we don't use that
@@ -146,8 +152,8 @@ def parse_index(src_dir):
 # Possible errors are:
 # 1) udhr has multiple files for a code, but we don't list the code.
 # 2) udhr has multiple files for a code, but we have a different set of files
-#    (in which case we might have ones they don't have, and they might have ones
-#     we don't have)
+#    (in which case we might have ones they don't have,
+#    and they might have ones we don't have)
 # 3) udhr has a single file for a code, but we list the code
 #
 # We also need to make sure we don't assign a new code that udhr already uses.
@@ -155,15 +161,24 @@ def parse_index(src_dir):
 BCP_FIXES = {
     'acu-Latn': {'acu': 'acu-Latn', 'acu_1': None},
     'ak': {'ak_asante': 'ak', 'ak_fante': 'ak-fante'},
-    'chr-Cher': {'chr_cased': 'chr-Cher-cased', 'chr_uppercase': 'chr-Cher-monocase'},
+    'chr-Cher': {
+        'chr_cased': 'chr-Cher-cased',
+        'chr_uppercase': 'chr-Cher-monocase',
+    },
     'cjk-Latn': {'cjk': 'cjk-Latn', 'cjk_AO': 'cjk-Latn-AO'},
-    'ht-Latn': {'hat_popular': 'ht-Latn-popular', 'hat_kreyol': 'ht-Latn-kreyol'},
+    'ht-Latn': {
+        'hat_popular': 'ht-Latn-popular',
+        'hat_kreyol': 'ht-Latn-kreyol',
+    },
     'hus-Latn': {'hus': 'hus-Latn', 'hva': None, 'hsf': None},
     'kg-Latn': {'kng': 'kg-Latn', 'kng_AO': 'kg-Latn-AO'},
     'kmb-Latn': {'009': None, 'kmb': 'kmb-Latn'},
     'la-Latn': {'lat': 'la-Latn', 'lat_1': None},
     'ln-Latn': {'lin_tones': 'ln-Latn', 'lin': None},
-    'ny-Latn': {'nya_chinyanja': 'ny-Latn-chinyan', 'nya_chechewa': 'ny-Latn-chechewa'},  # max 8 chars in bcp47
+    'ny-Latn': {
+        'nya_chinyanja': 'ny-Latn-chinyan',
+        'nya_chechewa': 'ny-Latn-chechewa',
+    },  # max 8 chars in bcp47
     'oc-Latn': {
         'lnc': 'oc-Latn',
         'auv': None,
@@ -201,11 +216,17 @@ def fix_index(bcp_to_codes):
         if len(v) == 1:
             udhr_code = next(iter(v))
             if k in result:
-                errors.append('%s: udhr assigns %s but we already applied %' % (k, udhr_code, result[k]))
+                errors.append(
+                    '%s: udhr assigns %s but we already applied %'
+                    % (k, udhr_code, result[k])
+                )
                 continue
 
             if k in BCP_FIXES:
-                errors.append('%s: udhr assigns %s but we have fixes %s' % (k, result[k], ', '.join(BCP_FIXES[k].keys)))
+                errors.append(
+                    '%s: udhr assigns %s but we have fixes %s'
+                    % (k, result[k], ', '.join(BCP_FIXES[k].keys))
+                )
                 continue
 
             # normal case here
@@ -213,7 +234,10 @@ def fix_index(bcp_to_codes):
             continue
 
         if k not in BCP_FIXES:
-            errors.append('%s: no fixes for udhr multiple codes %s' % (k, ', '.join(sorted(v))))
+            errors.append(
+                '%s: no fixes for udhr multiple codes %s'
+                % (k, ', '.join(sorted(v)))
+            )
             continue
 
         fixes = BCP_FIXES[k]
@@ -221,9 +245,13 @@ def fix_index(bcp_to_codes):
         unused_fixes = fixes_keys - v
         unknown_codes = v - fixes_keys
         if unused_fixes:
-            errors.append('%s: unused fixes %s' % (k, ', '.join(sorted(unused_fixes))))
+            errors.append(
+                '%s: unused fixes %s' % (k, ', '.join(sorted(unused_fixes)))
+            )
         if unknown_codes:
-            errors.append('%s: unknown codes %s' % (k, ', '.join(sorted(unknown_codes))))
+            errors.append(
+                '%s: unknown codes %s' % (k, ', '.join(sorted(unknown_codes)))
+            )
         if unused_fixes or unknown_codes:
             continue
 
@@ -233,7 +261,10 @@ def fix_index(bcp_to_codes):
                 continue
 
             if new_bcp in result:
-                errors.append('%s: fix defines %s as %s but already assigned %s' % (k, code, new_bcp, result[new_bcp]))
+                errors.append(
+                    '%s: fix defines %s as %s but already assigned %s'
+                    % (k, code, new_bcp, result[new_bcp])
+                )
                 continue
 
             # normal fix
@@ -270,32 +301,51 @@ def add_likely_scripts(bcp_to_code):
                 if len(parts) == 1:
                     new_bcp = '%s-%s' % (bcp, script)
                 elif len(parts[1]) != 4 or parts[1].isdigit():
-                    # assume a region or variant.  Some 4-char values are years, e.g. '1996'
-                    new_bcp = '%s-%s-%s' % (parts[0], script, '-'.join(parts[1:]))
-                # otherwise, we assume the 4-char value is a script, and leave it alone.
+                    # assume a region or variant.
+                    # Some 4-char values are years, e.g. '1996'
+                    new_bcp = '%s-%s-%s' % (
+                        parts[0],
+                        script,
+                        '-'.join(parts[1:]),
+                    )
+                # otherwise, we assume the 4-char value is a script,
+                # and leave it alone.
             except KeyError:
-                # if we can't provide a script, it's no use for a script sample, so exclude it
-                print('no likely subtag (script) data for %s, excluding' % parts[0])
+                # if we can't provide a script,
+                # it's no use for a script sample, so exclude it
+                print(
+                    'no likely subtag (script) data for %s, excluding'
+                    % parts[0]
+                )
                 continue
         result[new_bcp] = code
     return result
 
 
-# These have been fixed/changed in the noto repo.  We do not want to replace them
-# with the UDHR samples, which (as of now, anyway) do not reflect these
-# improvements. Our th-Thai is a more colloquial translation than the formal one
+# These have been fixed/changed in the noto repo.
+# We do not want to replace them with the UDHR samples,
+# which (as of now, anyway) do not reflect these
+# improvements.
+# Our th-Thai is a more colloquial translation than the formal one
 # in the UDHR repo.
 EXCLUDE_BCP = frozenset(['fa-Arab', 'ar-Arab', 'th-Thai'])
 
 # The data for these is bad.  The kwi.xml has no article 1 text (only '[?]')
-# and the cbi.xml article 1 text has '. mitya, tsenr)1in ' in it, which just looks
-# broken.
+# and the cbi.xml article 1 text has '. mitya, tsenr)1in ' in it,
+# which just looks broken.
 EXCLUDE_CODES = frozenset(['kwi', 'cbi'])
 
 
 def filter_bcp_to_code(bcp_to_code):
-    """Exclude entries for samples improved in noto/sample_texts and for bad samples."""
-    return {k: v for k, v in bcp_to_code.items() if k not in EXCLUDE_BCP and v not in EXCLUDE_CODES}
+    """
+    Exclude entries for samples improved in noto/sample_texts
+     and for bad samples.
+     """
+    return {
+        k: v
+        for k, v in bcp_to_code.items()
+        if k not in EXCLUDE_BCP and v not in EXCLUDE_CODES
+    }
 
 
 # Pick a default sample to use when only lang and script are provided.
@@ -334,7 +384,10 @@ def add_default_lang_script(bcp_to_code_attrib_sample):
 
     for lang_scr in sorted(options):
         if lang_scr in bcp_to_code_attrib_sample:
-            print('%s exists with variants %s' % (lang_scr, ', '.join(sorted(options[lang_scr]))))
+            print(
+                '%s exists with variants %s'
+                % (lang_scr, ', '.join(sorted(options[lang_scr])))
+            )
             del options[lang_scr]
 
     for lang_scr in sorted(options):
@@ -342,11 +395,16 @@ def add_default_lang_script(bcp_to_code_attrib_sample):
         if lang_scr not in OPTION_MAP:
             errors.append('%s missing from option map' % lang_scr)
         elif not OPTION_MAP[lang_scr] in options[lang_scr]:
-            errors.append('%s selected option for %s not available' % (lang_scr, OPTION_MAP[lang_scr]))
+            errors.append(
+                '%s selected option for %s not available'
+                % (lang_scr, OPTION_MAP[lang_scr])
+            )
         else:
             alias = OPTION_MAP[lang_scr]
             print('adding %s (from %s)' % (lang_scr, alias))
-            bcp_to_code_attrib_sample[lang_scr] = bcp_to_code_attrib_sample[alias]
+            bcp_to_code_attrib_sample[lang_scr] = bcp_to_code_attrib_sample[
+                alias
+            ]
 
     if errors:
         print('add_default_lang_script encountered %d errors:' % len(errors))
@@ -412,7 +470,9 @@ def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
 
 def print_bcp_to_code_attrib_sample(bcp_to_code_attrib_sample):
     print('index size: %s' % len(bcp_to_code_attrib_sample))
-    for bcp, (code, attrib, sample) in sorted(bcp_to_code_attrib_sample.items()):
+    for bcp, (code, attrib, sample) in sorted(
+        bcp_to_code_attrib_sample.items()
+    ):
         print('%s: %s, %s\n  "%s"' % (bcp, code, attrib, sample))
 
 
@@ -424,11 +484,14 @@ def extract_para(src_path):
     ns = {'udhr': 'http://www.unhchr.ch/udhr'}
     article = root.find('udhr:article[@number="1"]', ns)
     if article is None:
-        # file kjh.xml is damaged, arrgh. Cyrillic small 'ie' looks just like 'e', and
+        # file kjh.xml is damaged, arrgh.
+        # Cyrillic small 'ie' looks just like 'e', and
         # the 'number' attribute is written with the Cyrillic e!
         article = root.find(u'udhr:article[@numb\u0435r="1"]', ns)
     if article is not None:
-        text = '\n'.join([para.text for para in article.findall('udhr:para', ns)])
+        text = '\n'.join(
+            [para.text for para in article.findall('udhr:para', ns)]
+        )
         return text.strip() + '\n'
     return None
 
@@ -491,25 +554,40 @@ def check_bcp_sample(bcp, sample):
 
     def info_str(script_data):
         v = {data[0]: script for script, data in script_data.items()}
-        return ', '.join('%2d: %s' % tup for tup in sorted(v.items(), reverse=True))
+        return ', '.join(
+            '%2d: %s' % tup for tup in sorted(v.items(), reverse=True)
+        )
 
     def info_data(bad_scripts, script_data):
         errs = []
         for s in sorted(bad_scripts):
             count, chars = script_data[s]
-            errs.append('%s (%d) %s' % (s, count, ','.join('%04x (%s)' % (ord(cp), cp) for cp in sorted(chars))))
+            errs.append(
+                '%s (%d) %s'
+                % (
+                    s,
+                    count,
+                    ','.join(
+                        '%04x (%s)' % (ord(cp), cp) for cp in sorted(chars)
+                    ),
+                )
+            )
         return '; '.join(errs)
 
     script_data = get_script_histogram(sample)
 
     if len(sample) < 5:
-        return 'bcp %s: sample too short (%d): %s' % (bcp, len(sample), info_str(script_data))
+        return 'bcp %s: sample too short (%d): %s' % (
+            bcp,
+            len(sample),
+            info_str(script_data),
+        )
 
     script = get_bcp_script(bcp)  # can include non-unicode scripts like Jpan
     if not script:
         # formerly we were going to generate a script based on the sample if we
-        # didn't alredy have one, but at the moment all the samples include a script
-        # in index.xml.
+        # didn't alredy have one,
+        # but at the moment all the samples include a script in index.xml.
         raise Exception('no script for %s' % bcp)
 
     required, accepted = accept_scripts(script)  # unicode scripts
@@ -521,7 +599,11 @@ def check_bcp_sample(bcp, sample):
 
     if required:
         if required & frozenset(script_data.keys()) != required:
-            return 'bcp %s: required script %s but had (%s)' % (bcp, ', '.join(sorted(required)), info_str(script_data))
+            return 'bcp %s: required script %s but had (%s)' % (
+                bcp,
+                ', '.join(sorted(required)),
+                info_str(script_data),
+            )
     elif not accepted:
         # my problem
         raise Exception('Script %s has neither required nor accepted' % script)
@@ -559,7 +641,9 @@ def check_bcp_to_sample(bcp_to_sample):
             print(' ', e)
 
 
-def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_stage):
+def update_samples(
+    sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_stage
+):
     """Create samples in sample_dir based on the bcp to c_a_s map.  Stage
   if sample_dir is in the repo.  If sample_dir is in the repo, don't
   overwrite samples whose most recent log entry does not start with
@@ -567,13 +651,21 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_
 
     tool_utils.check_dir_exists(udhr_dir)
 
-    if in_repo and not no_stage and os.path.isdir(sample_dir) and not tool_utils.git_is_clean(sample_dir):
+    if (
+        in_repo
+        and not no_stage
+        and os.path.isdir(sample_dir)
+        and not tool_utils.git_is_clean(sample_dir)
+    ):
         raise ValueError('Please clean %s.' % sample_dir)
 
     if in_repo:
         repo, subdir = os.path.split(sample_dir)
         tool_samples = frozenset(tool_utils.get_tool_generated(repo, subdir))
-        print('allowing overwrite of %d files:\n  %s' % (len(tool_samples), ', '.join(sorted(tool_samples))))
+        print(
+            'allowing overwrite of %d files:\n  %s'
+            % (len(tool_samples), ', '.join(sorted(tool_samples)))
+        )
 
     comments = [
         '# Attributions for sample excerpts:',
@@ -588,7 +680,11 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_
     for bcp, (_code, attrib, sample) in bcp_to_code_attrib_sample.items():
         dst_file = '%s_udhr.txt' % bcp
         dst_path = os.path.join(sample_dir, dst_file)
-        if in_repo and os.path.isfile(dst_path) and dst_file not in tool_samples:
+        if (
+            in_repo
+            and os.path.isfile(dst_path)
+            and dst_file not in tool_samples
+        ):
             print('Not overwriting modified file %s' % dst_file)
         else:
             with codecs.open(dst_path, 'w', 'utf8') as f:
@@ -614,7 +710,9 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_
 
     # prefix of this sample commit message indicates that these were
     # tool-generated
-    print('Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date))
+    print(
+        'Updated by tool - sample files %sfrom %s as of %s.' % (dst, src, date)
+    )
 
 
 def get_scripts(text):
@@ -637,8 +735,12 @@ def get_scripts(text):
 
 
 def get_script_histogram(utext):
-    """Return a map from script to character count + chars, excluding some common
-  whitespace, and inherited characters.  utext is a unicode string."""
+    """
+    Return a map from script to character count + chars, excluding some common
+    whitespace, and inherited characters.
+
+    utext is a unicode string.
+    """
     exclusions = {0x00, 0x0A, 0x0D, 0x20, 0xA0, 0xFEFF}
     result = {}
     for cp in utext:
@@ -690,7 +792,10 @@ def test_sample_scripts(sample_dir):
             if required and required - scripts:
                 required_name = ', '.join(sorted([s for s in required]))
                 scripts_name = ', '.join(sorted([s for s in scripts]))
-                print('%s requires %s but contains only %s' % (filename, required_name, scripts_name))
+                print(
+                    '%s requires %s but contains only %s'
+                    % (filename, required_name, scripts_name)
+                )
                 errors += 1
             else:
                 remainder = scripts
@@ -699,14 +804,23 @@ def test_sample_scripts(sample_dir):
                 if required:
                     remainder -= required
                 if remainder:
-                    allowed_name = '<none>' if not allowed else ', '.join(sorted([s for s in allowed]))
+                    allowed_name = (
+                        '<none>'
+                        if not allowed
+                        else ', '.join(sorted([s for s in allowed]))
+                    )
                     scripts_name = ', '.join(sorted([s for s in scripts]))
-                    print('%s allows %s but contains %s' % (filename, allowed_name, scripts_name))
+                    print(
+                        '%s allows %s but contains %s'
+                        % (filename, allowed_name, scripts_name)
+                    )
                     errors += 1
     print('Found %d errors in %d files tested.' % (errors, tested))
 
 
-def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
+def compare_samples(
+    base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None
+):
     """Report on differences between samples in base and target directories.
       The trg_to_base_name fn takes a target file name and returns the source
       file name to use in the comparisons."""
@@ -754,9 +868,12 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
         if base_text.find(trg_text) == -1:
             print('target (%s) text not in base (%s)' % (base_name, trg_name))
             if show_diffs:
-                # In scripts that use space for word break it might be better to compare
-                # word by word, but this suffices.
-                sm = difflib.SequenceMatcher(None, base_text, trg_text, autojunk=False)
+                # In scripts that use space for word break
+                # it might be better to compare word by word,
+                # but this suffices.
+                sm = difflib.SequenceMatcher(
+                    None, base_text, trg_text, autojunk=False
+                )
                 lines = []
                 for tag, i1, i2, j1, j2 in sm.get_opcodes():
                     if tag == 'delete':
@@ -766,7 +883,9 @@ def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
                     elif tag == 'insert':
                         lines.append('[/%s]' % trg_text[j1:j2])
                     else:
-                        lines.append('[%s/%s]' % (base_text[i1:i2], trg_text[j1:j2]))
+                        lines.append(
+                            '[%s/%s]' % (base_text[i1:i2], trg_text[j1:j2])
+                        )
                 print(''.join(lines))
 
 
@@ -808,7 +927,9 @@ def main():
   not start with 'Updated by tool'.
   """
 
-    parser = argparse.ArgumentParser(epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        epilog=epilog, formatter_class=argparse.RawTextHelpFormatter
+    )
     parser.add_argument(
         '--fetch_dir',
         help='directory into which to fetch xml.zip ' '(default %s)' % fetch,
@@ -823,31 +944,43 @@ def main():
     )
     parser.add_argument(
         '--sample_dir',
-        help='directory into which to extract samples ' '(default %s)' % samples,
+        help='directory into which to extract samples '
+        '(default %s)' % samples,
         metavar='dir',
         default=samples,
     )
-    parser.add_argument('-f', '--fetch', help='fetch files from unicode.org/udhr to fetch dir', action='store_true')
+    parser.add_argument(
+        '-f',
+        '--fetch',
+        help='fetch files from unicode.org/udhr to fetch dir',
+        action='store_true',
+    )
     parser.add_argument(
         '-uu',
         '--update_udhr',
-        help='unpack from fetched files to clean udhr dir\n' '(will stage if in repo and not no_stage)',
+        help='unpack from fetched files to clean udhr dir\n'
+        '(will stage if in repo and not no_stage)',
         action='store_true',
     )
     parser.add_argument(
         '-us',
         '--update_sample',
         help='extract samples from udhr to sample dir, '
-        'using the bcp to code mapping\n(will stage if in repo and not no_stage)',
+        'using the bcp to code mapping\n'
+        '(will stage if in repo and not no_stage)',
         action='store_true',
     )
     parser.add_argument(
-        '-m', '--mapping', help='print the bcp to code mapping generated from the ' 'udhr dir', action='store_true'
+        '-m',
+        '--mapping',
+        help='print the bcp to code mapping generated from the ' 'udhr dir',
+        action='store_true',
     )
     parser.add_argument(
         '-c',
         '--compare',
-        help='compare sample changes from base dir ' '(default %s)\nto sample dir' % samples,
+        help='compare sample changes from base dir '
+        '(default %s)\nto sample dir' % samples,
         metavar='base_dir',
         nargs='?',
         const=samples,
@@ -862,15 +995,30 @@ def main():
         metavar='opt',
         nargs='+',
     )
-    parser.add_argument('-ts', '--test_script', help='test script of samples in sample dir', action='store_true')
-    parser.add_argument('-n', '--no_stage', help='do not stage changes in repo', action='store_true')
+    parser.add_argument(
+        '-ts',
+        '--test_script',
+        help='test script of samples in sample dir',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-n',
+        '--no_stage',
+        help='do not stage changes in repo',
+        action='store_true',
+    )
 
     args = parser.parse_args()
 
     # Check arguments
 
     if not (
-        args.fetch or args.update_udhr or args.update_sample or args.mapping or args.base_sample_dir or args.test_script
+        args.fetch
+        or args.update_udhr
+        or args.update_sample
+        or args.mapping
+        or args.base_sample_dir
+        or args.test_script
     ):
         print('nothing to do.')
         return
@@ -889,7 +1037,9 @@ def main():
         fix_noto_prefix('base_sample_dir')
 
     if args.sample_dir == args.base_sample_dir:
-        parser.error('Compare is no-op when base and target sample dirs are the same.')
+        parser.error(
+            'Compare is no-op when base and target sample dirs are the same.'
+        )
 
     # Perform operations.  Some might still fail despite arg checks.
     try:
@@ -898,21 +1048,33 @@ def main():
 
         if args.update_udhr:
             in_repo = args.udhr_dir == tool_utils.resolve_path(udhr)
-            update_udhr(args.udhr_dir, args.fetch_dir, in_repo and not args.no_stage)
+            update_udhr(
+                args.udhr_dir, args.fetch_dir, in_repo and not args.no_stage
+            )
 
         if args.update_sample or args.mapping:
             ohchr_dir = tool_utils.resolve_path('[tools]/third_party/ohchr')
-            bcp_to_code_attrib_sample = get_bcp_to_code_attrib_sample(args.udhr_dir, ohchr_dir)
+            bcp_to_code_attrib_sample = get_bcp_to_code_attrib_sample(
+                args.udhr_dir, ohchr_dir
+            )
 
         if args.update_sample:
             in_repo = args.sample_dir == tool_utils.resolve_path(samples)
-            update_samples(args.sample_dir, args.udhr_dir, bcp_to_code_attrib_sample, in_repo, args.no_stage)
+            update_samples(
+                args.sample_dir,
+                args.udhr_dir,
+                bcp_to_code_attrib_sample,
+                in_repo,
+                args.no_stage,
+            )
 
         if args.mapping:
             print_bcp_to_code_attrib_sample(bcp_to_code_attrib_sample)
 
         if args.base_sample_dir:
-            compare_samples(args.base_sample_dir, args.sample_dir, opts=args.compare_opts)
+            compare_samples(
+                args.base_sample_dir, args.sample_dir, opts=args.compare_opts
+            )
 
         if args.test_script:
             test_sample_scripts(args.sample_dir)

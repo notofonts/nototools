@@ -16,55 +16,73 @@
 
 """Extract attribution data from the ohchr UDHR site."""
 
-# This tool generates a .tsv file of attribution data based on information at the ohchr
-# site, but first you have to manually extract that data from the html on the site, as
-# there's no convenient way to get it.  This block of comments describes the process.
+# This tool generates a .tsv file of attribution data
+# based on information at the ohchr site,
+# but first you have to manually extract that data from the html on the site,
+# as there's no convenient way to get it.
+# This block of comments describes the process.
 #
-# The idea is to find out which data on the ohchr site is 'official United Nations' data
-# and which is not.  The data itself doesn't say, so we need to look at the attributions
+# The idea is to find out which data on the ohchr site
+# is 'official United Nations' data and which is not.
+# The data itself doesn't say, so we need to look at the attributions
 # listed on the ohchr.org site.
 #
 # Note that the data we actually use is not directly from ohchr.org, but from
-# www.unicode.org/udhr.  That site has cleaned up the data a little and converted it to
-# xml format.  We are assuming that any data with a matching language code shares the
-# original attribution, but we could be wrong.  The unicode.org site does not have the
-# attribution data in any kind of organized form.  Instead, they put a comment at the top
-# of each document giving copyright to "The Office of the High Commisioner for Human
-# Rights."
+# www.unicode.org/udhr.
+# That site has cleaned up the data a little and converted it to xml format.
+# We are assuming that any data with a matching language code shares the
+# original attribution, but we could be wrong.
+# The unicode.org site does not have the attribution data
+# in any kind of organized form.
+# Instead, they put a comment at the top of each document
+# giving copyright to "The Office of the High Commisioner for Human Rights."
 #
-# Unfortunately, the data at www.ohchr.org is not readily available.  At
-# http://www.ohchr.org/EN/UDHR/Pages/SearchByLang.aspx you can page through the data using
-# the dropdown under 'Search by Translation', but there's no visible url for a single page
+# Unfortunately, the data at www.ohchr.org is not readily available.
+# At http://www.ohchr.org/EN/UDHR/Pages/SearchByLang.aspx
+# you can page through the data using the dropdown
+# under 'Search by Translation', but there's no visible url for a single page
 # or for the data as a whole.
 #
-# If you try to view each page and then 'save as...', chrome fetches the url for the page
-# it is showing, which returns the first (default) page no matter what data you are
-# actually viewing.  'View as source' works, but it provides a formatted page, and if you
-# choose 'save as...' from there, you get the source for that formatted page, not the raw
-# source.  The only way to get the source is to select and copy it from the source view
+# If you try to view each page and then 'save as...',
+# chrome fetches the url for the page it is showing,
+# which returns the first (default) page no matter what data you are
+# actually viewing.
+# 'View as source' works, but it provides a formatted page, and if you
+# choose 'save as...' from there,
+# you get the source for that formatted page, not the raw source.
+# The only way to get the source is to select and copy it from the source view
 # into another document.
 #
-# At this point it makes more sense to just grab the portion of the data we can use
-# instead of the whole file.  So the process is to use the dropdown to show one of the
-# pages of translations and then choose view source for it.  Copy the contents of the
-# <table> tag that lists the languages and sources into a stub html file.  Repeat this for
-# each of the six dropdown pages.  The stub contains a single table element with the id
-# 'ohchr_alldata', after this the table contains the data from all six ohchr pages.
+# At this point it makes more sense to just grab the portion of the data
+# we can use instead of the whole file.
+# So the process is to use the dropdown to show one of the
+# pages of translations and then choose view source for it.
+# Copy the contents of the <table> tag that lists the languages and sources
+# into a stub html file.
+# Repeat this for each of the six dropdown pages.
+# The stub contains a single table element with the id 'ohchr_alldata',
+# after this the table contains the data from all six ohchr pages.
 #
-# This data is still odd, in particular it nests <tr> and <td> tags.  Fortunately
-# HTMLParser doesn't care, and we don't need to care.  The three pieces of data are the
-# 'ohchr code', the 'language name', and the 'source'.  The ohchr code is how they link to
-# the page for the translation, mostly it is a three-letter language code but sometimes it
-# is just whatever their server uses.  The 'language name' is more or less an English
-# translation of the language, sometimes with notes on script or region or the native name
-# of the language, and the attribution is a string.  The data is structured so that the
-# ohchr code is part of an anchor tag that wraps the language string, and the source is
-# part of a span in the following td.  There are no other anchor tags or spans in the
-# data, so we can just look for these.  Separating each set is a close tr tag, so we can
-# emit the data then.
+# This data is still odd, in particular it nests <tr> and <td> tags.
+# Fortunately HTMLParser doesn't care, and we don't need to care.
+# The three pieces of data are the 'ohchr code', the 'language name',
+# and the 'source'.
+# The ohchr code is how they link to the page for the translation,
+# mostly it is a three-letter language code but sometimes it
+# is just whatever their server uses.
+# The 'language name' is more or less an English translation of the language,
+# sometimes with notes on script or region or the native name
+# of the language, and the attribution is a string.
+# The data is structured so that the ohchr code is part of an anchor tag
+# that wraps the language string, and the source is part of a span
+# in the following td.
+# There are no other anchor tags or spans in the data,
+# so we can just look for these.
+# Separating each set is a close tr tag, so we can emit the data then.
 #
-# The output is a list of records with tab-separated fields: ohchr_code, lang_name, and
-# source_name.  The udhr index at unicode.org references the 'ohchr' code, so this is how
+# The output is a list of records with tab-separated fields:
+# ohchr_code, lang_name, and source_name.
+# The udhr index at unicode.org references the 'ohchr' code, so this is how
 # we tie the attributions to the data from unicode.org.
 
 
@@ -159,11 +177,17 @@ class ParseOhchr(html.HTMLParser):
                 self.state = 'after_table'
             elif tag == 'tr':
                 if self.ohchr_code:
-                    self.lang_name = re.sub(r'\s+', ' ', self.lang_name).strip()
-                    self.source_name = re.sub(r'\s+', ' ', self.source_name).strip()
+                    self.lang_name = re.sub(
+                        r'\s+', ' ', self.lang_name
+                    ).strip()
+                    self.source_name = re.sub(
+                        r'\s+', ' ', self.source_name
+                    ).strip()
                     if not self.source_name:
                         self.source_name = '(no attribution)'
-                    self.result_list.append((self.ohchr_code, self.lang_name, self.source_name))
+                    self.result_list.append(
+                        (self.ohchr_code, self.lang_name, self.source_name)
+                    )
                     self.ohchr_code = ''
                     self.lang_name = ''
                     self.source_name = ''
@@ -185,7 +209,10 @@ def get_ohchr_status(ohchr_code, lang, attrib):
 
     if ohchr_code in ['eng', 'frn', 'spn', 'rus', 'chn', 'arz']:
         return 'original'
-    if attrib.find('United Nations') != -1 or attrib.find('High Commissioner for Human Rights') != -1:
+    if (
+        attrib.find('United Nations') != -1
+        or attrib.find('High Commissioner for Human Rights') != -1
+    ):
         return 'UN'
     return 'other'
 

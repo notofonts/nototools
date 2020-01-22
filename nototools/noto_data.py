@@ -263,14 +263,38 @@ P3_EXTRA_CHARACTERS_NEEDED = {
     # left and right paren, comma, hyphen-minus, period, section,
     # no break space, left and right guillimet, hyphen, em dash, ellipsis
     # presentation forms FB13-FB17
-    'Armn': [0x0028, 0x0029, 0x002C, 0x002D, 0x002E, 0x00A0, 0x00A7, 0x00AB, 0x00BB, 0x2010, 0x2014, 0x2026],
+    'Armn': [
+        0x0028,
+        0x0029,
+        0x002C,
+        0x002D,
+        0x002E,
+        0x00A0,
+        0x00A7,
+        0x00AB,
+        0x00BB,
+        0x2010,
+        0x2014,
+        0x2026,
+    ],
     'Avst': [
         0x2E30,
         0x2E31,  # From Core Specification and NamesList.txt
         0x200C,
     ],  # www.unicode.org/L2/L2007/07006r-n3197r-avestan.pdf
     # From http://www.unicode.org/L2/L2014/14064r-n4537r-cherokee.pdf section 8
-    'Cher': [0x0300, 0x0301, 0x0302, 0x0304, 0x030B, 0x030C, 0x0323, 0x0324, 0x0330, 0x0331],
+    'Cher': [
+        0x0300,
+        0x0301,
+        0x0302,
+        0x0304,
+        0x030B,
+        0x030C,
+        0x0323,
+        0x0324,
+        0x0330,
+        0x0331,
+    ],
     # From Core Specification:
     # period, colon, semicolon, middle dot
     # combining: grave, macron, overline, dot above, double overline
@@ -305,8 +329,8 @@ P3_EXTRA_CHARACTERS_NEEDED = {
     # see http://www.unicode.org/L2/L2011/11050-n3985-elbasan.pdf
     # adds combining overbar and greek numerals for ones and tens, and
     # both stigma/digamma for 6.
-    # greek capital alpha beta gamma delta epsilon stigma/digamma zeta eta theta
-    # iota kappa lambda mu nu xi omicron pi koppa
+    # greek capital alpha beta gamma delta epsilon stigma/digamma zeta eta
+    # theta iota kappa lambda mu nu xi omicron pi koppa
     'Elba': [
         0x00B7,
         0x0305,
@@ -332,11 +356,13 @@ P3_EXTRA_CHARACTERS_NEEDED = {
     ],
     # Ethiopic
     # See http://abyssiniagateway.net/fidel/l10n/
-    # Recommends combining diaeresis 'for scholarly use', should look Ethiopian.
+    # Recommends combining diaeresis 'for scholarly use',
+    # should look Ethiopian.
     # Also claims hyphen is not used, but a wikipedia page in Amharic does use
     # it, see
     # https://am.wikipedia.org/wiki/1_%E1%8A%A5%E1%88%BD%E1%88%98-%E1%8B%B3%E1%8C%8B%E1%8A%95
-    # Western numerals and punctuation should look heavier to match the Ethiopic.
+    # Western numerals and punctuation should look heavier
+    # to match the Ethiopic.
     # A keyboard standard is here:
     # See http://www.mcit.gov.et/documents/1268465/1282796/Keyboard+Layout+Standard/a8aa75ca-e125-4e25-872e-380e2a9b2313
     # digits
@@ -375,8 +401,8 @@ P3_EXTRA_CHARACTERS_NEEDED = {
     # ascii digits,
     # exclamation mark, percent, open/close paren, comma, hyphen-minus,
     # period, colon, semicolon, no break space (appears to be used in numbers)
-    # em-dash, left double quotation mark, double low-9 quotation mark, ellipsis
-    # see core standard:
+    # em-dash, left double quotation mark, double low-9 quotation mark,
+    # ellipsis see core standard:
     # middle dot, word separator middle dot, archaic punctuation (includes two
     # dot punctuation at 205A)
     'Geor': char_range(0x0030, 0x0039)
@@ -401,9 +427,10 @@ P3_EXTRA_CHARACTERS_NEEDED = {
     + char_range(0x2056, 0x205E)
     + char_range(0x2E2A, 0x2E2D),
     # Hatran
-    # see http://www.unicode.org/L2/L2012/12312-n4324-hatran.pdf (most info, but
-    # not latest assignment, which doesn't have all digits shown here)
-    # single and double vertical line, also ZWNJ in case ligatures need breaking
+    # see http://www.unicode.org/L2/L2012/12312-n4324-hatran.pdf (most info,
+    # but# not latest assignment, which doesn't have all digits shown here)
+    # single and double vertical line, also ZWNJ in case ligatures
+    # need breaking
     # might want to ligate hatran digit 1 forms 11 (2), 111 (3), 1111 (4) to
     # look as the suggested (dropped) digits were represented in the doc.
     'Hatr': [0x007C, 0x2016, 0x200C],
@@ -462,7 +489,8 @@ P3_EXTRA_CHARACTERS_NEEDED = {
     # most use in Aast Asia
     'Sidd': [],
     # Sign Writing
-    # As with music notation, we can't lay this out.  Generative glyphs for lots
+    # As with music notation, we can't lay this out.
+    # Generative glyphs for lots
     # of hand positions...
     'Sgnw': [],
     'Sylo': [0x2055],  # From Core Specification
@@ -502,12 +530,39 @@ P3_EXTRA_CHARACTERS_NEEDED = {
 }
 
 EXTRA_CHARACTERS_NEEDED = {
-    'Arab': [0x2010, 0x2011, 0x204F, 0x2E41],  # Hyphen and non-breaking hyphen need different shapes  # For Sindhi
+    'Arab': [
+        0x2010,
+        0x2011,
+        0x204F,
+        0x2E41,
+    ],  # Hyphen and non-breaking hyphen need different shapes  # For Sindhi
     'Avst': [0x2E30, 0x2E31],  # From Core Specification and NamesList.txt
     # From http://www.unicode.org/L2/L2014/14064r-n4537r-cherokee.pdf section 8
-    'Cher': [0x0300, 0x0301, 0x0302, 0x0304, 0x030B, 0x030C, 0x0323, 0x0324, 0x0330, 0x0331],
+    'Cher': [
+        0x0300,
+        0x0301,
+        0x0302,
+        0x0304,
+        0x030B,
+        0x030C,
+        0x0323,
+        0x0324,
+        0x0330,
+        0x0331,
+    ],
     # From Core Specification
-    'Copt': [0x0300, 0x0304, 0x0305, 0x0307, 0x033F, 0x0374, 0x0375, 0xFE24, 0xFE25, 0xFE26],
+    'Copt': [
+        0x0300,
+        0x0304,
+        0x0305,
+        0x0307,
+        0x033F,
+        0x0374,
+        0x0375,
+        0xFE24,
+        0xFE25,
+        0xFE26,
+    ],
     # latin 1 and 2
     'LGC': char_range(0x20, 0x7E) + char_range(0xA0, 0xFF),
     'Lisu': [0x02BC, 0x02CD],  # From Core Specification

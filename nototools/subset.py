@@ -25,7 +25,9 @@ from fontTools import subset
 from nototools import coverage
 
 
-def subset_font(source_file, target_file, include=None, exclude=None, options=None):
+def subset_font(
+    source_file, target_file, include=None, exclude=None, options=None
+):
     """Subsets a font file.
 
     Subsets a font file based on a specified character set. If only include is
@@ -63,7 +65,9 @@ def subset_font(source_file, target_file, include=None, exclude=None, options=No
 
     if include is not None:
         if exclude is not None:
-            raise NotImplementedError('Subset cannot include and exclude a set at the same time.')
+            raise NotImplementedError(
+                'Subset cannot include and exclude a set at the same time.'
+            )
         target_charset = include
     else:
         if exclude is None:

@@ -208,11 +208,28 @@ def main():
     default_coverage_file = '[tools]/nototools/data/noto_cmap_phase3.xml'
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--output_file', help='name of xml file to output', metavar='file')
-    parser.add_argument('-d', '--dirs', help='directories containing font files', metavar='dir', nargs='+')
-    parser.add_argument('-f', '--files', help='font files', metavar='file', nargs='+')
     parser.add_argument(
-        '-n', '--name', help='short name of this collection, used in reports', metavar='name', required=True
+        '-o',
+        '--output_file',
+        help='name of xml file to output',
+        metavar='file',
+    )
+    parser.add_argument(
+        '-d',
+        '--dirs',
+        help='directories containing font files',
+        metavar='dir',
+        nargs='+',
+    )
+    parser.add_argument(
+        '-f', '--files', help='font files', metavar='file', nargs='+'
+    )
+    parser.add_argument(
+        '-n',
+        '--name',
+        help='short name of this collection, used in reports',
+        metavar='name',
+        required=True,
     )
     parser.add_argument(
         '-c',

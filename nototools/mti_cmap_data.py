@@ -73,14 +73,19 @@ def get_script_to_cmaps(csvdata):
             continue
         rowdata = r.split(',')
         if not header:
-            header, starred = zip(*[get_script_for_name(name) for name in rowdata])
+            header, starred = zip(
+                *[get_script_for_name(name) for name in rowdata]
+            )
             ncols = len(header)
             data = [set() for _ in range(ncols)]
             xdata = [(set() if star else None) for star in starred]
             continue
 
         if len(rowdata) != ncols:
-            raise ValueError('row %d had %d cols but expected %d:\n"%s"' % (n, len(rowdata), ncols, r))
+            raise ValueError(
+                'row %d had %d cols but expected %d:\n"%s"'
+                % (n, len(rowdata), ncols, r)
+            )
         for i, v in enumerate(rowdata):
             v = v.strip(' \n\t')
             if not v or v == u'\u001a':
@@ -95,10 +100,15 @@ def get_script_to_cmaps(csvdata):
                     data[i].add(int(v, 16))
             except Exception:
                 raise ValueError('error in col %d of row %d: "%s"' % (i, n, v))
-    return {script: (cmap, xcmap) for script, cmap, xcmap in zip(header, data, xdata)}
+    return {
+        script: (cmap, xcmap)
+        for script, cmap, xcmap in zip(header, data, xdata)
+    }
 
 
-def cmap_data_from_csv(csvdata, scripts=None, exclude_scripts=None, infile=None):
+def cmap_data_from_csv(
+    csvdata, scripts=None, exclude_scripts=None, infile=None
+):
     args = [('infile', infile)] if infile else None
     metadata = cmap_data.create_metadata('mti_cmap_data', args)
     script_to_cmaps = get_script_to_cmaps(csvdata)
@@ -144,7 +154,9 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
     cols = []
     max_lines = 0
     num_cells = 0
-    for script in sorted(script_to_rowdata, key=lambda s: _script_to_name(s).lower()):
+    for script in sorted(
+        script_to_rowdata, key=lambda s: _script_to_name(s).lower()
+    ):
         if scripts and script not in scripts:
             continue
         if exclude_scripts and script in exclude_scripts:
@@ -161,7 +173,9 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
         else:
             xcps = frozenset()
         num_cells += len(cps)
-        col.extend('%04X%s' % (cp, '*' if cp in xcps else '') for cp in sorted(cps))
+        col.extend(
+            '%04X%s' % (cp, '*' if cp in xcps else '') for cp in sorted(cps)
+        )
         cols.append(col)
         max_lines = max(max_lines, len(col))
 
@@ -173,7 +187,9 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
     cmap_lines = []
     cmap_lines.append(','.join(col[0] for col in cols))
     for i in range(1, max_lines):
-        cmap_lines.append(','.join(col[i] if i < len(col) else '' for col in cols))
+        cmap_lines.append(
+            ','.join(col[i] if i < len(col) else '' for col in cols)
+        )
     return '\n'.join(cmap_lines)
 
 
@@ -192,7 +208,15 @@ def _check_scripts(scripts):
     have_unknown = False
     if scripts:
         all_scripts = unicode_data.all_scripts()
-        all_scripts = all_scripts | {'CJK', 'EXCL', 'LGC', 'MONO', 'MUSIC', 'SYM2', 'Zsye'}
+        all_scripts = all_scripts | {
+            'CJK',
+            'EXCL',
+            'LGC',
+            'MONO',
+            'MUSIC',
+            'SYM2',
+            'Zsye',
+        }
         for s in scripts:
             if s not in all_scripts:
                 sys.stderr.write('unknown script:\n', s)
@@ -202,20 +226,40 @@ def _check_scripts(scripts):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--infile', help='input file name', metavar='fname')
+    parser.add_argument(
+        '-i', '--infile', help='input file name', metavar='fname'
+    )
     parser.add_argument(
         '-o',
         '--outfile',
-        help='write to output file, otherwise to stdout, ' 'provide file name or will default to one based on infile',
+        help='write to output file, otherwise to stdout, '
+        'provide file name or will default to one based on infile',
         metavar='fname',
         nargs='?',
         const='-default-',
     )
     parser.add_argument(
-        '-op', '--operation', help='read csv, or write csv', metavar='op', choices=['read', 'write'], default='read'
+        '-op',
+        '--operation',
+        help='read csv, or write csv',
+        metavar='op',
+        choices=['read', 'write'],
+        default='read',
     )
-    parser.add_argument('-s', '--scripts', help='limit to these scripts', metavar='script', nargs='*')
-    parser.add_argument('-xs', '--exclude_scripts', help='omit these scripts', metavar='script', nargs='*')
+    parser.add_argument(
+        '-s',
+        '--scripts',
+        help='limit to these scripts',
+        metavar='script',
+        nargs='*',
+    )
+    parser.add_argument(
+        '-xs',
+        '--exclude_scripts',
+        help='omit these scripts',
+        metavar='script',
+        nargs='*',
+    )
 
     args = parser.parse_args()
 
@@ -230,9 +274,13 @@ def main():
         args.outfile = path.splitext(path.basename(args.infile))[0]
         args.outfile += '.xml' if args.operation == 'read' else '.csv'
     if args.operation == 'read':
-        csv_to_xml(args.infile, args.outfile, args.scripts, args.exclude_scripts)
+        csv_to_xml(
+            args.infile, args.outfile, args.scripts, args.exclude_scripts
+        )
     else:
-        xml_to_csv(args.infile, args.outfile, args.scripts, args.exclude_scripts)
+        xml_to_csv(
+            args.infile, args.outfile, args.scripts, args.exclude_scripts
+        )
 
 
 if __name__ == "__main__":

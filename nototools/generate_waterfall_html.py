@@ -33,7 +33,11 @@ def _add_styles(lines, prefix, font_names, font_sizes):
 
     for i, font_name in enumerate(font_names):
         lines.append(prefix + '  @font-face {')
-        lines.append(prefix + '    font-family: "font_%d"; src: url("fonts/%s");' % (i, font_name))
+        lines.append(
+            prefix
+            + '    font-family: "font_%d"; src: url("fonts/%s");'
+            % (i, font_name)
+        )
         lines.append(prefix + '  }')
     lines.append('')
 
@@ -86,7 +90,10 @@ def _add_example(lines, prefix, index, name, sizes, text):
     lines.append(prefix + '  <h3>%s</h3>' % name)
     lines.append(prefix + '  <table>')
     for i, s in enumerate(sizes):
-        lines.append(prefix + '    <tr><th>%dpx:<td class="f%d s%d">%s' % (s, index, i, text))
+        lines.append(
+            prefix
+            + '    <tr><th>%dpx:<td class="f%d s%d">%s' % (s, index, i, text)
+        )
     lines.append(prefix + '  </table>')
     lines.append(prefix + '</div>')
 
@@ -98,14 +105,21 @@ def _add_examples(lines, prefix, font_names, font_sizes, text):
 
 def _add_example_switch(lines, prefix, font_names):
     lines.append(prefix + '<p>Select font')
-    lines.append(prefix + '<select name="font_select" ' 'onchange="_font_select(this)">')
+    lines.append(
+        prefix + '<select name="font_select" ' 'onchange="_font_select(this)">'
+    )
     for i, name in enumerate(font_names):
         lines.append(prefix + '  <option value="f%d">%s</option>' % (i, name))
     lines.append(prefix + '</select>')
 
 
 def _write_html(directory, font_names, font_sizes, text, out_file):
-    lines = ['<html lang="en">', '  <head>', '    <meta charset="utf-8">', '    <title>Font specimens</title>']
+    lines = [
+        '<html lang="en">',
+        '  <head>',
+        '    <meta charset="utf-8">',
+        '    <title>Font specimens</title>',
+    ]
     _add_styles(lines, '    ', font_names, font_sizes)
     _add_js(lines, '    ')
     lines.append('  </head>')
@@ -132,7 +146,11 @@ def _get_font_list(root, name_str):
     font_list = []
     for d in [root, path.join(root, 'hinted'), path.join(root, 'unhinted')]:
         if path.isdir(d):
-            font_list.extend(path.join(d, f)[len(root) + 1 :] for f in os.listdir(d) if match_re.match(f))
+            font_list.extend(
+                path.join(d, f)[len(root) + 1 :]
+                for f in os.listdir(d)
+                if match_re.match(f)
+            )
     return sorted(font_list)
 
 
@@ -148,7 +166,10 @@ def _get_sample_text(directory, font_names, lang):
     if lang:
         lang_scripts = ['%s-%s' % (lang, script) for script in scripts]
     else:
-        lang_scripts = ['%s-%s' % (lang_data.script_to_default_lang(script), script) for script in scripts]
+        lang_scripts = [
+            '%s-%s' % (lang_data.script_to_default_lang(script), script)
+            for script in scripts
+        ]
     lang_scripts.extend('und-%s' % script for script in scripts)
 
     samples = []
@@ -188,7 +209,10 @@ def _get_sample_text(directory, font_names, lang):
     if selected:
         samples = selected
     if len(samples) != 1:
-        raise Exception('found %d sample files (%s) but need exactly 1' % (len(samples), ', '.join(sorted(samples))))
+        raise Exception(
+            'found %d sample files (%s) but need exactly 1'
+            % (len(samples), ', '.join(sorted(samples)))
+        )
     print('selected sample %s' % samples[0])
 
     with codecs.open(path.join(sample_dir, samples[0]), 'r', 'utf-8') as f:
@@ -205,7 +229,10 @@ def generate(root, font_str, font_sizes, text, lang, out_file):
     if not font_names:
         raise Exception('no fonts matching "%s" in %s' % (font_str, root))
 
-    print('found %d fonts under %s:\n  %s' % (len(font_names), root, '\n  '.join(sorted(font_names))))
+    print(
+        'found %d fonts under %s:\n  %s'
+        % (len(font_names), root, '\n  '.join(sorted(font_names)))
+    )
 
     if not font_sizes:
         font_sizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 28, 32]
@@ -221,7 +248,9 @@ def generate(root, font_str, font_sizes, text, lang, out_file):
         font_dir = tool_utils.ensure_dir_exists(path.join(file_dir, 'fonts'))
         for font_name in font_names:
             src = path.join(root, font_name)
-            dst = tool_utils.ensure_dir_exists(path.dirname(path.join(font_dir, font_name)))
+            dst = tool_utils.ensure_dir_exists(
+                path.dirname(path.join(font_dir, font_name))
+            )
             shutil.copy2(src, dst)
 
     _write_html(root, font_names, font_sizes, text, out_file)
@@ -232,27 +261,52 @@ def main():
     parser.add_argument(
         '-r',
         '--root',
-        help='directory containing fonts, optionally in ' 'hinted/unhinted subdirs',
+        help='directory containing fonts, optionally in '
+        'hinted/unhinted subdirs',
         default='[fonts]',
         required=True,
         metavar='dir',
     )
-    parser.add_argument('-n', '--name_str', help='string to match font name', required=True, metavar='str')
     parser.add_argument(
-        '-t',
-        '--text',
-        help='text to use, defaults to udhr text for the ' 'script when there is a common script',
+        '-n',
+        '--name_str',
+        help='string to match font name',
+        required=True,
         metavar='str',
     )
     parser.add_argument(
-        '-l', '--lang', help='language string to select among multiple texts ' 'for a script', metavar='lang'
+        '-t',
+        '--text',
+        help='text to use, defaults to udhr text for the '
+        'script when there is a common script',
+        metavar='str',
     )
     parser.add_argument(
-        '-o', '--out_file', help='name of file to output', nargs='?', const='specimens.html', metavar='file'
+        '-l',
+        '--lang',
+        help='language string to select among multiple texts ' 'for a script',
+        metavar='lang',
     )
-    parser.add_argument('-s', '--sizes', help='font sizes', nargs='+', type=int, metavar='size')
+    parser.add_argument(
+        '-o',
+        '--out_file',
+        help='name of file to output',
+        nargs='?',
+        const='specimens.html',
+        metavar='file',
+    )
+    parser.add_argument(
+        '-s', '--sizes', help='font sizes', nargs='+', type=int, metavar='size'
+    )
     args = parser.parse_args()
-    generate(args.root, args.name_str, args.sizes, args.text, args.lang, args.out_file)
+    generate(
+        args.root,
+        args.name_str,
+        args.sizes,
+        args.text,
+        args.lang,
+        args.out_file,
+    )
 
 
 if __name__ == '__main__':

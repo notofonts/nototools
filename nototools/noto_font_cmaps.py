@@ -42,7 +42,9 @@ def report_set_differences(name_to_cpset, out=sys.stderr):
                     common &= cpset
         if common:
             name = ', '.join(sorted(name_to_cpset))
-            out.write('%d%s in common among %s:\n' % (len(common), additional, name))
+            out.write(
+                '%d%s in common among %s:\n' % (len(common), additional, name)
+            )
             out.write('%s\n' % lint_config.write_int_ranges(common))
 
             for name, cpset in sorted(name_to_cpset.items()):
@@ -79,7 +81,9 @@ def font_cmap_data(paths):
     fonts = filter(use_in_web, noto_fonts.get_noto_fonts(paths=paths))
     families = noto_fonts.get_families(fonts)
 
-    ScriptData = collections.namedtuple('ScriptData', 'family_name,script,cpset')
+    ScriptData = collections.namedtuple(
+        'ScriptData', 'family_name,script,cpset'
+    )
     script_to_data = collections.defaultdict(list)
     for family in families.values():
         script = family.rep_member.script
@@ -129,7 +133,8 @@ def main():
     parser.add_argument(
         '-o',
         '--outfile',
-        help='output file to write ("%s" if no name provided)' % DEFAULT_OUTFILE,
+        help='output file to write ("%s" if no name provided)'
+        % DEFAULT_OUTFILE,
         metavar='name',
         nargs='?',
         default=None,
@@ -138,7 +143,8 @@ def main():
     parser.add_argument(
         '-p',
         '--paths',
-        help='list of directory paths to search for noto fonts ' '(default is standard noto phase2 paths)',
+        help='list of directory paths to search for noto fonts '
+        '(default is standard noto phase2 paths)',
         metavar='path',
         nargs='*',
         default=None,

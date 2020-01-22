@@ -19,7 +19,20 @@ def eps_prologue(x0, y0, x1, y1, draw_box=False):
     print('%%EndProlog')
     print('%%Page: 1 1')
     if draw_box:
-        print(x0, y0, 'moveto', x0, y1, 'lineto', x1, y1, 'lineto', x1, y0, 'lineto closepath stroke')
+        print(
+            x0,
+            y0,
+            'moveto',
+            x0,
+            y1,
+            'lineto',
+            x1,
+            y1,
+            'lineto',
+            x1,
+            y0,
+            'lineto closepath stroke',
+        )
 
 
 def eps_trailer():
@@ -33,7 +46,12 @@ def fit_cubic_superfast(z0, z1, arclen, th0, th1, aab):
     armlen = 0.66667 * arclen
     a = armlen * aab
     b = armlen - a
-    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+    bz = [
+        z0,
+        (z0[0] + cth0 * a, z0[1] + sth0 * a),
+        (z1[0] + cth1 * b, z1[1] + sth1 * b),
+        z1,
+    ]
     return bz
 
 
@@ -48,7 +66,7 @@ def fit_cubic(z0, z1, arclen, th_fn, fast, aabmin=0, aabmax=1.0):
     if fast:
         imax = 1
         jmax = 0
-    for i in range(imax):
+    for _ in range(imax):
         for j in range(jmax + 1):
             if jmax == 0:
                 aab = 0.5 * (aabmin + aabmax)
@@ -93,7 +111,9 @@ def cornu_to_cubic(t0, t1, figno):
 
     y0, x0 = cornu.eval_cornu(t0)
     y1, x1 = cornu.eval_cornu(t1)
-    bz, score = fit_cubic((x0, y0), (x1, y1), t1 - t0, th_fn, fast, aabmin, aabmax)
+    bz, score = fit_cubic(
+        (x0, y0), (x1, y1), t1 - t0, th_fn, fast, aabmin, aabmax
+    )
     return bz, score
 
 
@@ -135,7 +155,9 @@ def simple_bez():
     eps_prologue(95, 126, 552, 508, False)
     tocubic.plot_prolog()
     print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print(
+        '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    )
     bz, score = cornu_to_cubic(0.5, 1.1, 2)
     fromcubic.plot_bzs([[bz]], (-400, 100), 1000, True)
     print('stroke')
@@ -156,7 +178,9 @@ def fast_bez(figno):
     eps_prologue(95, 140, 552, y1, False)
     tocubic.plot_prolog()
     print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print(
+        '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    )
     bz, score = cornu_to_cubic(0.5, 1.1, figno)
     fromcubic.plot_bzs([[bz]], (-400, 100), 1000, True)
     print('stroke')
@@ -171,7 +195,9 @@ def bezfig(s1):
     # print('0.5 0.5 scale 500 100 translate')
     tocubic.plot_prolog()
     print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print(
+        '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    )
     bz, score = cornu_to_cubic(0.5, 0.85, 1)
     fromcubic.plot_bzs([[bz]], (-400, 0), 1000, True)
     print('stroke')

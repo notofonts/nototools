@@ -25,7 +25,9 @@ from fontTools import ttLib
 from nototools import font_data
 from nototools import noto_fonts
 
-SPREADSHEET_NAME = 'Noto Project Status (Phase II)- go-noto - ' 'Unicode-Monotype (1).csv'
+SPREADSHEET_NAME = (
+    'Noto Project Status (Phase II)- go-noto - ' 'Unicode-Monotype (1).csv'
+)
 
 
 def check_spreadsheet(src_file):
@@ -78,14 +80,23 @@ def check_spreadsheet(src_file):
             elif script == 'SumeroAkkadianCuneiform':
                 script = 'Cuneiform'
 
-            fontname = ''.join(['Noto', style, script, ui, '-', weight, '.', ext])
+            fontname = ''.join(
+                ['Noto', style, script, ui, '-', weight, '.', ext]
+            )
             # print('%s:\n--> %s\n--> %s' % (
             #    font, str((style, script, ui, weight)), fontname))
 
             if hinting not in ['hinted', 'hinted (CFF)', 'unhinted']:
-                print('unrecognized hinting value \'%s\' on line %d (%s)' % (hinting, index, fontname))
+                print(
+                    'unrecognized hinting value \'%s\' on line %d (%s)'
+                    % (hinting, index, fontname)
+                )
                 continue
-            hinted = 'hinted' if hinting in ['hinted', 'hinted (CFF)'] else 'unhinted'
+            hinted = (
+                'hinted'
+                if hinting in ['hinted', 'hinted (CFF)']
+                else 'unhinted'
+            )
 
             if status not in [
                 'In finishing',
@@ -97,7 +108,10 @@ def check_spreadsheet(src_file):
                 'Design re-approved',
                 'Released',
             ]:
-                print('unrecognized status value \'%s\' on line %d (%s)' % (status, index, fontname))
+                print(
+                    'unrecognized status value \'%s\' on line %d (%s)'
+                    % (status, index, fontname)
+                )
                 continue
 
             expect_font = status in [
@@ -120,15 +134,28 @@ def check_spreadsheet(src_file):
 
         # ok, now let's see if we can find these files
         all_noto = noto_fonts.get_noto_fonts()
-        notodata = {('hinted' if f.is_hinted else 'unhinted') + '/' + path.basename(f.filepath): f for f in all_noto}
+        notodata = {
+            ('hinted' if f.is_hinted else 'unhinted')
+            + '/'
+            + path.basename(f.filepath): f
+            for f in all_noto
+        }
         noto_filenames = frozenset(notodata.keys())
-        spreadsheet_filenames = frozenset(k for k in filedata if filedata[k][6])
+        spreadsheet_filenames = frozenset(
+            k for k in filedata if filedata[k][6]
+        )
         spreadsheet_extra = spreadsheet_filenames - noto_filenames
         spreadsheet_missing = noto_filenames - spreadsheet_filenames
         if spreadsheet_extra:
-            print('spreadsheet extra:\n  ' + '\n  '.join(sorted(spreadsheet_extra)))
+            print(
+                'spreadsheet extra:\n  '
+                + '\n  '.join(sorted(spreadsheet_extra))
+            )
         if spreadsheet_missing:
-            print('spreadsheet missing:\n  ' + '\n  '.join(sorted(spreadsheet_missing)))
+            print(
+                'spreadsheet missing:\n  '
+                + '\n  '.join(sorted(spreadsheet_missing))
+            )
 
         spreadsheet_match = spreadsheet_filenames & noto_filenames
         for filename in sorted(spreadsheet_match):
@@ -139,7 +166,10 @@ def check_spreadsheet(src_file):
             approved_version = data[4]
             if approved_version:
                 warn = '!!!' if approved_version != font_version else ''
-                print('%s%s version: %s approved: %s' % (warn, filename, font_version, approved_version))
+                print(
+                    '%s%s version: %s approved: %s'
+                    % (warn, filename, font_version, approved_version)
+                )
             else:
                 print('%s version: %s' % (filename, font_version))
 
@@ -149,7 +179,11 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-sf', '--src_file', help='path to tracking spreadsheet csv', metavar='fname', default=default_file
+        '-sf',
+        '--src_file',
+        help='path to tracking spreadsheet csv',
+        metavar='fname',
+        default=default_file,
     )
 
     args = parser.parse_args()

@@ -26,7 +26,9 @@ def _run_harfbuzz(text, font, language, extra_parameters=None):
         extra_parameters = extra_parameters.split(' ')
     except AttributeError:
         pass
-    hb_output = render.run_harfbuzz_on_text(text, font, language, extra_parameters)
+    hb_output = render.run_harfbuzz_on_text(
+        text, font, language, extra_parameters
+    )
     return json.loads(hb_output)
 
 

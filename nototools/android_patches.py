@@ -82,7 +82,9 @@ def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
             font_file = path.join(srcdir, font_name)
             lgc_font_file = path.join(srcdir, lgc_font_name)
 
-            chars_to_add = (HYPHENS - coverage.character_set(font_file)) & coverage.character_set(lgc_font_file)
+            chars_to_add = (
+                HYPHENS - coverage.character_set(font_file)
+            ) & coverage.character_set(lgc_font_file)
 
             if chars_to_add:
                 print('patch hyphens', font_name)
@@ -94,7 +96,10 @@ def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
                 )
             else:
                 if copy_unchanged:
-                    shutil.copy2(path.join(srcdir, font_name), path.join(dstdir, font_name))
+                    shutil.copy2(
+                        path.join(srcdir, font_name),
+                        path.join(dstdir, font_name),
+                    )
                     print('%s already has hyphens, copying' % font_name)
                 else:
                     print('%s already has hyphens' % font_name)
@@ -113,11 +118,13 @@ def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
   """
 
     # Since subsetting changes tables in a way that would prevent a compact
-    # .ttc file, this simply removes entries from the cmap table.  This
-    # does not affect other tables in the font.  There are no emoji presentation
-    # variation sequences in the fonts.
+    # .ttc file, this simply removes entries from the cmap table.
+    # This does not affect other tables in the font.
+    # There are no emoji presentation variation sequences in the fonts.
 
-    def _remove_from_cmap(infile, outfile, exclude=[]):  # TODO: mutable defaults!  # noqa:B006
+    def _remove_from_cmap(
+        infile, outfile, exclude=[]
+    ):  # TODO: mutable defaults!  # noqa:B006
         font = ttLib.TTFont(infile)
         font_data.delete_from_cmap(font, exclude)
         font.save(outfile)
@@ -132,7 +139,11 @@ def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
 
     for font_name in cjk_font_names:
         print('remove cjk emoji', font_name)
-        _remove_from_cmap(path.join(srcdir, font_name), path.join(dstdir, font_name), exclude=EMOJI)
+        _remove_from_cmap(
+            path.join(srcdir, font_name),
+            path.join(dstdir, font_name),
+            exclude=EMOJI,
+        )
 
 
 def patch_cjk_ttc(ttc_srcfile, ttc_dstfile):
@@ -333,7 +344,8 @@ def subset_symbols(srcdir, dstdir):
     target_coverage |= ONE_OFF_ADDITIONS
     # Remove characters preferably coming from Roboto
     target_coverage -= LETTERLIKE_CHARS_IN_ROBOTO
-    # Remove default emoji presentation (including ones Android prefers default)
+    # Remove default emoji presentation
+    # (including ones Android prefers default)
     target_coverage -= EMOJI
 
     # Remove COMBINING ENCLOSING KEYCAP. It's needed for Android's color emoji
@@ -346,7 +358,9 @@ def subset_symbols(srcdir, dstdir):
 
     for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
         print('main subset', font_file)
-        out_file = path.join(dstdir, path.basename(font_file)[:-4] + '-Subsetted.ttf')
+        out_file = path.join(
+            dstdir, path.basename(font_file)[:-4] + '-Subsetted.ttf'
+        )
         subset.subset_font(font_file, out_file, include=target_coverage)
 
     # The second subset will be a fallback after the color emoji, for
@@ -355,7 +369,9 @@ def subset_symbols(srcdir, dstdir):
 
     for font_file in glob.glob(path.join(srcdir, 'NotoSansSymbols-*.ttf')):
         print('secondary subset', font_file)
-        out_file = path.join(dstdir, path.basename(font_file)[:-4] + '-Subsetted2.ttf')
+        out_file = path.join(
+            dstdir, path.basename(font_file)[:-4] + '-Subsetted2.ttf'
+        )
         subset.subset_font(font_file, out_file, include=target_coverage)
 
 
@@ -404,7 +420,8 @@ def main():
     parser.add_argument(
         '-d',
         '--dstdir',
-        help='directory into which to write patched fonts ' '(default %s)' % DST_DIR,
+        help='directory into which to write patched fonts '
+        '(default %s)' % DST_DIR,
         default=DST_DIR,
         metavar='dir',
     )

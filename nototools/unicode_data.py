@@ -23,7 +23,10 @@ edge version of the Unicode Standard not yet published, so it is expected to
 be unstable and sometimes inconsistent.
 """
 
-__author__ = "roozbeh@google.com (Roozbeh Pournader) and " "cibu@google.com (Cibu Johny)"
+__author__ = (
+    "roozbeh@google.com (Roozbeh Pournader) and "
+    "cibu@google.com (Cibu Johny)"
+)
 
 import codecs
 import collections
@@ -344,7 +347,9 @@ def indic_syllabic_category(char):
     if isinstance(char, (str, unicode)):
         char = ord(char)
     try:
-        return _bidi_syllabic_data[char]  # TODO: This variable is not defined!  # noqa:F821
+        return _bidi_syllabic_data[
+            char
+        ]  # TODO: This variable is not defined!  # noqa:F821
     except KeyError:
         return "Other"
 
@@ -379,9 +384,17 @@ def defined_characters(version=None, scr=None):
         pass
     characters = _defined_characters
     if version is not None:
-        characters = {char for char in characters if age(char) is not None and float(age(char)) <= version}
+        characters = {
+            char
+            for char in characters
+            if age(char) is not None and float(age(char)) <= version
+        }
     if scr is not None:
-        characters = {char for char in characters if script(char) == scr or scr in script_extensions(char)}
+        characters = {
+            char
+            for char in characters
+            if script(char) == scr or scr in script_extensions(char)
+        }
     characters = frozenset(characters)
     _DEFINED_CHARACTERS_CACHE[(version, scr)] = characters
     return characters
@@ -423,7 +436,8 @@ _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES = {
 }
 
 _HARD_CODED_FOLDED_SCRIPT_NAME_TO_CODE = {
-    _folded_script_name(name): code for code, name in _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES.items()
+    _folded_script_name(name): code
+    for code, name in _HARD_CODED_HUMAN_READABLE_SCRIPT_NAMES.items()
 }
 
 
@@ -442,7 +456,9 @@ def all_scripts():
     return frozenset(_script_code_to_long_name.keys())
 
 
-_DATA_DIR_PATH = path.join(path.abspath(path.dirname(__file__)), os.pardir, "third_party", "ucd")
+_DATA_DIR_PATH = path.join(
+    path.abspath(path.dirname(__file__)), os.pardir, "third_party", "ucd"
+)
 
 
 def open_unicode_data_file(data_file_name):
@@ -715,7 +731,10 @@ def _load_emoji_data():
     }
 
     set_names = '|'.join(sorted(emoji_sets.keys()))
-    line_re = re.compile(r'([0-9A-F]{4,6})(?:\.\.([0-9A-F]{4,6}))?\s*;\s*' r'(%s)\s*#.*$' % set_names)
+    line_re = re.compile(
+        r'([0-9A-F]{4,6})(?:\.\.([0-9A-F]{4,6}))?\s*;\s*'
+        r'(%s)\s*#.*$' % set_names
+    )
 
     with open_unicode_data_file('emoji-data.txt') as f:
         for line in f:
@@ -734,7 +753,9 @@ def _load_emoji_data():
     emoji_sets['Emoji_Modifier_Base'] |= {0x1F91D, 0x1F93C}
 
     _presentation_default_emoji = frozenset(emoji_sets['Emoji_Presentation'])
-    _presentation_default_text = frozenset(emoji_sets['Emoji'] - emoji_sets['Emoji_Presentation'])
+    _presentation_default_text = frozenset(
+        emoji_sets['Emoji'] - emoji_sets['Emoji_Presentation']
+    )
     _emoji_modifier_base = frozenset(emoji_sets['Emoji_Modifier_Base'])
     _emoji = frozenset(emoji_sets['Emoji'])
 
@@ -770,7 +791,8 @@ def _read_emoji_data(lines):
     """Parse lines of emoji data and return a map from sequence to tuples of
   name, age, type."""
     line_re = re.compile(
-        r'(?:([0-9A-F ]+)|([0-9A-F]+\.\.[0-9A-F]+)\s*);\s*(%s)\s*;\s*([^#]*)\s*#\s*(\d+\.\d+).*'
+        r'(?:([0-9A-F ]+)|([0-9A-F]+\.\.[0-9A-F]+)\s*);'
+        r'\s*(%s)\s*;\s*([^#]*)\s*#\s*(\d+\.\d+).*'
         % '|'.join(EMOJI_SEQUENCE_TYPES)
     )
     result = {}
@@ -782,8 +804,10 @@ def _read_emoji_data(lines):
         if not m:
             raise ValueError('Did not match "%s"' % line)
 
-        # group 1 is a sequence, group 2 is a range of single character sequences.
-        # we can't process the range because we don't have a name for each character
+        # group 1 is a sequence, group 2 is a range
+        # of single character sequences.
+        # we can't process the range
+        # because we don't have a name for each character
         # in the range, so skip it and get these emoji and their names from
         # UnicodeData
         if m.group(2):
@@ -802,16 +826,26 @@ def _read_emoji_data_file(filename):
         return _read_emoji_data(f.readlines())
 
 
-_EMOJI_QUAL_TYPES = ['component', 'fully-qualified', 'minimally-qualified', 'unqualified']
+_EMOJI_QUAL_TYPES = [
+    'component',
+    'fully-qualified',
+    'minimally-qualified',
+    'unqualified',
+]
 
 
 def _read_emoji_test_data(data_string):
-    """Parse the emoji-test.txt data.  This has names of proposed emoji that are
-  not yet in the full Unicode data file.  Returns a list of tuples of
-  sequence, group, subgroup, name.
+    """
+    Parse the emoji-test.txt data.  This has names of proposed emoji that are
+    not yet in the full Unicode data file.  Returns a list of tuples of
+    sequence, group, subgroup, name.
 
-  The data is a string."""
-    line_re = re.compile(r'([0-9a-fA-F ]+)\s*;\s*(%s)\s*#\s*(?:[^\s]+)\s+(.*)\s*' % '|'.join(_EMOJI_QUAL_TYPES))
+    The data is a string.
+    """
+    line_re = re.compile(
+        r'([0-9a-fA-F ]+)\s*;\s*(%s)\s*#\s*(?:[^\s]+)\s+(.*)\s*'
+        % '|'.join(_EMOJI_QUAL_TYPES)
+    )
     result = []
     GROUP_PREFIX = '# group: '
     SUBGROUP_PREFIX = '# subgroup: '
@@ -834,8 +868,9 @@ def _read_emoji_test_data(data_string):
         if not m:
             raise ValueError('Did not match "%s" in emoji-test.txt' % line)
         if m.group(2) not in ['component', 'fully-qualified']:
-            # We only want component and fully-qualified sequences, as those are
-            # 'canonical'.  'minimally-qualified' apparently just leave off the
+            # We only want component and fully-qualified sequences,
+            # as those are 'canonical'.
+            # 'minimally-qualified' apparently just leave off the
             # FEOF emoji presentation tag, we already assume these.
             # Information for the unqualified sequences should be
             # redundant.  At the moment we don't verify this so if the file
@@ -844,7 +879,9 @@ def _read_emoji_test_data(data_string):
         seq = tuple(int(s, 16) for s in m.group(1).split())
         name = m.group(3).strip()
         if not (group and subgroup):
-            raise Exception('sequence %s missing group or subgroup' % seq_to_string(seq))
+            raise Exception(
+                'sequence %s missing group or subgroup' % seq_to_string(seq)
+            )
         result.append((seq, group, subgroup, name))
 
     return result
@@ -1033,7 +1070,11 @@ def _apply_order_patch(patch, group_list):
     if unused:
         raise Exception(
             '%d unused patch%s\n  %s: '
-            % (len(unused), '' if len(unused) == 1 else 'es', '\n  '.join(seq_to_string(seq) for seq in sorted(unused)))
+            % (
+                len(unused),
+                '' if len(unused) == 1 else 'es',
+                '\n  '.join(seq_to_string(seq) for seq in sorted(unused)),
+            )
         )
 
     return result
@@ -1057,8 +1098,13 @@ def _load_emoji_group_data():
     group_list.extend(_read_emoji_test_data(_SUPPLEMENTAL_EMOJI_GROUP_DATA))
     for i, (seq, group, subgroup, name) in enumerate(group_list):
         if seq in _emoji_group_data:
-            print('seq %s already in group data as %s' % (seq_to_string(seq), _emoji_group_data[seq]))
-            print('    new value would be %s' % str((i, group, subgroup, name)))
+            print(
+                'seq %s already in group data as %s'
+                % (seq_to_string(seq), _emoji_group_data[seq])
+            )
+            print(
+                '    new value would be %s' % str((i, group, subgroup, name))
+            )
         _emoji_group_data[seq] = (i, group, subgroup, name)
 
     assert len(group_list) == len(_emoji_group_data)
@@ -1152,7 +1198,8 @@ def _load_emoji_sequence_data():
     _load_emoji_group_data()  # ensure group data is populated
 
     # Get names for single emoji from the test data. We will prefer these over
-    # those in UnicodeData (e.g. prefer "one o'clock" to "clock face one oclock"),
+    # those in UnicodeData
+    # (e.g. prefer "one o'clock" to "clock face one oclock"),
     # and if they're not in UnicodeData these are proposed new emoji.
     for seq, (_, _, _, emoji_name) in _emoji_group_data.items():
         non_vs_seq = strip_emoji_vs(seq)
@@ -1164,7 +1211,8 @@ def _load_emoji_sequence_data():
         # If it's not in character names data, it's a proposed emoji.
         if cp not in _character_names_data:
             # use 'ignore' to strip curly quotes etc if they exist, unicode
-            # character names are ASCII, and it's probably best to keep it that way.
+            # character names are ASCII,
+            # and it's probably best to keep it that way.
             cp_name = emoji_name.encode('ascii', 'ignore').upper()
             _character_names_data[cp] = cp_name
 
@@ -1173,14 +1221,23 @@ def _load_emoji_sequence_data():
             seq = (cp, EMOJI_VS)
 
         emoji_age = float(age(cp)) or PROPOSED_EMOJI_AGE
-        current_data = _emoji_sequence_data.get(seq) or (emoji_name, emoji_age, 'Emoji_Single_Sequence')
+        current_data = _emoji_sequence_data.get(seq) or (
+            emoji_name,
+            emoji_age,
+            'Emoji_Single_Sequence',
+        )
 
         if is_default_text_presentation:
             emoji_name = '(emoji) ' + emoji_name
 
-        _emoji_sequence_data[seq] = (emoji_name, current_data[1], current_data[2])
+        _emoji_sequence_data[seq] = (
+            emoji_name,
+            current_data[1],
+            current_data[2],
+        )
 
-    # Fill in sequences of single emoji, handling non-canonical to canonical also.
+    # Fill in sequences of single emoji,
+    # handling non-canonical to canonical also.
     for k in _emoji:
         non_vs_seq = (k,)
 
@@ -1193,7 +1250,9 @@ def _load_emoji_sequence_data():
 
         if canonical_seq in _emoji_sequence_data:
             # Prefer names we have where they exist
-            emoji_name, emoji_age, seq_type = _emoji_sequence_data[canonical_seq]
+            emoji_name, emoji_age, seq_type = _emoji_sequence_data[
+                canonical_seq
+            ]
         else:
             emoji_name = name(k, 'unnamed').lower()
             if name == 'unnamed':
@@ -1201,7 +1260,9 @@ def _load_emoji_sequence_data():
             emoji_age = age(k)
             seq_type = 'Emoji_Single_Sequence'
 
-        if is_default_text_presentation and not emoji_name.startswith('(emoji) '):
+        if is_default_text_presentation and not emoji_name.startswith(
+            '(emoji) '
+        ):
             emoji_name = '(emoji) ' + emoji_name
         _emoji_sequence_data[canonical_seq] = (emoji_name, emoji_age, seq_type)
 
@@ -1225,8 +1286,10 @@ def get_emoji_sequences(age=None, types=None):
 
 
 def get_emoji_sequence_data(seq):
-    """Return a tuple of the name, age, and type for the (possibly non-canonical)
-  sequence, or None if not recognized as a sequence."""
+    """
+    Return a tuple of the name, age, and type for the (possibly non-canonical)
+    sequence, or None if not recognized as a sequence.
+    """
     _load_emoji_sequence_data()
 
     seq = get_canonical_emoji_sequence(seq)
@@ -1260,8 +1323,10 @@ def get_emoji_sequence_type(seq):
 
 
 def is_canonical_emoji_sequence(seq):
-    """Return true if this is a canonical emoji sequence (has 'vs' where Unicode
-  says it should), and is known."""
+    """
+    Return true if this is a canonical emoji sequence
+    (has 'vs' where Unicode says it should), and is known.
+    """
     _load_emoji_sequence_data()
     return seq in _emoji_sequence_data
 
@@ -1344,7 +1409,11 @@ def tag_character_to_ascii(cp):
 
 
 def is_regional_tag_seq(seq):
-    return seq[0] == 0x1F3F4 and seq[-1] == 0xE007F and all(0xE0020 < cp < 0xE007E for cp in seq[1:-1])
+    return (
+        seq[0] == 0x1F3F4
+        and seq[-1] == 0xE007F
+        and all(0xE0020 < cp < 0xE007E for cp in seq[1:-1])
+    )
 
 
 _FITZ_START = 0x1F3FB
@@ -1415,7 +1484,10 @@ def _load_unicode_emoji_variants():
                     else:
                         emoji_variants.add(cp)
 
-        print('skipped %s %d proposed variants' % ('all of' if skipped == read else skipped, read))
+        print(
+            'skipped %s %d proposed variants'
+            % ('all of' if skipped == read else skipped, read)
+        )
     except IOError as e:
         if e.errno != 2:
             raise
@@ -1424,21 +1496,29 @@ def _load_unicode_emoji_variants():
 
 
 def get_unicode_emoji_variants(include_proposed='proposed'):
-    """Returns the emoji characters that have both emoji and text presentations.
-  If include_proposed is 'proposed', include the ones proposed in 2016/08.  If
-  include_proposed is 'proposed_extra', also include the emoji Noto proposes
-  for text presentation treatment to align related characters.  Else
-  include_proposed should resolve to boolean False."""
+    """
+    Returns the emoji characters that have both emoji and text presentations.
+    If include_proposed is 'proposed', include the ones proposed in 2016/08.
+    If include_proposed is 'proposed_extra',
+    also include the emoji Noto proposes for text presentation treatment
+    to align related characters.
+    Else include_proposed should resolve to boolean False.
+    """
     _load_unicode_emoji_variants()
     if not include_proposed:
         return _emoji_variants
     elif include_proposed == 'proposed':
         return _emoji_variants_proposed
     elif include_proposed == 'proposed_extra':
-        extra = tool_utils.parse_int_ranges('1f4b9 1f4c8-1f4ca 1f507 1f509-1f50a 1f44c')
+        extra = tool_utils.parse_int_ranges(
+            '1f4b9 1f4c8-1f4ca 1f507 1f509-1f50a 1f44c'
+        )
         return _emoji_variants_proposed | extra
     else:
-        raise Exception("include_proposed is %s which is not in ['proposed', 'proposed_extra']" % include_proposed)
+        raise Exception(
+            "include_proposed is %s "
+            "which is not in ['proposed', 'proposed_extra']" % include_proposed
+        )
 
 
 def _load_variant_data():
@@ -1454,7 +1534,9 @@ def _load_variant_data():
     if _variant_data:
         return
 
-    compatibility_re = re.compile(r'\s*CJK COMPATIBILITY IDEOGRAPH-([0-9A-Fa-f]+)')
+    compatibility_re = re.compile(
+        r'\s*CJK COMPATIBILITY IDEOGRAPH-([0-9A-Fa-f]+)'
+    )
     variants = collections.defaultdict(list)
     with open_unicode_data_file('StandardizedVariants.txt') as f:
         for line in f:
@@ -1532,7 +1614,8 @@ def _load_proposed_emoji_data():
                 name = m.group(2)
                 if cp in _proposed_emoji_data:
                     raise ValueError(
-                        'duplicate emoji %x, old name: %s, new name: %s' % (cp, _proposed_emoji_data[cp], name)
+                        'duplicate emoji %x, old name: %s, new name: %s'
+                        % (cp, _proposed_emoji_data[cp], name)
                     )
 
                 _proposed_emoji_data[cp] = name
@@ -1574,7 +1657,9 @@ def codeset(cpname):
     """Return a set of the unicode codepoints in the code page named cpname, or
   None."""
     filename = ('%s.txt' % cpname).upper()
-    filepath = path.join(path.dirname(__file__), os.pardir, 'third_party', 'unicode', filename)
+    filepath = path.join(
+        path.dirname(__file__), os.pardir, 'third_party', 'unicode', filename
+    )
     if not path.isfile(filepath):
         return None
     with open(filepath, 'r') as f:
@@ -1596,8 +1681,14 @@ def _dump_emoji_presentation():
             text_p += 1
         else:
             presentation = '<error>'
-        print('%s%04x %5s %s' % (' ' if cp < 0x10000 else '', cp, presentation, cp_name))
-    print('%d total emoji, %d text presentation, %d emoji presentation' % (len(get_emoji()), text_p, emoji_p))
+        print(
+            '%s%04x %5s %s'
+            % (' ' if cp < 0x10000 else '', cp, presentation, cp_name)
+        )
+    print(
+        '%d total emoji, %d text presentation, %d emoji presentation'
+        % (len(get_emoji()), text_p, emoji_p)
+    )
 
 
 def _load_nameslist_data():
@@ -1607,8 +1698,12 @@ def _load_nameslist_data():
 
     _nameslist_see_also = collections.defaultdict(set)
     cp = None
-    line_re = re.compile(r'^(?:(?:([0-9A-F]{4,6})\t.*)|(?:^\s+([x=])\s+(.*)))$')
-    see_also_re = re.compile(r'\s*(?:\(.*\s-\s+([0-9A-F]{4,6})\))|([0-9A-F]{4,6})')
+    line_re = re.compile(
+        r'^(?:(?:([0-9A-F]{4,6})\t.*)|(?:^\s+([x=])\s+(.*)))$'
+    )
+    see_also_re = re.compile(
+        r'\s*(?:\(.*\s-\s+([0-9A-F]{4,6})\))|([0-9A-F]{4,6})'
+    )
     with open_unicode_data_file('NamesList.txt') as f:
         for line in f:
             m = line_re.match(line)
@@ -1623,7 +1718,10 @@ def _load_nameslist_data():
                     continue
                 m = see_also_re.match(val)
                 if not m:
-                    raise Exception('could not match see also val "%s" in line "%s"' % (val, line))
+                    raise Exception(
+                        'could not match see also val "%s" in line "%s"'
+                        % (val, line)
+                    )
                 ref_cp = int(m.group(1) or m.group(2), 16)
                 _nameslist_see_also[cp].add(ref_cp)
 
@@ -1648,7 +1746,13 @@ def _load_namealiases_data():
             cp = int(m.group(1), 16)
             name = m.group(2).strip()
             name_type = m.group(3).strip()
-            if name_type not in ['correction', 'control', 'alternate', 'figment', 'abbreviation']:
+            if name_type not in [
+                'correction',
+                'control',
+                'alternate',
+                'figment',
+                'abbreviation',
+            ]:
                 raise Exception('unknown name type in "%s"' % line)
             if name_type == 'figment':
                 continue
@@ -1677,4 +1781,8 @@ if __name__ == '__main__':
     for k in get_sorted_emoji_sequences(all_sequences):
         age_val = get_emoji_sequence_age(k)
         if age_val == 12:
-            print(seq_to_string(k).replace('_', ' '), '#', get_emoji_sequence_name(k))
+            print(
+                seq_to_string(k).replace('_', ' '),
+                '#',
+                get_emoji_sequence_name(k),
+            )

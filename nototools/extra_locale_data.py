@@ -484,7 +484,8 @@ EXEMPLARS = {
     'und-Java': r'[\ua984-\ua9b2]',
     'und-Kali': r'[\ua90a-\ua925 \ua900-\ua909]',
     'und-Kana': r'[\u30a0-\u30ff \u31f0-\u31ff]',
-    'und-Khar': r'[\U010a10-\U010a13\U010a15-\U010a17\U010a19-\U010a33' r'\U010A38-\U010a3a]',
+    'und-Khar': r'[\U010a10-\U010a13\U010a15-\U010a17\U010a19-\U010a33'
+    r'\U010A38-\U010a3a]',
     'und-Kthi': r'[\U11080-\U110C1]',
     'und-Lana': r'[\u1a20-\u1a4c]',
     'und-Lepc': r'[\u1c00-\u1c23]',
@@ -501,7 +502,8 @@ EXEMPLARS = {
     'und-Ugar': r'[\U010380-\U01039d \U01039f]',
     'und-Xsux': r'[\U012000-\U01202f]',
     'und-Zmth': r'[\U010AC0-\U010AE6 \U010AEB-\U010AF6]',
-    'und-Zsye': r'[\u2049\u231a\u231b\u2600\u260e\u2614\u2615\u26fa\u2708\u2709'
+    'und-Zsye': r'['
+    r'\u2049\u231a\u231b\u2600\u260e\u2614\u2615\u26fa\u2708\u2709'
     r'\u270f\u3297\U01f004\U01f170\U01f193\U01f197\U01f30d\U01f318'
     r'\U01f332\U01f334\U01f335\U01f344\U01f346\U01f352\U01f381'
     r'\U01f393\U01f3a7\U01f3b8\U01f3e1\U01f402\U01f40a\U01f418'

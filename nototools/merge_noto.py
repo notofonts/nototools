@@ -35,7 +35,11 @@ def make_puncless_font_name(script):
 
 
 def make_font_file_name(script, weight, directory='individual/unhinted'):
-    filename = '%s/%s-%s.ttf' % (directory, make_puncless_font_name(script), weight)
+    filename = '%s/%s-%s.ttf' % (
+        directory,
+        make_puncless_font_name(script),
+        weight,
+    )
     return filename
 
 
@@ -231,8 +235,12 @@ def main():
             source_fonts = merge_table[merge_target]
             if '' not in source_fonts:
                 source_fonts = [''] + source_fonts  # The LGC font
-            regular_sources = [make_font_file_name(script, weight) for script in source_fonts]
-            regular_sources = [font for font in regular_sources if os.path.isfile(font)]
+            regular_sources = [
+                make_font_file_name(script, weight) for script in source_fonts
+            ]
+            regular_sources = [
+                font for font in regular_sources if os.path.isfile(font)
+            ]
 
             if len(regular_sources) <= 1:
                 continue
@@ -249,11 +257,21 @@ def main():
             if first_font != merge_target:
                 for name_record in font['name'].names:
                     name = name_record.string.decode('UTF-16BE')
-                    name = name.replace(make_font_name(first_font), make_font_name(merge_target))
-                    name = name.replace(make_puncless_font_name(first_font), make_puncless_font_name(merge_target))
+                    name = name.replace(
+                        make_font_name(first_font),
+                        make_font_name(merge_target),
+                    )
+                    name = name.replace(
+                        make_puncless_font_name(first_font),
+                        make_puncless_font_name(merge_target),
+                    )
                     name_record.string = name.encode('UTF-16BE')
 
-            font.save(make_font_file_name(merge_target, weight, directory='combined/unhinted'))
+            font.save(
+                make_font_file_name(
+                    merge_target, weight, directory='combined/unhinted'
+                )
+            )
 
 
 if __name__ == '__main__':

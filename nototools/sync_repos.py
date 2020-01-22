@@ -38,7 +38,10 @@ def noto_check_clean():
             errors.append(r)
 
     if errors:
-        sys.stderr.write('%s %s not clean\n' % (' '.join(errors), 'is' if len(errors) == 1 else 'are'))
+        sys.stderr.write(
+            '%s %s not clean\n'
+            % (' '.join(errors), 'is' if len(errors) == 1 else 'are')
+        )
         return False
     return True
 
@@ -59,7 +62,13 @@ def noto_checkout_master(dry_run=False):
     return True
 
 
-def noto_checkout(fonts_tag='latest', emoji_tag='latest', cjk_tag='latest', verbose=False, dry_run=False):
+def noto_checkout(
+    fonts_tag='latest',
+    emoji_tag='latest',
+    cjk_tag='latest',
+    verbose=False,
+    dry_run=False,
+):
     """Check out the noto repos at the provided tags.  Return True if ok,
   else log error and return False.  Default is 'latest' for the latest
   tag."""
@@ -92,7 +101,12 @@ def noto_checkout(fonts_tag='latest', emoji_tag='latest', cjk_tag='latest', verb
     if verbose or dry_run:
         print(
             '%schecked out:\n  %s'
-            % ('would have ' if dry_run else '', '\n  '.join('%s: %s' % (r, t) for r, t in zip(_REPOS, resolved_tags)))
+            % (
+                'would have ' if dry_run else '',
+                '\n  '.join(
+                    '%s: %s' % (r, t) for r, t in zip(_REPOS, resolved_tags)
+                ),
+            )
         )
 
     return True
@@ -101,17 +115,44 @@ def noto_checkout(fonts_tag='latest', emoji_tag='latest', cjk_tag='latest', verb
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-f', '--fonts_tag', help='tag for noto fonts repo (default latest)', metavar='tag', default='latest'
+        '-f',
+        '--fonts_tag',
+        help='tag for noto fonts repo (default latest)',
+        metavar='tag',
+        default='latest',
     )
     parser.add_argument(
-        '-e', '--emoji_tag', help='tag for noto emoji repo (default latest)', metavar='tag', default='latest'
+        '-e',
+        '--emoji_tag',
+        help='tag for noto emoji repo (default latest)',
+        metavar='tag',
+        default='latest',
     )
     parser.add_argument(
-        '-c', '--cjk_tag', help='tag for noto cjk repo (default latest)', metavar='tag', default='latest'
+        '-c',
+        '--cjk_tag',
+        help='tag for noto cjk repo (default latest)',
+        metavar='tag',
+        default='latest',
     )
-    parser.add_argument('-m', '--master', help='use master branch for all repos', action='store_true')
-    parser.add_argument('-v', '--verbose', help='report tags chosen on success', action='store_true')
-    parser.add_argument('-n', '--dry_run', help='report tags chosen but take no other action', action='store_true')
+    parser.add_argument(
+        '-m',
+        '--master',
+        help='use master branch for all repos',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        help='report tags chosen on success',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-n',
+        '--dry_run',
+        help='report tags chosen but take no other action',
+        action='store_true',
+    )
 
     args = parser.parse_args()
 

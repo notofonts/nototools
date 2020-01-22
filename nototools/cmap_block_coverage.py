@@ -63,7 +63,9 @@ def _create_cp_to_scripts(data, only_scripts=None):
     cp_to_scripts = collections.defaultdict(set)
     all_scripts = set()
     skip_set = frozenset(['Zinh', 'Zyyy', 'Zzzz'])
-    cjk_set = frozenset('Bopo,Hang,Hani,Hans,Hant,Hira,Jpan,Kana,Kore'.split(','))
+    cjk_set = frozenset(
+        'Bopo,Hang,Hani,Hans,Hant,Hira,Jpan,Kana,Kore'.split(',')
+    )
     lgc_set = frozenset('Latn,Grek,Cyrl'.split(','))
     for row in data.table.rows:
         script = row.script
@@ -87,7 +89,14 @@ def _list_details(start_cp, limit_cp, defined_cps, defined_count, details):
     initial_cp = start_cp
     while num < details - 1 and num < defined_count:
         if initial_cp in defined_cps:
-            print('%13d %04x %s' % (num + 1, initial_cp, unicode_data.name(initial_cp, '(unnamed)')))
+            print(
+                '%13d %04x %s'
+                % (
+                    num + 1,
+                    initial_cp,
+                    unicode_data.name(initial_cp, '(unnamed)'),
+                )
+            )
             num += 1
         initial_cp += 1
     if num < defined_count:
@@ -111,10 +120,23 @@ def _list_details(start_cp, limit_cp, defined_cps, defined_count, details):
 
 
 def _is_empty_scripts(scripts):
-    return not scripts or scripts == _MISSING_SCRIPTS or scripts == _OMITTED_SCRIPTS
+    return (
+        not scripts
+        or scripts == _MISSING_SCRIPTS
+        or scripts == _OMITTED_SCRIPTS
+    )
 
 
-def _list_range(start_cp, limit_cp, defined_cps, defined_count, scripts, all_scripts, only_scripts, details):
+def _list_range(
+    start_cp,
+    limit_cp,
+    defined_cps,
+    defined_count,
+    scripts,
+    all_scripts,
+    only_scripts,
+    details,
+):
 
     if limit_cp != start_cp + 1:
         range_text = '%04x-%04x' % (start_cp, limit_cp - 1)
@@ -150,7 +172,15 @@ def _list_range(start_cp, limit_cp, defined_cps, defined_count, scripts, all_scr
         _list_details(start_cp, limit_cp, defined_cps, defined_count, details)
 
 
-def _list_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts, only_scripts, details):
+def _list_blocks(
+    start,
+    limit,
+    defined_cps,
+    cp_to_scripts,
+    all_scripts,
+    only_scripts,
+    details,
+):
     start_cp = -1
     defined_count = 0
     block = None
@@ -161,13 +191,24 @@ def _list_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts, only_scr
         is_defined = cp in defined_cps
         cp_block = unicode_data.block(cp)
         cp_scripts = _get_scripts(cp, cp_to_scripts) if is_defined else None
-        if cp_block != block or (cp_scripts and scripts and cp_scripts != scripts):
+        if cp_block != block or (
+            cp_scripts and scripts and cp_scripts != scripts
+        ):
             if block and block != 'No_Block':
                 if not (skip_empty and _is_empty_scripts(scripts)):
                     if not showed_block:
                         print('...') if block == 'No_Block' else block
                         showed_block = True
-                    _list_range(start_cp, cp, defined_cps, defined_count, scripts, all_scripts, only_scripts, details)
+                    _list_range(
+                        start_cp,
+                        cp,
+                        defined_cps,
+                        defined_count,
+                        scripts,
+                        all_scripts,
+                        only_scripts,
+                        details,
+                    )
             start_cp = cp
             defined_count = 0
             if cp_block != block:
@@ -180,7 +221,16 @@ def _list_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts, only_scr
     if not (skip_empty and _is_empty_scripts(scripts)):
         if not showed_block:
             print('...') if block == 'No_Block' else block
-        _list_range(start_cp, limit, defined_cps, defined_count, scripts, all_scripts, only_scripts, details)
+        _list_range(
+            start_cp,
+            limit,
+            defined_cps,
+            defined_count,
+            scripts,
+            all_scripts,
+            only_scripts,
+            details,
+        )
 
 
 def _summarize_block(block, block_count, defined_count, script_counts):
@@ -234,7 +284,9 @@ def _summarize_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts):
         cp_block = unicode_data.block(cp)
         if cp_block != block:
             if block:
-                _summarize_block(block, block_count, defined_count, script_counts)
+                _summarize_block(
+                    block, block_count, defined_count, script_counts
+                )
             block = cp_block
             block_count = 0
             defined_count = 0
@@ -252,15 +304,32 @@ def _summarize_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts):
     _summarize_block(block, block_count, defined_count, script_counts)
 
 
-def block_coverage(cmap_file, start=0, limit=0x20000, only_scripts=None, details=0, summary=False):
+def block_coverage(
+    cmap_file,
+    start=0,
+    limit=0x20000,
+    only_scripts=None,
+    details=0,
+    summary=False,
+):
     data = cmap_data.read_cmap_data_file(cmap_file)
     cp_to_scripts, all_scripts = _create_cp_to_scripts(data, only_scripts)
     defined_cps = unicode_data.defined_characters(version=9.0)
 
     if summary:
-        _summarize_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts)
+        _summarize_blocks(
+            start, limit, defined_cps, cp_to_scripts, all_scripts
+        )
     else:
-        _list_blocks(start, limit, defined_cps, cp_to_scripts, all_scripts, only_scripts, details)
+        _list_blocks(
+            start,
+            limit,
+            defined_cps,
+            cp_to_scripts,
+            all_scripts,
+            only_scripts,
+            details,
+        )
 
 
 def main():
@@ -269,18 +338,35 @@ def main():
     parser.add_argument(
         '-d',
         '--details',
-        help='show details on N characters in each range' ' (3 if no value provided)',
+        help='show details on N characters in each range'
+        ' (3 if no value provided)',
         metavar='num',
         default=0,
         const=3,
         type=int,
         nargs='?',
     )
-    parser.add_argument('-s', '--summary', help='show summary of block usage only', action='store_true')
     parser.add_argument(
-        '-r', '--range', help='range of characters to show (default 0-1ffff)', metavar='range', default='0-1ffff'
+        '-s',
+        '--summary',
+        help='show summary of block usage only',
+        action='store_true',
     )
-    parser.add_argument('-sc', '--scripts', help='limit scripts to show', metavar='script', nargs='+', default=None)
+    parser.add_argument(
+        '-r',
+        '--range',
+        help='range of characters to show (default 0-1ffff)',
+        metavar='range',
+        default='0-1ffff',
+    )
+    parser.add_argument(
+        '-sc',
+        '--scripts',
+        help='limit scripts to show',
+        metavar='script',
+        nargs='+',
+        default=None,
+    )
 
     args = parser.parse_args()
     ranges = tool_utils.parse_int_ranges(args.range)
@@ -292,7 +378,9 @@ def main():
 
     if args.scripts:
         args.scripts = frozenset(args.scripts)
-    block_coverage(args.cmap_file, start, limit, args.scripts, args.details, args.summary)
+    block_coverage(
+        args.cmap_file, start, limit, args.scripts, args.details, args.summary
+    )
 
 
 if __name__ == "__main__":

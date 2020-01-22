@@ -111,7 +111,10 @@ def generate_font_table(compare_data):
     lines = []
 
     def write_lines(key, fdata):
-        lines.append('<tr><td><div class="box %s">&nbsp;</div><td><b>File</b> %s' % (key, fdata.file[pfx_len:]))
+        lines.append(
+            '<tr><td><div class="box %s">&nbsp;</div><td><b>File</b> %s'
+            % (key, fdata.file[pfx_len:])
+        )
 
         version = fdata.version
         if version.startswith('Version '):
@@ -121,10 +124,18 @@ def generate_font_table(compare_data):
         lines.append(
             '<tr><td><td><b>Upem</b> %d, <b>Ascent</b> %d, <b>Descent</b> %d, '
             '<b>Glyphs</b> %d, <b>CPs</b> %d'
-            % (fdata.upem, fdata.ascent, fdata.descent, fdata.num_glyphs, fdata.codepoints)
+            % (
+                fdata.upem,
+                fdata.ascent,
+                fdata.descent,
+                fdata.num_glyphs,
+                fdata.codepoints,
+            )
         )
 
-    pfx, paths = tool_utils.commonpathprefix((compare_data.base_fdata.file, compare_data.target_fdata.file))
+    pfx, paths = tool_utils.commonpathprefix(
+        (compare_data.base_fdata.file, compare_data.target_fdata.file)
+    )
     pfx_len = len(pfx)
 
     write_lines('b', compare_data.base_fdata)
@@ -155,7 +166,9 @@ def generate_image_data(compare_data):
     for name, b, t, similarity in compare_data.pair_data.pair_data:
         bd = bdata[b] if b != -1 else no_data
         td = tdata[t] if t != -1 else no_data
-        pair_lines.append(json.dumps((name + '.png', similarity, b) + bd + (t,) + td))
+        pair_lines.append(
+            json.dumps((name + '.png', similarity, b) + bd + (t,) + td)
+        )
         add_cp(bdata[b][1])
         add_cp(tdata[t][1])
     cp_lines = ['%s: "%s"' % t for t in sorted(cp_map.items())]
@@ -168,7 +181,9 @@ def generate_report(title, input_dir, compare_data, output_path):
     and .js files are written as siblings of the html file."""
 
     if compare_data is None:
-        compare_data = glyph_image_compare.read_compare_data(path.join(input_dir, 'compare_data.txt'))
+        compare_data = glyph_image_compare.read_compare_data(
+            path.join(input_dir, 'compare_data.txt')
+        )
 
     output_path = path.abspath(output_path)
     root = path.dirname(output_path)
@@ -184,9 +199,13 @@ def generate_report(title, input_dir, compare_data, output_path):
         shutil.copy2(path.join(filedir, name), path.join(root, name))
 
     # Clean subdir for this html, then copy image files to it
-    full_image_dir = tool_utils.ensure_dir_exists(path.join(root, image_dir), True)
+    full_image_dir = tool_utils.ensure_dir_exists(
+        path.join(root, image_dir), True
+    )
     for name in [t[0] + '.png' for t in compare_data.pair_data.pair_data]:
-        shutil.copy2(path.join(input_dir, name), path.join(full_image_dir, name))
+        shutil.copy2(
+            path.join(input_dir, name), path.join(full_image_dir, name)
+        )
 
     bname = compare_data.base_fdata.name
     tname = compare_data.target_fdata.name
@@ -217,10 +236,22 @@ def generate_report(title, input_dir, compare_data, output_path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-i', '--input_dir', help='directory containing glyph image compare data', metavar='dir', required=True
+        '-i',
+        '--input_dir',
+        help='directory containing glyph image compare data',
+        metavar='dir',
+        required=True,
     )
-    parser.add_argument('-o', '--output_path', help='path of output html file', metavar='file', required=True)
-    parser.add_argument('-t', '--title', help='title of report', metavar='str', required=True)
+    parser.add_argument(
+        '-o',
+        '--output_path',
+        help='path of output html file',
+        metavar='file',
+        required=True,
+    )
+    parser.add_argument(
+        '-t', '--title', help='title of report', metavar='str', required=True
+    )
 
     args = parser.parse_args()
 

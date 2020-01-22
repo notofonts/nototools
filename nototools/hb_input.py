@@ -137,7 +137,11 @@ class HbInputGenerator(object):
                 if lookup.LookupType == 1:
                     for glyph, subst in st.mapping.items():
                         if subst == name:
-                            inputs.append(self._input_with_context(gsub, [glyph], lookup_index, seen))
+                            inputs.append(
+                                self._input_with_context(
+                                    gsub, [glyph], lookup_index, seen
+                                )
+                            )
 
                 # see if this glyph is a ligature
                 elif lookup.LookupType == 4:
@@ -145,7 +149,11 @@ class HbInputGenerator(object):
                         for ligature in ligatures:
                             if ligature.LigGlyph == name:
                                 glyphs = [prefix] + list(ligature.Component)
-                                inputs.append(self._input_with_context(gsub, glyphs, lookup_index, seen))
+                                inputs.append(
+                                    self._input_with_context(
+                                        gsub, glyphs, lookup_index, seen
+                                    )
+                                )
         return inputs
 
     def _input_with_context(self, gsub, glyphs, target_i, seen):
@@ -158,7 +166,11 @@ class HbInputGenerator(object):
         # try to get a feature tag to activate this lookup
         for feature in gsub.FeatureList.FeatureRecord:
             if target_i in feature.Feature.LookupListIndex:
-                inputs.append(self._sequence_from_glyph_names(glyphs, (feature.FeatureTag,), seen))
+                inputs.append(
+                    self._sequence_from_glyph_names(
+                        glyphs, (feature.FeatureTag,), seen
+                    )
+                )
 
         for cur_i, lookup in enumerate(gsub.LookupList.Lookup):
             # try contextual substitutions
@@ -166,18 +178,34 @@ class HbInputGenerator(object):
                 for st in lookup.SubTable:
                     # TODO handle format 3
                     if st.Format == 1:
-                        inputs.extend(self._input_from_5_1(gsub, st, glyphs, target_i, cur_i, seen))
+                        inputs.extend(
+                            self._input_from_5_1(
+                                gsub, st, glyphs, target_i, cur_i, seen
+                            )
+                        )
                     if st.Format == 2:
-                        inputs.extend(self._input_from_5_2(gsub, st, glyphs, target_i, cur_i, seen))
+                        inputs.extend(
+                            self._input_from_5_2(
+                                gsub, st, glyphs, target_i, cur_i, seen
+                            )
+                        )
 
             # try chaining substitutions
             if lookup.LookupType == 6:
                 for st in lookup.SubTable:
                     # TODO handle format 2
                     if st.Format == 1:
-                        inputs.extend(self._input_from_6_1(gsub, st, glyphs, target_i, cur_i, seen))
+                        inputs.extend(
+                            self._input_from_6_1(
+                                gsub, st, glyphs, target_i, cur_i, seen
+                            )
+                        )
                     if st.Format == 3:
-                        inputs.extend(self._input_from_6_3(gsub, st, glyphs, target_i, cur_i, seen))
+                        inputs.extend(
+                            self._input_from_6_3(
+                                gsub, st, glyphs, target_i, cur_i, seen
+                            )
+                        )
 
         inputs = [i for i in inputs if i is not None]
         return min(inputs) if inputs else None
@@ -188,13 +216,20 @@ class HbInputGenerator(object):
         inputs = []
         for ruleset in st.SubRuleSet:
             for rule in ruleset.SubRule:
-                if not any(subst_lookup.LookupListIndex == target_i for subst_lookup in rule.SubstLookupRecord):
+                if not any(
+                    subst_lookup.LookupListIndex == target_i
+                    for subst_lookup in rule.SubstLookupRecord
+                ):
                     continue
                 for prefix in st.Coverage.glyphs:
                     input_glyphs = [prefix] + rule.Input
                     if not self._is_sublist(input_glyphs, glyphs):
                         continue
-                    inputs.append(self._input_with_context(gsub, input_glyphs, cur_i, seen))
+                    inputs.append(
+                        self._input_with_context(
+                            gsub, input_glyphs, cur_i, seen
+                        )
+                    )
         return inputs
 
     def _input_from_5_2(self, gsub, st, glyphs, target_i, cur_i, seen):
@@ -207,15 +242,23 @@ class HbInputGenerator(object):
             if ruleset is None:
                 continue
             for rule in ruleset.SubClassRule:
-                classes = [[n for n, c in class_defs if c == cls] for cls in rule.Class]
+                classes = [
+                    [n for n, c in class_defs if c == cls]
+                    for cls in rule.Class
+                ]
                 input_lists = [prefixes] + classes
                 input_glyphs = self._min_permutation(input_lists, glyphs)
                 if not (
-                    any(subst_lookup.LookupListIndex == target_i for subst_lookup in rule.SubstLookupRecord)
+                    any(
+                        subst_lookup.LookupListIndex == target_i
+                        for subst_lookup in rule.SubstLookupRecord
+                    )
                     and self._is_sublist(input_glyphs, glyphs)
                 ):
                     continue
-                inputs.append(self._input_with_context(gsub, input_glyphs, cur_i, seen))
+                inputs.append(
+                    self._input_with_context(gsub, input_glyphs, cur_i, seen)
+                )
         return inputs
 
     def _input_from_6_1(self, gsub, st, glyphs, target_i, cur_i, seen):
@@ -224,7 +267,10 @@ class HbInputGenerator(object):
         inputs = []
         for ruleset in st.ChainSubRuleSet:
             for rule in ruleset.ChainSubRule:
-                if not any(subst_lookup.LookupListIndex == target_i for subst_lookup in rule.SubstLookupRecord):
+                if not any(
+                    subst_lookup.LookupListIndex == target_i
+                    for subst_lookup in rule.SubstLookupRecord
+                ):
                     continue
                 for prefix in st.Coverage.glyphs:
                     input_glyphs = [prefix] + rule.Input
@@ -235,7 +281,11 @@ class HbInputGenerator(object):
                     if rule.Backtrack:
                         bt = list(reversed(rule.Backtrack))
                         input_glyphs = bt + input_glyphs
-                    inputs.append(self._input_with_context(gsub, input_glyphs, cur_i, seen))
+                    inputs.append(
+                        self._input_with_context(
+                            gsub, input_glyphs, cur_i, seen
+                        )
+                    )
         return inputs
 
     def _input_from_6_3(self, gsub, st, glyphs, target_i, cur_i, seen):
@@ -244,7 +294,10 @@ class HbInputGenerator(object):
         input_lists = [c.glyphs for c in st.InputCoverage]
         input_glyphs = self._min_permutation(input_lists, glyphs)
         if not (
-            any(subst_lookup.LookupListIndex == target_i for subst_lookup in st.SubstLookupRecord)
+            any(
+                subst_lookup.LookupListIndex == target_i
+                for subst_lookup in st.SubstLookupRecord
+            )
             and self._is_sublist(input_glyphs, glyphs)
         ):
             return []
@@ -293,7 +346,10 @@ class HbInputGenerator(object):
     def _is_sublist(self, lst, sub):
         """Return whether sub is a sub-list of lst."""
 
-        return any(lst[i : i + len(sub)] == sub for i in range(1 + len(lst) - len(sub)))
+        return any(
+            lst[i : i + len(sub)] == sub
+            for i in range(1 + len(lst) - len(sub))
+        )
 
 
 def build_reverse_cmap(font):

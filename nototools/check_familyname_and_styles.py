@@ -34,7 +34,15 @@ _extended_style_re = re.compile(r'^([TLRBH]+)(?:/([CR]+)(?:/([RI]+))?)?$')
 # Map a key name to the expected instance weight/width/italic names.
 
 _WEIGHT_KEY_TO_NAMES = {
-    'TRBH': ['Thin', 'Light', 'Regular', 'Medium', 'SemiBold', 'Bold', 'Black'],
+    'TRBH': [
+        'Thin',
+        'Light',
+        'Regular',
+        'Medium',
+        'SemiBold',
+        'Bold',
+        'Black',
+    ],
     'LB': ['Light', 'Regular', 'Medium', 'SemiBold', 'Bold'],  # for mono
     'RB': ['Regular', 'Bold'],  # for Nastaliq
     'R': ['Regular'],
@@ -123,8 +131,8 @@ def _for_all_familynames(namefile, fn):
                 styles = m.group(1)
                 continue
 
-            # Catch a common error in which an intended style tag didn't match the
-            # regex.
+            # Catch a common error
+            # in which an intended style tag didn't match the regex.
             if name[0] == '-':
                 raise ValueError('Looks like a bad style tag: "%s"' % name)
             if styles is None:
@@ -171,14 +179,30 @@ def main():
     parser.add_argument(
         '-f',
         '--familynamedata',
-        help='file containing family name/style data' ' (default %s)' % DEFAULT_NAMEDATA,
+        help='file containing family name/style data'
+        ' (default %s)' % DEFAULT_NAMEDATA,
         metavar='file',
         default=DEFAULT_NAMEDATA,
     )
-    parser.add_argument('-c', '--check', help='check family name/style data', action='store_true')
-    parser.add_argument('-s', '--sort', help='sort generated filenames before write', action='store_true')
     parser.add_argument(
-        '-w', '--write', help='write filenames, default stdout', nargs='?', const='stdout', metavar='file'
+        '-c',
+        '--check',
+        help='check family name/style data',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-s',
+        '--sort',
+        help='sort generated filenames before write',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-w',
+        '--write',
+        help='write filenames, default stdout',
+        nargs='?',
+        const='stdout',
+        metavar='file',
     )
     args = parser.parse_args()
 

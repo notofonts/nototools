@@ -29,12 +29,16 @@ class Font:
         self.ttfont = ttLib.TTFont(fontfile)
         cmap = self.ttfont['cmap']
         self.charset = set()
-        self.charset.update(*[t.cmap.keys() for t in cmap.tables if t.isUnicode()])
+        self.charset.update(
+            *[t.cmap.keys() for t in cmap.tables if t.isUnicode()]
+        )
         self.cairo_font_face = None
 
     def get_cairo_font_face(self):
         if self.cairo_font_face is None:
-            self.cairo_font_face = pycairoft.create_cairo_font_face_for_file(self.filename)
+            self.cairo_font_face = pycairoft.create_cairo_font_face_for_file(
+                self.filename
+            )
         return self.cairo_font_face
 
     def __repr__(self):
@@ -88,9 +92,13 @@ elif outfile.endswith(".ps"):
 else:
     assert 0
 cr = cairo.Context(surface)
-noto_sans_lgc = pycairoft.create_cairo_font_face_for_file("../../fonts/individual/unhinted/NotoSans-Regular.ttf")
+noto_sans_lgc = pycairoft.create_cairo_font_face_for_file(
+    "../../fonts/individual/unhinted/NotoSans-Regular.ttf"
+)
 
-# cr.select_font_face("@cairo:", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+# cr.select_font_face(
+# "@cairo:", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL
+# )
 
 cr.set_font_size(FONT_SIZE)
 cr.set_line_width(PADDING)
@@ -114,24 +122,50 @@ for stage in range(2):
             cr.translate(PADDING, 0)
             for font in coverage.get(char, []):
                 if stage == STAGE_BOXES:
-                    # cr.rectangle(-BOX_WIDTH*.5, -BOX_WIDTH*.5, FONT_SIZE+BOX_WIDTH, FONT_SIZE+BOX_WIDTH)
-                    # cr.set_source_rgba(*[c * .1 + .9 for c in font.color.rgb])
+                    # cr.rectangle(
+                    # -BOX_WIDTH*.5,
+                    # -BOX_WIDTH*.5,
+                    # FONT_SIZE+BOX_WIDTH,
+                    # FONT_SIZE+BOX_WIDTH
+                    # )
+                    # cr.set_source_rgba(
+                    # *[c * .1 + .9 for c in font.color.rgb]
+                    # )
                     # cr.stroke()
                     pass
                 elif stage == STAGE_GLYPHS:
                     cr.set_source_rgb(*font.color.rgb)
                     # cr.set_source_rgb(0,0,0)
                     cr.set_font_face(font.get_cairo_font_face())
-                    ascent, descent, font_height, max_x_adv, max_y_adv = cr.font_extents()
+                    (
+                        ascent,
+                        descent,
+                        font_height,
+                        max_x_adv,
+                        max_y_adv,
+                    ) = cr.font_extents()
 
                     cr.save()
-                    # XXX cr.set_font_size (FONT_SIZE*FONT_SIZE / (ascent+descent))
-                    cr.set_font_size(round(1.2 * FONT_SIZE * FONT_SIZE / (ascent + descent)))
+                    # XXX cr.set_font_size (
+                    # FONT_SIZE*FONT_SIZE / (ascent+descent)
+                    # )
+                    cr.set_font_size(
+                        round(1.2 * FONT_SIZE * FONT_SIZE / (ascent + descent))
+                    )
 
-                    ascent, descent, font_height, max_x_adv, max_y_adv = cr.font_extents()
+                    (
+                        ascent,
+                        descent,
+                        font_height,
+                        max_x_adv,
+                        max_y_adv,
+                    ) = cr.font_extents()
                     utf8 = unichr(char).encode('utf-8')
                     x1, y1, width, height, xadv, yadv = cr.text_extents(utf8)
-                    cr.move_to(FONT_SIZE * 0.5 - (x1 + 0.5 * width), FONT_SIZE * 0.5 - (-ascent + descent) * 0.5)
+                    cr.move_to(
+                        FONT_SIZE * 0.5 - (x1 + 0.5 * width),
+                        FONT_SIZE * 0.5 - (-ascent + descent) * 0.5,
+                    )
                     cr.show_text(utf8)
 
                     cr.restore()

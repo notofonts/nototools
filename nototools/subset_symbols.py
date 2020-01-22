@@ -54,7 +54,11 @@ def main(argv):
     }
     target_coverage.update(range(0x2800, 0x28FF + 1))  # Braille symbols
 
-    subset.subset_font(source_file_name, 'NotoSansSymbols-Regular-Subsetted.ttf', include=target_coverage)
+    subset.subset_font(
+        source_file_name,
+        'NotoSansSymbols-Regular-Subsetted.ttf',
+        include=target_coverage,
+    )
 
 
 if __name__ == '__main__':

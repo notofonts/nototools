@@ -41,7 +41,9 @@ images at their origins.
 
 Frame = collections.namedtuple('Frame', 'l t w h')
 Advance = collections.namedtuple('Advance', 'int frac')
-FileHeader = collections.namedtuple('FileHeader', 'file name upem ascent descent size font_glyphs num_glyphs')
+FileHeader = collections.namedtuple(
+    'FileHeader', 'file name upem ascent descent size font_glyphs num_glyphs'
+)
 
 
 class GlyphImage(object):
@@ -58,7 +60,9 @@ class GlyphImage(object):
         return self.index < rhs.index
 
     def __repr__(self):
-        return 'index: %3d, adv: %3d+%3d, ltwh: %3d %3d %3d %3d' % ((self.index,) + self.adv + self.frame)
+        return 'index: %3d, adv: %3d+%3d, ltwh: %3d %3d %3d %3d' % (
+            (self.index,) + self.adv + self.frame
+        )
 
     def get(self, x, y, val):
         """Return data at x, y if x, y in frame, else return val."""
@@ -162,7 +166,9 @@ class GlyphImageCollection(object):
         if fr is None:
             frames = [gi.frame for gi in self.image_dict.values()]
             if include_metrics:
-                frames.extend(gi.metrics_frame() for gi in self.image_dict.values())
+                frames.extend(
+                    gi.metrics_frame() for gi in self.image_dict.values()
+                )
             fr = union_frames(frames)
             if include_metrics:
                 self._cmframe = fr
@@ -189,7 +195,9 @@ class LineStripper(object):
 
 
 _glyph_header_re = re.compile(
-    r'^>\s*glyph:\s*(\d+)\s*;' r'\s*(\d+)(?:\s*,\s*(\d+))?\s*;' r'\s*(-?\d+)\s+(-?\d+)\s+(\d+)\s+(\d+)\s*$'
+    r'^>\s*glyph:\s*(\d+)\s*;'
+    r'\s*(\d+)(?:\s*,\s*(\d+))?\s*;'
+    r'\s*(-?\d+)\s+(-?\d+)\s+(\d+)\s+(\d+)\s*$'
 )
 
 
@@ -203,7 +211,10 @@ def write_glyph_image(im, glyph_header_only, fd):
     adv_string = str(im.adv.int)
     if im.adv.frac:
         adv_string += ',%d' % im.adv.frac
-    print('> glyph: %d;%s;%d %d %d %d' % ((im.index, adv_string) + im.frame), file=fd)
+    print(
+        '> glyph: %d;%s;%d %d %d %d' % ((im.index, adv_string) + im.frame),
+        file=fd,
+    )
     if not glyph_header_only:
         print(im.image_str(), file=fd)
 
@@ -243,7 +254,10 @@ def _next_glyph_image(it, file_header):
         row_data = line[1:]
         while row_data:
             if ix >= image.frame.w:
-                raise Exception('line has more than %d values: "%s"' % (image.frame.w, line))
+                raise Exception(
+                    'line has more than %d values: "%s"'
+                    % (image.frame.w, line)
+                )
             if row_data[:2] != '  ':
                 image.data[row_base + ix] = int(row_data[:2], 16)
             row_data = row_data[2:]
@@ -321,7 +335,9 @@ def compute_frame(gi1, gi2, include_metrics=False, pad=None):
         gi = gi1 or gi2
         if gi is None:
             raise ValueError('both arguments are None')
-        return pad_frame(gi.metrics_frame() if include_metrics else gi.frame, pad)
+        return pad_frame(
+            gi.metrics_frame() if include_metrics else gi.frame, pad
+        )
 
     frames = [gi1.frame, gi2.frame]
     if include_metrics:

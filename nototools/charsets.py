@@ -675,7 +675,8 @@ WGL4 = [
 ]
 
 # From https://sites.google.com/site/unicodesymbols/Home/japanese-tv-symbols/arib-unicode-mapping-table
-# With additions from http://www.arib.or.jp/english/html/overview/doc/2-STD-B62v1_0-1p2.pdf
+# With additions from
+# http://www.arib.or.jp/english/html/overview/doc/2-STD-B62v1_0-1p2.pdf
 ARIB = [
     0x00B2,  # ² SUPERSCRIPT TWO
     0x00B3,  # ³ SUPERSCRIPT THREE

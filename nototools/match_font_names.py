@@ -82,7 +82,11 @@ def main():
         nargs='+',
     )
     parser.add_argument(
-        '-s', '--src_dir', help='directory under which to search for files', metavar='dir', required=True
+        '-s',
+        '--src_dir',
+        help='directory under which to search for files',
+        metavar='dir',
+        required=True,
     )
     args = parser.parse_args()
     _print_list(match_files(args.src_dir, _collect_names(args.files)))

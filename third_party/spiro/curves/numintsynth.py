@@ -16,7 +16,9 @@ class Poly:
         self.p0 = p0
         self.coeffs = coeffs
 
-    def eval(self, x):  # TODO: method was broken. Investigate remove possibility.
+    def eval(
+        self, x
+    ):  # TODO: method was broken. Investigate remove possibility.
         y = x ** self.p0
         z = 0
         for c in self.coeffs:

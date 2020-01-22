@@ -33,7 +33,9 @@ def title_from_metadata(metadata):
     return ' '.join(items)
 
 
-CompareOptions = collections.namedtuple('CompareOptions', 'only_cps, except_cps, no_additions, no_removals')
+CompareOptions = collections.namedtuple(
+    'CompareOptions', 'only_cps, except_cps, no_additions, no_removals'
+)
 
 
 _DEFAULT_COMPARE_OPTIONS = CompareOptions(None, None, False, False)
@@ -71,7 +73,9 @@ def compare_data(base_data, target_data, opts=None):
     return added, removed, xadded, xremoved
 
 
-def compare_cmap_data(base_cmap_data, target_cmap_data, scripts, except_scripts, opts=None):
+def compare_cmap_data(
+    base_cmap_data, target_cmap_data, scripts, except_scripts, opts=None
+):
     result = {}
     base_map = cmap_data.create_map_from_table(base_cmap_data.table)
     target_map = cmap_data.create_map_from_table(target_cmap_data.table)
@@ -88,10 +92,14 @@ def compare_cmap_data(base_cmap_data, target_cmap_data, scripts, except_scripts,
     return result
 
 
-def compare_cmap_data_files(base_file, target_file, scripts, except_scripts, opts=None):
+def compare_cmap_data_files(
+    base_file, target_file, scripts, except_scripts, opts=None
+):
     base_cmap_data = cmap_data.read_cmap_data_file(base_file)
     target_cmap_data = cmap_data.read_cmap_data_file(target_file)
-    compare = compare_cmap_data(base_cmap_data, target_cmap_data, scripts, except_scripts, opts)
+    compare = compare_cmap_data(
+        base_cmap_data, target_cmap_data, scripts, except_scripts, opts
+    )
     return compare, base_cmap_data, target_cmap_data
 
 
@@ -103,7 +111,8 @@ def compare_interscript(base_map, base_script, target_script, opts=None):
         missing_scripts.append(target_script)
     if missing_scripts:
         print(
-            'Cannot compare %s and %s, %s not in cmap data.' % (base_script, target_script, ', '.join(missing_scripts))
+            'Cannot compare %s and %s, %s not in cmap data.'
+            % (base_script, target_script, ', '.join(missing_scripts))
         )
         return
     base_data = base_map[base_script]
@@ -118,7 +127,9 @@ def compare_interscript_data(base_cmap_data, scripts, opts=None):
         base_script = scripts[i]
         for j in range(i + 1, len(scripts)):
             target_script = scripts[j]
-            result[base_script, target_script] = compare_interscript(base_map, base_script, target_script, opts)
+            result[base_script, target_script] = compare_interscript(
+                base_map, base_script, target_script, opts
+            )
     return result
 
 
@@ -136,13 +147,18 @@ def _print_detailed(cps, inverted_target=None):
     def show_undefined(start, end):
         if start >= 0:
             if end > start:
-                print('      %04x-%04x Zzzz <%d undefined>' % (start, end, end - start - 1))
+                print(
+                    '      %04x-%04x Zzzz <%d undefined>'
+                    % (start, end, end - start - 1)
+                )
             else:
                 print('      %04x Zzzz <1 undefined>' % start)
 
     for cp in sorted(cps):
         block = unicode_data.block(cp)
-        if block != last_block or (undefined_end > -1 and cp > undefined_end + 1):
+        if block != last_block or (
+            undefined_end > -1 and cp > undefined_end + 1
+        ):
             show_undefined(undefined_start, undefined_end)
             undefined_start, undefined_end = -1, -1
             if block != last_block:
@@ -190,12 +206,22 @@ def _print_detailed(cps, inverted_target=None):
 
 
 def report_cmap_compare(
-    label, added, removed, xadded, xremoved, inverted_target=None, detailed=True, report_same=False
+    label,
+    added,
+    removed,
+    xadded,
+    xremoved,
+    inverted_target=None,
+    detailed=True,
+    report_same=False,
 ):
     def report_cps(label, cps, inverted=None):
         if not cps:
             return
-        print('  %s (%d): %s' % (label, len(cps), lint_config.write_int_ranges(cps)))
+        print(
+            '  %s (%d): %s'
+            % (label, len(cps), lint_config.write_int_ranges(cps))
+        )
         if detailed:
             _print_detailed(cps, inverted)
 
@@ -215,7 +241,9 @@ def report_cmap_compare(
         report_cps('added', added)
         report_cps('added, no longer fallback', added_from_fallback)
         report_cps('removed', removed, inverted_target)
-        report_cps('removed, now in fallback', removed_to_fallback, inverted_target)
+        report_cps(
+            'removed, now in fallback', removed_to_fallback, inverted_target
+        )
         report_cps('added to fallback', xadded, inverted_target)
         report_cps('removed from fallback', xremoved)
 
@@ -239,7 +267,9 @@ def report_compare(compare_result, detailed=True):
     for script in sorted(compare):
         added, removed, xadded, xremoved = compare[script]
         label = '%s # %s' % (script, base_map[script].name)
-        report_cmap_compare(label, added, removed, xadded, xremoved, inverted_target, detailed)
+        report_cmap_compare(
+            label, added, removed, xadded, xremoved, inverted_target, detailed
+        )
 
 
 def report_interscript_compare(compare_result, detailed=True):
@@ -256,24 +286,66 @@ def report_interscript_compare(compare_result, detailed=True):
             target_script,
             base_map[target_script].name,
         )
-        report_cmap_compare(label, added, removed, xadded, xremoved, None, detailed)
+        report_cmap_compare(
+            label, added, removed, xadded, xremoved, None, detailed
+        )
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-b', '--base', help='base cmap data file', metavar='file', required=True)
-    parser.add_argument('-t', '--target', help='target cmap data file', metavar='file')
-    parser.add_argument('-s', '--scripts', help='only these scripts (except ignored)', metavar='code', nargs='+')
-    parser.add_argument('-r', '--ranges', help='only these ranges (except ignored)', metavar='ranges', nargs='+')
-    parser.add_argument('-xs', '--except_scripts', help='ignore these scripts', metavar='code', nargs='+')
-    parser.add_argument('-xr', '--except_ranges', help='ignore these codepoints', metavar='ranges', nargs='+')
     parser.add_argument(
-        '-na', '--no_additions', help='do not report additions (in target ' 'but not base)', action='store_true'
+        '-b',
+        '--base',
+        help='base cmap data file',
+        metavar='file',
+        required=True,
     )
     parser.add_argument(
-        '-nr', '--no_removals', help='do not report removals (in base ' 'but not target)', action='store_true'
+        '-t', '--target', help='target cmap data file', metavar='file'
     )
-    parser.add_argument('-d', '--detailed', help='report details', action='store_true')
+    parser.add_argument(
+        '-s',
+        '--scripts',
+        help='only these scripts (except ignored)',
+        metavar='code',
+        nargs='+',
+    )
+    parser.add_argument(
+        '-r',
+        '--ranges',
+        help='only these ranges (except ignored)',
+        metavar='ranges',
+        nargs='+',
+    )
+    parser.add_argument(
+        '-xs',
+        '--except_scripts',
+        help='ignore these scripts',
+        metavar='code',
+        nargs='+',
+    )
+    parser.add_argument(
+        '-xr',
+        '--except_ranges',
+        help='ignore these codepoints',
+        metavar='ranges',
+        nargs='+',
+    )
+    parser.add_argument(
+        '-na',
+        '--no_additions',
+        help='do not report additions (in target ' 'but not base)',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-nr',
+        '--no_removals',
+        help='do not report removals (in base ' 'but not target)',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-d', '--detailed', help='report details', action='store_true'
+    )
 
     args = parser.parse_args()
     if args.scripts:
@@ -306,7 +378,9 @@ def main():
         report_interscript_compare(result, detailed=args.detailed)
         return
 
-    result = compare_cmap_data_files(args.base, args.target, scripts, except_scripts, opts)
+    result = compare_cmap_data_files(
+        args.base, args.target, scripts, except_scripts, opts
+    )
     report_compare(result, detailed=args.detailed)
 
 

@@ -68,11 +68,20 @@ def _invert_script_to_chars(script_to_chars):
 
 
 class CmapOps(object):
-    def __init__(self, script_to_chars=None, log_events=False, log_details=False, undefined_exceptions=None):
+    def __init__(
+        self,
+        script_to_chars=None,
+        log_events=False,
+        log_details=False,
+        undefined_exceptions=None,
+    ):
         if script_to_chars is None:
             self._script_to_chars = {}
         else:
-            self._script_to_chars = {script: set(script_to_chars[script]) for script in script_to_chars}
+            self._script_to_chars = {
+                script: set(script_to_chars[script])
+                for script in script_to_chars
+            }
         self._log_events = log_events
         self._log_details = log_details
         self._suppressed_blocks = {
@@ -110,7 +119,13 @@ class CmapOps(object):
     def _finish_block(self):
         if self._block and self._log_events and not self._log_details:
             for text in sorted(self._block_count):
-                print('%s: %s' % (text, tool_utils.write_int_ranges(self._block_count[text])))
+                print(
+                    '%s: %s'
+                    % (
+                        text,
+                        tool_utils.write_int_ranges(self._block_count[text]),
+                    )
+                )
 
     def _report_cp(self, cp, text, script):
         if not self._log_events:
@@ -122,7 +137,10 @@ class CmapOps(object):
             print('# block: ' + self._block)
             self._block_count = collections.defaultdict(set)
         if self._log_details:
-            if not (self._block in self._suppressed_blocks or script in self._suppressed_scripts):
+            if not (
+                self._block in self._suppressed_blocks
+                or script in self._suppressed_scripts
+            ):
                 print(self._cp_info(cp), text)
         else:
             self._block_count[text].add(cp)
@@ -261,20 +279,26 @@ class CmapOps(object):
         return sorted(self._script_to_chars[script])
 
     def create_script_to_chars(self):
-        return {script: set(self._script_to_chars[script]) for script in self._script_to_chars}
+        return {
+            script: set(self._script_to_chars[script])
+            for script in self._script_to_chars
+        }
 
     def finish(self):
         self._finish_phase()
 
 
 def _build_block_to_primary_script():
-    """Create a map from block to the primary script in a block.
-  If there are no characters defined in the block, it gets the script 'EXCL',
-  for 'exclude.'  We don't define characters in this block.
-  If the most common script accounts for less than 80% of the defined characters
-  in the block, we use the primary from assigned_primaries, which might be None.
-  It's an error if there's no default primary and it's not listed in
-  assigned_primaries."""
+    """
+    Create a map from block to the primary script in a block.
+    If there are no characters defined in the block, it gets the script 'EXCL',
+    for 'exclude.'  We don't define characters in this block.
+    If the most common script accounts for less than 80% of the defined
+    characters in the block, we use the primary from assigned_primaries,
+    which might be None.
+    It's an error if there's no default primary and it's not listed in
+    assigned_primaries.
+    """
 
     assigned_primaries = {
         'Basic Latin': 'Latn',
@@ -320,7 +344,10 @@ def _build_block_to_primary_script():
             max_script = 'EXCL'  # exclude
         elif float(max_script_count) / num < 0.8:
             info = sorted(script_counts.items(), key=lambda t: (-t[1], t[0]))
-            block_info = '%s %s' % (block, ', '.join('%s/%d' % t for t in info))
+            block_info = '%s %s' % (
+                block,
+                ', '.join('%s/%d' % t for t in info),
+            )
             if block in assigned_primaries:
                 max_script = assigned_primaries[block]
                 # print('assigning primary', block_info, '->', max_script)
@@ -331,7 +358,9 @@ def _build_block_to_primary_script():
             if block in inherited_primaries:
                 max_script = inherited_primaries[block]
             else:
-                sys.stderr.write('ERROR: no inherited primary\n', block, block_info)
+                sys.stderr.write(
+                    'ERROR: no inherited primary\n', block, block_info
+                )
                 max_script = None
         block_to_script[block] = max_script
     return block_to_script
@@ -341,7 +370,9 @@ _block_to_primary_script = None
 
 
 def _primary_script_for_block(block):
-    """Return the primary script for the block, or None if no primary script."""
+    """
+    Return the primary script for the block, or None if no primary script.
+    """
     global _block_to_primary_script
     if not _block_to_primary_script:
         _block_to_primary_script = _build_block_to_primary_script()
@@ -349,8 +380,10 @@ def _primary_script_for_block(block):
 
 
 def _remove_unicode_assignments(cmap_ops):
-    """The starting point is based on the script and script extensions data from
-  Unicode.  Sometimes the assignments seem premature."""
+    """
+    The starting point is based on the script and script extensions data from
+    Unicode.  Sometimes the assignments seem premature.
+    """
     cmap_ops.phase('remove unicode assignments')
 
     # Jelle says A8F1 makes no sense for Bengali since other characters needed
@@ -377,8 +410,11 @@ def _unassign_inherited_and_common_with_extensions(cmap_ops):
 
 
 def _reassign_inherited(cmap_ops):
-    """Assign all 'Zinh' chars to the primary script in their block.
-  Fail if there's no primary script.  'Zinh' is removed from script_to_chars."""
+    """
+    Assign all 'Zinh' chars to the primary script in their block.
+    Fail if there's no primary script.
+    'Zinh' is removed from script_to_chars.
+    """
     cmap_ops.phase('reassign inherited')
     for cp in cmap_ops.script_chars('Zinh'):
         primary_script = _primary_script_for_block(unicode_data.block(cp))
@@ -406,8 +442,10 @@ def _reassign_common(cmap_ops):
 
 
 def _unassign_latin(cmap_ops):
-    """Remove some characters that extensions assigns to Latin but which we don't
-  need there."""
+    """
+    Remove some characters that extensions assigns to Latin but which we don't
+    need there.
+    """
     unwanted_latn = tool_utils.parse_int_ranges(
         """
     0951 0952  # devanagari marks
@@ -523,11 +561,19 @@ def _reassign_common_by_block(cmap_ops):
             cmap_ops.remove(cp, 'Zyyy')
             cmap_ops.add(cp, new_script)
         else:
-            sys.stderr.write('  could not assign %04x %s\n' % (cp, unicode_data.name(cp)))
+            sys.stderr.write(
+                '  could not assign %04x %s\n' % (cp, unicode_data.name(cp))
+            )
 
     if len(used_assignments) != len(block_assignments):
         sys.stderr.write('ERROR: some block assignments unused\n')
-        unused = set([block for block in block_assignments if block not in used_assignments])
+        unused = set(
+            [
+                block
+                for block in block_assignments
+                if block not in used_assignments
+            ]
+        )
         for block in unicode_data.block_names():
             if block in unused:
                 sys.stderr.write('  %s\n' % block)
@@ -542,7 +588,9 @@ def _reassign_common_by_block(cmap_ops):
 
 def _block_cps(block):
     start, end = unicode_data.block_range(block)
-    return frozenset([cp for cp in range(start, end + 1) if unicode_data.is_defined(cp)])
+    return frozenset(
+        [cp for cp in range(start, end + 1) if unicode_data.is_defined(cp)]
+    )
 
 
 def _reassign_by_block(cmap_ops):
@@ -570,7 +618,9 @@ def _reassign_by_block(cmap_ops):
         ('Supplementary Private Use Area-A', '*', 'EXCL'),
         ('Supplementary Private Use Area-B', '*', 'EXCL'),
     ]
-    block_assignments = sorted(block_assignments, key=lambda k: unicode_data.block_range(k[0])[0])
+    block_assignments = sorted(
+        block_assignments, key=lambda k: unicode_data.block_range(k[0])[0]
+    )
 
     cmap_ops.phase('reassign by block')
     char_to_scripts = cmap_ops.create_char_to_scripts()
@@ -585,7 +635,10 @@ def _reassign_by_block(cmap_ops):
             if not unicode_data.is_defined(cp):
                 continue
             if cp not in char_to_scripts and to_script != 'EXCL':
-                sys.stderr.write('reassign missing %04X %s\n' % (cp, unicode_data.name(cp, '<unnamed>')))
+                sys.stderr.write(
+                    'reassign missing %04X %s\n'
+                    % (cp, unicode_data.name(cp, '<unnamed>'))
+                )
                 continue
             if all_scripts:
                 from_list = char_to_scripts[cp]
@@ -610,7 +663,9 @@ def _remove_empty(cmap_ops):
 
 
 def _reassign_symbols(cmap_ops):
-    """Some symbols belong together but get split up when we assign by block."""
+    """
+    Some symbols belong together but get split up when we assign by block.
+    """
     cmap_ops.phase('reassign symbols')
 
     white_arrow_parts = tool_utils.parse_int_ranges('2b00-2b04 1f8ac-1f8ad')
@@ -625,7 +680,9 @@ def _reassign_symbols(cmap_ops):
     cmap_ops.add_all(math_circles, 'SYM2')
 
     # keyboard symbols, user interface symbols, media play symbols
-    misc_tech = tool_utils.parse_int_ranges('2318 231a-231b 2324-2328 232b 237d 23ce-23cf 23e9-23fa 23fb-23fe')
+    misc_tech = tool_utils.parse_int_ranges(
+        '2318 231a-231b 2324-2328 232b 237d 23ce-23cf 23e9-23fa 23fb-23fe'
+    )
     cmap_ops.move_all_to_from(misc_tech, 'SYM2', 'Zsym')
 
     # Split Miscellaneous Symbols into SYM2 and Zsym by related symbols.
@@ -692,7 +749,8 @@ def _reassign_symbols(cmap_ops):
     duplicate_cps = to_sym2 & to_zsym
     if duplicate_cps:
         raise Exception(
-            '%d cps in both from and to symbols: %s' % (len(duplicate_cps), tool_utils.write_int_ranges(duplicate_cps))
+            '%d cps in both from and to symbols: %s'
+            % (len(duplicate_cps), tool_utils.write_int_ranges(duplicate_cps))
         )
 
     missing_cps = set(range(0x2600, 0x2700))
@@ -743,7 +801,8 @@ def _reassign_symbols(cmap_ops):
     cmap_ops.add_all(emoji_symbols, 'SYM2')
     cmap_ops.remove_all(emoji_symbols, 'Zsym')
 
-    # neutral face should go with white smiling/frowning face, which are in Zsym
+    # neutral face should go with white smiling/frowning face,
+    # which are in Zsym
     cmap_ops.add(0x1F610, 'Zsym')
     cmap_ops.remove(0x1F610, 'SYM2')
 
@@ -766,7 +825,9 @@ def _reassign_emoji(cmap_ops):
     color_only_emoji.remove(0x1F0CF)  # playing card black joker
     # remove emoji with a variation selector that allows a text presentation
     # include proposed variants from 2016/08/23
-    color_only_emoji -= unicode_data.get_unicode_emoji_variants('proposed_extra')
+    color_only_emoji -= unicode_data.get_unicode_emoji_variants(
+        'proposed_extra'
+    )
 
     all_emoji = unicode_data.get_emoji()
     cmap_ops.create_script('Zsye')
@@ -823,7 +884,9 @@ def _assign_nastaliq(cmap_ops):
     cmap_ops.add_all(european_digits, 'Aran')
 
     # noto-fonts#368 requests these characters
-    extra_arabic_1 = tool_utils.parse_int_ranges('067b  0684 068a 06b3 0759 0768')
+    extra_arabic_1 = tool_utils.parse_int_ranges(
+        '067b  0684 068a 06b3 0759 0768'
+    )
     cmap_ops.add_all(extra_arabic_1, 'Aran')
 
     # noto-fonts#606 requests a few additional characters
@@ -2633,7 +2696,9 @@ _SCRIPT_REQUIRED = [
 # the source in sorted order with block labels and codepoint names.
 def _regen_script_required():
     """Rerun after editing script required to check/reformat."""
-    script_to_comment_and_data = {script: (comment, data) for script, comment, data in _SCRIPT_REQUIRED}
+    script_to_comment_and_data = {
+        script: (comment, data) for script, comment, data in _SCRIPT_REQUIRED
+    }
     scripts = set(unicode_data.all_scripts())
     for to_script, from_scripts in _MERGED_SCRIPTS_BY_TARGET.items():
         scripts.add(to_script)
@@ -2648,7 +2713,9 @@ def _regen_script_required():
         else:
             script_name = cldr_data.get_english_script_name(script)
             try:
-                unicode_script_name = unicode_data.human_readable_script_name(script)
+                unicode_script_name = unicode_data.human_readable_script_name(
+                    script
+                )
                 if script_name.lower() != unicode_script_name.lower():
                     script_name += ' (%s)' % unicode_script_name
             except KeyError:
@@ -2708,18 +2775,22 @@ def _assign_legacy_phase2(cmap_ops):
     """Assign legacy chars in some scripts, excluding some blocks."""
     legacy_data = cmap_data.read_cmap_data_file('data/noto_cmap_phase2.xml')
     legacy_map = cmap_data.create_map_from_table(legacy_data.table)
-    legacy_script_to_chars = {script: tool_utils.parse_int_ranges(row.ranges) for script, row in legacy_map.items()}
+    legacy_script_to_chars = {
+        script: tool_utils.parse_int_ranges(row.ranges)
+        for script, row in legacy_map.items()
+    }
 
     # The default is to include all legacy characters, except for the chars
     # listed for these scripts, for some default chars, and for some scripts.
 
     # Find out why these were included in the phase two fonts.
     # This excludes lots of punctuation and digits from Cham, Khmer, and Lao
-    # but leaves some common latin characters like quotes, parens, comma/period,
-    # and so on.
+    # but leaves some common latin characters
+    # like quotes, parens, comma/period, and so on.
     exclude_script_ranges = {
         'Cham': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
-        'Deva': '00AF',  # Jelle says this was encoded by accident, should be 00AD
+        # Jelle says this was encoded by accident, should be 00AD
+        'Deva': '00AF',
         'Kthi': '0030-0039',
         'Khmr': '23-26 2A-2B 30-39 3C-3E 40 5B-60 7B-7E 037E',
         'LGC': '03E2',
@@ -2759,13 +2830,19 @@ def _assign_legacy_phase2(cmap_ops):
 def _check_CJK():
     # not used
     # check CJK
-    cmap_ops.log('check cjk legacy')  # TODO: cmap_ops is undefined!  # noqa:F821
+    cmap_ops.log(
+        'check cjk legacy'
+    )  # TODO: cmap_ops is undefined!  # noqa:F821
     legacy_cjk_chars = set()
     for script in _MERGED_SCRIPTS_BY_TARGET['CJK']:
-        if script in legacy_script_to_chars:  # TODO: legacy_script_to_chars is undefined!  # noqa:F821
+        if (
+            script in legacy_script_to_chars
+        ):  # TODO: legacy_script_to_chars is undefined!  # noqa:F821
             legacy_cjk_chars |= legacy_script_to_chars[script]  # noqa:F821
 
-    cjk_chars = script_to_chars['CJK']  # TODO: script_to_chars is undefined!  # noqa:F821
+    cjk_chars = script_to_chars[
+        'CJK'
+    ]  # TODO: script_to_chars is undefined!  # noqa:F821
     not_in_legacy = cjk_chars - legacy_cjk_chars
     # ignore plane 2 and above
     not_in_legacy -= set(range(0x20000, 0x120000))
@@ -2788,7 +2865,9 @@ def _assign_bidi_mirroring(cmap_ops):
         mirrored_in_script = cps & mirrored
         if not mirrored_in_script:
             continue
-        sibs = set(unicode_data.bidi_mirroring_glyph(cp) for cp in mirrored_in_script)
+        sibs = set(
+            unicode_data.bidi_mirroring_glyph(cp) for cp in mirrored_in_script
+        )
         missing_sibs = sibs - mirrored_in_script
         if missing_sibs:
             cmap_ops.log('adding %d missing bidi chars' % len(missing_sibs))
@@ -2885,7 +2964,9 @@ def _assign_programming_lang_symbols(cmap_ops):
 
     # add extra not in the set above:
     # (from github.com/adobe-fonts/source-code-pro/issues/114)
-    haskell_cps |= tool_utils.parse_int_ranges("""2202 2210 2220 2234 2235 2284 2285 2289""")
+    haskell_cps |= tool_utils.parse_int_ranges(
+        """2202 2210 2220 2234 2235 2284 2285 2289"""
+    )
 
     # see comment from joeyaiello on noto-fonts/issues/669
     # others mentioned in that comment are already in haskell
@@ -2932,9 +3013,10 @@ def _assign_programming_lang_symbols(cmap_ops):
 
     # do not use circled uppercase letters as a substitute for APL underscored
     # letters.  Dyalog APL does this and hacks a font to make them to render as
-    # underscored. Also apl385 does this and renders these as underscored.  This
-    # is contrary to Unicode (which should just have gone ahead and encoded these,
-    # but I guess balked since they were already kind of deprecated by that time).
+    # underscored. Also apl385 does this and renders these as underscored.
+    # This is contrary to Unicode (which should just have gone ahead and
+    # encoded these, but I guess balked since they were already kind of
+    # deprecated by that time).
     # apl_cps |= tool_utils.parse_int_ranges('24B6-24CF')
 
     # additionally requested relational algebra symbols
@@ -2997,7 +3079,10 @@ def _assign_symbols_from_groups(cmap_ops):
                     break
                 close_p = ranges.find(')', open_p + 1)
                 if close_p < 0:
-                    raise Exception('unclosed paren in ranges on line %d "%s"' % (lineix, line))
+                    raise Exception(
+                        'unclosed paren in ranges on line %d "%s"'
+                        % (lineix, line)
+                    )
                 if parts is None:
                     parts = []
                 parts.append(ranges[ix:open_p])
@@ -3013,7 +3098,9 @@ def _assign_symbols_from_groups(cmap_ops):
                 sys.stderr.write('problem on %d "%s"\n' % (lineix, line))
                 raise
             if len(cps) > 50:
-                sys.stderr.write('large range (%d) on %d "%s"\n' % (len(cps), lineix, line))
+                sys.stderr.write(
+                    'large range (%d) on %d "%s"\n' % (len(cps), lineix, line)
+                )
 
             cmap_ops.log('group: %s (%d)' % (name, len(cps)))
             if add:
@@ -3102,10 +3189,14 @@ def _assign_math(cmap_ops):
 
     # Add back blocks that get split up too arbitrarily
     cmap_ops.add_all(_block_cps('Mathematical Operators'), 'Zmth')
-    cmap_ops.add_all(_block_cps('Miscellaneous Mathematical Symbols-B'), 'Zmth')
+    cmap_ops.add_all(
+        _block_cps('Miscellaneous Mathematical Symbols-B'), 'Zmth'
+    )
 
     # Add back some symbols for math/logic
-    math_geom = tool_utils.parse_int_ranges('25af/b3/b7/bd/c1/ca/fb', allow_compressed=True)
+    math_geom = tool_utils.parse_int_ranges(
+        '25af/b3/b7/bd/c1/ca/fb', allow_compressed=True
+    )
     cmap_ops.add_all(math_geom, 'Zmth')
 
     # Add dotted circle, we have combining marks
@@ -3131,20 +3222,26 @@ def _assign_math(cmap_ops):
 
     # Add greek regular, we can have combining marks on them too
     # These correspond to the math greek alpha ranges
-    greek_math_regular = tool_utils.parse_int_ranges('391-3a1 3f4 3a3-3a9 2207 3b1-3c9 2202 3f5 3d1 3f0 3d5 3f1 3d6')
+    greek_math_regular = tool_utils.parse_int_ranges(
+        '391-3a1 3f4 3a3-3a9 2207 3b1-3c9 2202 3f5 3d1 3f0 3d5 3f1 3d6'
+    )
     cmap_ops.add_all(greek_math_regular, 'Zmth')
 
     # Add primes
     cmap_ops.add_all(tool_utils.parse_int_ranges('2032-2037 2057'), 'Zmth')
 
     # Duplicate some combining marks from LGC so they can apply to math chars
-    more_combining_marks = tool_utils.parse_int_ranges('302-303 305 307-308 330')
+    more_combining_marks = tool_utils.parse_int_ranges(
+        '302-303 305 307-308 330'
+    )
     cmap_ops.add_all(more_combining_marks, 'Zmth')
 
 
 def _assign_dotted_circle(cmap_ops):
-    """All scripts with combining marks should provide dotted circle (and provide
-  an appropriate rendering of the mark in combination with it)."""
+    """
+    All scripts with combining marks should provide dotted circle (and provide
+    an appropriate rendering of the mark in combination with it).
+    """
     cmap_ops.phase('assign dotted circle')
 
     def is_combining(cp):
@@ -3161,7 +3258,11 @@ def _assign_dotted_circle(cmap_ops):
         if nsm:
             count = len(nsm)
             range_str = tool_utils.write_int_ranges(sorted(nsm)[:8])
-            msg = '%s has %d marks: %s' % (script, count, range_str if count < 8 else range_str + '...')
+            msg = '%s has %d marks: %s' % (
+                script,
+                count,
+                range_str if count < 8 else range_str + '...',
+            )
             cmap_ops.log(msg)
             cmap_ops.add(0x25CC, script)
 
@@ -3232,7 +3333,10 @@ def build_script_to_chars(log_level):
     temp_defined = {0x20BF}
 
     cmap_ops = CmapOps(
-        script_to_chars, log_events=log_events, log_details=log_details, undefined_exceptions=temp_defined
+        script_to_chars,
+        log_events=log_events,
+        log_details=log_details,
+        undefined_exceptions=temp_defined,
     )
 
     _remove_unicode_assignments(cmap_ops)
@@ -3304,7 +3408,11 @@ def _dump_primaries():
         primary_script = _primary_script_for_block(block)
         print(
             '%13s %6s %s'
-            % ('%04X-%04X' % block_range, '\'%s\'' % primary_script if primary_script else '------', block)
+            % (
+                '%04X-%04X' % block_range,
+                '\'%s\'' % primary_script if primary_script else '------',
+                block,
+            )
         )
 
 
@@ -3314,17 +3422,34 @@ def main():
     parser.add_argument(
         '-o',
         '--outfile',
-        help='name of cmap file to output ("%s" if name ' 'omitted)' % DEFAULT_OUTFILE,
+        help='name of cmap file to output ("%s" if name '
+        'omitted)' % DEFAULT_OUTFILE,
         metavar='file',
         nargs='?',
         default=None,
         const=DEFAULT_OUTFILE,
     )
-    parser.add_argument('-m', '--merge', help='merge excluded/fallback data from file', metavar='file')
     parser.add_argument(
-        '-l', '--loglevel', help='log detail 0-2', metavar='level', nargs='?', type=int, const=1, default=0
+        '-m',
+        '--merge',
+        help='merge excluded/fallback data from file',
+        metavar='file',
     )
-    parser.add_argument('--regen', help='reformat script required data, no cmap generation', action='store_true')
+    parser.add_argument(
+        '-l',
+        '--loglevel',
+        help='log detail 0-2',
+        metavar='level',
+        nargs='?',
+        type=int,
+        const=1,
+        default=0,
+    )
+    parser.add_argument(
+        '--regen',
+        help='reformat script required data, no cmap generation',
+        action='store_true',
+    )
 
     args = parser.parse_args()
     if args.regen:

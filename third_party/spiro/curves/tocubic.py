@@ -34,7 +34,9 @@ def bz_eval(bz, t):
     degree = len(bz) - 1
     mt = 1 - t
     if degree == 3:
-        return pt_wsum(bz, [mt * mt * mt, 3 * mt * mt * t, 3 * mt * t * t, t * t * t])
+        return pt_wsum(
+            bz, [mt * mt * mt, 3 * mt * mt * t, 3 * mt * t * t, t * t * t]
+        )
     elif degree == 2:
         return pt_wsum(bz, [mt * mt, 2 * mt * t, t * t])
     elif degree == 1:
@@ -43,7 +45,13 @@ def bz_eval(bz, t):
 
 def bz_deriv(bz):
     degree = len(bz) - 1
-    return [(degree * (bz[i + 1][0] - bz[i][0]), degree * (bz[i + 1][1] - bz[i][1])) for i in range(degree)]
+    return [
+        (
+            degree * (bz[i + 1][0] - bz[i][0]),
+            degree * (bz[i + 1][1] - bz[i][1]),
+        )
+        for i in range(degree)
+    ]
 
 
 def bz_arclength(bz, n=10):
@@ -99,7 +107,7 @@ def bz_arclength_rk4(bz, n=10):
     dt = 1.0 / n
     t = 0
     ys = [0]
-    for i in range(n):
+    for _ in range(n):
         dydx = arclength_deriv(t, ys)
         rk4(ys, dydx, t, dt, arclength_deriv)
         t += dt
@@ -116,16 +124,26 @@ def fit_cubic_arclen(z0, z1, arclen, th0, th1, aab):
     cth1, sth1 = -cos(th1), -sin(th1)
     armlen = 0.66667 * chord
     darmlen = 1e-6 * armlen
-    for i in range(10):
+    for _ in range(10):
         a = armlen * aab
         b = armlen - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [
+            z0,
+            (z0[0] + cth0 * a, z0[1] + sth0 * a),
+            (z1[0] + cth1 * b, z1[1] + sth1 * b),
+            z1,
+        ]
         actual_s = bz_arclength_rk4(bz)
         if abs(arclen - actual_s) < 1e-12:
             break
         a = (armlen + darmlen) * aab
         b = (armlen + darmlen) - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [
+            z0,
+            (z0[0] + cth0 * a, z0[1] + sth0 * a),
+            (z1[0] + cth1 * b, z1[1] + sth1 * b),
+            z1,
+        ]
         actual_s2 = bz_arclength_rk4(bz)
         ds = (actual_s2 - actual_s) / darmlen
         # print('% armlen = ', armlen)
@@ -134,7 +152,12 @@ def fit_cubic_arclen(z0, z1, arclen, th0, th1, aab):
         armlen += (arclen - actual_s) / ds
     a = armlen * aab
     b = armlen - a
-    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+    bz = [
+        z0,
+        (z0[0] + cth0 * a, z0[1] + sth0 * a),
+        (z1[0] + cth1 * b, z1[1] + sth1 * b),
+        z1,
+    ]
     return bz
 
 
@@ -169,7 +192,7 @@ def measure_bz_rk4(bz, arclen, th_fn, n=10):
     dt = 1.0 / n
     t = 0
     ys = [0, 0]
-    for i in range(n):
+    for _ in range(n):
         dydx = measure_derivs(t, ys)
         rk4(ys, dydx, t, dt, measure_derivs)
         t += dt
@@ -276,7 +299,9 @@ def test_draw_cornu():
     plot_prolog()
     thresh = 1e-6
     print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print(
+        '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    )
     s0 = 0
     imax = 200
     x0, y0, scale = 36, 100, 500
@@ -352,7 +377,9 @@ def pcorn_segment_to_bzs_optim(curve, s0, s1, thresh, optim):
         r = thresh
         for i in range(5):
             tmid = (0.5 * (l ** gamma + r ** gamma)) ** (1 / gamma)
-            result, score = pcorn_segment_to_bzs_optim_inner(curve, s0, s1, tmid, nmax)
+            result, score = pcorn_segment_to_bzs_optim_inner(
+                curve, s0, s1, tmid, nmax
+            )
             if score < tmid:
                 l = max(l, score)
                 r = tmid
@@ -406,23 +433,38 @@ def fit_cubic_arclen_forplot(z0, z1, arclen, th0, th1, aab):
     cth1, sth1 = -cos(th1), -sin(th1)
     armlen = 0.66667 * chord
     darmlen = 1e-6 * armlen
-    for i in range(10):
+    for _ in range(10):
         a = armlen * aab
         b = armlen - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [
+            z0,
+            (z0[0] + cth0 * a, z0[1] + sth0 * a),
+            (z1[0] + cth1 * b, z1[1] + sth1 * b),
+            z1,
+        ]
         actual_s = bz_arclength_rk4(bz)
         if abs(arclen - actual_s) < 1e-12:
             break
         a = (armlen + darmlen) * aab
         b = (armlen + darmlen) - a
-        bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+        bz = [
+            z0,
+            (z0[0] + cth0 * a, z0[1] + sth0 * a),
+            (z1[0] + cth1 * b, z1[1] + sth1 * b),
+            z1,
+        ]
         actual_s2 = bz_arclength_rk4(bz)
         ds = (actual_s2 - actual_s) / darmlen
         # print('% armlen = ', armlen)
         armlen += (arclen - actual_s) / ds
     a = armlen * aab
     b = armlen - a
-    bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+    bz = [
+        z0,
+        (z0[0] + cth0 * a, z0[1] + sth0 * a),
+        (z1[0] + cth1 * b, z1[1] + sth1 * b),
+        z1,
+    ]
     return bz, a, b
 
 
@@ -452,7 +494,12 @@ def plot_errors_2d(t0, t1, as_ppm):
         b = 0.8 * chord * (ys - y - 1) / ys
         for x in range(xs):
             a = 0.8 * chord * x / xs
-            bz = [z0, (z0[0] + cth0 * a, z0[1] + sth0 * a), (z1[0] + cth1 * b, z1[1] + sth1 * b), z1]
+            bz = [
+                z0,
+                (z0[0] + cth0 * a, z0[1] + sth0 * a),
+                (z1[0] + cth1 * b, z1[1] + sth1 * b),
+                z1,
+            ]
             s_bz = bz_arclength(bz, 10)
 
             def th_fn_scaled(s):

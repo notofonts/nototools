@@ -34,7 +34,11 @@ def _set_ompl():
     global OMPL
     unicode_data.load_data()
     bmg_data = unicode_data._bidi_mirroring_glyph_data
-    OMPL = {char: bmg for (char, bmg) in bmg_data.items() if float(unicode_data.age(char)) <= 5.1}
+    OMPL = {
+        char: bmg
+        for (char, bmg) in bmg_data.items()
+        if float(unicode_data.age(char)) <= 5.1
+    }
 
 
 ZWSP = [0x200B]
@@ -249,20 +253,27 @@ ur_bucket_info = [[] for i in range(128)]
 
 
 def _setup_unicoderange_data():
-    """The unicoderange data used in the os/2 table consists of slightly under
-    128 'buckets', each of which consists of one or more 'ranges' of codepoints.
-    Each range has a name, start, and end.  Bucket 57 is special, it consists of
-    all non-BMP codepoints and overlaps the other ranges, though in the data it
-    corresponds to the high and low UTF-16 surrogate code units.  The other ranges
-    are all disjoint.
+    """
+    The unicoderange data used in the os/2 table consists of slightly under
+    128 'buckets', each of which consists of one or more 'ranges'
+    of codepoints.
+    Each range has a name, start, and end.
+    Bucket 57 is special, it consists of all non-BMP codepoints and overlaps
+    the other ranges, though in the data it corresponds
+    to the high and low UTF-16 surrogate code units.
+    The other ranges are all disjoint.
 
-    We build two tables.  ur_data is a list of the ranges, consisting of the
-    start, end, bucket index, and name.  It is sorted by range start.  ur_bucket_info
-    is a list of buckets in bucket index order; each entry is a list of the tuples
-    in ur_data that belong to that bucket.
+    We build two tables.
+    ur_data is a list of the ranges, consisting of the
+    start, end, bucket index, and name.
+    It is sorted by range start.
+    ur_bucket_info is a list of buckets in bucket index order;
+    each entry is a list of the tuples in ur_data that belong to that bucket.
 
-    This is called by functions that require these tables.  On first use it builds
-    ur_data and ur_bucket_info, which should remain unchanged thereafter."""
+    This is called by functions that require these tables.
+    On first use it builds ur_data and ur_bucket_info,
+    which should remain unchanged thereafter.
+    """
 
     if ur_data:
         return
@@ -281,10 +292,12 @@ def _setup_unicoderange_data():
 
 
 def collect_unicoderange_info(cmap):
-    """Return a list of 2-tuples, the first element a count of the characters in a
-    range, the second element the 4-tuple of information about that range: start,
-    end, bucket number, and name.  Only ranges for which the cmap has a character
-    are included."""
+    """
+    Return a list of 2-tuples, the first element a count of the characters in a
+    range, the second element the 4-tuple of information about that range:
+    start, end, bucket number, and name.
+    Only ranges for which the cmap has a character are included.
+    """
 
     _setup_unicoderange_data()
     range_count = 0
@@ -325,7 +338,9 @@ def unicoderange_bucket_index_to_info(bucket_index):
 
 
 def unicoderange_bucket_index_to_name(bucket_index):
-    return unicoderange_bucket_info_name(unicoderange_bucket_index_to_info(bucket_index))
+    return unicoderange_bucket_info_name(
+        unicoderange_bucket_index_to_info(bucket_index)
+    )
 
 
 if not OMPL:

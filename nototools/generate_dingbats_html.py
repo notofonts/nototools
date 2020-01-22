@@ -90,8 +90,11 @@ def _cleanlines(textfile):
 
 
 class CodeList(object):
-    """An ordered list of code points (ints).  These might map to other (PUA) code
-  points that the font knows how to display."""
+    """
+    An ordered list of code points (ints).
+    These might map to other (PUA) code points
+    that the font knows how to display.
+    """
 
     @staticmethod
     def fromfile(filename):
@@ -102,7 +105,9 @@ class CodeList(object):
         elif filename.endswith('.ttf') or filename.endswith('.otf'):
             return CodeList.fromfontcmap(filename)
         else:
-            raise Exception('unrecognized file type %s for CodeList.fromfile' % filename)
+            raise Exception(
+                'unrecognized file type %s for CodeList.fromfile' % filename
+            )
 
     @staticmethod
     def fromspec(spec):
@@ -131,7 +136,9 @@ class CodeList(object):
 
     @staticmethod
     def fromrangetext(cpranges):
-        return CodeList.fromset(tool_utils.parse_int_ranges(cpranges, allow_compressed=True))
+        return CodeList.fromset(
+            tool_utils.parse_int_ranges(cpranges, allow_compressed=True)
+        )
 
     @staticmethod
     def fromrangefile(cprange_file):
@@ -144,7 +151,12 @@ class CodeList(object):
 
     @staticmethod
     def fromlisttext(cplist):
-        codes = tool_utils.parse_int_ranges(cplist, allow_duplicates=True, return_set=False, allow_compressed=True)
+        codes = tool_utils.parse_int_ranges(
+            cplist,
+            allow_duplicates=True,
+            return_set=False,
+            allow_compressed=True,
+        )
         return CodeList.fromlist(codes)
 
     @staticmethod
@@ -266,7 +278,9 @@ def _load_codelist(codelist_spec, data_dir, codelistfile_map):
         if codelist_spec.endswith('.txt'):
             codelist_type = 'file'
         else:
-            raise Exception('cannot determine type of codelist spec "%s"' % codelist_spec)
+            raise Exception(
+                'cannot determine type of codelist spec "%s"' % codelist_spec
+            )
     if codelist_type != 'file':
         codelist = CodeList.fromtext(codelist_spec, codelist_type)
     else:
@@ -325,7 +339,9 @@ class Target(object):
     def generate_text(self, metrics, flag_sets):
         raise NotImplementedError
 
-    def generate_html(self, tindex, context, metrics, flag_sets, cp_to_targets):
+    def generate_html(
+        self, tindex, context, metrics, flag_sets, cp_to_targets
+    ):
         raise NotImplementedError
 
 
@@ -341,7 +357,9 @@ class SequenceListTarget(Target):
     def generate_text(self, metrics, flag_sets):
         raise NotImplementedError
 
-    def generate_html(self, tindex, context, metrics, flag_sets, cp_to_targets):
+    def generate_html(
+        self, tindex, context, metrics, flag_sets, cp_to_targets
+    ):
         lines = ['<h3 id="target_%d">%s</h3>' % (tindex, self.name)]
         lines.append('<div class="%s line">' % self.used_font[0])
         for seq in self.sequencelist:
@@ -369,14 +387,18 @@ class CodeTableTarget(Target):
             line = ['%3d' % index]
             line.append('%5s' % ('%04x' % cp))
             for rkey, keyinfos in self.used_fonts:
-                match = any(codelist.contains(cp) for _, _, codelist in keyinfos)
+                match = any(
+                    codelist.contains(cp) for _, _, codelist in keyinfos
+                )
                 line.append(rkey if match else ('-' * len(rkey)))
             line.append(unicode_data.age(cp))
             line.append(_flagged_name(cp, flag_sets))
             lines.append(' '.join(line))
         return '\n'.join(lines)
 
-    def generate_html(self, tindex, context, metrics, flag_sets, cp_to_targets):
+    def generate_html(
+        self, tindex, context, metrics, flag_sets, cp_to_targets
+    ):
         dump_metrics = False
 
         if dump_metrics:
@@ -451,11 +473,16 @@ class CodeTableTarget(Target):
                     line.append('<td>&nbsp;')
             name = _flagged_name(cp, flag_sets)
             if metrics is not None:
-                cp_metrics = _get_cp_metrics(metrics_font, cp) if metrics_font else None
+                cp_metrics = (
+                    _get_cp_metrics(metrics_font, cp) if metrics_font else None
+                )
                 if cp_metrics:
                     lsb, rsb, wid, adv, cy = cp_metrics
                     if dump_metrics:
-                        print('%04x # %4d, %4d, %4d, %s' % (cp, lsb, adv, cy, name))
+                        print(
+                            '%04x # %4d, %4d, %4d, %s'
+                            % (cp, lsb, adv, cy, name)
+                        )
 
                     if cp in metrics:
                         nlsb, nadv, ncy = metrics[cp]
@@ -463,16 +490,39 @@ class CodeTableTarget(Target):
                         nlsb, nadv, ncy = lsb, adv, cy
                     nrsb = nadv - wid - nlsb
 
-                    line.append('<td>%d%s' % (lsb, '&rarr;<b>%d</b>' % nlsb if lsb != nlsb else ''))
+                    line.append(
+                        '<td>%d%s'
+                        % (
+                            lsb,
+                            '&rarr;<b>%d</b>' % nlsb if lsb != nlsb else '',
+                        )
+                    )
                     line.append('<td>%d' % wid)
-                    line.append('<td>%d%s' % (rsb, '&rarr;<b>%d</b>' % nrsb if rsb != nrsb else ''))
-                    line.append('<td>%d%s' % (adv, '&rarr;<b>%d</b>' % nadv if adv != nadv else ''))
-                    line.append('<td>%d%s' % (cy, '&rarr;<b>%d</b>' % ncy if cy != ncy else ''))
+                    line.append(
+                        '<td>%d%s'
+                        % (
+                            rsb,
+                            '&rarr;<b>%d</b>' % nrsb if rsb != nrsb else '',
+                        )
+                    )
+                    line.append(
+                        '<td>%d%s'
+                        % (
+                            adv,
+                            '&rarr;<b>%d</b>' % nadv if adv != nadv else '',
+                        )
+                    )
+                    line.append(
+                        '<td>%d%s'
+                        % (cy, '&rarr;<b>%d</b>' % ncy if cy != ncy else '')
+                    )
                 else:
                     line.append('<td><td><td><td><td>')
             line.append('<td>%s' % unicode_data.age(cp))
             line.append('<td>%s' % name)
-            line.append('<td>%s' % _target_line(cp, tindex, cp_to_targets.get(cp)))
+            line.append(
+                '<td>%s' % _target_line(cp, tindex, cp_to_targets.get(cp))
+            )
             lines.append(''.join(line))
         lines.append('</table>')
         return '\n'.join(lines)
@@ -517,9 +567,17 @@ def _load_fonts(data_list, data_dir, codelist_map):
             font = ttLib.TTFont(fontpath)
             if not name:
                 names = font_data.get_name_records(font)
-                name = names[16] if 16 in names else names[1] if 1 in names else None
+                name = (
+                    names[16]
+                    if 16 in names
+                    else names[1]
+                    if 1 in names
+                    else None
+                )
                 if not name:
-                    raise Exception('cannot read name from font "%s"' % fontpath)
+                    raise Exception(
+                        'cannot read name from font "%s"' % fontpath
+                    )
             if not codelistfile:
                 codelist = CodeList.fromset(font_data.get_cmap(font))
 
@@ -605,7 +663,9 @@ def _load_targets(target_data, fonts, data_dir, codelist_map):
             codelist = _load_codelist(codelist_spec, data_dir, codelist_map)
             prefer_fonts = target[3] if len(target) > 3 else None
             omit_fonts = target[4] if len(target) > 4 else None
-            used_fonts = _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts)
+            used_fonts = _select_used_fonts(
+                codelist, fonts, prefer_fonts, omit_fonts
+            )
             if not used_fonts:
                 raise Exception('no fonts used by target %s' % name)
             result.append(Target.from_table_data(name, codelist, used_fonts))
@@ -616,7 +676,9 @@ def _load_targets(target_data, fonts, data_dir, codelist_map):
             codelists = [CodeList.fromlisttext(cl) for cl in lists]
             suffix = _create_suffix(target[3])
             font_tuple = _select_font(fonts, target[4])
-            result.append(Target.from_sequence_data(name, codelists, suffix, font_tuple))
+            result.append(
+                Target.from_sequence_data(name, codelists, suffix, font_tuple)
+            )
     return tuple(result)
 
 
@@ -639,18 +701,23 @@ def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
                 if codes_or_spec is None:
                     # we only know about '_emoji_' and '_math_'
                     if exp == '_emoji_':
-                        codes = unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants('proposed_extra')
+                        codes = unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants(
+                            'proposed_extra'
+                        )
                     elif exp == '_math_':
                         codes = unicode_data.chars_with_property('Math')
                     else:
                         raise Exception('unknown special codeset "%s"' % exp)
                 else:
-                    codes = _load_codelist(codes_or_spec, data_dir, codelist_map).codeset()
+                    codes = _load_codelist(
+                        codes_or_spec, data_dir, codelist_map
+                    ).codeset()
                 flag_sets[exp] = codes
         if op == '|':
             if not result:
-                # it appers that python 'optimizes' |= by replacing the lhs by rhs if
-                # lhs is an empty set, but this changes the type of lhs to frozenset...
+                # it appers that python 'optimizes' |= by replacing
+                # the lhs by rhs if lhs is an empty set,
+                # but this changes the type of lhs to frozenset...
                 result = set(codes)
             else:
                 result |= codes
@@ -665,14 +732,16 @@ def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
 
 
 def _load_flags(flag_data, data_dir, codelist_map):
-    """Flag data is a list of tuples of defined sets or flags and expressions, see
-  _read_flag_data_from_file for more info.
-  This returns a map from set name to a tuple of (cp_set, bool) where True
-  means the flag is set for a cp if it is in the cp_set, and false means the
-  flag is set if the cp is not in the cp_set.
+    """
+    Flag data is a list of tuples of defined sets or flags and expressions, see
+    _read_flag_data_from_file for more info.
+    This returns a map from set name to a tuple of (cp_set, bool) where True
+    means the flag is set for a cp if it is in the cp_set, and false means the
+    flag is set if the cp is not in the cp_set.
 
-  This can fail since the code processing the flag_data does not actually try
-  to load the codelists."""
+    This can fail since the code processing the flag_data does not actually try
+    to load the codelists.
+    """
 
     flag_sets = {}
     flag_map = {}
@@ -683,19 +752,23 @@ def _load_flags(flag_data, data_dir, codelist_map):
             if set_name in ['_emoji_', '_math_']:
                 set_codes = None  # gets created by _create_codeset_from_expr
             else:
-                set_codes = _load_codelist(t2, data_dir, codelist_map).codeset()
+                set_codes = _load_codelist(
+                    t2, data_dir, codelist_map
+                ).codeset()
             flag_sets[set_name] = set_codes
         else:
             flag_name = t0
             flag_in = t1
-            flag_set = _create_codeset_from_expr(t2, flag_sets, data_dir, codelist_map)
+            flag_set = _create_codeset_from_expr(
+                t2, flag_sets, data_dir, codelist_map
+            )
             flag_map[flag_name] = (flag_set, flag_in)
     return flag_map
 
 
 def _load_fonts_targets_flags(font_data, target_data, flag_data, data_dir):
-    # we cache the codelists to avoid building them twice if they're referenced by
-    # both fonts and targets, not a big deal but...
+    # we cache the codelists to avoid building them twice
+    # if they're referenced by both fonts and targets, not a big deal but...
     codelist_map = {}
     fonts = _load_fonts(font_data, data_dir, codelist_map)
     targets = _load_targets(target_data, fonts, data_dir, codelist_map)
@@ -806,7 +879,9 @@ def _read_target_data_from_file(filename):
             name, rest = line[len(kDefineDirective) :].split('=')
             name = name.strip()
             if name in defines:
-                raise Exception('name %s already defined in %s' % (name, filename))
+                raise Exception(
+                    'name %s already defined in %s' % (name, filename)
+                )
             rest = rest.strip().split()
             defines[name] = tuple(rest)
             continue
@@ -822,7 +897,9 @@ def _read_target_data_from_file(filename):
             elif name == 'omit':
                 omit_fallback = rest
             else:
-                raise Exception('default only understands \'prefer\' or \'omit\'')
+                raise Exception(
+                    'default only understands \'prefer\' or \'omit\''
+                )
             continue
         if line.startswith(kTypeDirective):
             # !type table|sequence
@@ -830,19 +907,30 @@ def _read_target_data_from_file(filename):
             if value in {'table', 'sequence'}:
                 target_type = value
             else:
-                raise Exception('type only understands \'table\' or \'sequence\'')
+                raise Exception(
+                    'type only understands \'table\' or \'sequence\''
+                )
             continue
         info = [k.strip() for k in line.split(';')]
         if len(info) < 2:
             raise Exception('need at least two fields in "%s"' % line)
         if target_type == 'table':
-            # name;character spec or filename;prefer_id... or empty;omit_id... or empty
-            add_index_list_or_defined(info, 2, prefer_fallback, defines)  # preferred
-            add_index_list_or_defined(info, 3, omit_fallback, defines)  # omitted
+            # name;character spec
+            # or filename;prefer_id...
+            # or empty;omit_id...
+            # or empty
+            add_index_list_or_defined(
+                info, 2, prefer_fallback, defines
+            )  # preferred
+            add_index_list_or_defined(
+                info, 3, omit_fallback, defines
+            )  # omitted
             target_data.append(tuple(['table'] + info))
         elif target_type == 'sequence':
             if len(info) < 4:
-                raise Exception('need four fields in sequence data in "%s"' % line)
+                raise Exception(
+                    'need four fields in sequence data in "%s"' % line
+                )
             target_data.append(tuple(['sequence'] + info))
 
     return target_data
@@ -866,7 +954,9 @@ def _flagged_name(cp, flag_sets):
     return name
 
 
-def generate_text(outfile, title, fonts, targets, flag_sets, metrics, data_dir):
+def generate_text(
+    outfile, title, fonts, targets, flag_sets, metrics, data_dir
+):
     outfile.write(title + '\n')
     outfile.write('\n')
     outfile.write('Fonts:\n')
@@ -887,7 +977,9 @@ def _generate_fontkey(fonts, targets, data_dir):
     lines = ['<p style="margin-bottom:5px"><b>Targets</b>']
     lines.append('<div style="margin-left:20px"><table class="key">')
     for tid, target in enumerate(targets):
-        lines.append('<tr><th><a href="#target_%s">%s</a>' % (tid, target.name))
+        lines.append(
+            '<tr><th><a href="#target_%s">%s</a>' % (tid, target.name)
+        )
     lines.append('</table></div>')
 
     lines.append('<p style="margin-bottom:5px"><b>Fonts</b>')
@@ -931,7 +1023,9 @@ def _generate_styles(fonts, relpath):
                 else:
                     font = path.join(relpath, path.basename(font))
                 facelines.append(face_pat % (kname, font))
-                classlines.append('.%s { font-family: "%s", "noto_0" }' % (kname, kname))
+                classlines.append(
+                    '.%s { font-family: "%s", "noto_0" }' % (kname, kname)
+                )
 
     lines = []
     lines.extend(facelines)
@@ -980,7 +1074,9 @@ def _get_cp_metrics(font, cp):
     if not pen.bounds:
         return None
     xmin, ymin, xmax, ymax = pen.bounds
-    return GMetrics(xmin, g.width - xmax, xmax - xmin, g.width, (ymin + ymax) / 2)
+    return GMetrics(
+        xmin, g.width - xmax, xmax - xmin, g.width, (ymin + ymax) / 2
+    )
 
 
 _expr_re = re.compile(r'(\||&|(?<![0-9a-fA-F])-(?![0-9a-fA-F]))')
@@ -1064,17 +1160,23 @@ def _read_flag_data_from_file(filename):
             if line.startswith('!'):
                 m = def_re.match(line)
                 if not m:
-                    raise Exception('could not match definition line "%s"' % line)
+                    raise Exception(
+                        'could not match definition line "%s"' % line
+                    )
                 def_name = m.group(1)
                 def_codelist = m.group(2)
                 if def_name in def_names:
-                    raise Exception('more than one flag definition named "%s"' % def_name)
+                    raise Exception(
+                        'more than one flag definition named "%s"' % def_name
+                    )
                 def_names.add(def_name)
                 def_info.append(('!define', def_name, def_codelist))
             else:
                 m = flag_re.match(line)
                 if not m:
-                    raise Exception('could not match set definition line "%s"' % line)
+                    raise Exception(
+                        'could not match set definition line "%s"' % line
+                    )
                 flag_name = m.group(1)
                 flag_in_str = m.group(2)
                 if flag_in_str == 'in':
@@ -1082,7 +1184,10 @@ def _read_flag_data_from_file(filename):
                 elif flag_in_str == 'not in':
                     flag_in = False
                 else:
-                    raise Exception('found "%s" but expected \'in\' or \'not in\'' % flag_in_str)
+                    raise Exception(
+                        'found "%s" but expected \'in\' or \'not in\''
+                        % flag_in_str
+                    )
                 flag_expr = m.group(3)
                 flag_info.append([flag_name, flag_in, flag_expr])
 
@@ -1095,31 +1200,44 @@ def _read_flag_data_from_file(filename):
     return used_defs + flag_expr_info
 
 
-"""
-def _generate_html_lines(outfile, fontkey):
-  ascii_chars = u'#*0123456789 '
-  epact_chars = u''.join(unichr(cp) for cp in range(0x102e1, 0x102fb + 1)) + ' '
-  phaistos_chars = u''.join(unichr(cp) for cp in range(0x101d0, 0x101fc + 1)) + ' '
-  stringlist = [
-     ascii_chars,
-     u''.join(u'%s\u20e3' % c for c in ascii_chars),
-     epact_chars,
-     u''.join(u'%s\U000102e0' % c for c in epact_chars),
-     phaistos_chars,
-     u''.join(u'%s\U000101fd' % c for c in phaistos_chars),
-  ]
+# def _generate_html_lines(outfile, fontkey):
+#   ascii_chars = u'#*0123456789 '
+#   epact_chars = u''.join(
+#   unichr(cp) for cp in range(0x102e1, 0x102fb + 1)
+#   ) + ' '
+#   phaistos_chars = u''.join(
+#   unichr(cp) for cp in range(0x101d0, 0x101fc + 1)
+#   ) + ' '
+#   stringlist = [
+#      ascii_chars,
+#      u''.join(u'%s\u20e3' % c for c in ascii_chars),
+#      epact_chars,
+#      u''.join(u'%s\U000102e0' % c for c in epact_chars),
+#      phaistos_chars,
+#      u''.join(u'%s\U000101fd' % c for c in phaistos_chars),
+#   ]
+#
+#   lines = ['<h3>Sequences</h3>']
+#   lines.append('<div class="%s line">' % fontkey)
+#   for string in stringlist:
+#     lines.append(string + '<br/>')
+#   lines.append('</div>')
+#
+#   outfile.write('\n'.join(lines) + '\n')
 
-  lines = ['<h3>Sequences</h3>']
-  lines.append('<div class="%s line">' % fontkey)
-  for string in stringlist:
-    lines.append(string + '<br/>')
-  lines.append('</div>')
 
-  outfile.write('\n'.join(lines) + '\n')
-"""
-
-
-def generate_html(outfile, title, fonts, targets, flag_sets, context, metrics, cp_to_targets, data_dir, relpath):
+def generate_html(
+    outfile,
+    title,
+    fonts,
+    targets,
+    flag_sets,
+    context,
+    metrics,
+    cp_to_targets,
+    data_dir,
+    relpath,
+):
     """If not None, relpath is the relative path from the outfile to
   the datadir, for use when generating font paths."""
 
@@ -1127,7 +1245,15 @@ def generate_html(outfile, title, fonts, targets, flag_sets, context, metrics, c
     styles = _generate_styles(fonts, relpath)
     mstyles = _METRICS_STYLES if metrics is not None else ''
     contextfont = _CONTEXT_FONT if context else 'sansserif'
-    outfile.write(template.substitute(title=title, styles=styles, mstyles=mstyles, contextfont=contextfont) + '\n')
+    outfile.write(
+        template.substitute(
+            title=title,
+            styles=styles,
+            mstyles=mstyles,
+            contextfont=contextfont,
+        )
+        + '\n'
+    )
 
     outfile.write(_generate_fontkey(fonts, targets, data_dir) + '\n')
 
@@ -1135,7 +1261,12 @@ def generate_html(outfile, title, fonts, targets, flag_sets, context, metrics, c
     # _generate_html_lines(outfile, 'sym4')
 
     for index, target in enumerate(targets):
-        outfile.write(target.generate_html(index, context, metrics, flag_sets, cp_to_targets) + '\n')
+        outfile.write(
+            target.generate_html(
+                index, context, metrics, flag_sets, cp_to_targets
+            )
+            + '\n'
+        )
 
     outfile.write(_HTML_FOOTER + '\n')
 
@@ -1153,21 +1284,47 @@ def _build_cp_to_targets(targets):
 
 
 def generate(
-    outfile, fmt, data_dir, font_spec, target_spec, flag_spec, title=None, context=None, metrics=False, relpath=None
+    outfile,
+    fmt,
+    data_dir,
+    font_spec,
+    target_spec,
+    flag_spec,
+    title=None,
+    context=None,
+    metrics=False,
+    relpath=None,
 ):
     if not path.isdir(data_dir):
         raise Exception('data dir "%s" does not exist' % data_dir)
 
     font_data = _read_font_data_from_file(path.join(data_dir, font_spec))
     target_data = _read_target_data_from_file(path.join(data_dir, target_spec))
-    flag_data = _read_flag_data_from_file(None if not flag_spec else path.join(data_dir, flag_spec))
-    fonts, targets, flag_sets = _load_fonts_targets_flags(font_data, target_data, flag_data, data_dir)
+    flag_data = _read_flag_data_from_file(
+        None if not flag_spec else path.join(data_dir, flag_spec)
+    )
+    fonts, targets, flag_sets = _load_fonts_targets_flags(
+        font_data, target_data, flag_data, data_dir
+    )
 
     if fmt == 'txt':
-        generate_text(outfile, title, fonts, targets, flag_sets, metrics, data_dir)
+        generate_text(
+            outfile, title, fonts, targets, flag_sets, metrics, data_dir
+        )
     elif fmt == 'html':
         cp_to_targets = _build_cp_to_targets(targets)
-        generate_html(outfile, title, fonts, targets, flag_sets, context, metrics, cp_to_targets, data_dir, relpath)
+        generate_html(
+            outfile,
+            title,
+            fonts,
+            targets,
+            flag_sets,
+            context,
+            metrics,
+            cp_to_targets,
+            data_dir,
+            relpath,
+        )
     else:
         raise Exception('unrecognized format "%s"' % fmt)
 
@@ -1194,7 +1351,17 @@ def _parse_metrics_file(filename):
     return metrics
 
 
-def _call_generate(outfile, fmt, data_dir, font_spec, target_spec, flag_spec, title=None, context=None, metrics=None):
+def _call_generate(
+    outfile,
+    fmt,
+    data_dir,
+    font_spec,
+    target_spec,
+    flag_spec,
+    title=None,
+    context=None,
+    metrics=None,
+):
     data_dir = path.realpath(path.abspath(data_dir))
     if metrics is not None:
         if metrics == '-':
@@ -1217,7 +1384,10 @@ def _call_generate(outfile, fmt, data_dir, font_spec, target_spec, flag_spec, ti
                 raise Exception('don\'t understand "%s" format' % ext)
             fmt = ext
         elif ext != fmt:
-            raise Exception('mismatching format "%s" and output extension "%s"' % (fmt, ext))
+            raise Exception(
+                'mismatching format "%s" and output extension "%s"'
+                % (fmt, ext)
+            )
         outfile = base + '.' + ext
         outdir = path.dirname(outfile)
         if data_dir == outdir:
@@ -1227,11 +1397,32 @@ def _call_generate(outfile, fmt, data_dir, font_spec, target_spec, flag_spec, ti
         else:
             relpath = None
         with codecs.open(outfile, 'w', 'utf-8') as f:
-            generate(f, fmt, data_dir, font_spec, target_spec, flag_spec, title, context, metrics, relpath)
+            generate(
+                f,
+                fmt,
+                data_dir,
+                font_spec,
+                target_spec,
+                flag_spec,
+                title,
+                context,
+                metrics,
+                relpath,
+            )
     else:
         if not fmt:
             fmt = 'txt'
-        generate(sys.stdout, fmt, data_dir, font_spec, target_spec, flag_spec, title, context, metrics)
+        generate(
+            sys.stdout,
+            fmt,
+            data_dir,
+            font_spec,
+            target_spec,
+            flag_spec,
+            title,
+            context,
+            metrics,
+        )
 
 
 def main():
@@ -1249,32 +1440,45 @@ def main():
     parser.add_argument(
         '-t',
         '--output_type',
-        help='output format (defaults based on outfile ' 'extension, else "txt")',
+        help='output format (defaults based on outfile '
+        'extension, else "txt")',
         choices=['txt', 'html'],
     )
     parser.add_argument(
-        '-d', '--data_dir', help='Path to directory containing fonts ' 'and data', metavar='dir', required=True
+        '-d',
+        '--data_dir',
+        help='Path to directory containing fonts ' 'and data',
+        metavar='dir',
+        required=True,
     )
     parser.add_argument(
         '--font_spec',
-        help='Name of font spec file relative to data dir ' '(default \'font_data.txt\')',
+        help='Name of font spec file relative to data dir '
+        '(default \'font_data.txt\')',
         metavar='file',
         default='font_data.txt',
     )
     parser.add_argument(
         '--target_spec',
-        help='Name of target spec file relative to data dir ' '(default \'target_data.txt\')',
+        help='Name of target spec file relative to data dir '
+        '(default \'target_data.txt\')',
         metavar='file',
         default='target_data.txt',
     )
     parser.add_argument(
         '--flag_spec',
-        help='Name of flag spec file relative to data dir ' '(uses \'flag_data.txt\' with no arg)',
+        help='Name of flag spec file relative to data dir '
+        '(uses \'flag_data.txt\' with no arg)',
         metavar='file',
         nargs='?',
         const='flag_data.txt',
     )
-    parser.add_argument('--title', help='Title on html page', metavar='title', default='Character and Font Comparison')
+    parser.add_argument(
+        '--title',
+        help='Title on html page',
+        metavar='title',
+        default='Character and Font Comparison',
+    )
     parser.add_argument(
         '--context',
         help='Context pattern for glyphs (e.g. \'O%%sg\')',
@@ -1285,7 +1489,8 @@ def main():
     parser.add_argument(
         '-m',
         '--metrics',
-        help='Report metrics of target font, optionally ' 'with preferred metrics file',
+        help='Report metrics of target font, optionally '
+        'with preferred metrics file',
         metavar='file',
         nargs='?',
         const='-',

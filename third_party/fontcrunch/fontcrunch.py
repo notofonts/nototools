@@ -34,7 +34,9 @@ else:
 from fontTools import ttLib
 from fontTools.ttLib.tables import _g_l_y_f
 
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, 'spiro', 'curves'))
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), os.pardir, 'spiro', 'curves')
+)
 import fromcubic
 import tocubic
 import pcorn
@@ -80,7 +82,14 @@ def raise_to_cubic(bzs):
         r = []
         for bz in sp:
             if len(bz) == 3:
-                r.append((bz[0], lerppt(2.0 / 3, bz[0], bz[1]), lerppt(2.0 / 3, bz[2], bz[1]), bz[2]))
+                r.append(
+                    (
+                        bz[0],
+                        lerppt(2.0 / 3, bz[0], bz[1]),
+                        lerppt(2.0 / 3, bz[2], bz[1]),
+                        bz[2],
+                    )
+                )
             else:
                 r.append(bz)
         result.append(r)
@@ -90,7 +99,9 @@ def raise_to_cubic(bzs):
 def plot(bzs):
     tocubic.plot_prolog()
     print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print(
+        '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    )
     fromcubic.plot_bzs(bzs, (100, 100), 0.25, fancy=True)
     print('showpage')
 
@@ -278,18 +289,30 @@ def plot_tt_raw(bzs, fancy=True):
             for i in range(len(sp)):
                 lastbz = sp[i - 1]
                 bz = sp[i]
-                if len(bz) != 3 or len(lastbz) != 3 or lerppt(0.5, lastbz[1], bz[1]) != bz[0]:
+                if (
+                    len(bz) != 3
+                    or len(lastbz) != 3
+                    or lerppt(0.5, lastbz[1], bz[1]) != bz[0]
+                ):
                     x, y = bz[0]
-                    print('gsave %f %f translate circle fill grestore' % (x * scale + x0, y * scale + y0))
+                    print(
+                        'gsave %f %f translate circle fill grestore'
+                        % (x * scale + x0, y * scale + y0)
+                    )
                 if len(bz) == 3:
                     x, y = bz[1]
-                    print('gsave %f %f translate circle stroke grestore' % (x * scale + x0, y * scale + y0))
+                    print(
+                        'gsave %f %f translate circle stroke grestore'
+                        % (x * scale + x0, y * scale + y0)
+                    )
 
 
 def plot_tt(bzs, orig=None, style='redcyan'):
     tocubic.plot_prolog()
     print('/ss 2 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print(
+        '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    )
     if style == 'redcyan':
         print('true setoverprint true setoverprintmode')
     x0 = 100
@@ -423,7 +446,11 @@ def bzs_to_glyph(bzs, glyph):
         for i in range(len(sp)):
             lastbz = sp[i - 1]
             bz = sp[i]
-            if len(bz) != 3 or len(lastbz) != 3 or lerppt(0.5, lastbz[1], bz[1]) != bz[0]:
+            if (
+                len(bz) != 3
+                or len(lastbz) != 3
+                or lerppt(0.5, lastbz[1], bz[1]) != bz[0]
+            ):
                 coordinates.append(pt_to_int(bz[0]))
                 flags.append(1)
             if len(bz) == 3:

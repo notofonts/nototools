@@ -157,14 +157,19 @@ class SampleGen(object):
             ok_patterns = []
             for pattern in select_patterns:
                 if pattern not in self.patterns:
-                    print('No pattern named \'%s\' in %s' % (pattern, ', '.join(self.pattern_order)))
+                    print(
+                        'No pattern named \'%s\' in %s'
+                        % (pattern, ', '.join(self.pattern_order))
+                    )
                     continue
                 ok_patterns.append(pattern)
             select_patterns = ok_patterns
 
         output_lines = []
         for pattern in select_patterns:
-            self._generate_output(output_lines, pattern, group, sep, label, sort)
+            self._generate_output(
+                output_lines, pattern, group, sep, label, sort
+            )
         if not label:
             # force trailing newline, if we label we already have one
             output_lines.append('')
@@ -324,7 +329,9 @@ def _convert_to_segments(arg):
         next = chunks[i]
         index, ncp = next_cp(next, 0)
         if ncp <= pcp:
-            raise ValueError('illegal range from %0x to %0x in "%s"' % (pcp, ncp, arg))
+            raise ValueError(
+                'illegal range from %0x to %0x in "%s"' % (pcp, ncp, arg)
+            )
         result.append((pcp, ncp))
         prev = next[index:]
     if prev:
@@ -361,8 +368,8 @@ def _parse_group(value):
             for expanded_arg in _expand_ranges(arg.strip()):
                 if expanded_arg in args:
                     print(
-                        'The sequence "%s" is already in this group, ignoring it'
-                        % ('U+%04X' % cp for cp in expanded_arg)
+                        'The sequence "%s" is already in this group,'
+                        ' ignoring it' % ('U+%04X' % cp for cp in expanded_arg)
                     )
                     continue
                 args.append(expanded_arg)
@@ -419,7 +426,10 @@ def _parse_pattern(value, groups):
         if name:
             # angle brackets
             if name not in groups:
-                print('Could not find "%s" in groups (%s)' % (name, ', '.join(sorted(groups))))
+                print(
+                    'Could not find "%s" in groups (%s)'
+                    % (name, ', '.join(sorted(groups)))
+                )
                 return None
             pat_list.append(groups[name])
             value = value[m.end() :].strip()
@@ -483,7 +493,15 @@ def parse_sample_gen(definition):
     return SampleGen(patterns, pattern_order)
 
 
-def generate_samples(defs_file, out_file, patterns=None, group=False, sep='\t', label=False, sort=False):
+def generate_samples(
+    defs_file,
+    out_file,
+    patterns=None,
+    group=False,
+    sep='\t',
+    label=False,
+    sort=False,
+):
 
     with codecs.open(defs_file, 'r', 'utf-8') as f:
         sample_gen = parse_sample_gen(f.read())
@@ -492,28 +510,62 @@ def generate_samples(defs_file, out_file, patterns=None, group=False, sep='\t', 
 
 
 def main():
-    parser = argparse.ArgumentParser(epilog=USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        epilog=USAGE, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         '-p',
         '--patterns',
-        help='only output the named patterns, to name ' 'more than one, join them with comma',
+        help='only output the named patterns, to name '
+        'more than one, join them with comma',
         metavar='pat',
     )
-    parser.add_argument('-g', '--group', help='group output from a pattern on a single line', action='store_true')
-    parser.add_argument('-s', '--sep', help='separator to use when grouping, default tab', metavar='sep', default='\t')
-    parser.add_argument('--sort', help='sort sequences within a group by unicode code point', action='store_true')
+    parser.add_argument(
+        '-g',
+        '--group',
+        help='group output from a pattern on a single line',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-s',
+        '--sep',
+        help='separator to use when grouping, default tab',
+        metavar='sep',
+        default='\t',
+    )
+    parser.add_argument(
+        '--sort',
+        help='sort sequences within a group by unicode code point',
+        action='store_true',
+    )
     parser.add_argument(
         '-l',
         '--label',
-        help='include the name of a pattern before the ' 'samples it generates, separate groups with blank lines',
+        help='include the name of a pattern before the '
+        'samples it generates, separate groups with blank lines',
         action='store_true',
     )
-    parser.add_argument('defs', help='the name of the definitions file', metavar='definition_file')
-    parser.add_argument('out', help='the name of the output file', metavar='output_file', nargs='?')
+    parser.add_argument(
+        'defs',
+        help='the name of the definitions file',
+        metavar='definition_file',
+    )
+    parser.add_argument(
+        'out',
+        help='the name of the output file',
+        metavar='output_file',
+        nargs='?',
+    )
     args = parser.parse_args()
 
     generate_samples(
-        args.defs, args.out, patterns=args.patterns, group=args.group, sep=args.sep, label=args.label, sort=args.sort
+        args.defs,
+        args.out,
+        patterns=args.patterns,
+        group=args.group,
+        sep=args.sep,
+        label=args.label,
+        sort=args.sort,
     )
 
 

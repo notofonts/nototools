@@ -45,7 +45,9 @@ def _parse_likely_subtags():
     if _LIKELY_SUBTAGS:
         return
 
-    data_file = path.join(CLDR_DIR, 'common', 'supplemental', 'likelySubtags.xml')
+    data_file = path.join(
+        CLDR_DIR, 'common', 'supplemental', 'likelySubtags.xml'
+    )
     tree = ElementTree.parse(data_file)
 
     for tag in tree.findall('likelySubtags/likelySubtag'):
@@ -81,7 +83,9 @@ def _parse_supplemental_data():
     # _LIKELY_SUBTAGS data used directly below
     _parse_likely_subtags()
 
-    data_file = path.join(CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml')
+    data_file = path.join(
+        CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml'
+    )
     root = ElementTree.parse(data_file).getroot()
 
     for language_tag in root.iter('language'):
@@ -109,7 +113,8 @@ def _parse_supplemental_data():
             #       continue  # Skip non-official languages
             lang = child.get('type')
             if lang == 'und':
-                # no point, this data is typically uninhabited small islands and
+                # no point,
+                # this data is typically uninhabited small islands and
                 # Antarctica
                 continue
             ix = lang.find('_')
@@ -121,7 +126,8 @@ def _parse_supplemental_data():
                     try:
                         likely_tuple = _LIKELY_SUBTAGS[lang]
                     except Exception:
-                        # hmmm, language tag for territory not in likely subtags data
+                        # hmmm, language tag for territory
+                        # not in likely subtags data
                         # filed bug with CLDR, for now patch fixes here
                         if lang in ['bsc', 'mfv', 'snf', 'tnr']:
                             script = 'Latn'
@@ -140,7 +146,10 @@ def _parse_supplemental_data():
             _LANG_TO_SCRIPTS[lang].add(script)
 
     if langs_missing_likely_subtag_data:
-        print('cldr_data: %d keys not in likely subtags:' % len(langs_missing_likely_subtag_data))
+        print(
+            'cldr_data: %d keys not in likely subtags:'
+            % len(langs_missing_likely_subtag_data)
+        )
         for k in sorted(langs_missing_likely_subtag_data):
             print(' ', k)
         print('cldr_data: defaulting script to Latn')
@@ -180,21 +189,33 @@ def _parse_supplemental_data():
             if script not in lang_scripts:
                 if _DEBUG:
                     print(
-                        ('extra likely subtags lang %s has script %s but supplemental ' 'only has [%s]')
+                        (
+                            'extra likely subtags lang %s '
+                            'has script %s but supplemental only has [%s]'
+                        )
                         % (lang, script, ', '.join(sorted(lang_scripts)))
                     )
                 if len(lang_scripts) == 1:
                     replacement = {script}
                     if _DEBUG:
-                        print('replacing %s with %s' % (lang_scripts, replacement))
+                        print(
+                            'replacing %s with %s'
+                            % (lang_scripts, replacement)
+                        )
                     _LANG_TO_SCRIPTS[lang] = replacement
                 else:
                     _LANG_TO_SCRIPTS[lang].add(script)
             lang_script = lang + '-' + script
             # skip ZZ region
-            if region != 'ZZ' and lang_script not in _REGION_TO_LANG_SCRIPTS[region]:
+            if (
+                region != 'ZZ'
+                and lang_script not in _REGION_TO_LANG_SCRIPTS[region]
+            ):
                 if _DEBUG:
-                    print('extra lang_script %s not in cldr for %s, adding' % (lang_script, region))
+                    print(
+                        'extra lang_script %s not in cldr for %s, adding'
+                        % (lang_script, region)
+                    )
                 _REGION_TO_LANG_SCRIPTS[region].add(lang_script)
                 _LANG_TO_REGIONS[lang].add(region)
 
@@ -269,7 +290,9 @@ def get_likely_subtags(lang_tag):
             m = LSRV_RE.match(lang_tag)
             if not m:
                 if _DEBUG:
-                    print('regex did not match locale \'%s\'' % loc_tag)  # TODO: loc_tag is undefined!  # noqa:F821
+                    print(
+                        'regex did not match locale \'%s\'' % loc_tag
+                    )  # TODO: loc_tag is undefined!  # noqa:F821
                 return result
             # lang = m.group(1)
             script = m.group(2)
@@ -297,7 +320,11 @@ def get_likely_subtags(lang_tag):
     if _DEBUG:
         print('no likely subtag for %s' % lang_tag)
     tags = lang_tag.split('-')
-    return (tags[0], tags[1] if len(tags) > 1 else 'Zzzz', tags[2] if len(tags) > 2 else 'ZZ')
+    return (
+        tags[0],
+        tags[1] if len(tags) > 1 else 'Zzzz',
+        tags[2] if len(tags) > 2 else 'ZZ',
+    )
 
 
 _SCRIPT_METADATA = {}
@@ -305,7 +332,9 @@ _SCRIPT_METADATA = {}
 
 def _parse_script_metadata():
     global _SCRIPT_METADATA
-    data = open(path.join(CLDR_DIR, 'common', 'properties', 'scriptMetadata.txt')).read()
+    data = open(
+        path.join(CLDR_DIR, 'common', 'properties', 'scriptMetadata.txt')
+    ).read()
     parsed_data = unicode_data._parse_semicolon_separated_data(data)
     _SCRIPT_METADATA = {line[0]: tuple(line[1:]) for line in parsed_data}
 
@@ -390,7 +419,10 @@ def get_native_language_name(lang_scr, exclude_script=False):
     if exclude_script or not lang_scr:
         langs = [lang]
     else:
-        langs = [lang_scr, lang]  # lang_scr first since we want to try that first
+        langs = [
+            lang_scr,
+            lang,
+        ]  # lang_scr first since we want to try that first
 
     for lang in langs:
         try:
@@ -404,7 +436,9 @@ def get_native_language_name(lang_scr, exclude_script=False):
         for subdir in ['common', 'seed']:
             cldr_file_path = path.join(subdir, 'main', filename)
             for lang in langs:
-                native_name = _get_language_name_from_file(lang, cldr_file_path)
+                native_name = _get_language_name_from_file(
+                    lang, cldr_file_path
+                )
                 if native_name:
                     return native_name
         locale = parent_locale(locale)
@@ -467,7 +501,10 @@ def get_english_language_name(lang_scr):
             lang, script = lang_scr.split('-')
             try:
                 langName = _ENGLISH_LANGUAGE_NAMES[lang]
-                name = '%s (%s script)' % (langName, _ENGLISH_SCRIPT_NAMES[script])
+                name = '%s (%s script)' % (
+                    langName,
+                    _ENGLISH_SCRIPT_NAMES[script],
+                )
                 return name
             except KeyError:
                 pass
@@ -492,16 +529,22 @@ def _read_character_at(source, pointer):
         pointer += 1
 
     if pointer >= len(source):
-        raise IndexError('pointer %d out of range 0-%d' % (pointer, len(source)))
+        raise IndexError(
+            'pointer %d out of range 0-%d' % (pointer, len(source))
+        )
 
     if source[pointer] == '\\':
         if source[pointer + 1].upper() == 'U':
             end_of_hex = pointer + 2
-            while end_of_hex < len(source) and source[end_of_hex].upper() in '0123456789ABCDEF':
+            while (
+                end_of_hex < len(source)
+                and source[end_of_hex].upper() in '0123456789ABCDEF'
+            ):
                 end_of_hex += 1
             if end_of_hex - (pointer + 2) not in {4, 5, 6, 8}:
                 raise Exception(
-                    'cldr_data: parse of unicode escape failed at %d: %s' % (pointer, source[pointer : pointer + 10])
+                    'cldr_data: parse of unicode escape failed at %d: %s'
+                    % (pointer, source[pointer : pointer + 10])
                 )
             hex_code = source[pointer + 2 : end_of_hex]
             return end_of_hex, unichr(int(hex_code, 16))
@@ -554,7 +597,9 @@ def unicode_set_string_to_list(us_str):
 _exemplar_from_file_cache = {}
 
 
-def get_exemplar_from_file(cldr_file_path, types=['']):  # TODO: mutable defaults!  # noqa:B006
+def get_exemplar_from_file(
+    cldr_file_path, types=['']
+):  # TODO: mutable defaults!  # noqa:B006
     cache_key = cldr_file_path + '_'.join(sorted(types))
     try:
         return _exemplar_from_file_cache[cache_key]
@@ -584,7 +629,9 @@ def get_exemplar_from_file(cldr_file_path, types=['']):  # TODO: mutable default
             def accept(s):
                 return len(s) > 1 or unicode_data.category(s)[0] in cat
 
-            # exemplar_list = [s for s in unicode_set_string_to_list(tag.text) if accept(s)]
+            # exemplar_list = [
+            # s for s in unicode_set_string_to_list(tag.text) if accept(s)
+            # ]
             exemplars.extend(unicode_set_string_to_list(tag.text))
         except Exception:
             print('failed parse of %s' % cldr_file_path)
@@ -616,9 +663,13 @@ def get_exemplar_from_extra_data(loc_tag):
 
 # Technically, language tags are case-insensitive, but the CLDR data is cased,
 # this leaves out lots of edge cases of course.  Sometimes we use lower case
-# script tags so this allows that, but it requires the lang tag to be lower case
+# script tags so this allows that,
+# but it requires the lang tag to be lower case
 # and the region tag to be all upper case.
-LSRV_RE = re.compile(r'^([a-z]{2,3})(?:[_-]([A-Za-z][a-z]{3}))?' r'(?:[_-]([A-Z]{2}|\d{3}))?(?:[_-]([A-Z]{5,8}))?$')
+LSRV_RE = re.compile(
+    r'^([a-z]{2,3})(?:[_-]([A-Za-z][a-z]{3}))?'
+    r'(?:[_-]([A-Z]{2}|\d{3}))?(?:[_-]([A-Z]{5,8}))?$'
+)
 
 
 def get_exemplar_and_source(loc_tag):
@@ -629,7 +680,10 @@ def get_exemplar_and_source(loc_tag):
     while loc_tag != 'root':
         for directory in ['common', 'seed', 'exemplars']:
             exemplar = get_exemplar_from_file(
-                path.join(directory, 'main', loc_tag.replace('-', '_') + '.xml'), ['', 'auxiliary']
+                path.join(
+                    directory, 'main', loc_tag.replace('-', '_') + '.xml'
+                ),
+                ['', 'auxiliary'],
             )
             if exemplar:
                 return exemplar, loc_tag + '_ex_' + directory
@@ -637,7 +691,9 @@ def get_exemplar_and_source(loc_tag):
         if exemplar:
             return exemplar, loc_tag + '_ex_extra'
         loc_tag = parent_locale(loc_tag)
-        if loc_tag == 'root' or (script and get_likely_subtags(loc_tag)[1] != script):
+        if loc_tag == 'root' or (
+            script and get_likely_subtags(loc_tag)[1] != script
+        ):
             break
     return None, None
 
@@ -677,7 +733,9 @@ _lang_scr_to_lit_pops = {}
 
 
 def _init_lang_scr_to_lit_pops():
-    data_file = path.join(CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml')
+    data_file = path.join(
+        CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml'
+    )
     root = ElementTree.parse(data_file).getroot()
 
     tmp_map = collections.defaultdict(list)
@@ -689,7 +747,9 @@ def _init_lang_scr_to_lit_pops():
             lang = lang_pop.attrib['type']
             pop_percent = float(lang_pop.attrib['populationPercent']) / 100.0
             if 'writingPercent' in lang_pop.attrib:
-                lang_lit_percent = float(lang_pop.attrib['writingPercent']) / 100.0
+                lang_lit_percent = (
+                    float(lang_pop.attrib['writingPercent']) / 100.0
+                )
             else:
                 lang_lit_percent = lit_percent
 
@@ -698,10 +758,12 @@ def _init_lang_scr_to_lit_pops():
             lit_pop = int(population * pop_percent * lang_lit_percent)
             tmp_map[lang_scr].append((region, lit_pop))
 
-    # make it a bit more useful by sorting the value list in order of decreasing
-    # population and converting the list to a tuple
+    # make it a bit more useful by sorting the value list
+    # in order of decreasing population and converting the list to a tuple
     for lang_scr, values in tmp_map.items():
-        _lang_scr_to_lit_pops[lang_scr] = tuple(sorted(values, key=lambda x: (-x[1], x[0])))
+        _lang_scr_to_lit_pops[lang_scr] = tuple(
+            sorted(values, key=lambda x: (-x[1], x[0]))
+        )
 
 
 def get_lang_scr_to_lit_pops():
@@ -740,11 +802,39 @@ def get_lang_scrs_by_decreasing_global_lit_pop():
 def main():
     global _DEBUG, _USE_EXTRA_LOCALE_DATA
     parser = argparse.ArgumentParser()
-    parser.add_argument('-rl', '--region_to_lang', help='dump region to lang script info', metavar='region', nargs='*')
-    parser.add_argument('-lr', '--lang_to_region', help='dump lang to region info', metavar='lang', nargs='*')
-    parser.add_argument('-ls', '--lang_to_script', help='dump lang to script info', metavar='lang', nargs='*')
-    parser.add_argument('-d', '--debug', help='turn on debug flag when building data', action='store_true')
-    parser.add_argument('-nx', '--no_extra', help='turn off extra locale data', action='store_true')
+    parser.add_argument(
+        '-rl',
+        '--region_to_lang',
+        help='dump region to lang script info',
+        metavar='region',
+        nargs='*',
+    )
+    parser.add_argument(
+        '-lr',
+        '--lang_to_region',
+        help='dump lang to region info',
+        metavar='lang',
+        nargs='*',
+    )
+    parser.add_argument(
+        '-ls',
+        '--lang_to_script',
+        help='dump lang to script info',
+        metavar='lang',
+        nargs='*',
+    )
+    parser.add_argument(
+        '-d',
+        '--debug',
+        help='turn on debug flag when building data',
+        action='store_true',
+    )
+    parser.add_argument(
+        '-nx',
+        '--no_extra',
+        help='turn off extra locale data',
+        action='store_true',
+    )
 
     args = parser.parse_args()
     if args.debug:

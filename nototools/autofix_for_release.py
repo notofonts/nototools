@@ -120,7 +120,10 @@ def fix_name_table(font):
                 break
         if record != name_records[name_id]:
             font_data.set_name_record(font, name_id, record)
-            print('Updated name table record #%d from "%s" to "%s"' % (name_id, oldrecord, record))
+            print(
+                'Updated name table record #%d from "%s" to "%s"'
+                % (name_id, oldrecord, record)
+            )
             modified = True
 
     trademark_names = ['Noto', 'Arimo', 'Tinos', 'Cousine']
@@ -138,7 +141,10 @@ def fix_name_table(font):
             old_line = name_records[7]
             font_data.set_name_record(font, 7, trademark_line)
             modified = True
-            print('Updated name table record 7 from "%s" to "%s"' % (old_line, trademark_line))
+            print(
+                'Updated name table record 7 from "%s" to "%s"'
+                % (old_line, trademark_line)
+            )
 
     if name_records[11] != NOTO_URL:
         font_data.set_name_record(font, 11, NOTO_URL)
@@ -201,7 +207,6 @@ def drop_tables(font, tables):
     modified = False
     for table in tables:
         if table in font:
-            modified = True
             print('Dropped table "%s"' % table)
             modified = True
             del font[table]
@@ -235,7 +240,9 @@ def fix_path(file_path, is_hinted):
             else:
                 file_path = file_path.replace('hinted/', 'unhinted/')
     else:
-        file_path = os.path.join('hinted' if is_hinted else 'unhinted', file_path)
+        file_path = os.path.join(
+            'hinted' if is_hinted else 'unhinted', file_path
+        )
 
     # fix Naskh, assume Arabic if unspecified
     file_path = re.sub(r'NotoNaskh(-|UI-)', r'NotoNaskhArabic\1', file_path)
@@ -255,8 +262,13 @@ def fix_os2_unicoderange(font):
     if os2_bitmap != expected_bitmap:
         old_bitmap_string = font_data.unicoderange_bitmap_to_string(os2_bitmap)
         font_data.set_os2_unicoderange_bitmap(font, expected_bitmap)
-        bitmap_string = font_data.unicoderange_bitmap_to_string(expected_bitmap)
-        print('Change unicoderanges from:\n  %s\nto:\n  %s' % (old_bitmap_string, bitmap_string))
+        bitmap_string = font_data.unicoderange_bitmap_to_string(
+            expected_bitmap
+        )
+        print(
+            'Change unicoderanges from:\n  %s\nto:\n  %s'
+            % (old_bitmap_string, bitmap_string)
+        )
         return True
     return False
 
@@ -275,7 +287,9 @@ def fix_linegap(font):
         modified = True
     os2_table = font["OS/2"]
     if os2_table.sTypoLineGap != 0:
-        print('os/2 sTypoLineGap was %d, setting to 0' % os2_table.sTypoLineGap)
+        print(
+            'os/2 sTypoLineGap was %d, setting to 0' % os2_table.sTypoLineGap
+        )
         os2_table.sTypoLineGap = 0
         modified = True
     return modified
@@ -298,7 +312,8 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
     modified |= fix_name_table(font)
     modified |= fix_attachlist(font)
     modified |= fix_os2_unicoderange(font)
-    # leave line gap for non-noto fonts alone, metrics are more constrained there
+    # leave line gap for non-noto fonts alone,
+    # metrics are more constrained there
     if font_data.font_name(font).find('Noto') != -1:
         modified |= fix_linegap(font)
 
@@ -335,7 +350,9 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
             if path.splitext(file)[1] not in ['.ttf', '.ttc', '.otf']:
                 continue
             src_file = path.join(root, file)
-            file_path = src_file[len(src_root) + 1 :]  # +1 to ensure no leading slash.
+            file_path = src_file[
+                len(src_root) + 1 :
+            ]  # +1 to ensure no leading slash.
             if not name_rx.search(file_path):
                 continue
             is_hinted = root.endswith('/hinted') or '_hinted' in file
@@ -347,14 +364,25 @@ def main():
     default_dst_root = notoconfig.values.get('autofix')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('name_pat', help='regex for files to fix, ' 'searches relative path from src root')
     parser.add_argument(
-        '--src_root', help='root of src files (default %s)' % default_src_root, default=default_src_root
+        'name_pat',
+        help='regex for files to fix, ' 'searches relative path from src root',
     )
     parser.add_argument(
-        '--dst_root', help='root of destination (default %s)' % default_dst_root, default=default_dst_root
+        '--src_root',
+        help='root of src files (default %s)' % default_src_root,
+        default=default_src_root,
     )
-    parser.add_argument('--save_unmodified', help='save even unmodified files', action='store_true')
+    parser.add_argument(
+        '--dst_root',
+        help='root of destination (default %s)' % default_dst_root,
+        default=default_dst_root,
+    )
+    parser.add_argument(
+        '--save_unmodified',
+        help='save even unmodified files',
+        action='store_true',
+    )
     args = parser.parse_args()
 
     if not args.src_root:

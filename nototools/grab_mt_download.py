@@ -107,7 +107,11 @@ def unzip_to_directory_tree(drop_dir, filepath):
         if name.endswith('.ttf'):
             blobfile = BytesIO(data)
             font = ttLib.TTFont(blobfile)
-            subdir = 'hinted' if font.get('fpgm') or font.get('prep') else 'unhinted'
+            subdir = (
+                'hinted'
+                if font.get('fpgm') or font.get('prep')
+                else 'unhinted'
+            )
             write_data_to_file(data, drop_dir, subdir, name)
             count += 1
 

@@ -36,12 +36,14 @@ def get_name_records(font):
 
 
 def set_name_record(font, record_id, value, addIfMissing=''):
-    """Sets a record in the 'name' table to a given string.
+    """
+    Sets a record in the 'name' table to a given string.
 
     Assumes that the record already exists. If it doesn't, it only adds it
-    if addIfMissing is set.  Pass 'win' to add a record in 3/1/0x409 (win UCS2 en-US)
-    and/or 'mac' to add a record in 1/0/0 (mac-roman English), separate by comma
-    if you want both.
+    if addIfMissing is set.
+    Pass 'win' to add a record in 3/1/0x409 (win UCS2 en-US)
+    and/or 'mac' to add a record in 1/0/0 (mac-roman English),
+    separate by comma if you want both.
 
     If 'value' is None, the name record is dropped."""
     records_to_drop = set()
@@ -89,12 +91,17 @@ def set_name_record(font, record_id, value, addIfMissing=''):
 
     if records_to_drop:
         font['name'].names = [
-            record for record_number, record in enumerate(names) if record_number not in records_to_drop
+            record
+            for record_number, record in enumerate(names)
+            if record_number not in records_to_drop
         ]
 
 
 def get_os2_unicoderange_bitmap(font):
-    """Get an integer bitmap representing the UnicodeRange fields in the os/2 table."""
+    """
+    Get an integer bitmap representing the UnicodeRange fields
+    in the os/2 table.
+    """
     os2_table = font['OS/2']
     return (
         os2_table.ulUnicodeRange1
@@ -152,7 +159,9 @@ def unicoderange_bitmap_to_string(bitmap):
     have_list = []
     for bucket_index in range(128):
         if bitmap & (1 << bucket_index):
-            bucket_name = opentype_data.unicoderange_bucket_index_to_name(bucket_index)
+            bucket_name = opentype_data.unicoderange_bucket_index_to_name(
+                bucket_index
+            )
             have_list.append("%d (%s)" % (bucket_index, bucket_name))
     return '; '.join(have_list)
 
@@ -173,7 +182,9 @@ def printable_font_revision(font, accuracy=2):
     """Returns the font revision as a string from the 'head' table."""
     font_revision = font['head'].fontRevision
     font_revision_int = int(font_revision)
-    font_revision_frac = int(round((font_revision - font_revision_int) * 10 ** accuracy))
+    font_revision_frac = int(
+        round((font_revision - font_revision_int) * 10 ** accuracy)
+    )
 
     font_revision_int = str(font_revision_int)
     font_revision_frac = str(font_revision_frac).zfill(accuracy)
@@ -185,7 +196,10 @@ def get_cmap(font):
     cmap_table = font['cmap']
     cmaps = {}
     for table in cmap_table.tables:
-        if (table.format, table.platformID, table.platEncID) in [(4, 3, 1), (12, 3, 10)]:
+        if (table.format, table.platformID, table.platEncID) in [
+            (4, 3, 1),
+            (12, 3, 10),
+        ]:
             cmaps[table.format] = table.cmap
     if 12 in cmaps:
         return cmaps[12]

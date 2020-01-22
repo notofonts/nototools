@@ -95,7 +95,8 @@ def _build_text(name_map, initial_text=''):
             if line in m.split(' '):
                 new_matches.append(m)
 
-        # if we match a full word, and only one line has this full word, use that
+        # if we match a full word,
+        # and only one line has this full word, use that
         if len(new_matches) == 1:
             print(new_matches[0])
             text += unichr(name_map[new_matches[0]])
@@ -103,7 +104,12 @@ def _build_text(name_map, initial_text=''):
 
         select_multiple = True
         while select_multiple:
-            print('multiple matches:\n  ' + '\n  '.join('[%2d] %s' % (i, n) for i, n in enumerate(matches)))
+            print(
+                'multiple matches:\n  '
+                + '\n  '.join(
+                    '[%2d] %s' % (i, n) for i, n in enumerate(matches)
+                )
+            )
             while True:
                 line = input('0-%d or q to skip> ' % (len(matches) - 1))
                 if line == 'q':
@@ -154,8 +160,15 @@ def _write_text(filename, text):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--font', help='font whose character map to restrict text to', required=True)
-    parser.add_argument('-t', '--text', help='initial text, prepend @ to read from file')
+    parser.add_argument(
+        '-f',
+        '--font',
+        help='font whose character map to restrict text to',
+        required=True,
+    )
+    parser.add_argument(
+        '-t', '--text', help='initial text, prepend @ to read from file'
+    )
 
     args = parser.parse_args()
     if args.text:

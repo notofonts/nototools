@@ -68,7 +68,9 @@ def _emoji_pua_set():
     return lint_config.parse_int_ranges('FE4E5-FE4EE FE82C FE82E-FE837')
 
 
-def _get_script_required(script, unicode_version, noto_phase, unicode_only=False, verbose=False):
+def _get_script_required(
+    script, unicode_version, noto_phase, unicode_only=False, verbose=False
+):
     needed_chars = set()
     if script == 'Zsye':  # Emoji
         # TODO: Check emoji coverage
@@ -82,29 +84,43 @@ def _get_script_required(script, unicode_version, noto_phase, unicode_only=False
             needed_chars = _symbol_set()
     elif script == 'LGC':
         needed_chars = (
-            unicode_data.defined_characters(scr='Latn', version=unicode_version)
-            | unicode_data.defined_characters(scr='Grek', version=unicode_version)
-            | unicode_data.defined_characters(scr='Cyrl', version=unicode_version)
+            unicode_data.defined_characters(
+                scr='Latn', version=unicode_version
+            )
+            | unicode_data.defined_characters(
+                scr='Grek', version=unicode_version
+            )
+            | unicode_data.defined_characters(
+                scr='Cyrl', version=unicode_version
+            )
         )
         if not unicode_only:
             needed_chars -= _symbol_set()
             needed_chars -= _cjk_set()
     elif script == "Aran":
         if unicode_only:
-            needed_chars = unicode_data.defined_characters(scr='Arab', version=unicode_version)
+            needed_chars = unicode_data.defined_characters(
+                scr='Arab', version=unicode_version
+            )
         else:
             needed_chars = noto_data.urdu_set()
     elif script in ['Hans', 'Hant', 'Jpan', 'Kore']:
         needed_chars = _cjk_set()
     else:
-        needed_chars = unicode_data.defined_characters(scr=script, version=unicode_version)
+        needed_chars = unicode_data.defined_characters(
+            scr=script, version=unicode_version
+        )
         if not unicode_only:
             needed_chars -= _symbol_set()
 
     if not unicode_only:
-        needed_chars |= noto_data.get_extra_characters_needed(script, noto_phase)
+        needed_chars |= noto_data.get_extra_characters_needed(
+            script, noto_phase
+        )
         try:
-            needed_chars |= set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
+            needed_chars |= set(
+                opentype_data.SPECIAL_CHARACTERS_NEEDED[script]
+            )
         except KeyError:
             pass
         needed_chars -= noto_data.get_characters_not_needed(script, noto_phase)
@@ -130,7 +146,9 @@ def _required_unicode_version(noto_font, noto_phase):
 
 def _compute_required_chars(noto_font, noto_phase):
     unicode_version = _required_unicode_version(noto_font, noto_phase)
-    needed_chars = _get_script_required(noto_font.script, unicode_version, noto_phase)
+    needed_chars = _get_script_required(
+        noto_font.script, unicode_version, noto_phase
+    )
     return frozenset(needed_chars)
 
 
@@ -138,8 +156,19 @@ _REQUIRED_CACHE = {}
 
 
 def get_required_chars(noto_font, phase):
-    # Required characters must only depend on family, script, variant, and phase
-    key = '_'.join(filter(None, [noto_font.family, noto_font.script, noto_font.variant, str(phase)]))
+    # Required characters must only depend on family, script, variant,
+    # and phase
+    key = '_'.join(
+        filter(
+            None,
+            [
+                noto_font.family,
+                noto_font.script,
+                noto_font.variant,
+                str(phase),
+            ],
+        )
+    )
     result = _REQUIRED_CACHE.get(key, None)
     if not result:
         result = _compute_required_chars(noto_font, phase)
@@ -162,11 +191,18 @@ def _check_scripts(scripts):
 
 def get_cmap_data(scripts, unicode_version, noto_phase, unicode_only, verbose):
     metadata = cmap_data.create_metadata(
-        'lint_cmap_reqs', [('unicode_version', unicode_version), ('phase', noto_phase), ('unicode_only', unicode_only)]
+        'lint_cmap_reqs',
+        [
+            ('unicode_version', unicode_version),
+            ('phase', noto_phase),
+            ('unicode_only', unicode_only),
+        ],
     )
     tabledata = cmap_data.create_table_from_map(
         {
-            script: _get_script_required(script, unicode_version, noto_phase, unicode_only, verbose)
+            script: _get_script_required(
+                script, unicode_version, noto_phase, unicode_only, verbose
+            )
             for script in sorted(scripts)
         }
     )
@@ -178,21 +214,44 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--scripts', help='list of pseudo-script codes, empty for all ' 'phase 2 scripts', metavar='code', nargs='*'
+        '--scripts',
+        help='list of pseudo-script codes, empty for all ' 'phase 2 scripts',
+        metavar='code',
+        nargs='*',
     )
     parser.add_argument(
         '--unicode_version',
-        help='version of unicode to use (default %s)' % DEFAULT_UNICODE_VERSION,
+        help='version of unicode to use (default %s)'
+        % DEFAULT_UNICODE_VERSION,
         metavar='version',
         type=float,
         default=DEFAULT_UNICODE_VERSION,
     )
-    parser.add_argument('--unicode_only', help='only use unicode data, not noto-specific data', action='store_true')
-    parser.add_argument('-p', '--phase', help='noto phase (default 3)', metavar='phase', type=int, default=3)
     parser.add_argument(
-        '--outfile', help='write to output file, otherwise to stdout', metavar='fname', nargs='?', const='-default-'
+        '--unicode_only',
+        help='only use unicode data, not noto-specific data',
+        action='store_true',
     )
-    parser.add_argument('--verbose', help='log to stderr as each script is complete', action='store_true')
+    parser.add_argument(
+        '-p',
+        '--phase',
+        help='noto phase (default 3)',
+        metavar='phase',
+        type=int,
+        default=3,
+    )
+    parser.add_argument(
+        '--outfile',
+        help='write to output file, otherwise to stdout',
+        metavar='fname',
+        nargs='?',
+        const='-default-',
+    )
+    parser.add_argument(
+        '--verbose',
+        help='log to stderr as each script is complete',
+        action='store_true',
+    )
     args = parser.parse_args()
 
     if not args.scripts:
@@ -200,7 +259,13 @@ def main():
     else:
         scripts = _check_scripts(args.scripts)
 
-    cmapdata = get_cmap_data(scripts, args.unicode_version, args.phase, args.unicode_only, args.verbose)
+    cmapdata = get_cmap_data(
+        scripts,
+        args.unicode_version,
+        args.phase,
+        args.unicode_only,
+        args.verbose,
+    )
     if args.outfile:
         if args.outfile == '-default-':
             args.outfile = 'lint_cmap_%s.xml' % args.unicode_version

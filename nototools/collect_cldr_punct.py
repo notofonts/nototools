@@ -105,7 +105,11 @@ def _collect_script_to_punct(files):
             else:
                 script_to_punct[script] |= punct
 
-    script_to_punct['LGC'] = set(script_to_punct['Latn'] | script_to_punct['Grek'] | script_to_punct['Cyrl'])
+    script_to_punct['LGC'] = set(
+        script_to_punct['Latn']
+        | script_to_punct['Grek']
+        | script_to_punct['Cyrl']
+    )
 
     for script in script_to_punct:
         punct = script_to_punct[script]
@@ -119,7 +123,10 @@ def _collect_script_to_punct(files):
 def _build_script_to_punct():
     files = _get_cldr_files(['main'])
     script_to_punct = _collect_script_to_punct(files)
-    return {script: frozenset(script_to_punct[script]) for script in script_to_punct}
+    return {
+        script: frozenset(script_to_punct[script])
+        for script in script_to_punct
+    }
 
 
 _script_to_punct = None
@@ -138,7 +145,9 @@ def _write_script_to_punct(script_to_punct):
         chars = script_to_punct[script]
         int_chars = [ord(cp) for cp in chars]
         print('  # %s' % ('|'.join(sorted(chars))))
-        print("  '%s': '%s'," % (script, tool_utils.write_int_ranges(int_chars)))
+        print(
+            "  '%s': '%s'," % (script, tool_utils.write_int_ranges(int_chars))
+        )
     print('}')
 
 

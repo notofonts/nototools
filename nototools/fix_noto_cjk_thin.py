@@ -64,7 +64,9 @@ def fix_font(source_filename):
         elif record.nameID == 10:
             # record #10 appears to be the best place to put a change notice
             assert 'Google' not in value
-            new_value = value + ('; Changed by Google ' 'to work around a bug in Windows')
+            new_value = value + (
+                '; Changed by Google ' 'to work around a bug in Windows'
+            )
             record.string = new_value.encode(encoding)
 
     font['head'].fontRevision = float(new_version)

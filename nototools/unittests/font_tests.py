@@ -58,7 +58,9 @@ def load_fonts(patterns, expected_count=None, font_class=None):
         all_font_files += glob.glob(pattern)
     all_fonts = [font_class(font) for font in all_font_files]
     if expected_count:
-        assert len(all_font_files) == expected_count, "got %d fonts, expected %d." % (
+        assert (
+            len(all_font_files) == expected_count
+        ), "got %d fonts, expected %d." % (
             len(all_font_files),
             expected_count,
         )
@@ -101,7 +103,9 @@ class TestMetaInfo(FontTest):
         """Parse font name to infer weight and slope."""
 
         font_name = font_data.font_name(font)
-        bold = ('Bold' in font_name) or (self.mark_heavier_as_bold and 'Black' in font_name)
+        bold = ('Bold' in font_name) or (
+            self.mark_heavier_as_bold and 'Black' in font_name
+        )
         italic = 'Italic' in font_name
         return bold, italic
 
@@ -132,23 +136,29 @@ class TestMetaInfo(FontTest):
     def test_vendor_id(self):
         """Tests the vendor ID of the fonts."""
         for font in self.fonts:
-            self.assertEqual(font['OS/2'].achVendID, self.expected_os2_achVendID)
+            self.assertEqual(
+                font['OS/2'].achVendID, self.expected_os2_achVendID
+            )
 
     def test_us_weight(self):
-        "Tests the usWeight of the fonts to be correct." ""
+        """Tests the usWeight of the fonts to be correct." \""""
         for font in self.fonts:
             weight = noto_fonts.parse_weight(font_data.font_name(font))
             expected_numeric_weight = noto_fonts.WEIGHTS[weight]
             # hack for windows GDI
             expected_numeric_weight = max(expected_numeric_weight, 250)
-            self.assertEqual(font['OS/2'].usWeightClass, expected_numeric_weight)
+            self.assertEqual(
+                font['OS/2'].usWeightClass, expected_numeric_weight
+            )
 
     def test_version_numbers(self):
-        "Tests the two version numbers of the font to be correct." ""
+        """Tests the two version numbers of the font to be correct." \""""
         for font in self.fonts:
             version = font_data.font_version(font)
             usable_part_of_version = version.split(';')[0]
-            self.assertEqual(usable_part_of_version, 'Version ' + self.expected_version)
+            self.assertEqual(
+                usable_part_of_version, 'Version ' + self.expected_version
+            )
 
             revision = font_data.printable_font_revision(font, accuracy=3)
             self.assertEqual(revision, self.expected_version)
@@ -216,7 +226,8 @@ class TestNames(FontTest):
                 self.assertIn(16, records)
                 self.assertEqual(records[16], family)
 
-            # check that family name does not include weight, if regular or bold
+            # check that family name does not include weight,
+            # if regular or bold
             else:
                 self.assertEqual(records[1], family)
 
@@ -232,7 +243,8 @@ class TestNames(FontTest):
 
             # check that subfamily weight/slope are consistent with filename
             bold = (weight == 'Bold') or (
-                self.mark_heavier_as_bold and noto_fonts.WEIGHTS[weight] > noto_fonts.WEIGHTS['Bold']
+                self.mark_heavier_as_bold
+                and noto_fonts.WEIGHTS[weight] > noto_fonts.WEIGHTS['Bold']
             )
             self.assertEqual(bold, subfam.startswith('Bold'))
             self.assertEqual(slope == 'Italic', subfam.endswith('Italic'))
@@ -250,7 +262,9 @@ class TestNames(FontTest):
             expected_name = family
             if style != 'Regular':
                 expected_name += ' ' + style
-            self.assertEqual(records[3], self.expected_unique_id(family, style))
+            self.assertEqual(
+                records[3], self.expected_unique_id(family, style)
+            )
             self.assertEqual(records[4], expected_name)
             self.assertFalse(18 in records)
 
@@ -273,7 +287,18 @@ class TestDigitWidths(FontTest):
 
     def setUp(self):
         self.font_files, self.fonts = self.loaded_fonts
-        self.digits = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+        self.digits = [
+            'zero',
+            'one',
+            'two',
+            'three',
+            'four',
+            'five',
+            'six',
+            'seven',
+            'eight',
+            'nine',
+        ]
 
     def test_digit_widths(self):
         """Tests all decimal digits to make sure they have the same width."""
@@ -287,8 +312,12 @@ class TestDigitWidths(FontTest):
         ascii_digits = '0123456789'
         superscript_digits = u'⁰¹²³⁴⁵⁶⁷⁸⁹'
         for font_file in self.font_files:
-            numr_glyphs = layout.get_advances(ascii_digits, font_file, '--features=numr')
-            superscript_glyphs = layout.get_advances(superscript_digits, font_file)
+            numr_glyphs = layout.get_advances(
+                ascii_digits, font_file, '--features=numr'
+            )
+            superscript_glyphs = layout.get_advances(
+                superscript_digits, font_file
+            )
             self.assertEqual(superscript_glyphs, numr_glyphs)
 
 
@@ -315,7 +344,8 @@ class TestCharacterCoverage(FontTest):
                 self.assertNotIn(char, charset)
 
     def test_format_4_cmap_preset(self):
-        """Test that fonts contain a MS Unicode BMP encoded cmap, as recommended
+        """
+        Test that fonts contain a MS Unicode BMP encoded cmap, as recommended
         by the spec: https://www.microsoft.com/typography/otspec/cmap.htm
         """
 
@@ -365,7 +395,11 @@ class TestLigatures(FontTest):
                     else:  # should not ligate with parameters applied
                         expected = len(sequence)
                         err_msg = '%s ligated in %s with parameters: %s'
-                    self.assertEqual(len(output), expected, err_msg % (sequence, fontfile, params))
+                    self.assertEqual(
+                        len(output),
+                        expected,
+                        err_msg % (sequence, fontfile, params),
+                    )
 
 
 class TestFeatures(FontTest):
@@ -377,10 +411,21 @@ class TestFeatures(FontTest):
     def test_num_features(self):
         """Tests that lnum/onum/pnum/tnum features behave appropriately."""
 
-        def run_test(glyph_order, glyph_set, fontfile, tags, proportional=False, oldstyle=False):
+        def run_test(
+            glyph_order,
+            glyph_set,
+            fontfile,
+            tags,
+            proportional=False,
+            oldstyle=False,
+        ):
 
             num = glyph_order[layout.get_glyphs('1', fontfile)[0]]
-            styled = glyph_order[layout.get_glyphs('1', fontfile, '--features=' + ','.join(tags))[0]]
+            styled = glyph_order[
+                layout.get_glyphs(
+                    '1', fontfile, '--features=' + ','.join(tags)
+                )[0]
+            ]
 
             if not (proportional or oldstyle):
                 self.assertEqual(num, styled)
@@ -406,19 +451,30 @@ class TestFeatures(FontTest):
             run_test(go, gs, fontfile, ['lnum', 'tnum'])
             run_test(go, gs, fontfile, ['lnum', 'pnum'], proportional=True)
             run_test(go, gs, fontfile, ['onum', 'tnum'], oldstyle=True)
-            run_test(go, gs, fontfile, ['onum', 'pnum'], oldstyle=True, proportional=True)
+            run_test(
+                go,
+                gs,
+                fontfile,
+                ['onum', 'pnum'],
+                oldstyle=True,
+                proportional=True,
+            )
 
             # test that defaults take precedence
             run_test(go, gs, fontfile, ['lnum', 'onum'])
             run_test(go, gs, fontfile, ['pnum', 'tnum'])
             run_test(go, gs, fontfile, ['lnum', 'onum', 'tnum'])
-            run_test(go, gs, fontfile, ['lnum', 'onum', 'pnum'], proportional=True)
+            run_test(
+                go, gs, fontfile, ['lnum', 'onum', 'pnum'], proportional=True
+            )
             run_test(go, gs, fontfile, ['lnum', 'pnum', 'tnum'])
             run_test(go, gs, fontfile, ['onum', 'pnum', 'tnum'], oldstyle=True)
             run_test(go, gs, fontfile, ['lnum', 'onum', 'pnum', 'tnum'])
 
     def run_sub_coverage_test(self, feature, reqs_path):
-        """Tests that a substitution feature is supported for a required set."""
+        """
+        Tests that a substitution feature is supported for a required set.
+        """
 
         with open(reqs_path) as reqs_file:
             reqs_list = []
@@ -430,7 +486,9 @@ class TestFeatures(FontTest):
             glyph_order = font.getGlyphOrder()
             chars_with_no_sub = []
             for char, expected_name in reqs_list:
-                sub = layout.get_glyphs(char, fontfile, '--features=%s' % feature)
+                sub = layout.get_glyphs(
+                    char, fontfile, '--features=%s' % feature
+                )
                 if glyph_order[sub[0]] != expected_name:
                     chars_with_no_sub.append(char)
             self.assertEqual(
@@ -485,7 +543,10 @@ class TestVerticalMetrics(FontTest):
                 except AttributeError:
                     continue
 
-                if y_min < self.expected_head_yMin or y_max > self.expected_head_yMax:
+                if (
+                    y_min < self.expected_head_yMin
+                    or y_max > self.expected_head_yMax
+                ):
                     out_of_bounds.append((font_file, glyph_name, y_min, y_max))
 
         self.assertFalse(
@@ -500,7 +561,9 @@ class TestVerticalMetrics(FontTest):
         )
 
     def test_hhea_table_metrics(self):
-        """Tests ascent, descent, and lineGap to be equal to expected values."""
+        """
+        Tests ascent, descent, and lineGap to be equal to expected values.
+        """
 
         for font in self.fonts:
             hhea_table = font['hhea']
@@ -513,11 +576,21 @@ class TestVerticalMetrics(FontTest):
 
         for font in self.fonts:
             os2_table = font['OS/2']
-            self.assertEqual(os2_table.sTypoDescender, self.expected_os2_sTypoDescender)
-            self.assertEqual(os2_table.sTypoAscender, self.expected_os2_sTypoAscender)
-            self.assertEqual(os2_table.sTypoLineGap, self.expected_os2_sTypoLineGap)
-            self.assertEqual(os2_table.usWinDescent, self.expected_os2_usWinDescent)
-            self.assertEqual(os2_table.usWinAscent, self.expected_os2_usWinAscent)
+            self.assertEqual(
+                os2_table.sTypoDescender, self.expected_os2_sTypoDescender
+            )
+            self.assertEqual(
+                os2_table.sTypoAscender, self.expected_os2_sTypoAscender
+            )
+            self.assertEqual(
+                os2_table.sTypoLineGap, self.expected_os2_sTypoLineGap
+            )
+            self.assertEqual(
+                os2_table.usWinDescent, self.expected_os2_usWinDescent
+            )
+            self.assertEqual(
+                os2_table.usWinAscent, self.expected_os2_usWinAscent
+            )
 
 
 class TestHints(FontTest):
@@ -536,7 +609,9 @@ class TestHints(FontTest):
                 if glyph.numberOfContours <= 0:  # composite or empty glyph
                     continue
                 if len(glyph.program.bytecode) <= 0:
-                    missing_hints.append((glyph_name, font_data.font_name(font)))
+                    missing_hints.append(
+                        (glyph_name, font_data.font_name(font))
+                    )
 
         self.assertTrue(missing_hints == [])
 
@@ -552,9 +627,9 @@ class TestHints(FontTest):
 class TestGlyphBounds(FontTest):
     """Tests that certain glyphs do or don't go outside of given bounds.
 
-    Glyphs must be designated with two class attribute lists "should_exceed" and
-    "should_not_exceed", both containing tuples each with the following four
-    elements:
+    Glyphs must be designated with two class attribute lists "should_exceed"
+    and "should_not_exceed",
+    both containing tuples each with the following four elements:
      - names: a list containing glyph names as strings.
      - bounds: a list (xmin, ymin, xmax, ymax), values can be None.
      - multiplier: a value which, when multiplied by a font's weight class
@@ -576,7 +651,10 @@ class TestGlyphBounds(FontTest):
             self._run_test(names, bounds, multiplier, errmsg, True)
 
     def _run_test(self, names, bounds, multiplier, errmsg, should_exceed):
-        errmsg_format = "%%s's %%s %%s %s %%d (%s)" % ('does not exceed' if should_exceed else 'exceeds', errmsg)
+        errmsg_format = "%%s's %%s %%s %s %%d (%s)" % (
+            'does not exceed' if should_exceed else 'exceeds',
+            errmsg,
+        )
 
         for fontfile, font in zip(self.fontfiles, self.fonts):
             glyph_set = font.getGlyphSet()
@@ -586,7 +664,12 @@ class TestGlyphBounds(FontTest):
             xmin, ymin, xmax, ymax = bounds
             for name in names:
                 glyph = glyph_set[name]._glyph
-                for attr, expected in (('xMin', xmin), ('yMin', ymin), ('xMax', xmax), ('yMax', ymax)):
+                for attr, expected in (
+                    ('xMin', xmin),
+                    ('yMin', ymin),
+                    ('xMax', xmax),
+                    ('yMax', ymax),
+                ):
                     if expected is None:
                         continue
                     is_min = attr.endswith('Min')
@@ -595,8 +678,14 @@ class TestGlyphBounds(FontTest):
                     # try to always apply offset away (if positive) or towards
                     # (if negative) a central value
                     expected = expected + (-offset if is_min else offset)
-                    exceeds = actual < expected if is_min else actual > expected
-                    self.assertEqual(exceeds, should_exceed, errmsg_format % (fontfile, name, attr, expected))
+                    exceeds = (
+                        actual < expected if is_min else actual > expected
+                    )
+                    self.assertEqual(
+                        exceeds,
+                        should_exceed,
+                        errmsg_format % (fontfile, name, attr, expected),
+                    )
 
 
 class TestGlyphAreas(unittest.TestCase):
@@ -621,7 +710,9 @@ class TestGlyphAreas(unittest.TestCase):
         """Determine which glyphs are intentionally unchanged."""
 
         self.unchanged = set()
-        master_a, master_b = self.getGlyphSets(self.master_glyph_sets, self.master_weights_to_test)
+        master_a, master_b = self.getGlyphSets(
+            self.master_glyph_sets, self.master_weights_to_test
+        )
 
         pen_a = GlyphAreaPen(master_a)
         pen_b = GlyphAreaPen(master_b)
@@ -653,7 +744,9 @@ class TestGlyphAreas(unittest.TestCase):
         everything else is changed.
         """
 
-        glyph_sets = self.getGlyphSets(self.instance_glyph_sets, self.instance_weights_to_test)
+        glyph_sets = self.getGlyphSets(
+            self.instance_glyph_sets, self.instance_weights_to_test
+        )
 
         standard = glyph_sets[0]
         pen = GlyphAreaPen(standard)
@@ -672,10 +765,16 @@ class TestGlyphAreas(unittest.TestCase):
                 other_area = other_pen.pop()
                 if name in self.unchanged or not area:
                     if area != other_area:
-                        errors.append("%s has changed, but should not have: %s vs. %s." % (name, area, other_area))
+                        errors.append(
+                            "%s has changed, but should not have: %s vs. %s."
+                            % (name, area, other_area)
+                        )
                 else:
                     if area == other_area:
-                        errors.append("%s has not changed, but should have: %s vs. %s." % (name, area, other_area))
+                        errors.append(
+                            "%s has not changed, but should have: %s vs. %s."
+                            % (name, area, other_area)
+                        )
         self.assertFalse(errors, '\n'.join([''] + errors))
 
 
@@ -685,7 +784,11 @@ class TestSpacingMarks(FontTest):
     def setUp(self):
         self.font_files, _ = self.loaded_fonts
         charset = coverage.character_set(self.font_files[0])
-        self.marks_to_test = [char for char in charset if unicode_data.category(char) in ['Lm', 'Sk']]
+        self.marks_to_test = [
+            char
+            for char in charset
+            if unicode_data.category(char) in ['Lm', 'Sk']
+        ]
         self.advance_cache = {}
 
     def test_individual_spacing_marks(self):
@@ -720,7 +823,8 @@ class TestSpacingMarks(FontTest):
                     self.assertEqual(
                         len(advances),
                         2,
-                        'The sequence <%04X, %04X> combines, ' 'but it should not' % (ord(base_letter), ord(mark)),
+                        'The sequence <%04X, %04X> combines, '
+                        'but it should not' % (ord(base_letter), ord(mark)),
                     )
 
 
@@ -730,7 +834,9 @@ class TestSoftDottedChars(FontTest):
     def setUp(self):
         self.font_files, _ = self.loaded_fonts
         charset = coverage.character_set(self.font_files[0])
-        self.marks_to_test = [char for char in charset if unicode_data.combining(char) == 230]
+        self.marks_to_test = [
+            char for char in charset if unicode_data.combining(char) == 230
+        ]
         self.advance_cache = {}
 
     def test_combinations(self):

@@ -43,7 +43,9 @@ def get_coverages(coverage_files):
 
 def get_block_data(defined_cps, coverages, no_empty=False):
     block_data = []
-    covered_cps_list = [tool_utils.parse_int_ranges(cov.cmapdata.ranges) for cov in coverages]
+    covered_cps_list = [
+        tool_utils.parse_int_ranges(cov.cmapdata.ranges) for cov in coverages
+    ]
     for block_name in unicode_data.block_names():
         block_range = unicode_data.block_range(block_name)
         block_cps = unicode_data.block_chars(block_name)
@@ -114,7 +116,9 @@ def write_block_coverage_html(block_data, names, msg, out_file=sys.stdout):
         range_str = '%04x-%04x' % (start, end)
         num_in_block = len(block_cps)
         tot_ht = 1 + int(math.floor(float(num_in_block) / cp_limit))
-        tot_px = int(float(chart_width) * num_in_block / max_block_size / tot_ht)
+        tot_px = int(
+            float(chart_width) * num_in_block / max_block_size / tot_ht
+        )
         vir_cp_limit = int(float(num_in_block) / tot_ht)
         out_file.write('    <tr>')
         out_file.write('<td class="range">%s' % range_str)
@@ -123,13 +127,23 @@ def write_block_coverage_html(block_data, names, msg, out_file=sys.stdout):
         for block_covered_cps in block_covered_cps_list:
             num_covered = len(block_covered_cps)
             pct = '%d%%' % int(100.0 * num_covered / num_in_block)
-            bar_ht = min(tot_ht, 1 + int(math.floor(float(num_covered) / vir_cp_limit)))
-            bar_px = int(float(chart_width) * num_covered / max_block_size / bar_ht)
+            bar_ht = min(
+                tot_ht, 1 + int(math.floor(float(num_covered) / vir_cp_limit))
+            )
+            bar_px = int(
+                float(chart_width) * num_covered / max_block_size / bar_ht
+            )
             out_file.write('<td class="count">%s' % num_covered)
             out_file.write('<td class="pct">%s' % pct)
             out_file.write('<td><div class="chart">')
-            out_file.write('<div class="tot" style="width:%dpx; height:%dpx">' % (tot_px, tot_ht * chart_row_height))
-            out_file.write('<div class="bar" style="width:%dpx; height:%dpx">' % (bar_px, bar_ht * chart_row_height))
+            out_file.write(
+                '<div class="tot" style="width:%dpx; height:%dpx">'
+                % (tot_px, tot_ht * chart_row_height)
+            )
+            out_file.write(
+                '<div class="bar" style="width:%dpx; height:%dpx">'
+                % (bar_px, bar_ht * chart_row_height)
+            )
             out_file.write('</div></div></div>\n')
     out_file.write(FOOTER)
 
@@ -181,7 +195,9 @@ def write_block_coverage_csv(block_data, names, msg, out_file=sys.stdout):
         csv_writer.writerow(row_parts)
 
 
-def write_block_coverage(block_data, names, msg, fmt=None, out_file=sys.stdout):
+def write_block_coverage(
+    block_data, names, msg, fmt=None, out_file=sys.stdout
+):
     if not fmt:
         if not out_file:
             fmt = 'text'
@@ -219,21 +235,50 @@ def main():
     parser.add_argument(
         '-uv',
         '--unicode_version',
-        help='version of unicode to compare against ' '(default %3.1f)' % default_version,
+        help='version of unicode to compare against '
+        '(default %3.1f)' % default_version,
         metavar='version',
         type=float,
         default=default_version,
     )
-    parser.add_argument('-ex', '--exclude_ranges', help='ranges to exclude', nargs='*', metavar='range')
     parser.add_argument(
-        '-o', '--output_file', help='name of file to output (format defaults ' 'based on suffix)', metavar='file'
+        '-ex',
+        '--exclude_ranges',
+        help='ranges to exclude',
+        nargs='*',
+        metavar='range',
     )
     parser.add_argument(
-        '-fmt', '--format', help='format of output, defaults to text if no file', choices=format_choices
+        '-o',
+        '--output_file',
+        help='name of file to output (format defaults ' 'based on suffix)',
+        metavar='file',
     )
-    parser.add_argument('-ne', '--no_empty', help='exclude empty blocks', action='store_true')
-    parser.add_argument('-c', '--coverage_data', help='coverage data files', nargs='+', metavar='file', required=True)
-    parser.add_argument('-m', '--message', help='message header for output', nargs='?', metavar='msg', const='--uv--')
+    parser.add_argument(
+        '-fmt',
+        '--format',
+        help='format of output, defaults to text if no file',
+        choices=format_choices,
+    )
+    parser.add_argument(
+        '-ne', '--no_empty', help='exclude empty blocks', action='store_true'
+    )
+    parser.add_argument(
+        '-c',
+        '--coverage_data',
+        help='coverage data files',
+        nargs='+',
+        metavar='file',
+        required=True,
+    )
+    parser.add_argument(
+        '-m',
+        '--message',
+        help='message header for output',
+        nargs='?',
+        metavar='msg',
+        const='--uv--',
+    )
     args = parser.parse_args()
 
     if args.exclude_ranges is None:
@@ -242,7 +287,9 @@ def main():
         # exclude c0-c1 controls if args is passed but no ranges specified
         args.exclude_ranges = ['0-1f 7f 80-9f']
 
-    defined_cps = get_defined_cps(args.unicode_version, ' '.join(args.exclude_ranges))
+    defined_cps = get_defined_cps(
+        args.unicode_version, ' '.join(args.exclude_ranges)
+    )
 
     coverages = get_coverages(args.coverage_data)
 
@@ -251,7 +298,9 @@ def main():
 
     block_data = get_block_data(defined_cps, coverages, args.no_empty)
     names = [cov.cmapdata.name for cov in coverages]
-    write_block_coverage(block_data, names, args.message, args.format, args.output_file)
+    write_block_coverage(
+        block_data, names, args.message, args.format, args.output_file
+    )
 
 
 if __name__ == '__main__':

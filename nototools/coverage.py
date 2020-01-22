@@ -43,7 +43,10 @@ def character_set(font):
     cmap_table = font['cmap']
     cmaps = {}
     for table in cmap_table.tables:
-        if (table.format, table.platformID, table.platEncID) in [(4, 3, 1), (12, 3, 10)]:
+        if (table.format, table.platformID, table.platEncID) in [
+            (4, 3, 1),
+            (12, 3, 10),
+        ]:
             cmaps[table.format] = table.cmap
     if 12 in cmaps:
         cmap = cmaps[12]
@@ -118,19 +121,38 @@ def _process_font(filepath, args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('files', help='Files to dump', metavar='file', nargs='+')
-    parser.add_argument('--ranges', help='Dump cmap as hex ranges', action='store_true')
-    parser.add_argument('--text', help='Dump cmap as sample text', action='store_true')
-    parser.add_argument('--sep', help='Separator between chars in text, default space', default=' ')
-    parser.add_argument('--info', help='Dump cmap as cp and unicode name, one per line', action='store_true')
+    parser.add_argument(
+        'files', help='Files to dump', metavar='file', nargs='+'
+    )
+    parser.add_argument(
+        '--ranges', help='Dump cmap as hex ranges', action='store_true'
+    )
+    parser.add_argument(
+        '--text', help='Dump cmap as sample text', action='store_true'
+    )
+    parser.add_argument(
+        '--sep',
+        help='Separator between chars in text, default space',
+        default=' ',
+    )
+    parser.add_argument(
+        '--info',
+        help='Dump cmap as cp and unicode name, one per line',
+        action='store_true',
+    )
     parser.add_argument(
         '--chars_per_line',
-        help='Format text in lines of at most this ' 'many codepoints,  0 to format as a single line',
+        help='Format text in lines of at most this '
+        'many codepoints,  0 to format as a single line',
         type=int,
         metavar='N',
         default=32,
     )
-    parser.add_argument('--limit', help='string of hex codepoint ranges limiting cmap ' 'to output', metavar='ranges')
+    parser.add_argument(
+        '--limit',
+        help='string of hex codepoint ranges limiting cmap ' 'to output',
+        metavar='ranges',
+    )
     args = parser.parse_args()
 
     if not (args.ranges or args.text or args.info):

@@ -55,7 +55,14 @@ def modify_font(font_name, font, presentation, emoji_variants):
     font['cmap'].tables.append(cmap14)
 
 
-def modify_fonts(font_names, presentation='emoji', output=None, suffix=None, dst_dir=None, vs_added=None):
+def modify_fonts(
+    font_names,
+    presentation='emoji',
+    output=None,
+    suffix=None,
+    dst_dir=None,
+    vs_added=None,
+):
     assert dst_dir
     if output:
         assert len(font_names) == 1
@@ -64,7 +71,9 @@ def modify_fonts(font_names, presentation='emoji', output=None, suffix=None, dst
         font = ttLib.TTFont(font_name)
         if font_data.get_variation_sequence_cmap(font):
             # process no font if any already has a var selector cmap
-            raise ValueError('font %s already has a format 14 cmap' % font_name)
+            raise ValueError(
+                'font %s already has a format 14 cmap' % font_name
+            )
 
     if not path.exists(dst_dir):
         os.makedirs(dst_dir)
@@ -103,9 +112,17 @@ def main():
         default='emoji',
     )
     parser.add_argument(
-        '-s', '--suffix', metavar='suffix', help='suffix to add to file names for output, goes before extension'
+        '-s',
+        '--suffix',
+        metavar='suffix',
+        help='suffix to add to file names for output, goes before extension',
     )
-    parser.add_argument('-o', '--output', metavar='filename', help='output file name, requires only one input file')
+    parser.add_argument(
+        '-o',
+        '--output',
+        metavar='filename',
+        help='output file name, requires only one input file',
+    )
     parser.add_argument(
         '-vs',
         '--vs_added',
@@ -113,7 +130,9 @@ def main():
         metavar='range',
         nargs='+',
     )
-    parser.add_argument('files', help='files to modify', metavar='file', nargs='+')
+    parser.add_argument(
+        'files', help='files to modify', metavar='file', nargs='+'
+    )
 
     # argparse fails with named arguments that have leading hyphen.  You
     # can work around this by using a short arg and concatenating it and

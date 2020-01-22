@@ -38,7 +38,8 @@ def get_largest_cmap(font):
             # Continue scan because we prefer the other cmap if it exists.
             cmap = table.cmap
         elif tup == (12, 3, 10):
-            # Stop scan if we find this cmap. Should be strictly larger than the other.
+            # Stop scan if we find this cmap.
+            # Should be strictly larger than the other.
             cmap = table.cmap
             break
     return cmap
@@ -64,8 +65,8 @@ def summarize_file(root, path):
     size = os.path.getsize(path)
     # Printable_font_revision requires you specify the accuracy of digits.
     # ttLib apparently reads the fixed values as a float, so it loses the info.
-    # Adobe fonts use 3 digits, so the default from printable_font_revision of 2
-    # is insufficient.
+    # Adobe fonts use 3 digits,
+    # so the default from printable_font_revision of 2 is insufficient.
     # Assume that the name from the name table is accurate, and use it instead.
     version_string = noto_lint.font_version(font)
     match = re.match(r'Version (\d+\.\d+)', version_string)
@@ -75,11 +76,22 @@ def summarize_file(root, path):
         version = noto_lint.printable_font_revision(font)  # default 2
     num_glyphs = len(font.getGlyphOrder())
     full_name = font_data.get_name_records(font)[4]
-    cmap = set(get_largest_cmap(font).keys())  # copy needed? what's the lifespan?
+    cmap = set(
+        get_largest_cmap(font).keys()
+    )  # copy needed? what's the lifespan?
     num_chars = len(cmap)
     font.close()
 
-    return relpath, version, full_name, size, num_glyphs, num_chars, cmap, table_info
+    return (
+        relpath,
+        version,
+        full_name,
+        size,
+        num_glyphs,
+        num_chars,
+        cmap,
+        table_info,
+    )
 
 
 def summarize(root, name=None):
@@ -113,12 +125,25 @@ def print_tup(tup, short):
             result = '"%s"' % result
         return result
 
-    line = [to_str(idx, val) for idx, val in enumerate(tup) if not (short and (idx == 3 or idx == 6 or idx == 7))]
+    line = [
+        to_str(idx, val)
+        for idx, val in enumerate(tup)
+        if not (short and (idx == 3 or idx == 6 or idx == 7))
+    ]
     print('\t'.join(line))
 
 
 def print_summary(summary_list, short):
-    labels = ('path', 'version', 'name', 'size', 'num_glyphs', 'num_chars', 'cmap', 'table_info')
+    labels = (
+        'path',
+        'version',
+        'name',
+        'size',
+        'num_glyphs',
+        'num_chars',
+        'cmap',
+        'table_info',
+    )
     print_tup(labels, short)
     for tup in summary_list:
         print_tup(tup, short)
@@ -128,16 +153,22 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('root', help='root of directory tree')
     parser.add_argument(
-        '--name', help='only report files where name regex matches ' 'some portion of the path under root'
+        '--name',
+        help='only report files where name regex matches '
+        'some portion of the path under root',
     ),
-    parser.add_argument('-s', '--short', help='shorter summary format', action='store_true')
+    parser.add_argument(
+        '-s', '--short', help='shorter summary format', action='store_true'
+    )
     args = parser.parse_args()
 
     if not os.path.isdir(args.root):
         print('%s does not exist or is not a directory' % args.root)
     else:
         root = os.path.abspath(args.root)
-        print("root: %s, name: %s" % (root, args.name if args.name else '[all]'))
+        print(
+            "root: %s, name: %s" % (root, args.name if args.name else '[all]')
+        )
         print_summary(summarize(root, name=args.name), args.short)
 
 

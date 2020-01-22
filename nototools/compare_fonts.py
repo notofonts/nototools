@@ -31,9 +31,18 @@ import unicode_data
 
 name_re = re.compile(r'(.+)-(.*)\.ttf')
 
-family_map = {'Arimo': 'Arial', 'Tinos': 'Times New Roman', 'Cousine': 'Courier New'}
+family_map = {
+    'Arimo': 'Arial',
+    'Tinos': 'Times New Roman',
+    'Cousine': 'Courier New',
+}
 
-style_map = {'Regular': '', 'Bold': ' Bold', 'Italic': ' Italic', 'BoldItalic': ' Bold Italic'}
+style_map = {
+    'Regular': '',
+    'Bold': ' Bold',
+    'Italic': ' Italic',
+    'BoldItalic': ' Bold Italic',
+}
 
 _excluded_chars = None
 
@@ -42,15 +51,36 @@ def _get_excluded_chars():
     # we skip Arabic and Hebrew characters
     global _excluded_chars
     if not _excluded_chars:
-        arabic_ranges = '[\u0600-\u06ff \u0750-\u077f \u08a0-\u08ff \ufb50-\ufdff \ufe70-\ufefc]'
-        arabic_set = frozenset([ord(cp) for cp in cldr_data.unicode_set_string_to_list(arabic_ranges)])
+        arabic_ranges = (
+            '[\u0600-\u06ff '
+            '\u0750-\u077f '
+            '\u08a0-\u08ff \ufb50-\ufdff \ufe70-\ufefc]'
+        )
+        arabic_set = frozenset(
+            [
+                ord(cp)
+                for cp in cldr_data.unicode_set_string_to_list(arabic_ranges)
+            ]
+        )
         # includes sheqel sign, omit?
         hebrew_ranges = '[\u0590-\u05ff \u20aa \ufb1d-\ufb4f]'
-        hebrew_set = frozenset([ord(cp) for cp in cldr_data.unicode_set_string_to_list(hebrew_ranges)])
+        hebrew_set = frozenset(
+            [
+                ord(cp)
+                for cp in cldr_data.unicode_set_string_to_list(hebrew_ranges)
+            ]
+        )
         armenian_ranges = '[\u0530-\u058f \ufb13-\ufb17]'
-        armenian_set = frozenset([ord(cp) for cp in cldr_data.unicode_set_string_to_list(armenian_ranges)])
+        armenian_set = frozenset(
+            [
+                ord(cp)
+                for cp in cldr_data.unicode_set_string_to_list(armenian_ranges)
+            ]
+        )
         private_use_set = frozenset(range(0xE000, 0xF900))
-        _excluded_chars = frozenset(arabic_set | hebrew_set | armenian_set | private_use_set)
+        _excluded_chars = frozenset(
+            arabic_set | hebrew_set | armenian_set | private_use_set
+        )
     return _excluded_chars
 
 
@@ -62,7 +92,9 @@ def _get_class_defs(font):
 
 
 class FontCompare(object):
-    test_names = frozenset(['cmap', 'advance', 'hhea', 'OS/2', 'bounds', 'gdef'])
+    test_names = frozenset(
+        ['cmap', 'advance', 'hhea', 'OS/2', 'bounds', 'gdef']
+    )
 
     @staticmethod
     def check_test_list(test_list):
@@ -86,10 +118,21 @@ class FontCompare(object):
             return None
         return lint_config.parse_int_ranges(range_list, True)
 
-    def __init__(self, target, test, incremental, emit_config, ignored_cp, only_cp, enabled_tests):
+    def __init__(
+        self,
+        target,
+        test,
+        incremental,
+        emit_config,
+        ignored_cp,
+        only_cp,
+        enabled_tests,
+    ):
         self.target = target
         self.test = test
-        self.incremental = incremental  # target is different version of same file
+        self.incremental = (
+            incremental  # target is different version of same file
+        )
         self.emit_config = emit_config  # generate config lines
         self.enabled_tests = enabled_tests or FontCompare.test_names
 
@@ -103,19 +146,29 @@ class FontCompare(object):
             target_chars &= only_cp
         self.target_chars = target_chars
 
-        # Assume version has two decimal places, which MTI fonts do but Adobe's do not.
+        # Assume version has two decimal places,
+        # which MTI fonts do but Adobe's do not.
         target_version = font_data.printable_font_revision(target)
         test_version = font_data.printable_font_revision(test)
 
         target_names = font_data.get_name_records(target)
         test_names = font_data.get_name_records(test)
-        self._log('target name: %s %s, version: %s' % (target_names[1], target_names[2], target_version))
-        self._log('test name: %s %s, version %s' % (test_names[1], test_names[2], test_version))
+        self._log(
+            'target name: %s %s, version: %s'
+            % (target_names[1], target_names[2], target_version)
+        )
+        self._log(
+            'test name: %s %s, version %s'
+            % (test_names[1], test_names[2], test_version)
+        )
 
         if emit_config:
             font_family = test_names[1]
             font_subfamily = test_names[2].replace(' ', '')
-            self._config('name like %s; weight like %s; version == %s' % (font_family, font_subfamily, test_version))
+            self._config(
+                'name like %s; weight like %s; version == %s'
+                % (font_family, font_subfamily, test_version)
+            )
 
     def _log(self, msg):
         """Write a message that should not go to config output."""
@@ -124,12 +177,16 @@ class FontCompare(object):
 
     def _logerr(self, msg):
         """Write an error that should not go to config output."""
-        # this is an error, but lint doesn't check for it, so no point in emitting a comment.
+        # this is an error, but lint doesn't check for it,
+        # so no point in emitting a comment.
         if not self.emit_config:
             print(msg)
 
     def _err(self, msg):
-        """Write a message that should go to config as a comment, or just be logged."""
+        """
+        Write a message that should go to config as a comment,
+        or just be logged.
+        """
         if self.emit_config:
             print('# ' + msg)
         else:
@@ -166,7 +223,13 @@ class FontCompare(object):
         target_gid = self._target_gid(cp)
         if self.emit_config:
             # omit character name for brevity
-            return 'cp %04x (gid %d) %s but target (gid %d) %s' % (cp, test_gid, test_msg, target_gid, target_msg)
+            return 'cp %04x (gid %d) %s but target (gid %d) %s' % (
+                cp,
+                test_gid,
+                test_msg,
+                target_gid,
+                target_msg,
+            )
         else:
             cp_name = unicode_data.name(cp)
             return 'cp %04x (gid %d) %s but target (gid %d) %s (%s)' % (
@@ -187,7 +250,10 @@ class FontCompare(object):
     def check_cmaps(self):
         if self._skip('cmap'):
             return
-        self._log('target cmap size: %d, test cmap size: %d' % (len(self.target_cmap), len(self.test_cmap)))
+        self._log(
+            'target cmap size: %d, test cmap size: %d'
+            % (len(self.target_cmap), len(self.test_cmap))
+        )
 
         missing_chars = self.target_chars - set(self.test_cmap.keys())
         if missing_chars:
@@ -212,9 +278,15 @@ class FontCompare(object):
 
         # No current lint test requires specific advances of arbitrary glyphs.
         if differences:
-            self._logerr('%d codepoints have advance differences' % len(differences))
+            self._logerr(
+                '%d codepoints have advance differences' % len(differences)
+            )
             for cp, ta, fa in sorted(differences):
-                self._logerr(self._cp_error_msg(cp, 'advance is %d' % fa, 'advance is %d' % ta))
+                self._logerr(
+                    self._cp_error_msg(
+                        cp, 'advance is %d' % fa, 'advance is %d' % ta
+                    )
+                )
 
     def check_hhea(self):
         if self._skip('hhea'):
@@ -222,7 +294,9 @@ class FontCompare(object):
 
         target_hhea = self.target['hhea']
         test_hhea = self.test['hhea']
-        failed_attrs = self._check_attributes(target_hhea, test_hhea, ['ascent', 'descent', 'lineGap'])
+        failed_attrs = self._check_attributes(
+            target_hhea, test_hhea, ['ascent', 'descent', 'lineGap']
+        )
 
         if not failed_attrs:
             self._config('disable head/hhea')
@@ -232,7 +306,10 @@ class FontCompare(object):
             if self.emit_config:
                 print('enable head/hhea/%s' % attr.lower())
             else:
-                print('font hhea %s was %d but target was %d' % (attr, test_val, target_val))
+                print(
+                    'font hhea %s was %d but target was %d'
+                    % (attr, test_val, target_val)
+                )
 
     def check_os2(self):
         if self._skip('OS/2'):
@@ -240,8 +317,14 @@ class FontCompare(object):
 
         target_os2 = self.target['OS/2']
         test_os2 = self.test['OS/2']
-        attr_name_map = {'sTypoAscender': 'ascender', 'sTypoDescender': 'descender', 'sTypoLineGap': 'linegap'}
-        failed_attrs = self._check_attributes(target_os2, test_os2, attr_name_map.keys())
+        attr_name_map = {
+            'sTypoAscender': 'ascender',
+            'sTypoDescender': 'descender',
+            'sTypoLineGap': 'linegap',
+        }
+        failed_attrs = self._check_attributes(
+            target_os2, test_os2, attr_name_map.keys()
+        )
         if not failed_attrs:
             self._config('disable head/os2')
             return
@@ -250,11 +333,14 @@ class FontCompare(object):
             if self.emit_config:
                 print('enable head/os2/%s' % attr_name_map[attr])
             else:
-                print('font OS/2 %s was %d but target was %d' % (attr, test_val, target_val))
+                print(
+                    'font OS/2 %s was %d but target was %d'
+                    % (attr, test_val, target_val)
+                )
 
     def check_glyph_bounds(self):
-        # Don't compare the actual bounds, but whether they exceed the limits when the target
-        # font does not.
+        # Don't compare the actual bounds,
+        # but whether they exceed the limits when the target font does not.
         if self._skip('bounds'):
             return
 
@@ -266,8 +352,10 @@ class FontCompare(object):
         target_min = -self.target['OS/2'].usWinDescent
         test_min = -self.test['OS/2'].usWinDescent
 
-        # We need to align the glyph ids, but once we get past the cmap it gets more and more
-        # complicated to do this.  For now we'll just check the directly mapped glyphs.
+        # We need to align the glyph ids,
+        # but once we get past the cmap it gets more and more
+        # complicated to do this.
+        # For now we'll just check the directly mapped glyphs.
         differences = []
         for cp in self.target_chars:
             if cp not in self.test_cmap:
@@ -276,8 +364,12 @@ class FontCompare(object):
             test_glyph_name = self.test_cmap[cp]
             target_ttglyph = target_glyphset[target_glyph_name]
             test_ttglyph = test_glyphset[test_glyph_name]
-            target_ymin, target_ymax = render.get_glyph_cleaned_extents(target_ttglyph, target_glyphset)
-            test_ymin, test_ymax = render.get_glyph_cleaned_extents(test_ttglyph, test_glyphset)
+            target_ymin, target_ymax = render.get_glyph_cleaned_extents(
+                target_ttglyph, target_glyphset
+            )
+            test_ymin, test_ymax = render.get_glyph_cleaned_extents(
+                test_ttglyph, test_glyphset
+            )
             target_exceeds_max = target_ymax > target_max
             target_exceeds_min = target_ymin < target_min
             test_exceeds_max = test_ymax > test_max
@@ -285,7 +377,9 @@ class FontCompare(object):
             max_failure = test_exceeds_max and not target_exceeds_max
             min_failure = test_exceeds_min and not target_exceeds_min
             if max_failure or min_failure:
-                differences.append((cp, max_failure, test_ymax, min_failure, test_ymin))
+                differences.append(
+                    (cp, max_failure, test_ymax, min_failure, test_ymin)
+                )
 
         if not differences:
             self._config('disable bounds/glyph')
@@ -298,20 +392,30 @@ class FontCompare(object):
         min_failures = []
         for cp, max_failure, ymax, min_failure, ymin in sorted(differences):
             if max_failure:
-                self._err(self._cp_error_msg(cp, 'above max (%d)' % ymax, 'is not'))
+                self._err(
+                    self._cp_error_msg(cp, 'above max (%d)' % ymax, 'is not')
+                )
                 if self.emit_config:
                     test_gid = self._test_gid(cp)
                     max_failures.append(test_gid)
             if min_failure:
-                self._err(self._cp_error_msg(cp, 'below min (%d)' % ymin, 'is not'))
+                self._err(
+                    self._cp_error_msg(cp, 'below min (%d)' % ymin, 'is not')
+                )
                 if self.emit_config:
                     test_gid = self._test_gid(cp)
                     min_failures.append(test_gid)
         if self.emit_config:
             if max_failures:
-                self._config('enable bounds/glyph/ymax only gid %s' % lint_config.write_int_ranges(max_failures, False))
+                self._config(
+                    'enable bounds/glyph/ymax only gid %s'
+                    % lint_config.write_int_ranges(max_failures, False)
+                )
             if min_failures:
-                self._config('enable bounds/glyph/ymin only gid %s' % lint_config.write_int_ranges(min_failures, False))
+                self._config(
+                    'enable bounds/glyph/ymin only gid %s'
+                    % lint_config.write_int_ranges(min_failures, False)
+                )
 
     def _check_gdef_class_defs(self, mark_glyphs):
         """Return False if we cannot check classDef-related info."""
@@ -322,10 +426,15 @@ class FontCompare(object):
 
         if mark_glyphs:
             if not target_class_defs:
-                self._err('Have mark glyphs, but target does not have classDefs table.')
+                self._err(
+                    'Have mark glyphs, '
+                    'but target does not have classDefs table.'
+                )
                 self._config('exclude /gdef/classdef/not_present')
             if not test_class_defs:
-                self._logerr('Have mark glyphs, but test does not have classDefs table.')
+                self._logerr(
+                    'Have mark glyphs, but test does not have classDefs table.'
+                )
 
         if (target_class_defs is not None) != (test_class_defs is not None):
             if target_class_defs:
@@ -353,7 +462,10 @@ class FontCompare(object):
                 continue
             target_glyph = self.target_cmap[cp]
             test_glyph = self.test_cmap[cp]
-            if target_glyph in target_class_defs and test_glyph not in test_class_defs:
+            if (
+                target_glyph in target_class_defs
+                and test_glyph not in test_class_defs
+            ):
                 differences.append((cp, -1))
             else:
                 target_glyph_class = target_class_defs[target_glyph]
@@ -367,15 +479,24 @@ class FontCompare(object):
             incorrect_list = []
             for cp, gc in sorted(differences):
                 if gc == -1:
-                    self._err(self._cp_error_msg(cp, 'has no classDef', 'does'))
+                    self._err(
+                        self._cp_error_msg(cp, 'has no classDef', 'does')
+                    )
                     missing_list.append(cp)
                 else:
-                    self._err(self._cp_error_msg(cp, 'has non-combining-mark glyph class %d' % gc, 'is correct'))
+                    self._err(
+                        self._cp_error_msg(
+                            cp,
+                            'has non-combining-mark glyph class %d' % gc,
+                            'is correct',
+                        )
+                    )
                     incorrect_list.append(cp)
 
             if missing_list:
                 self._config(
-                    'enable gdef/classdef/unlisted only cp %s' % lint_config.write_int_ranges(missing_list, True)
+                    'enable gdef/classdef/unlisted only cp %s'
+                    % lint_config.write_int_ranges(missing_list, True)
                 )
             if incorrect_list:
                 self._config(
@@ -405,20 +526,31 @@ class FontCompare(object):
             cp_list = []
             self._err('%d glyphs have classDef differences' % len(differences))
             for cp, test_class, target_class in sorted(differences):
-                target_msg = 'has class %d' % target_class if target_class != -1 else 'not in classDef'
-                test_msg = 'has class %d' % test_class if test_class != -1 else 'not in classDef'
+                target_msg = (
+                    'has class %d' % target_class
+                    if target_class != -1
+                    else 'not in classDef'
+                )
+                test_msg = (
+                    'has class %d' % test_class
+                    if test_class != -1
+                    else 'not in classDef'
+                )
                 self._err(self._cp_error_msg(cp, test_msg, target_msg))
                 cp_list.append(cp)
 
             self._config(
-                'enable gdef/classdef/not_combining_mismatch only cp %s' % lint_config.write_int_ranges(cp_list, True)
+                'enable gdef/classdef/not_combining_mismatch only cp %s'
+                % lint_config.write_int_ranges(cp_list, True)
             )
 
     def check_gdef(self):
         if self._skip('gdef'):
             return
 
-        mark_glyphs = [cp for cp in self.target_chars if unicode_data.category(cp) == 'Mn']
+        mark_glyphs = [
+            cp for cp in self.target_chars if unicode_data.category(cp) == 'Mn'
+        ]
         if self._check_gdef_class_defs(mark_glyphs):
             self._check_gdef_marks(mark_glyphs)
             self._check_gdef_combining()
@@ -452,8 +584,20 @@ def check_font(
 
     print()
     if not emit_config:
-        print('target is previous version' if incremental_version else 'target is reference font')
-    FontCompare(target, test, incremental_version, emit_config, ignored_cp, only_cp, enabled_tests).check_all()
+        print(
+            'target is previous version'
+            if incremental_version
+            else 'target is reference font'
+        )
+    FontCompare(
+        target,
+        test,
+        incremental_version,
+        emit_config,
+        ignored_cp,
+        only_cp,
+        enabled_tests,
+    ).check_all()
 
 
 def get_reference_name_1(name):
@@ -524,38 +668,71 @@ def check_fonts(
             target_path = path.join(target_dir, target_name)
 
         if not path.isfile(target_path):
-            raise ValueError('could not find %s in target dir %s' % (target_name, target_dir))
+            raise ValueError(
+                'could not find %s in target dir %s'
+                % (target_name, target_dir)
+            )
 
-        check_font(target_path, font, incremental_version, emit_config, reverse, ignored_cp, only_cp, enabled_tests)
+        check_font(
+            target_path,
+            font,
+            incremental_version,
+            emit_config,
+            reverse,
+            ignored_cp,
+            only_cp,
+            enabled_tests,
+        )
 
 
 def main():
     default_target = '/usr/local/google/home/dougfelt/msfonts'
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('fonts', metavar='font', nargs='+', help='fonts to check')
     parser.add_argument(
-        '-t', '--target', metavar='dir', help='target font dir (default %s)' % default_target, default=default_target
+        'fonts', metavar='font', nargs='+', help='fonts to check'
     )
     parser.add_argument(
-        '-iv', '--incremental_version', help='target font is a previous drop from MTI', action='store_true'
+        '-t',
+        '--target',
+        metavar='dir',
+        help='target font dir (default %s)' % default_target,
+        default=default_target,
     )
-    parser.add_argument('-c', '--config', help='emit config spec', action='store_true')
     parser.add_argument(
-        '--test', metavar='test', help='test only named tests (%s)' % sorted(FontCompare.test_names), nargs='+'
+        '-iv',
+        '--incremental_version',
+        help='target font is a previous drop from MTI',
+        action='store_true',
     )
-    parser.add_argument('-r', '--reverse', help='reverse direction of comparison', action='store_true')
+    parser.add_argument(
+        '-c', '--config', help='emit config spec', action='store_true'
+    )
+    parser.add_argument(
+        '--test',
+        metavar='test',
+        help='test only named tests (%s)' % sorted(FontCompare.test_names),
+        nargs='+',
+    )
+    parser.add_argument(
+        '-r',
+        '--reverse',
+        help='reverse direction of comparison',
+        action='store_true',
+    )
     parser.add_argument(
         '-ic',
         '--ignore_codepoints',
         metavar='ranges',
-        help='report no errors on these codepoints (hex ranges separated by space)',
+        help='report no errors on these codepoints '
+        '(hex ranges separated by space)',
     )
     parser.add_argument(
         '-oc',
         '--only_codepoints',
         metavar='ranges',
-        help='only report errors on these codepoints (hex ranges separated by space)',
+        help='only report errors on these codepoints '
+        '(hex ranges separated by space)',
     )
     args = parser.parse_args()
 
@@ -567,7 +744,14 @@ def main():
     only_cp = FontCompare.get_codepoints(args.only_codepoints)
 
     check_fonts(
-        args.target, args.fonts, args.incremental_version, args.config, args.reverse, ignored_cp, only_cp, enabled_tests
+        args.target,
+        args.fonts,
+        args.incremental_version,
+        args.config,
+        args.reverse,
+        ignored_cp,
+        only_cp,
+        enabled_tests,
     )
 
 

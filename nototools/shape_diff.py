@@ -23,7 +23,8 @@ difference of shapes and calculates the area.
 
 Some caveats: glyph areas can be the same even if the shapes are wildly
 different (though they're useful for shapes that should be identical except
-for some offset). Image comparison is usually either slow (hi-res) or inaccurate
+for some offset).
+Image comparison is usually either slow (hi-res) or inaccurate
 (lo-res). Still, these are usually useful for raising red flags and catching
 large errors.
 """
@@ -54,19 +55,27 @@ GDEF_LABELS = ['no class', 'base', 'ligature', 'mark', 'component']
 class ShapeDiffFinder:
     """Provides methods to report diffs in glyph shapes between OT Fonts."""
 
-    def __init__(self, file_a, file_b, stats, ratio_diffs=False, diff_threshold=0):
+    def __init__(
+        self, file_a, file_b, stats, ratio_diffs=False, diff_threshold=0
+    ):
         self.path_a = file_a
         self.font_a = TTFont(self.path_a)
         self.glyph_set_a = self.font_a.getGlyphSet()
         self.gdef_a = {}
-        if 'GDEF' in self.font_a and not self.font_a['GDEF'].table.GlyphClassDef is None:
+        if (
+            'GDEF' in self.font_a
+            and not self.font_a['GDEF'].table.GlyphClassDef is None
+        ):
             self.gdef_a = self.font_a['GDEF'].table.GlyphClassDef.classDefs
 
         self.path_b = file_b
         self.font_b = TTFont(self.path_b)
         self.glyph_set_b = self.font_b.getGlyphSet()
         self.gdef_b = {}
-        if 'GDEF' in self.font_b and not self.font_b['GDEF'].table.GlyphClassDef is None:
+        if (
+            'GDEF' in self.font_b
+            and not self.font_b['GDEF'].table.GlyphClassDef is None
+        ):
             self.gdef_b = self.font_b['GDEF'].table.GlyphClassDef.classDefs
 
         for stat_type in (
@@ -106,7 +115,9 @@ class ShapeDiffFinder:
         stats = self.stats['compared']
         calc = self._calc_ratio if self.ratio_diffs else self._calc_diff
         for name, areas in mismatched.items():
-            stats.append((calc(areas), name, self.basepath, areas[0], areas[1]))
+            stats.append(
+                (calc(areas), name, self.basepath, areas[0], areas[1])
+            )
 
     def find_rendered_diffs(self, font_size=128, render_path=None):
         """Find diffs of glyphs as rendered by harfbuzz."""
@@ -127,7 +138,12 @@ class ShapeDiffFinder:
             class_b = self.gdef_b.get(name, GDEF_UNDEF)
             if GDEF_MARK in (class_a, class_b) and class_a != class_b:
                 self.stats['gdef_mark_mismatch'].append(
-                    (self.basepath, name, GDEF_LABELS[class_a], GDEF_LABELS[class_b])
+                    (
+                        self.basepath,
+                        name,
+                        GDEF_LABELS[class_a],
+                        GDEF_LABELS[class_b],
+                    )
                 )
                 continue
 
@@ -136,13 +152,21 @@ class ShapeDiffFinder:
             zwidth_a = width_a == 0
             zwidth_b = width_b == 0
             if zwidth_a != zwidth_b:
-                self.stats['zero_width_mismatch'].append((self.basepath, name, width_a, width_b))
+                self.stats['zero_width_mismatch'].append(
+                    (self.basepath, name, width_a, width_b)
+                )
                 continue
 
-            hb_args_a = hb_input_generator_a.input_from_name(name, pad=zwidth_a)
-            hb_args_b = hb_input_generator_b.input_from_name(name, pad=zwidth_b)
+            hb_args_a = hb_input_generator_a.input_from_name(
+                name, pad=zwidth_a
+            )
+            hb_args_b = hb_input_generator_b.input_from_name(
+                name, pad=zwidth_b
+            )
             if hb_args_a != hb_args_b:
-                self.stats['input_mismatch'].append((self.basepath, name, hb_args_a, hb_args_b))
+                self.stats['input_mismatch'].append(
+                    (self.basepath, name, hb_args_a, hb_args_b)
+                )
                 continue
 
             # ignore unreachable characters
@@ -158,12 +182,24 @@ class ShapeDiffFinder:
 
             img_file_a = BytesIO(
                 subprocess.check_output(
-                    ['hb-view', '--font-size=%d' % font_size, '--features=%s' % ','.join(features), self.path_a, text]
+                    [
+                        'hb-view',
+                        '--font-size=%d' % font_size,
+                        '--features=%s' % ','.join(features),
+                        self.path_a,
+                        text,
+                    ]
                 )
             )
             img_file_b = BytesIO(
                 subprocess.check_output(
-                    ['hb-view', '--font-size=%d' % font_size, '--features=%s' % ','.join(features), self.path_b, text]
+                    [
+                        'hb-view',
+                        '--font-size=%d' % font_size,
+                        '--features=%s' % ','.join(features),
+                        self.path_b,
+                        text,
+                    ]
                 )
             )
             img_a = Image.open(img_file_a)
@@ -198,7 +234,13 @@ class ShapeDiffFinder:
                     ):
                         diff += 1
                     else:
-                        diff += abs(data_a[ax + ay * width_a] - data_b[bx + by * width_b]) / 255
+                        diff += (
+                            abs(
+                                data_a[ax + ay * width_a]
+                                - data_b[bx + by * width_b]
+                            )
+                            / 255
+                        )
 
             if self.ratio_diffs:
                 diff /= width * height
@@ -206,8 +248,12 @@ class ShapeDiffFinder:
             if render_path and diff > self.diff_threshold:
                 img_cmp = Image.new('RGB', (width, height))
                 data_cmp = list(img_cmp.getdata())
-                self._project(data_a, width_a, height_a, data_cmp, width, height, 1)
-                self._project(data_b, width_b, height_b, data_cmp, width, height, 0)
+                self._project(
+                    data_a, width_a, height_a, data_cmp, width, height, 1
+                )
+                self._project(
+                    data_b, width_b, height_b, data_cmp, width, height, 0
+                )
                 for y in range(height):
                     for x in range(width):
                         i = x + y * width
@@ -228,7 +274,9 @@ class ShapeDiffFinder:
         for name, diff in mismatched.items():
             stats.append((diff, name, self.basepath))
 
-    def _project(self, src_data, src_width, src_height, dst_data, width, height, channel):
+    def _project(
+        self, src_data, src_width, src_height, dst_data, width, height, channel
+    ):
         """Project a single-channel image onto a channel of an RGB image."""
 
         offset_x = (width - src_width) // 2
@@ -252,8 +300,12 @@ class ShapeDiffFinder:
         for name in self.names:
             glyph_a = Glyph()
             glyph_b = Glyph()
-            self.glyph_set_a[name].draw(Qu2CuPen(glyph_a.getPen(), self.glyph_set_a))
-            self.glyph_set_b[name].draw(Qu2CuPen(glyph_b.getPen(), self.glyph_set_b))
+            self.glyph_set_a[name].draw(
+                Qu2CuPen(glyph_a.getPen(), self.glyph_set_a)
+            )
+            self.glyph_set_b[name].draw(
+                Qu2CuPen(glyph_b.getPen(), self.glyph_set_b)
+            )
             booleanOperations.xor(list(glyph_a), list(glyph_b), pen)
             area = abs(area_pen.pop())
             if area:
@@ -319,7 +371,9 @@ class ShapeDiffFinder:
 
         report = []
 
-        compared = sorted(s for s in stats['compared'] if s[1] not in whitelist)
+        compared = sorted(
+            s for s in stats['compared'] if s[1] not in whitelist
+        )
         compared.reverse()
         fmt = '%s %s'
         if include_vals:
@@ -346,19 +400,29 @@ class ShapeDiffFinder:
             report.append("Glyph unicode values don't match in %s" % font)
             for name, univals in sorted(mismatches):
                 univals = [(('0x%04X' % v) if v else str(v)) for v in univals]
-                report.append('  %s: %s in A, %s in B' % (name, univals[0], univals[1]))
+                report.append(
+                    '  %s: %s in A, %s in B' % (name, univals[0], univals[1])
+                )
         report.append('')
 
         ShapeDiffFinder._add_simple_report(
-            report, stats['gdef_mark_mismatch'], '%s: Mark class mismatch for %s (%s vs %s)'
+            report,
+            stats['gdef_mark_mismatch'],
+            '%s: Mark class mismatch for %s (%s vs %s)',
         )
         ShapeDiffFinder._add_simple_report(
-            report, stats['zero_width_mismatch'], '%s: Zero-width mismatch for %s (%d vs %d)'
+            report,
+            stats['zero_width_mismatch'],
+            '%s: Zero-width mismatch for %s (%d vs %d)',
         )
         ShapeDiffFinder._add_simple_report(
-            report, stats['input_mismatch'], '%s: Harfbuzz input mismatch for %s (%s vs %s)'
+            report,
+            stats['input_mismatch'],
+            '%s: Harfbuzz input mismatch for %s (%s vs %s)',
         )
-        ShapeDiffFinder._add_simple_report(report, stats['untested'], '%s: %s not tested (unreachable?)')
+        ShapeDiffFinder._add_simple_report(
+            report, stats['untested'], '%s: %s not tested (unreachable?)'
+        )
 
         return '\n'.join(report)
 

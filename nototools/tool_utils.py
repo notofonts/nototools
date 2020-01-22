@@ -45,7 +45,9 @@ def temp_chdir(path):
         os.chdir(saved_dir)
 
 
-noto_re = re.compile(r'\[(tools|fonts|fonts_alpha|emoji|cjk|source|adobe|mti|afdko)\](.*)')
+noto_re = re.compile(
+    r'\[(tools|fonts|fonts_alpha|emoji|cjk|source|adobe|mti|afdko)\](.*)'
+)
 
 
 def resolve_path(somepath):
@@ -74,14 +76,18 @@ def resolve_path(somepath):
 
 
 def commonpathprefix(paths):
-    """Return the common path prefix and a tuple of the relative subpaths for the
-  provided paths.  Uses resolve_path to convert to absolute paths and returns
-  the common absolute path.  Some subpaths might be the empty string and joining
-  these will produce paths ending in '/', use normpath if you don't want this.
+    """
+    Return the common path prefix and a tuple of the relative subpaths
+    for the provided paths.
+    Uses resolve_path to convert to absolute paths and returns
+    the common absolute path.
+    Some subpaths might be the empty string and joining
+    these will produce paths ending in '/',
+    use normpath if you don't want this.
 
-  Python 2.7 only has path.commonprefix, which returns a common string prefix,
-  not a common path prefix.
-  """
+    Python 2.7 only has path.commonprefix,
+    which returns a common string prefix, not a common path prefix.
+    """
     norm_paths = [resolve_path(p) + path.sep for p in paths]
     prefix = path.dirname(path.commonprefix(norm_paths))
     prefix_len = len(prefix)
@@ -102,9 +108,11 @@ def _name_to_key(keyname):
 
 
 def short_path(somepath, basedir=CWD):
-    """Return a short version of somepath, either relative to one of the noto path
-  shorthands or to the provided base directory (defaults to current).  For
-  logging/debugging output of file paths."""
+    """
+    Return a short version of somepath, either relative to one of the noto path
+    shorthands or to the provided base directory (defaults to current).  For
+    logging/debugging output of file paths.
+    """
     shortest = somepath
     if basedir and somepath.startswith(basedir):
         shortest = '.' + somepath[len(basedir) :]
@@ -140,8 +148,10 @@ def ensure_dir_exists(path, clean=False):
 
 
 def generate_zip_with_7za(root_dir, file_paths, archive_path):
-    """file_paths is a list of files relative to root_dir, these will be the names
-  in the archive at archive_path."""
+    """
+    file_paths is a list of files relative to root_dir, these will be the names
+    in the archive at archive_path.
+    """
 
     arg_list = ['7za', 'a', archive_path, '-tzip', '-mx=7', '-bd', '--']
     arg_list.extend(file_paths)
@@ -180,7 +190,9 @@ def dos2unix(root_dir, glob_list):
         for g in glob_list:
             file_list = glob.glob(g)
             if file_list:
-                subprocess.check_call(['dos2unix', '-k', '-q', '-o'] + file_list)
+                subprocess.check_call(
+                    ['dos2unix', '-k', '-q', '-o'] + file_list
+                )
 
 
 def zip_extract_with_timestamp(zippath, dstdir):
@@ -196,7 +208,9 @@ def zip_extract_with_timestamp(zippath, dstdir):
 def git_checkout(repo, branch_or_tag, verbose=False):
     """checkout the branch or tag"""
     with temp_chdir(repo):
-        result = subprocess.check_output(['git', 'checkout', branch_or_tag], stderr=subprocess.STDOUT)
+        result = subprocess.check_output(
+            ['git', 'checkout', branch_or_tag], stderr=subprocess.STDOUT
+        )
         if verbose:
             print('%s:\n%s\n-----' % (repo, result))
 
@@ -212,7 +226,16 @@ def git_file_lastlog(repo, filepath):
   of most recent commit of filepath, separated by tab."""
     with temp_chdir(repo):
         return subprocess.check_output(
-            ['git', 'log', '-n', '1', '--format=%h\t%ad\t%ae\t%s', '--date=short', '--', filepath]
+            [
+                'git',
+                'log',
+                '-n',
+                '1',
+                '--format=%h\t%ad\t%ae\t%s',
+                '--date=short',
+                '--',
+                filepath,
+            ]
         )
 
 
@@ -227,16 +250,23 @@ def git_tags(repo):
                 'git',
                 'tag',
                 '-l',
-                '--format=%(*objectname)|%(refname:strip=2)|' '%(taggerdate:format:%Y-%m-%d %T %Z)',
+                '--format=%(*objectname)|%(refname:strip=2)|'
+                '%(taggerdate:format:%Y-%m-%d %T %Z)',
                 '--sort=-taggerdate',
             ]
         )
-        return [tuple(line.split('|')) for line in text.splitlines() if not line.strip().startswith('|')]
+        return [
+            tuple(line.split('|'))
+            for line in text.splitlines()
+            if not line.strip().startswith('|')
+        ]
 
 
 def git_tag_info(repo, tag_name):
-    """Return the annotation for this tag in the repo.  It is limited to no more
-  than 50 lines."""
+    """
+    Return the annotation for this tag in the repo.
+    It is limited to no more than 50 lines.
+    """
     # Unfortunately, I can't get the other formatted tag info and also limit
     # to the tag annotation without more serious munging of tag or show output.
     with temp_chdir(repo):
@@ -247,18 +277,22 @@ def git_tag_info(repo, tag_name):
 
 def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
     """
-  Return a list of the names of tool-generated files in the provided directory.
-  The idea is that when we check in files that are generated by a tool, the
-  commit will start with the given prefix.  If a files' most recent log entry
-  matches this, it means that we've not applied patches or fixes to the file
-  since it was generated, so we can overwrite it with new tool-generated data.
+    Return a list of the names of tool-generated files
+    in the provided directory.
+    The idea is that when we check in files that are generated by a tool, the
+    commit will start with the given prefix.
+    If a files' most recent log entry matches this,
+    it means that we've not applied patches or fixes to the file
+    since it was generated,
+    so we can overwrite it with new tool-generated data.
 
-  The motivation for this is mantaining the sample texts.  The original source
-  for most of these is UDHR data, but subsequently we have fixed things in
-  some of the samples.  We generally do not want to blindly overwrite these
-  fixes, but do want to be able to regenerate the samples if we get new source
-  data.
-  """
+    The motivation for this is mantaining the sample texts.
+    The original source for most of these is UDHR data,
+    but subsequently we have fixed things in
+    some of the samples.
+    We generally do not want to blindly overwrite these fixes,
+    but do want to be able to regenerate the samples if we get new source data.
+    """
     files_not_under_version_control = []
     protected_files = []
     tool_generated_files = []
@@ -277,11 +311,17 @@ def get_tool_generated(repo, subdir, commit_title_prefix='Updated by tool'):
     if files_not_under_version_control:
         sys.stderr.write(
             '%d files were not under version control:\n  %s\n'
-            % (len(files_not_under_version_control), ', '.join(files_not_under_version_control))
+            % (
+                len(files_not_under_version_control),
+                ', '.join(files_not_under_version_control),
+            )
         )
 
     if protected_files:
-        sys.stderr.write('%d files protected:\n  %s\n' % (len(protected_files), ', '.join(protected_files)))
+        sys.stderr.write(
+            '%d files protected:\n  %s\n'
+            % (len(protected_files), ', '.join(protected_files))
+        )
 
     return tool_generated_files
 
@@ -290,7 +330,9 @@ def git_get_branch(repo):
     try:
         with temp_chdir(repo):
             with open(os.devnull) as trash:
-                return subprocess.check_output(['git', 'symbolic-ref', '--short', 'HEAD'], stderr=trash).strip()
+                return subprocess.check_output(
+                    ['git', 'symbolic-ref', '--short', 'HEAD'], stderr=trash
+                ).strip()
     except Exception:
         return '<not on any branch>'
 
@@ -302,28 +344,65 @@ def git_is_clean(repo, print_errors=False):
         def dumplines(msg, text, limit):
             if text:
                 lines = text.splitlines()
-                print('%s (%d lines):\n  %s' % (msg, len(lines), '\n  '.join(lines[:limit])))
+                print(
+                    '%s (%d lines):\n  %s'
+                    % (msg, len(lines), '\n  '.join(lines[:limit]))
+                )
                 if len(lines) > limit:
                     print('  ...')
 
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         out, err = p.communicate()
         dumplines('out', out, 20)
         dumplines('err', err, 20)
 
     result = True
     with temp_chdir(repo):
-        subprocess.check_call(['git', 'update-index', '-q', '--ignore-submodules', '--refresh'])
-        if subprocess.call(['git', 'diff-files', '--quiet', '--ignore-submodules', '--']):
+        subprocess.check_call(
+            ['git', 'update-index', '-q', '--ignore-submodules', '--refresh']
+        )
+        if subprocess.call(
+            ['git', 'diff-files', '--quiet', '--ignore-submodules', '--']
+        ):
             if print_errors:
                 print('There are unstaged changes:')
-                capture_and_show_errors(['git', 'diff-files', '--name-status', '-r', '--ignore-submodules', '--'])
+                capture_and_show_errors(
+                    [
+                        'git',
+                        'diff-files',
+                        '--name-status',
+                        '-r',
+                        '--ignore-submodules',
+                        '--',
+                    ]
+                )
             result = False
-        if subprocess.call(['git', 'diff-index', '--cached', '--quiet', 'HEAD', '--ignore-submodules', '--']):
+        if subprocess.call(
+            [
+                'git',
+                'diff-index',
+                '--cached',
+                '--quiet',
+                'HEAD',
+                '--ignore-submodules',
+                '--',
+            ]
+        ):
             if print_errors:
                 print('There are uncommitted changes:')
                 capture_and_show_errors(
-                    ['git', 'diff-index', '--cached', '--name-status', '-r', 'HEAD', '--ignore-submodules', '--']
+                    [
+                        'git',
+                        'diff-index',
+                        '--cached',
+                        '--name-status',
+                        '-r',
+                        'HEAD',
+                        '--ignore-submodules',
+                        '--',
+                    ]
                 )
             result = False
     return result
@@ -354,7 +433,9 @@ def git_check_remote_commit(repo, commit, remote='upstream', branch='master'):
     with temp_chdir(repo):
         subprocess.check_call(['git', 'fetch', remote])
         # the following will throw an exception if commit is unrecognized
-        text = subprocess.check_output(['git', 'branch', '-r', '--contains', commit])
+        text = subprocess.check_output(
+            ['git', 'branch', '-r', '--contains', commit]
+        )
 
         lines = [line.strip() for line in text.splitlines()]
         if branch:
@@ -370,7 +451,9 @@ def git_check_remote_commit(repo, commit, remote='upstream', branch='master'):
 
 
 def git_add_all(repo_subdir):
-    """Add all changed, deleted, and new files in subdir to the staging area."""
+    """
+    Add all changed, deleted, and new files in subdir to the staging area.
+    """
     # git can now add everything, even removed files
     with temp_chdir(repo_subdir):
         subprocess.check_call(['git', 'add', '--', '.'])
@@ -391,20 +474,29 @@ def svn_update(repo):
 
 
 def parse_int_ranges(
-    range_string, is_hex=True, sep=None, allow_duplicates=False, return_set=True, allow_compressed=False
+    range_string,
+    is_hex=True,
+    sep=None,
+    allow_duplicates=False,
+    return_set=True,
+    allow_compressed=False,
 ):
-    """Returns a set/list of ints from a string of numbers or ranges separated by
-  sep.  A range is two values separated by hyphen with no intervening separator;
-  ranges are inclusive.  If allow_compressed is true, '/' is also allowed
-  as a separator, and ranges following it or hyphen are interpreted as suffixes
-  that replace the same number of characters at the end of the previous value.
-  '-' generates the range of intervening characters as before, while '/' does
-  not.  Returns a set or a list depending on return_set.
+    """
+    Returns a set/list of ints from a string of numbers or ranges separated by
+    sep.
+    A range is two values separated by hyphen with no intervening separator;
+    ranges are inclusive.
+    If allow_compressed is true, '/' is also allowed as a separator,
+    and ranges following it or hyphen are interpreted as suffixes
+    that replace the same number of characters
+    at the end of the previous value.
+    '-' generates the range of intervening characters as before, while '/' does
+    not.  Returns a set or a list depending on return_set.
 
-  For example, with compressed ranges the following:
+    For example, with compressed ranges the following:
     1ee42/7/9/b/d-f 1ee51-2/4/7/9/b/d/f
 
-  expands to:
+    expands to:
     1ee42 1ee47 1ee49 1ee4b 1ee4d-1ee4f 1ee51-1ee52 1ee54 1ee57 1ee59 1ee5b
     1ee5d 1ee5f
   """
@@ -419,12 +511,18 @@ def parse_int_ranges(
             next_val = int(next_str, base)
         else:
             if slen > len(prev_str):
-                raise ValueError('suffix \'%s\' is longer than previous \'%s\'' % (suffix, prev_str))
+                raise ValueError(
+                    'suffix \'%s\' is longer than previous \'%s\''
+                    % (suffix, prev_str)
+                )
             next_str = prev_str[:-slen] + suffix
 
             next_val = int(next_str, base)
             if next_val <= vals[-1]:
-                raise ValueError('next value \'%s\' is not greater than previous \'%s\'' % (next_str, prev_str))
+                raise ValueError(
+                    'next value \'%s\' is not greater than previous \'%s\''
+                    % (next_str, prev_str)
+                )
 
         if is_range:
             start_val = vals[-1] + 1
@@ -462,7 +560,10 @@ def parse_int_ranges(
                 if start == 0:
                     len_limit = i
                 elif i - start > len_limit:
-                    raise ValueError('segment \'%s\' longer than previous segment' % r[start:i])
+                    raise ValueError(
+                        'segment \'%s\' longer than previous segment'
+                        % r[start:i]
+                    )
                 else:
                     len_limit = i - start
 
@@ -481,7 +582,12 @@ def parse_int_ranges(
             return line.strip()
 
         join_char = ' ' if sep is None else sep
-        range_string = join_char.join(filter(None, (strip_comment(line) for line in range_string.splitlines())))
+        range_string = join_char.join(
+            filter(
+                None,
+                (strip_comment(line) for line in range_string.splitlines()),
+            )
+        )
 
     if not allow_compressed and '/' != sep and range_string.find('/') != -1:
         raise ValueError('\'/\' only allowed in compressed range format')
@@ -501,7 +607,10 @@ def parse_int_ranges(
                     fail.add(v)
                 else:
                     seen.add(v)
-            raise ValueError('range "%s" has %d duplicates: %s' % (range_string, len(fail), write_int_ranges(fail)))
+            raise ValueError(
+                'range "%s" has %d duplicates: %s'
+                % (range_string, len(fail), write_int_ranges(fail))
+            )
 
     return range_set if return_set else vals
 
@@ -553,7 +662,10 @@ def setup_logging(loglevel, quiet_ttx=True):
     except Exception:
         loglevel = getattr(logging, loglevel.upper(), loglevel)
     if not isinstance(loglevel, int):
-        print('Could not set log level, should be one of debug, info, warning, ' 'error, critical, or a numeric value')
+        print(
+            'Could not set log level, should be one of debug, info, warning, '
+            'error, critical, or a numeric value'
+        )
         return
     logging.basicConfig(level=loglevel)
 
@@ -571,8 +683,10 @@ def write_lines(lines, outfile):
 
 
 def read_lines(infile, ignore_comments=True, strip=True, skip_empty=True):
-    """Read lines from infile and return as a list, optionally stripping comments,
-  whitespace, and/or skipping blank lines."""
+    """
+    Read lines from infile and return as a list, optionally stripping comments,
+    whitespace, and/or skipping blank lines.
+    """
     lines = []
     with codecs.open(infile, 'r', 'utf-8') as f:
         for line in f:
@@ -594,7 +708,12 @@ def _read_filename_list(filenames):
 
 
 # see noto_fonts.NOTO_FONT_PATHS
-NOTO_FONT_PATHS = ['[fonts]/hinted', '[fonts]/unhinted', '[emoji]/fonts', '[cjk]']
+NOTO_FONT_PATHS = [
+    '[fonts]/hinted',
+    '[fonts]/unhinted',
+    '[emoji]/fonts',
+    '[cjk]',
+]
 
 
 def collect_paths(dirs, files):
@@ -611,7 +730,9 @@ def collect_paths(dirs, files):
             if dirs[i] == '[noto]':
                 dirs[i] = None
                 dirs.extend(NOTO_FONT_PATHS)
-                dirs = filter(None, args.dirs)  # TODO: args is not defined!  # noqa:F821
+                dirs = filter(
+                    None, args.dirs
+                )  # TODO: args is not defined!  # noqa:F821
                 break
         for d in dirs:
             d = resolve_path(d)

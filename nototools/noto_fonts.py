@@ -34,7 +34,12 @@ from nototools import unicode_data
 # The '[xxx]' syntax is used to get the noto-xxx value from notoconfig.
 # for now we exclude alpha, the phase 3 fonts are here but we don't use
 # them yet.
-NOTO_FONT_PATHS = ['[fonts]/hinted', '[fonts]/unhinted', '[emoji]/fonts', '[cjk]']
+NOTO_FONT_PATHS = [
+    '[fonts]/hinted',
+    '[fonts]/unhinted',
+    '[emoji]/fonts',
+    '[cjk]',
+]
 
 
 ODD_SCRIPTS = {
@@ -92,7 +97,9 @@ _script_key_to_report_name = {
 
 
 def script_name_for_report(script_key):
-    return _script_key_to_report_name.get(script_key, None) or preferred_script_name(script_key)
+    return _script_key_to_report_name.get(
+        script_key, None
+    ) or preferred_script_name(script_key)
 
 
 # NotoFont maps a font path to information we assume the font to have, based
@@ -121,16 +128,17 @@ def script_name_for_report(script_key):
 NotoFont = collections.namedtuple(
     'NotoFont',
     'filepath, family, style, script, variant, width, weight, slope, '
-    'fmt, manufacturer, license_type, is_hinted, is_mono, is_UI, is_UI_metrics, '
-    'is_display, is_cjk, subset',
+    'fmt, manufacturer, license_type, is_hinted, is_mono, is_UI, '
+    'is_UI_metrics, is_display, is_cjk, subset',
 )
 
 
-# These are the ideal pseudo-css weights. 'ideal', because windows GDI limits us
-# to weights >= 250 if we are to prevent auto-bolding, and 'pseudo-css' because
-# css limits us to multiples of 100 currently.  The hope is that both of these
-# restrictions eventually go away, so we encode the values as we wish they would
-# be, and adjust when necessary based on context.
+# These are the ideal pseudo-css weights. 'ideal', because windows GDI
+# limits us to weights >= 250 if we are to prevent auto-bolding,
+# and 'pseudo-css' because css limits us to multiples of 100 currently.
+# The hope is that both of these restrictions eventually go away,
+# so we encode the values as we wish they would be, and adjust
+# when necessary based on context.
 WEIGHTS = {
     'Thin': 100,
     'ExtraLight': 200,
@@ -172,7 +180,19 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto', phase=3):
         filedir = os.getcwd()
     match = match_filename(filename, family_name)
     if match:
-        (family, style, mono, script, variant, ui, display, width, weight, slope, fmt) = match.groups()
+        (
+            family,
+            style,
+            mono,
+            script,
+            variant,
+            ui,
+            display,
+            width,
+            weight,
+            slope,
+            fmt,
+        ) = match.groups()
     else:
         if _EXT_REGEX.match(filename):
             sys.stderr.write('%s did not match font regex\n' % filename)
@@ -214,7 +234,8 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto', phase=3):
         else:
             script = 'LGC'
     elif script == 'Urdu':
-        # Use 'Aran' for languages written in the Nastaliq Arabic style, like Urdu.
+        # Use 'Aran' for languages written in the Nastaliq Arabic style,
+        # like Urdu.
         # The font naming uses 'Urdu' which is not a script, but a language.
         assert family == 'Noto' and style == 'Nastaliq'
         script = 'Aran'
@@ -229,14 +250,20 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto', phase=3):
         try:
             script = convert_to_four_letter(script)
         except ValueError:
-            sys.stderr.write('unknown script: %s for %s\n' % (script, filename))
+            sys.stderr.write(
+                'unknown script: %s for %s\n' % (script, filename)
+            )
             return None
 
     if not weight:
         weight = 'Regular'
 
     is_UI = ui == 'UI'
-    is_UI_metrics = is_UI or style == 'Emoji' or (style == 'Sans' and script in noto_data.DEEMED_UI_SCRIPTS_SET)
+    is_UI_metrics = (
+        is_UI
+        or style == 'Emoji'
+        or (style == 'Sans' and script in noto_data.DEEMED_UI_SCRIPTS_SET)
+    )
 
     is_display = display == 'Display'
     if is_cjk:
@@ -245,9 +272,14 @@ def get_noto_font(filepath, family_name='Arimo|Cousine|Tinos|Noto', phase=3):
         is_hinted = False
     else:
         hint_status = path.basename(filedir)
-        if hint_status not in ['hinted', 'unhinted'] and 'noto-source' not in filedir:
-            # print >> sys.stderr, (
-            #    'unknown hint status for %s, defaulting to unhinted') % filedir
+        if (
+            hint_status not in ['hinted', 'unhinted']
+            and 'noto-source' not in filedir
+        ):
+            # print (
+            # 'unknown hint status for %s, defaulting to unhinted' % filedir,
+            # file=sys.stderr
+            # )
             pass
         is_hinted = hint_status == 'hinted'
 
@@ -324,10 +356,13 @@ def script_key_to_scripts(script_key):
 
 
 def script_key_to_primary_script(script_key):
-    """We need a default script for a font, and fonts using a 'script key' support
-  multiple fonts.  This lets us pick a default sample for a font based on it.
-  The sample is named with a script that can include 'Jpan' so 'Jpan' should be
-  the primary script in this case."""
+    """
+    We need a default script for a font, and fonts using a 'script key' support
+    multiple fonts.
+    This lets us pick a default sample for a font based on it.
+    The sample is named with a script that can include 'Jpan'
+    so 'Jpan' should be the primary script in this case.
+    """
     if script_key == 'LGC':
         return 'Latn'
     if script_key == 'Aran':
@@ -361,10 +396,11 @@ def noto_font_to_family_id(notofont):
         tags.append('cjk')
         tags.append(notofont.subset)
     else:
-        # Sans Mono should get tag sans-mono, but 'Mono' (phase 2 name) should get
-        # tag mono-mono, and Sans/Serif Mono CJK should not include mono in tag.
-        # Above we've already added mono for non-cjk fonts, so if the style is not
-        # empty we don't want to add mono a second time.
+        # Sans Mono should get tag sans-mono, but 'Mono' (phase 2 name)
+        # should get tag mono-mono, and Sans/Serif Mono CJK should not
+        # include mono in tag.
+        # Above we've already added mono for non-cjk fonts,
+        # so if the style is not empty we don't want to add mono a second time.
         if not (notofont.style and notofont.script.lower() == 'mono'):
             tags.append(notofont.script)
     if notofont.variant:
@@ -437,7 +473,9 @@ def wws_family_id_to_name_parts(wws_id):
         # mono comes before CJK in the name
         if len(part_keys) > 2 and part_keys[2] == 'mono':
             parts.append('Mono')
-            part_keys = part_keys[:2]  # trim mono so we don't try to add it again
+            part_keys = part_keys[
+                :2
+            ]  # trim mono so we don't try to add it again
         parts.append('CJK')
         if script == 'hans':
             parts.append('sc')
@@ -456,7 +494,9 @@ def wws_family_id_to_name_parts(wws_id):
         # Mono works as a script. The phase 2 'mono-mono' tag was special-cased
         # above so it won't get added a second time.
         script_name = preferred_script_name(script.title())
-        script_name = script_name.replace(' ', '').replace("'", '').replace('-', '')
+        script_name = (
+            script_name.replace(' ', '').replace("'", '').replace('-', '')
+        )
         parts.append(script_name)
     if len(part_keys) > 2:
         extra = part_keys[2]
@@ -485,8 +525,11 @@ def wws_family_id_to_name_parts(wws_id):
 
 
 def get_noto_fonts(paths=NOTO_FONT_PATHS):
-    """Scan paths for fonts, and create a NotoFont for each one, returning a list
-  of these.  'paths' defaults to the standard noto font paths, using notoconfig."""
+    """
+    Scan paths for fonts, and create a NotoFont for each one, returning a list
+    of these.
+    'paths' defaults to the standard noto font paths, using notoconfig.
+    """
 
     font_dirs = list(filter(None, [tool_utils.resolve_path(p) for p in paths]))
     print('Getting fonts from: %s' % font_dirs)
@@ -502,7 +545,9 @@ def get_noto_fonts(paths=NOTO_FONT_PATHS):
             filepath = path.join(font_dir, filename)
             font = get_noto_font(filepath)
             if not font:
-                sys.stderr.write('bad font filename in %s: \'%s\'.\n' % ((font_dir, filename)))
+                sys.stderr.write(
+                    'bad font filename in %s: \'%s\'.\n' % (font_dir, filename)
+                )
                 continue
 
             all_fonts.append(font)
@@ -536,7 +581,8 @@ def get_font_family_name(font_file):
 # - unhinted_members: list of members that are unhinted
 # When both hinted_members and unhinted_members are present, they correspond.
 NotoFamily = collections.namedtuple(
-    'NotoFamily', 'name, family_id, rep_member, charset, hinted_members, unhinted_members'
+    'NotoFamily',
+    'name, family_id, rep_member, charset, hinted_members, unhinted_members',
 )
 
 
@@ -567,10 +613,11 @@ def get_families(fonts):
                     and not (font.is_cjk and font.is_mono)
                     and not font.is_UI
                 ):
-                    # We assume here that there's no difference between a hinted or
-                    # unhinted rep_member in terms of what we use it for.  The other
-                    # filters are to ensure the fontTools font name is a good stand-in
-                    # for the family name.
+                    # We assume here that there's no difference
+                    # between a hinted or unhinted rep_member in terms
+                    # of what we use it for.
+                    # The other filters are to ensure the fontTools font name
+                    # is a good stand-in for the family name.
                     if font.fmt == 'ttc' and not rep_backup:
                         rep_backup = font
                     else:
@@ -578,7 +625,9 @@ def get_families(fonts):
 
         rep_member = rep_member or rep_backup
         if not rep_member:
-            raise ValueError('Family %s does not have a representative font.' % family_id)
+            raise ValueError(
+                'Family %s does not have a representative font.' % family_id
+            )
 
         name = get_font_family_name(rep_member.filepath)
 
@@ -588,7 +637,14 @@ def get_families(fonts):
             # was NotImplemented, but bool(NotImplemented) is True
             charset = None
 
-        families[family_id] = NotoFamily(name, family_id, rep_member, charset, hinted_members, unhinted_members)
+        families[family_id] = NotoFamily(
+            name,
+            family_id,
+            rep_member,
+            charset,
+            hinted_members,
+            unhinted_members,
+        )
 
     return families
 
@@ -631,7 +687,9 @@ def _all_noto_font_key_to_names(paths):
 
 
 def test(paths):
-    """test name generation to make sure we match the font name from the wws id"""
+    """
+    test name generation to make sure we match the font name from the wws id
+    """
     wws_key_to_family_name = _all_noto_font_key_to_names(paths)
     for key, val in sorted(wws_key_to_family_name.items()):
         print(key, val)
@@ -642,9 +700,20 @@ def test(paths):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--dirs', help='list of directories to find fonts in', metavar='dir', nargs='+')
     parser.add_argument(
-        '-t', '--test', help='test mapping from wws key back to font file name', nargs='?', const=True, metavar='bool'
+        '-d',
+        '--dirs',
+        help='list of directories to find fonts in',
+        metavar='dir',
+        nargs='+',
+    )
+    parser.add_argument(
+        '-t',
+        '--test',
+        help='test mapping from wws key back to font file name',
+        nargs='?',
+        const=True,
+        metavar='bool',
     )
     args = parser.parse_args()
 

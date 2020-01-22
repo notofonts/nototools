@@ -86,11 +86,19 @@ def get_glyph_cleaned_extents_OLD(glyph, glyf_table):
 
                 if hasattr(component, 'transform'):
                     transform = component.transform
-                    assert transform[1][0] == transform[0][1] == 0, "Can't handle complex transforms"
+                    assert (
+                        transform[1][0] == transform[0][1] == 0
+                    ), "Can't handle complex transforms"
                 else:
                     transform = [[1, 0], [0, 1]]
-                max_height = max_with_none(max_height, transform_y(transform, component_ymax) + component.y)
-                min_height = min_with_none(min_height, transform_y(transform, component_ymin) + component.y)
+                max_height = max_with_none(
+                    max_height,
+                    transform_y(transform, component_ymax) + component.y,
+                )
+                min_height = min_with_none(
+                    min_height,
+                    transform_y(transform, component_ymin) + component.y,
+                )
         else:
             # Set points_to_ignore to the list of all single-point contours
             points_to_ignore = set()
@@ -132,7 +140,9 @@ HARFBUZZ_DIR = os.getenv('HOME') + os.sep + 'harfbuzz'
 HB_SHAPE_PATH = HARFBUZZ_DIR + os.sep + 'util' + os.sep + 'hb-shape'
 
 
-def run_harfbuzz_on_text(text, font_file_name, language, extra_parameters=None):
+def run_harfbuzz_on_text(
+    text, font_file_name, language, extra_parameters=None
+):
     """Runs HarfBuzz on input text and return JSON shaping information."""
     hb_parameters = [
         HB_SHAPE_PATH,
@@ -147,7 +157,9 @@ def run_harfbuzz_on_text(text, font_file_name, language, extra_parameters=None):
     if extra_parameters is not None:
         hb_parameters += extra_parameters
 
-    hb_process = subprocess.Popen(hb_parameters, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    hb_process = subprocess.Popen(
+        hb_parameters, stdin=subprocess.PIPE, stdout=subprocess.PIPE
+    )
 
     return hb_process.communicate(input=text.encode('UTF-8'))[0]
 
@@ -158,17 +170,25 @@ def get_line_extents_from_json(json_data, font_file_name):
     min_height = None
     for glyph_position in json.loads(json_data):
         glyph_id = glyph_position['g']
-        glyph_ymin, glyph_ymax = get_glyph_vertical_extents(glyph_id, font_file_name)
+        glyph_ymin, glyph_ymax = get_glyph_vertical_extents(
+            glyph_id, font_file_name
+        )
 
         if glyph_ymax is not None:
             glyph_vertical_offset = glyph_position['dy']
-            max_height = max_with_none(max_height, glyph_ymax + glyph_vertical_offset)
-            min_height = min_with_none(min_height, glyph_ymin + glyph_vertical_offset)
+            max_height = max_with_none(
+                max_height, glyph_ymax + glyph_vertical_offset
+            )
+            min_height = min_with_none(
+                min_height, glyph_ymin + glyph_vertical_offset
+            )
 
     return min_height, max_height
 
 
-def test_text_vertical_extents(text, font_file_name, min_allowed, max_allowed, language=None):
+def test_text_vertical_extents(
+    text, font_file_name, min_allowed, max_allowed, language=None
+):
     """Runs given text through HarfBuzz to find cases that go out of bounds."""
 
     hb_output = run_harfbuzz_on_text(text, font_file_name, language)
@@ -179,11 +199,15 @@ def test_text_vertical_extents(text, font_file_name, min_allowed, max_allowed, l
         if not output_line:
             continue
 
-        min_height, max_height = get_line_extents_from_json(output_line, font_file_name)
+        min_height, max_height = get_line_extents_from_json(
+            output_line, font_file_name
+        )
 
         if min_height is None:
             continue
         if min_height < min_allowed or max_height > max_allowed:
-            exceeding_lines.append(((min_height, max_height), split_text[line_no]))
+            exceeding_lines.append(
+                ((min_height, max_height), split_text[line_no])
+            )
 
     return exceeding_lines

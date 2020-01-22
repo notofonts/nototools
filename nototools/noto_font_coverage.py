@@ -30,7 +30,9 @@ def print_names(families):
 
 
 def check_cp(families, cp):
-    return set([family.name for family in families.values() if cp in family.charset])
+    return set(
+        [family.name for family in families.values() if cp in family.charset]
+    )
 
 
 def codepoints(cp_list):
@@ -151,10 +153,27 @@ def run(args, families):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--names', help='print family names', action='store_true')
-    parser.add_argument('--each', help='for each code point, show supporting families', metavar='cp', nargs='+')
-    parser.add_argument('--any', help='show families that support any of the codepoints', metavar='cp', nargs='+')
-    parser.add_argument('--all', help='show families that support all of the codepoints', metavar='cp', nargs='+')
+    parser.add_argument(
+        '--names', help='print family names', action='store_true'
+    )
+    parser.add_argument(
+        '--each',
+        help='for each code point, show supporting families',
+        metavar='cp',
+        nargs='+',
+    )
+    parser.add_argument(
+        '--any',
+        help='show families that support any of the codepoints',
+        metavar='cp',
+        nargs='+',
+    )
+    parser.add_argument(
+        '--all',
+        help='show families that support all of the codepoints',
+        metavar='cp',
+        nargs='+',
+    )
     args = parser.parse_args()
 
     fonts = noto_fonts.get_noto_fonts()

@@ -45,10 +45,12 @@ def is_excluded_script(script_code):
 
 
 def script_includes(script_code):
-    """Returns a set of script codes 'included' by the provided one.  Intended to
-  deal with script codes like 'Jpan' used to describe writing systems that
-  use/require multiple scripts.  The script code itself (and other subsets)
-  are also included in the result."""
+    """Returns a set of script codes 'included' by the provided one.
+
+    Intended to deal with script codes like 'Jpan' used to describe
+    writing systems that use/require multiple scripts.
+    The script code itself (and other subsets) are also included in the result.
+    """
     if script_code not in scripts():
         raise ValueError('!not a script code: %s' % script_code)
     if script_code == 'Hrkt':
@@ -76,7 +78,10 @@ def _create_lang_data():
             lang, script = lang_script.split('-')
             known_scripts.add(script)
             if lang == 'und':
-                _log('used lang is und for script %s in region %s' % (script, region))
+                _log(
+                    'used lang is und for script %s in region %s'
+                    % (script, region)
+                )
                 continue
             used_lang_scripts[lang].add(script)
             all_lang_scripts[lang].add(script)
@@ -122,7 +127,10 @@ def _create_lang_data():
         if lang in used_lang_scripts:
             if lang in all_lang_scripts:
                 unused_set = all_lang_scripts[lang] - used_lang_scripts[lang]
-                lang_data[lang] = (used_lang_scripts[lang].copy(), unused_set if unused_set else set())
+                lang_data[lang] = (
+                    used_lang_scripts[lang].copy(),
+                    unused_set if unused_set else set(),
+                )
             else:
                 lang_data[lang] = (used_lang_scripts[lang].copy(), set())
         else:
@@ -133,7 +141,13 @@ def _create_lang_data():
 
 def _langs_with_no_scripts(lang_script_data):
     """Return a set of langs with no scripts in lang_script_data."""
-    return set([k for k in lang_script_data if not (lang_script_data[k][0] or lang_script_data[k][1])])
+    return set(
+        [
+            k
+            for k in lang_script_data
+            if not (lang_script_data[k][0] or lang_script_data[k][1])
+        ]
+    )
 
 
 def _remove_keys_from_dict(keys, some_dict):
@@ -187,7 +201,10 @@ def _create_script_to_default_lang(lang_script_data):
                     langs = script_to_unused[script]
                     if langs:
                         default_lang = next(iter(langs))
-                        _log('using unused lang %s from %s' % (default_lang, langs))
+                        _log(
+                            'using unused lang %s from %s'
+                            % (default_lang, langs)
+                        )
                     else:
                         _log('defaulting to \'und\'')
         else:
@@ -223,20 +240,27 @@ def _create_lang_script_to_names(lang_script_data):
             target = lang if script == exclude_script else lang_script
             # special case, not generally useful
             if target.startswith('und-'):
-                en_name = cldr_data.get_english_script_name(target[4:]) + ' script'
+                en_name = (
+                    cldr_data.get_english_script_name(target[4:]) + ' script'
+                )
             else:
                 en_name = cldr_data.get_english_language_name(target)
             if not en_name:
-                # Easier than patching the cldr_data, not sure I want to go there.
+                # Easier than patching the cldr_data,
+                # not sure I want to go there.
                 if lang_script == 'tlh-Piqd':
                     en_name = u'Klingon'
                 else:
                     _log('No english name for %s' % lang_script)
                     continue
-            native_name = cldr_data.get_native_language_name(lang_script, exclude_script)
+            native_name = cldr_data.get_native_language_name(
+                lang_script, exclude_script
+            )
             if native_name == en_name:
                 native_name = None
-            lang_to_names[lang_script] = [en_name, native_name] if native_name else [en_name]
+            lang_to_names[lang_script] = (
+                [en_name, native_name] if native_name else [en_name]
+            )
 
     return lang_to_names
 
@@ -257,7 +281,9 @@ _SCRIPT_TO_DEFAULT_LANG = None
 def _get_script_to_default_lang():
     global _SCRIPT_TO_DEFAULT_LANG
     if not _SCRIPT_TO_DEFAULT_LANG:
-        _SCRIPT_TO_DEFAULT_LANG = _create_script_to_default_lang(_get_lang_data())
+        _SCRIPT_TO_DEFAULT_LANG = _create_script_to_default_lang(
+            _get_lang_data()
+        )
     return _SCRIPT_TO_DEFAULT_LANG
 
 
@@ -294,7 +320,10 @@ def main():
 
     langs_without_scripts = _langs_with_no_scripts(lang_data)
     if langs_without_scripts:
-        print('langs without scripts: ' + ', '.join(sorted(langs_without_scripts)))
+        print(
+            'langs without scripts: '
+            + ', '.join(sorted(langs_without_scripts))
+        )
         _remove_keys_from_dict(langs_without_scripts, lang_data)
         print()
 

@@ -57,9 +57,24 @@ def plot_bzs(bzs, z0, scale, fancy=False):
                     print(x1, y1, 'lineto stroke')
                     print(x2, y2, 'moveto')
                     print(x3, y3, 'lineto stroke grestore')
-                    print('gsave', x1, y1, 'translate 0.75 dup scale circle fill grestore')
-                    print('gsave', x2, y2, 'translate 0.75 dup scale circle fill grestore')
-                    print('gsave', x3, y3, 'translate 0.75 dup scale circle fill grestore')
+                    print(
+                        'gsave',
+                        x1,
+                        y1,
+                        'translate 0.75 dup scale circle fill grestore',
+                    )
+                    print(
+                        'gsave',
+                        x2,
+                        y2,
+                        'translate 0.75 dup scale circle fill grestore',
+                    )
+                    print(
+                        'gsave',
+                        x3,
+                        y3,
+                        'translate 0.75 dup scale circle fill grestore',
+                    )
 
 
 def measure_bz_cloth(seg, bz, n=100):
@@ -78,7 +93,7 @@ def measure_bz_cloth(seg, bz, n=100):
     dt = 1.0 / n
     t = 0
     ys = [0, 0]
-    for i in range(n):
+    for _ in range(n):
         dydx = measure_derivs(t, ys)
         tocubic.rk4(ys, dydx, t, dt, measure_derivs)
         t += dt
@@ -140,7 +155,9 @@ def plot_segs(segs):
     for i in range(len(segs)):
         seg = segs[i]
         if i == 0:
-            print('gsave', seg.z0[0], seg.z0[1], 'translate circle fill grestore')
+            print(
+                'gsave', seg.z0[0], seg.z0[1], 'translate circle fill grestore'
+            )
         print('gsave', seg.z1[0], seg.z1[1], 'translate circle fill grestore')
 
 
@@ -164,7 +181,9 @@ if __name__ == '__main__':
     print('grestore')
     print('1 -1 scale 0 -720 translate')
     print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print(
+        '/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def'
+    )
     tot = 0
     for segs in rsps:
         curve = pcorn.Curve(segs)

@@ -144,7 +144,9 @@ def compare_rle2(expanded_data, original_data):
     return True, None
 
 
-_base64_enc = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'
+_base64_enc = (
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/'
+)
 _base64_inv = [None] * 128
 for i, c in enumerate(_base64_enc):
     _base64_inv[ord(c)] = i
@@ -310,19 +312,25 @@ def default_compress(input_file, output_file, comp):
         elif ext == '.b64':
             comp = False
         else:
-            raise Exception('don\'t know whether to compress/decompress %s' % input_file)
+            raise Exception(
+                'don\'t know whether to compress/decompress %s' % input_file
+            )
 
     if output_file is None:
         if comp:
             if ext == '.b64':
-                raise Exception('won\'t compress already compressed file %s' % input_file)
+                raise Exception(
+                    'won\'t compress already compressed file %s' % input_file
+                )
             elif ext == '.txt':
                 output_file = base + '.b64'
             else:
                 output_file = input_file + '.b64'
         else:
             if ext == '.txt':
-                raise Exception('won\'t uncompress uncompressed file %s' % input_file)
+                raise Exception(
+                    'won\'t uncompress uncompressed file %s' % input_file
+                )
             elif ext == '.b64':
                 output_file = base + '.txt'
             else:
@@ -343,12 +351,31 @@ def default_compress(input_file, output_file, comp):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input_file', help='glyph image file to input', metavar='file', required=True)
-    parser.add_argument('-o', '--output_file', help='file to output', metavar='file')
     parser.add_argument(
-        '-c', '--compress', help='compress (based on input extension)', type=bool, nargs='?', const=True, metavar='tf'
+        '-i',
+        '--input_file',
+        help='glyph image file to input',
+        metavar='file',
+        required=True,
     )
-    parser.add_argument('-t', '--test', help='run test compression on input file', action='store_true')
+    parser.add_argument(
+        '-o', '--output_file', help='file to output', metavar='file'
+    )
+    parser.add_argument(
+        '-c',
+        '--compress',
+        help='compress (based on input extension)',
+        type=bool,
+        nargs='?',
+        const=True,
+        metavar='tf',
+    )
+    parser.add_argument(
+        '-t',
+        '--test',
+        help='run test compression on input file',
+        action='store_true',
+    )
     args = parser.parse_args()
 
     if args.test:

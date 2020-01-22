@@ -45,10 +45,16 @@ _new_version_re = re.compile(r'^(?:keep|[12]\.\d{3})$')
 
 def _check_version(version):
     if not (version is None or _new_version_re.match(version)):
-        raise Exception('version "%s" did not match regex "%s"' % (version, _new_version_re.pattern))
+        raise Exception(
+            'version "%s" did not match regex "%s"'
+            % (version, _new_version_re.pattern)
+        )
 
 
-_version_info_re = re.compile(r'GOOG;noto-(?:fonts(?:-alpha)?|source):(\d{4})(\d{2})(\d{2}):([0-9a-f]{12})')
+_version_info_re = re.compile(
+    r'GOOG;noto-(?:fonts(?:-alpha)?|source):'
+    r'(\d{4})(\d{2})(\d{2}):([0-9a-f]{12})'
+)
 
 
 def _check_version_info(version_info):
@@ -57,7 +63,10 @@ def _check_version_info(version_info):
   if it does not."""
     m = _version_info_re.match(version_info)
     if not m:
-        raise Exception('version info "%s" did not match regex "%s"' % (version_info, _version_info_re.pattern))
+        raise Exception(
+            'version info "%s" did not match regex "%s"'
+            % (version_info, _version_info_re.pattern)
+        )
     year = int(m.group(1))
     month = int(m.group(2))
     day = int(m.group(3))
@@ -67,11 +76,19 @@ def _check_version_info(version_info):
         try:
             encoded_date = datetime.date(year, month, day)
         except Exception:
-            raise Exception('%04d-%02d-%02d in %s is not a valid date' % (year, month, day, version_info))
+            raise Exception(
+                '%04d-%02d-%02d in %s is not a valid date'
+                % (year, month, day, version_info)
+            )
         if encoded_date > today:
-            raise Exception('%s in %s is after the current date' % (encoded_date, version_info))
+            raise Exception(
+                '%s in %s is after the current date'
+                % (encoded_date, version_info)
+            )
     else:
-        raise Exception('date in %s appears too far in the past' % version_info)
+        raise Exception(
+            'date in %s appears too far in the past' % version_info
+        )
 
 
 def _get_version_info(fonts):
@@ -102,13 +119,16 @@ def _get_fonts_repo_version_info(repo_tag):
     # check that commit is on the upstream master
     if not tool_utils.git_check_remote_commit(prefix, commit):
         raise Exception(
-            'commit %s (%s) not on upstream master branch' % (commit[:12], commit_msg.splitlines()[0].strip())
+            'commit %s (%s) not on upstream master branch'
+            % (commit[:12], commit_msg.splitlines()[0].strip())
         )
 
     date_re = re.compile(r'(\d{4})-(\d{2})-(\d{2})')
     m = date_re.match(date)
     if not m:
-        raise Exception('could not match "%s" with "%s"' % (date, date_re.pattern))
+        raise Exception(
+            'could not match "%s" with "%s"' % (date, date_re.pattern)
+        )
     ymd = ''.join(m.groups())
 
     # hack tag to get the formal repo name.  strip enclosing brackets...
@@ -117,7 +137,9 @@ def _get_fonts_repo_version_info(repo_tag):
 
 
 def _check_autohint(script):
-    if script and not (script in ['no-script'] or script in noto_data.HINTED_SCRIPTS):
+    if script and not (
+        script in ['no-script'] or script in noto_data.HINTED_SCRIPTS
+    ):
         raise Exception('not a hintable script: "%s"' % script)
 
 
@@ -146,12 +168,24 @@ def _expand_font_names(font_names, result=None):
     return result
 
 
-def autofix_fonts(font_names, src_root, dst_dir, release_dir, version, version_info, autohint, dry_run):
+def autofix_fonts(
+    font_names,
+    src_root,
+    dst_dir,
+    release_dir,
+    version,
+    version_info,
+    autohint,
+    dry_run,
+):
     dst_dir = tool_utils.resolve_path(dst_dir)
     dst_dir = tool_utils.ensure_dir_exists(dst_dir)
 
     font_names = sorted(_expand_font_names(font_names))
-    print('Processing %d fonts\n  %s' % (len(font_names), '\n  '.join(font_names[:5]) + '...'))
+    print(
+        'Processing %d fonts\n  %s'
+        % (len(font_names), '\n  '.join(font_names[:5]) + '...')
+    )
 
     src_root = tool_utils.resolve_path(src_root)
     print('Src root: %s' % src_root)
@@ -164,7 +198,11 @@ def autofix_fonts(font_names, src_root, dst_dir, release_dir, version, version_i
         if not path.isdir(rel_dir):
             raise Exception('release dir "%s" does not exist' % rel_dir)
 
-    if version_info is None or version_info == '[fonts]' or version_info == '[fonts_alpha]':
+    if (
+        version_info is None
+        or version_info == '[fonts]'
+        or version_info == '[fonts_alpha]'
+    ):
         if version_info is None:
             version_info = _get_version_info(font_names)
         else:
@@ -238,7 +276,10 @@ def get_new_version(font, relfont, nversion):
         if nversion == 'keep':
             if rversion is not None:
                 if r_is_phase2:
-                    print('Warning, keeping phase 2 release version %s' % rversion)
+                    print(
+                        'Warning, keeping phase 2 release version %s'
+                        % rversion
+                    )
                 return rversion
         else:
             n_mm, n_is_phase_2 = _version_str_to_mm(nversion)
@@ -246,9 +287,14 @@ def get_new_version(font, relfont, nversion):
                 raise Exception('bad phase 3 minor version ("%s")' % nversion)
             if rversion is not None:
                 if n_mm < r_mm:
-                    raise Exception('new version %s < release version %s' % (nversion, rversion))
+                    raise Exception(
+                        'new version %s < release version %s'
+                        % (nversion, rversion)
+                    )
             if n_mm < mm:
-                raise Exception('new version %s < old version %s' % (nversion, version))
+                raise Exception(
+                    'new version %s < old version %s' % (nversion, version)
+                )
             return nversion
 
     # No new verson string, so compute one.  If we have a phase 3 version,
@@ -292,14 +338,18 @@ def _autohint_code(f, script):
     if script == 'no-script':
         return script
     if not script:
-        script = noto_fonts.script_key_to_primary_script(_get_font_info(f).script)
+        script = noto_fonts.script_key_to_primary_script(
+            _get_font_info(f).script
+        )
     return noto_data.HINTED_SCRIPTS.get(script, 'not-hinted')
 
 
 def autohint_font(src, dst, script, dry_run):
     code = _autohint_code(src, script)
     if code == 'not-hinted':
-        print('Warning: no hinting information for %s, script %s' % (src, script))
+        print(
+            'Warning: no hinting information for %s, script %s' % (src, script)
+        )
         return
 
     if code is None:
@@ -398,7 +448,10 @@ def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
         names = font_data.get_name_records(font)
         NAME_ID = 5
         font_version = names[NAME_ID]
-        expected_version = 'Version %s;%s' % (expected_font_revision, version_info)
+        expected_version = 'Version %s;%s' % (
+            expected_font_revision,
+            version_info,
+        )
         if font_version != expected_version:
             _alert('version string', font_version, expected_version)
             font_data.set_name_record(font, NAME_ID, expected_version)
@@ -416,7 +469,9 @@ def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
             expected_ascent = 1069
             expected_descent = -293
         else:
-            raise Exception('no expected ui ascent/descent for upem: %d' % upem)
+            raise Exception(
+                'no expected ui ascent/descent for upem: %d' % upem
+            )
 
         font_ascent = font['hhea'].ascent
         font_descent = font['hhea'].descent
@@ -450,7 +505,11 @@ def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-d', '--dest_dir', help='directory into which to write swatted fonts', metavar='dir', default='swatted'
+        '-d',
+        '--dest_dir',
+        help='directory into which to write swatted fonts',
+        metavar='dir',
+        default='swatted',
     )
     parser.add_argument(
         '-r',
@@ -467,7 +526,12 @@ def main():
         metavar='font',
         nargs='+',
     )
-    parser.add_argument('-s', '--src_root', help='common root of all paths of fonts', default='')
+    parser.add_argument(
+        '-s',
+        '--src_root',
+        help='common root of all paths of fonts',
+        default='',
+    )
     parser.add_argument(
         '-i',
         '--version_info',
@@ -476,11 +540,28 @@ def main():
         nargs='?',
         const='[fonts]',
     )
-    parser.add_argument('-v', '--version', help='force version (opt keep)', metavar='ver', nargs='?', const='keep')
     parser.add_argument(
-        '-a', '--autohint', help='autohint fonts (opt no-script)', metavar='code', nargs='?', const='no-script'
+        '-v',
+        '--version',
+        help='force version (opt keep)',
+        metavar='ver',
+        nargs='?',
+        const='keep',
     )
-    parser.add_argument('-n', '--dry_run', help='process checks but don\'t fix', action='store_true')
+    parser.add_argument(
+        '-a',
+        '--autohint',
+        help='autohint fonts (opt no-script)',
+        metavar='code',
+        nargs='?',
+        const='no-script',
+    )
+    parser.add_argument(
+        '-n',
+        '--dry_run',
+        help='process checks but don\'t fix',
+        action='store_true',
+    )
     args = parser.parse_args()
 
     autofix_fonts(

@@ -57,7 +57,9 @@ def get_key_lists(base_map, target_map, base_root, target_root):
         target = target_map.get(k)
         if not target:
             removed.append(k)
-        elif filecmp.cmp(os.path.join(base_root, k), os.path.join(target_root, k)):
+        elif filecmp.cmp(
+            os.path.join(base_root, k), os.path.join(target_root, k)
+        ):
             identical.append(k)
         else:
             shared.append(k)
@@ -97,7 +99,9 @@ def compare_table_info(base_info, target_info):
         if not target_info.get(k):
             removed.append(k)
 
-    biggest_deltas.sort(lambda lhs, rhs: -cmp(abs(lhs[1]), abs(rhs[1])) or cmp(lhs[0], rhs[0]))
+    biggest_deltas.sort(
+        lambda lhs, rhs: -cmp(abs(lhs[1]), abs(rhs[1])) or cmp(lhs[0], rhs[0])
+    )
     del biggest_deltas[5:]
 
     result = []
@@ -109,23 +113,45 @@ def compare_table_info(base_info, target_info):
             return '%s(%+d)' % t
 
         biggest_delta_strings = [print_delta(t) for t in biggest_deltas]
-        # if a table changed size, the head table will change the checksum, don't
-        # report this.
+        # if a table changed size,
+        # the head table will change the checksum, don't report this.
         others = [k for k in others if k != 'head']
         if len(others) > 0 and len(biggest_deltas) < 5:
             other_count = len(others)
-            biggest_delta_strings.append('%s other%s' % (other_count, 's' if other_count != 1 else ''))
+            biggest_delta_strings.append(
+                '%s other%s' % (other_count, 's' if other_count != 1 else '')
+            )
         result.append('changed ' + ', '.join(biggest_delta_strings))
     if added:
-        result.append('added ' + ', '.join('%s(%s)' % t for t in sorted(added)))
+        result.append(
+            'added ' + ', '.join('%s(%s)' % t for t in sorted(added))
+        )
     if removed:
         result.append('removed ' + ', '.join(sorted(removed)))
     return '; '.join(result)
 
 
 def print_difference(k, base_tuple, target_tuple, other_difference):
-    b_path, b_version, b_name, b_size, b_numglyphs, b_numchars, b_cmap, b_tableinfo = base_tuple
-    t_path, t_version, t_name, t_size, t_numglyphs, t_numchars, t_cmap, t_tableinfo = target_tuple
+    (
+        b_path,
+        b_version,
+        b_name,
+        b_size,
+        b_numglyphs,
+        b_numchars,
+        b_cmap,
+        b_tableinfo,
+    ) = base_tuple
+    (
+        t_path,
+        t_version,
+        t_name,
+        t_size,
+        t_numglyphs,
+        t_numchars,
+        t_cmap,
+        t_tableinfo,
+    ) = target_tuple
     print('  ' + k)
     versions_differ = b_version != t_version
     diff_list = []
@@ -169,12 +195,21 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
     if b_cmap != t_cmap:
         removed_from_base = b_cmap - t_cmap
         if removed_from_base:
-            print('    cmap removed: ' + noto_lint.printable_unicode_range(removed_from_base))
+            print(
+                '    cmap removed: '
+                + noto_lint.printable_unicode_range(removed_from_base)
+            )
         added_in_target = t_cmap - b_cmap
         if added_in_target:
-            print('    cmap added: ' + noto_lint.printable_unicode_range(added_in_target))
+            print(
+                '    cmap added: '
+                + noto_lint.printable_unicode_range(added_in_target)
+            )
     if diff_list and not versions_differ:
-        print('    %s differs but revision number is the same' % ', '.join(diff_list))
+        print(
+            '    %s differs but revision number is the same'
+            % ', '.join(diff_list)
+        )
     if not diff_list and other_difference:
         print('    other difference')
 
@@ -212,7 +247,9 @@ def compare_summary(
 ):
     base_map = summary_to_map(summary.summarize(base_root, name))
     target_map = summary_to_map(summary.summarize(target_root, name))
-    added, removed, changed, identical = get_key_lists(base_map, target_map, base_root, target_root)
+    added, removed, changed, identical = get_key_lists(
+        base_map, target_map, base_root, target_root
+    )
 
     # no nonlocal in 2.7
     have_output_hack = [False]
@@ -248,20 +285,44 @@ def main():
     parser.add_argument(
         '-b',
         '--base_root',
-        help='root of directory tree, base for comparison ' '(default [fonts])',
+        help='root of directory tree, base for comparison '
+        '(default [fonts])',
         metavar='dir',
         default='[fonts]',
     )
     parser.add_argument(
-        '-t', '--target_root', help='root of directory tree, target for comparison', metavar='dir', required=True
+        '-t',
+        '--target_root',
+        help='root of directory tree, target for comparison',
+        metavar='dir',
+        required=True,
     )
-    parser.add_argument('--name', help='only examine files whose subpath+names contain this regex')
-    parser.add_argument('--compare_size', help='include size in comparisons', action='store_true')
-    parser.add_argument('--removed', help='list files not in target', action='store_true')
-    parser.add_argument('--added', help='list files not in base', action='store_true')
-    parser.add_argument('--identical', help='list files that are identical in base and target', action='store_true')
     parser.add_argument(
-        '--nopaths', help='do not print root paths', action='store_false', default=True, dest='show_paths'
+        '--name',
+        help='only examine files whose subpath+names contain this regex',
+    )
+    parser.add_argument(
+        '--compare_size',
+        help='include size in comparisons',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--removed', help='list files not in target', action='store_true'
+    )
+    parser.add_argument(
+        '--added', help='list files not in base', action='store_true'
+    )
+    parser.add_argument(
+        '--identical',
+        help='list files that are identical in base and target',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--nopaths',
+        help='do not print root paths',
+        action='store_false',
+        default=True,
+        dest='show_paths',
     )
     args = parser.parse_args()
 
@@ -269,11 +330,17 @@ def main():
     args.target_root = tool_utils.resolve_path(args.target_root)
 
     if not os.path.isdir(args.base_root):
-        print('base_root %s does not exist or is not a directory' % args.base_root)
+        print(
+            'base_root %s does not exist or is not a directory'
+            % args.base_root
+        )
         return
 
     if not os.path.isdir(args.target_root):
-        print('target_root %s does not exist or is not a directory' % args.target_root)
+        print(
+            'target_root %s does not exist or is not a directory'
+            % args.target_root
+        )
         return
 
     comparefn = tuple_compare if args.compare_size else tuple_compare_no_size

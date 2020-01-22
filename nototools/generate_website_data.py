@@ -93,7 +93,10 @@ def convert_to_four_letter(script):
 
 
 Font = collections.namedtuple(
-    'Font', 'filepath, hint_status, key, ' 'family, script, variant, weight, style, platform,' 'charset, license_type'
+    'Font',
+    'filepath, hint_status, key, '
+    'family, script, variant, weight, style, platform,'
+    'charset, license_type',
 )
 
 
@@ -125,7 +128,15 @@ def find_fonts():
         for filename in os.listdir(directory):
             match = font_name_regexp.match(filename)
             if match:
-                family, mono, script, variant, weight, style, platform = match.groups()
+                (
+                    family,
+                    mono,
+                    script,
+                    variant,
+                    weight,
+                    style,
+                    platform,
+                ) = match.groups()
             elif filename == 'NotoNastaliqUrduDraft.ttf':
                 family = 'NotoNastaliq'
                 script = 'Aran'  # Arabic Nastaliq
@@ -139,7 +150,10 @@ def find_fonts():
                     or filename.startswith('README.')
                     or filename in ['COPYING', 'LICENSE', 'NEWS', 'HISTORY']
                 ):
-                    raise ValueError("unexpected filename in %s: '%s'." % (directory, filename))
+                    raise ValueError(
+                        "unexpected filename in %s: '%s'."
+                        % (directory, filename)
+                    )
                 continue
 
             if directory == CJK_DIR:
@@ -197,7 +211,17 @@ def find_fonts():
             key = key.lower()
 
             font = Font(
-                file_path, hint_status, key, family, script, variant, weight, style, platform, charset, license_type
+                file_path,
+                hint_status,
+                key,
+                family,
+                script,
+                variant,
+                weight,
+                style,
+                platform,
+                charset,
+                license_type,
             )
             all_fonts.append(font)
 
@@ -207,7 +231,10 @@ def read_character_at(source, pointer):
     if source[pointer] == '\\':
         if source[pointer + 1] == 'u':
             end_of_hex = pointer + 2
-            while end_of_hex < len(source) and source[end_of_hex].upper() in '0123456789ABCDEF':
+            while (
+                end_of_hex < len(source)
+                and source[end_of_hex].upper() in '0123456789ABCDEF'
+            ):
                 end_of_hex += 1
             assert end_of_hex - (pointer + 2) in {4, 5, 6}
             hex_code = source[pointer + 2 : end_of_hex]
@@ -245,7 +272,9 @@ def exemplar_string_to_list(exstr):
             pointer, last = read_character_at(exstr, pointer + 1)
             assert last not in [' ', '\\', '{', '}', '-']
             last = ord(last)
-            return_list += [unichr(code) for code in range(previous + 1, last + 1)]
+            return_list += [
+                unichr(code) for code in range(previous + 1, last + 1)
+            ]
         else:
             pointer, char = read_character_at(exstr, pointer)
             return_list.append(char)
@@ -271,7 +300,9 @@ def get_exemplar_from_file(cldr_file_path):
     for tag in root.iter('exemplarCharacters'):
         if 'type' in tag.attrib:
             continue
-        exemplar_from_file_cache[cldr_file_path] = exemplar_string_to_list(tag.text)
+        exemplar_from_file_cache[cldr_file_path] = exemplar_string_to_list(
+            tag.text
+        )
         return exemplar_from_file_cache[cldr_file_path]
     return None
 
@@ -290,7 +321,9 @@ def get_exemplar(language, script):
     locl = language + '-' + script
     while locl != 'root':
         for directory in ['common', 'seed', 'exemplars']:
-            exemplar = get_exemplar_from_file(path.join(directory, 'main', locl.replace('-', '_') + '.xml'))
+            exemplar = get_exemplar_from_file(
+                path.join(directory, 'main', locl.replace('-', '_') + '.xml')
+            )
             if exemplar:
                 return exemplar
         locl = find_parent_locale(locl)
@@ -347,9 +380,13 @@ def get_native_language_name(lang_scr):
     locl = lang_scr
     while locl != 'root':
         for directory in ['common', 'seed']:
-            file_path = path.join(directory, 'main', locl.replace('-', '_') + '.xml')
+            file_path = path.join(
+                directory, 'main', locl.replace('-', '_') + '.xml'
+            )
             for name_to_find in [lang_scr, language]:
-                native_name = get_language_name_from_file(name_to_find, file_path)
+                native_name = get_language_name_from_file(
+                    name_to_find, file_path
+                )
                 if native_name:
                     return native_name
         locl = find_parent_locale(locl)
@@ -360,7 +397,9 @@ EXEMPLAR_CUTOFF_SIZE = 50
 
 
 def sample_text_from_exemplar(exemplar):
-    exemplar = [c for c in exemplar if unicode_data.category(c[0])[0] in 'LNPS']
+    exemplar = [
+        c for c in exemplar if unicode_data.category(c[0])[0] in 'LNPS'
+    ]
     exemplar = exemplar[:EXEMPLAR_CUTOFF_SIZE]
     return ' '.join(exemplar)
 
@@ -419,7 +458,10 @@ def get_english_language_name(lang_scr):
         return english_language_name[lang_scr]
     except KeyError:
         lang, script = lang_scr.split('-')
-        name = '%s (%s script)' % (english_language_name[lang], english_script_name[script])
+        name = '%s (%s script)' % (
+            english_language_name[lang],
+            english_script_name[script],
+        )
         print("Constructing name '%s' for %s." % (name, lang_scr))
         return name
 
@@ -431,7 +473,9 @@ parent_locale = {}
 
 
 def parse_supplemental_data():
-    data_file = path.join(CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml')
+    data_file = path.join(
+        CLDR_DIR, 'common', 'supplemental', 'supplementalData.xml'
+    )
     root = ElementTree.parse(data_file).getroot()
 
     for language_tag in root.iter('language'):
@@ -475,7 +519,9 @@ likely_subtag_data = {}
 
 
 def parse_likely_subtags():
-    data_file = path.join(CLDR_DIR, 'common', 'supplemental', 'likelySubtags.xml')
+    data_file = path.join(
+        CLDR_DIR, 'common', 'supplemental', 'likelySubtags.xml'
+    )
     tree = ElementTree.parse(data_file)
 
     for tag in tree.findall('likelySubtags/likelySubtag'):
@@ -497,7 +543,9 @@ script_metadata = {}
 
 def parse_script_metadata():
     global script_metadata
-    data = open(path.join(CLDR_DIR, 'common', 'properties', 'scriptMetadata.txt')).read()
+    data = open(
+        path.join(CLDR_DIR, 'common', 'properties', 'scriptMetadata.txt')
+    ).read()
     parsed_data = unicode_data._parse_semicolon_separated_data(data)
     script_metadata = {line[0]: tuple(line[1:]) for line in parsed_data}
 
@@ -533,11 +581,17 @@ def read_lat_long_data():
             'BQ': (12 + 11 / 60, -68 - 14 / 60),  # Caribbean Netherlands
             'CP': (10 + 18 / 60, -109 - 13 / 60),  # Clipperton Island
             'CW': (12 + 11 / 60, -69),  # Curaçao
-            'DG': (7 + 18 / 60 + 48 / 3600, 72 + 24 / 60 + 40 / 3600),  # Diego Garcia
+            'DG': (
+                7 + 18 / 60 + 48 / 3600,
+                72 + 24 / 60 + 40 / 3600,
+            ),  # Diego Garcia
             # Ceuta and Melilla, using Ceuta
             'EA': (35 + 53 / 60 + 18 / 3600, -5 - 18 / 60 - 56 / 3600),
             'IC': (28.1, -15.4),  # Canary Islands
-            'MF': (18 + 4 / 60 + 31 / 3600, -63 - 3 / 60 - 36 / 3600),  # Saint Martin
+            'MF': (
+                18 + 4 / 60 + 31 / 3600,
+                -63 - 3 / 60 - 36 / 3600,
+            ),  # Saint Martin
             'SS': (8, 30),  # South Sudan
             'SX': (18 + 3 / 60, -63 - 3 / 60),  # Sint Maarten
             'TA': (-37 - 7 / 60, -12 - 17 / 60),  # Tristan da Cunha
@@ -548,7 +602,12 @@ def read_lat_long_data():
 
 
 def sorted_langs(langs):
-    return sorted(set(langs), key=lambda code: locale.strxfrm(get_english_language_name(code).encode('UTF-8')))
+    return sorted(
+        set(langs),
+        key=lambda code: locale.strxfrm(
+            get_english_language_name(code).encode('UTF-8')
+        ),
+    )
 
 
 all_used_lang_scrs = set()
@@ -606,7 +665,8 @@ def create_langs_object():
         if script not in supported_scripts:
             # Scripts we don't have fonts for yet
             print(
-                'No font supports the %s script (%s) needed for the %s language.'
+                'No font supports the %s script (%s) '
+                'needed for the %s language.'
                 % (english_script_name[script], script, lang_object['name'])
             )
             assert script in {
@@ -638,7 +698,16 @@ def create_langs_object():
             fonts = [font for font in all_fonts if font.script == query_script]
 
             # For certain languages of Pakistan, add Nastaliq font
-            if lang_scr in {'bal', 'hnd', 'hno', 'ks-Arab', 'lah', 'pa-Arab', 'skr', 'ur'}:
+            if lang_scr in {
+                'bal',
+                'hnd',
+                'hno',
+                'ks-Arab',
+                'lah',
+                'pa-Arab',
+                'skr',
+                'ur',
+            }:
                 fonts += [font for font in all_fonts if font.script == 'Aran']
 
             family_keys = set([font.key for font in fonts])
@@ -816,7 +885,13 @@ def create_css(key, family_name, fonts):
                 '  font-weight: %d;\n'
                 '  font-style: %s;\n'
                 '  src: url(%s) format("truetype");\n'
-                '}\n' % (family_name, css_weight(font.weight), css_style(font.style), font_url)
+                '}\n'
+                % (
+                    family_name,
+                    css_weight(font.weight),
+                    css_style(font.style),
+                    font_url,
+                )
             )
     return '%s.css' % key
 
@@ -828,12 +903,18 @@ def create_families_object(target_platform):
     for key in all_keys:
         family_object = {}
         members = {
-            font for font in all_fonts if font.key == key and font.variant != 'UI' and font.filepath.endswith('tf')
+            font
+            for font in all_fonts
+            if font.key == key
+            and font.variant != 'UI'
+            and font.filepath.endswith('tf')
         }
 
         if not members:
             mbrs = {font for font in all_fonts if font.key == key}
-            raise ValueError("no members for %s from %s" % (key, [f.filepath for f in mbrs]))
+            raise ValueError(
+                "no members for %s from %s" % (key, [f.filepath for f in mbrs])
+            )
 
         members_to_drop = set()
         for font in members:
@@ -844,7 +925,8 @@ def create_families_object(target_platform):
                     {
                         alt
                         for alt in members
-                        if fonts_are_basically_the_same(font, alt) and font.platform != alt.platform
+                        if fonts_are_basically_the_same(font, alt)
+                        and font.platform != alt.platform
                     }
                 )
             elif font.platform is not None:
@@ -866,14 +948,19 @@ def create_families_object(target_platform):
                     {
                         alt
                         for alt in members
-                        if fonts_are_basically_the_same(font, alt) and font.hint_status != alt.hint_status
+                        if fonts_are_basically_the_same(font, alt)
+                        and font.hint_status != alt.hint_status
                     }
                 )
         members -= members_to_drop
 
         all_font_files |= members
 
-        repr_members = {font for font in members if font.weight == 'Regular' and font.style is None}
+        repr_members = {
+            font
+            for font in members
+            if font.weight == 'Regular' and font.style is None
+        }
 
         if len(repr_members) != 1:
             raise ValueError(
@@ -887,7 +974,9 @@ def create_families_object(target_platform):
             font_family_name = font_family_name.rsplit(' ', 1)[0]
         family_object['name'] = font_family_name
 
-        family_object['pkg'] = create_zip(font_family_name.replace(' ', ''), target_platform, members)
+        family_object['pkg'] = create_zip(
+            font_family_name.replace(' ', ''), target_platform, members
+        )
 
         family_object['langs'] = sorted_langs(family_to_langs[repr_member.key])
 
@@ -897,7 +986,12 @@ def create_families_object(target_platform):
 
         font_list = []
         for font in members:
-            font_list.append({'style': css_style(font.style), 'weight': css_weight(font.weight)})
+            font_list.append(
+                {
+                    'style': css_style(font.style),
+                    'weight': css_weight(font.weight),
+                }
+            )
         if len(font_list) not in [1, 2, 4, 7]:
             print(key, font_list)
         assert len(font_list) in [1, 2, 4, 7]
@@ -911,14 +1005,17 @@ def generate_ttc_zips_with_7za():
     """Generate zipped versions of the ttc files and put in pkgs directory."""
 
     # The font family code skips the ttc files, but we want them in the
-    # package directory. Instead of mucking with the family code to add the ttcs
+    # package directory.
+    # Instead of mucking with the family code to add the ttcs
     # and then exclude them from the other handling, we'll just handle them
     # separately.
     # For now at least, the only .ttc fonts are the CJK fonts
 
     pkg_dir = path.join(OUTPUT_DIR, 'pkgs')
     tool_utils.ensure_dir_exists(pkg_dir)
-    filenames = [path.basename(f) for f in os.listdir(CJK_DIR) if f.endswith('.ttc')]
+    filenames = [
+        path.basename(f) for f in os.listdir(CJK_DIR) if f.endswith('.ttc')
+    ]
     for filename in filenames:
         zip_basename = filename + '.zip'
         zip_path = path.join(pkg_dir, zip_basename)
@@ -926,12 +1023,18 @@ def generate_ttc_zips_with_7za():
             print("Continue: assuming built %s is valid." % zip_basename)
             continue
         oldsize = os.stat(path.join(CJK_DIR, filename)).st_size
-        pairs = [(path.join(CJK_DIR, filename), filename), (SIL_LICENSE_LOC, 'LICENSE_CJK.txt')]
+        pairs = [
+            (path.join(CJK_DIR, filename), filename),
+            (SIL_LICENSE_LOC, 'LICENSE_CJK.txt'),
+        ]
         tool_utils.generate_zip_with_7za_from_filepairs(pairs, zip_path)
         newsize = os.stat(zip_path).st_size
         print("Wrote " + zip_path)
         print('Compressed from {0:,}B to {1:,}B.'.format(oldsize, newsize))
-    shutil.copy2(path.join(CJK_DIR, 'NotoSansCJK.ttc.zip'), path.join(pkg_dir, 'NotoSansCJK.ttc.zip'))
+    shutil.copy2(
+        path.join(CJK_DIR, 'NotoSansCJK.ttc.zip'),
+        path.join(pkg_dir, 'NotoSansCJK.ttc.zip'),
+    )
 
 
 def generate_sample_images(data_object):
@@ -952,7 +1055,10 @@ def generate_sample_images(data_object):
             is_rtl = lang_obj['rtl']
             for instance in family_obj['fonts']:
                 weight, style = instance['weight'], instance['style']
-                image_file_name = path.join(image_dir, '%s_%s_%d_%s.png' % (family_key, lang_scr, weight, style))
+                image_file_name = path.join(
+                    image_dir,
+                    '%s_%s_%d_%s.png' % (family_key, lang_scr, weight, style),
+                )
                 if is_cjk_family:
                     family_suffix = ' ' + css_weight_to_string(weight)
                 else:
@@ -960,7 +1066,10 @@ def generate_sample_images(data_object):
                 image_location = path.join(image_dir, image_file_name)
                 if path.isfile(image_location):
                     # Don't rebuild images when continuing.
-                    print("Continue: assuming image file '%s' is valid." % image_location)
+                    print(
+                        "Continue: assuming image file '%s' is valid."
+                        % image_location
+                    )
                     continue
                 create_image.create_png(
                     sample_text,
@@ -979,7 +1088,9 @@ def create_package_object(fonts, target_platform):
     comp_zip_file = create_zip('Noto', target_platform, fonts)
     package = {}
     package['url'] = CLOUD_LOC + comp_zip_file
-    package['size'] = os.stat(path.join(OUTPUT_DIR, 'pkgs', comp_zip_file)).st_size
+    package['size'] = os.stat(
+        path.join(OUTPUT_DIR, 'pkgs', comp_zip_file)
+    ).st_size
     return package
 
 
@@ -988,7 +1099,10 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--continue', help="continue with existing built objects", action='store_true', dest='continuing'
+        '--continue',
+        help="continue with existing built objects",
+        action='store_true',
+        dest='continuing',
     )
     args = parser.parse_args()
 
@@ -1027,10 +1141,14 @@ def main():
         output_object['region'] = create_regions_object()
         output_object['lang'] = create_langs_object()
 
-        output_object['family'], all_font_files = create_families_object(target_platform)
+        output_object['family'], all_font_files = create_families_object(
+            target_platform
+        )
 
         print('Creating comprehensive zip file...')
-        output_object['pkg'] = create_package_object(all_font_files, target_platform)
+        output_object['pkg'] = create_package_object(
+            all_font_files, target_platform
+        )
 
         ############### Hot patches ###############
         # Kufi is broken for Urdu Heh goal
@@ -1066,7 +1184,12 @@ def main():
             json_file_name = 'data-%s.json' % target_platform
         json_path = path.join(OUTPUT_DIR, 'js', json_file_name)
         with codecs.open(json_path, 'w', encoding='UTF-8') as json_file:
-            json.dump(output_object, json_file, ensure_ascii=False, separators=(',', ':'))
+            json.dump(
+                output_object,
+                json_file,
+                ensure_ascii=False,
+                separators=(',', ':'),
+            )
 
     # Compress the ttc files.  Requires 7za on the build machine.
     generate_ttc_zips_with_7za()

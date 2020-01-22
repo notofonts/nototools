@@ -78,7 +78,11 @@ _FAMILY_KEYS = {
 }
 
 _HINTED_TABLES_TO_DROP = autofix_for_release.TABLES_TO_DROP
-_UNHINTED_TABLES_TO_DROP = autofix_for_release.TABLES_TO_DROP + ['fpgm', 'prep', 'cvt']
+_UNHINTED_TABLES_TO_DROP = autofix_for_release.TABLES_TO_DROP + [
+    'fpgm',
+    'prep',
+    'cvt',
+]
 
 _changes = {}
 
@@ -92,7 +96,9 @@ def _swat_fonts(dst_root, dry_run):
         return _FAMILY_KEYS.get(family, 'x' + family)
 
     def script_key(script):
-        return _SCRIPT_KEYS.get(script, None) or cldr_data.get_english_script_name(script)
+        return _SCRIPT_KEYS.get(
+            script, None
+        ) or cldr_data.get_english_script_name(script)
 
     def compare_key(font):
         return (
@@ -150,22 +156,33 @@ def get_bumped_version(ttfont, is_hinted=None):
     # sanity check
     expected_revision = major_version + '.' + minor_version
     if expected_revision != print_revision:
-        raise ValueError('! Expected revision \'%s\' but got revision \'%s\'' % (expected_revision, print_revision))
+        raise ValueError(
+            '! Expected revision \'%s\' but got revision \'%s\''
+            % (expected_revision, print_revision)
+        )
 
     # bump the minor version keeping significant digits:
     new_minor_version = str(int(minor_version) + 1).zfill(accuracy)
     new_revision = major_version + '.' + new_minor_version
-    print('Update revision from  \'%s\' to \'%s\'' % (expected_revision, new_revision))
+    print(
+        'Update revision from  \'%s\' to \'%s\''
+        % (expected_revision, new_revision)
+    )
     # double check we are going to properly round-trip this value
     float_revision = float(new_revision)
     fixed_revision = misc.fixedTools.floatToFixed(float_revision, 16)
     rt_float_rev = misc.fixedTools.fixedToFloat(fixed_revision, 16)
     rt_float_rev_int = int(rt_float_rev)
-    rt_float_rev_frac = int(round((rt_float_rev - rt_float_rev_int) * 10 ** accuracy))
-    rt_new_revision = str(rt_float_rev_int) + '.' + str(rt_float_rev_frac).zfill(accuracy)
+    rt_float_rev_frac = int(
+        round((rt_float_rev - rt_float_rev_int) * 10 ** accuracy)
+    )
+    rt_new_revision = (
+        str(rt_float_rev_int) + '.' + str(rt_float_rev_frac).zfill(accuracy)
+    )
     if new_revision != rt_new_revision:
         raise ValueError(
-            '! Could not update new revision, expected \'%s\' but got \'%s\'' % (new_revision, rt_new_revision)
+            '! Could not update new revision, expected \'%s\' but got \'%s\''
+            % (new_revision, rt_new_revision)
         )
 
     new_version_string = 'Version ' + new_revision
@@ -202,7 +219,9 @@ def _swat_font(noto_font, dst_root, dry_run):
     dst_file = path.join(dst_root, rel_filepath)
 
     try:
-        new_revision, new_version_string = get_bumped_version(ttfont, noto_font.is_hinted)
+        new_revision, new_version_string = get_bumped_version(
+            ttfont, noto_font.is_hinted
+        )
     except ValueError as e:
         print(e)
         return
@@ -215,15 +234,27 @@ def _swat_font(noto_font, dst_root, dry_run):
     # Roozbeh has note, make sure design field has information
     # on whether the font is hinted.
     # Missing in Lao and Khmer, default in Cham.
-    if cldr_data.get_english_script_name(noto_font.script) in ['Lao', 'Khmer', 'Cham']:
-        new_description = 'Data %shinted.' % ('' if noto_font.is_hinted else 'un')
+    if cldr_data.get_english_script_name(noto_font.script) in [
+        'Lao',
+        'Khmer',
+        'Cham',
+    ]:
+        new_description = 'Data %shinted.' % (
+            '' if noto_font.is_hinted else 'un'
+        )
     # elif noto_font.vendor is 'Monotype':
     elif not noto_font.is_cjk and noto_font.family == 'Noto':
-        new_description = 'Data %shinted. Designed by Monotype design team.' % ('' if noto_font.is_hinted else 'un')
+        new_description = (
+            'Data %shinted. Designed by Monotype design team.'
+            % ('' if noto_font.is_hinted else 'un')
+        )
     else:
         new_description = None
 
-    if re.match(r'^Copyright 201\d Google Inc. All Rights Reserved\.$', names[_COPYRIGHT_ID]):
+    if re.match(
+        r'^Copyright 201\d Google Inc. All Rights Reserved\.$',
+        names[_COPYRIGHT_ID],
+    ):
         new_copyright = None
     else:
         new_copyright = '!!'
@@ -236,7 +267,10 @@ def _swat_font(noto_font, dst_root, dry_run):
         new_designer = None
     elif names.get(_DESIGNER_ID) == 'Monotype Design team':
         new_designer = 'Monotype Design Team'
-    elif _DESIGNER_ID not in names and cldr_data.get_english_script_name(noto_font.script) == 'Khmer':
+    elif (
+        _DESIGNER_ID not in names
+        and cldr_data.get_english_script_name(noto_font.script) == 'Khmer'
+    ):
         new_designer = 'Danh Hong'
     else:
         new_designer = '!!'
@@ -272,12 +306,16 @@ def _swat_font(noto_font, dst_root, dry_run):
         old = names.get(name_id)
         if new and (new != old):
             if not dry_run and '!!!' not in new:
-                font_data.set_name_record(ttfont, name_id, new, addIfMissing='win')
+                font_data.set_name_record(
+                    ttfont, name_id, new, addIfMissing='win'
+                )
 
             label = _NAME_ID_LABELS[name_id]
             oldText = '\'%s\'' % old if old else 'None'
             newText = newText or ('\'%s\'' % new)
-            print('%s:\n  old: %s\n  new: %s' % (label, oldText, newText or new))
+            print(
+                '%s:\n  old: %s\n  new: %s' % (label, oldText, newText or new)
+            )
 
             label_change = _changes.get(label)
             if not label_change:
@@ -326,7 +364,11 @@ def _swat_font(noto_font, dst_root, dry_run):
     if dry_run:
         return
 
-    ttfont['head'].fontRevision = float_revision  # TODO: Undefined variable float_revision  # noqa:F821
+    ttfont[
+        'head'
+    ].fontRevision = (
+        float_revision  # TODO: Undefined variable float_revision  # noqa:F821
+    )
 
     dst_dir = path.dirname(dst_file)
     if not path.isdir(dst_dir):
@@ -362,7 +404,10 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
         for component in components:
             possible_components = basename_to_fonts.get(component)
             if not possible_components:
-                print('! no match for component named %s in %s' % (component, rel_filepath))
+                print(
+                    '! no match for component named %s in %s'
+                    % (component, rel_filepath)
+                )
                 component_list = []
                 break
 
@@ -372,7 +417,10 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
                     if matched_possible_component:
                         print(
                             '! already matched possible component %s for %s'
-                            % (matched_possible_component.filename, possible_component.filename)
+                            % (
+                                matched_possible_component.filename,
+                                possible_component.filename,
+                            )
                         )
                         matched_possible_component = None
                         break
@@ -386,23 +434,38 @@ def _construct_ttc_fonts(fonts, dst_root, dry_run):
             print('! cannot generate ttc font %s' % rel_filepath)
             continue
 
-        print('components:\n  ' + '\n  '.join(_noto_relative_path(font.filepath) for font in component_list))
+        print(
+            'components:\n  '
+            + '\n  '.join(
+                _noto_relative_path(font.filepath) for font in component_list
+            )
+        )
         if dry_run:
             continue
 
         dst_ttc = path.join(dst_root, rel_filepath)
-        src_files = [path.join(dst_root, _noto_relative_path(font.filepath)) for font in component_list]
+        src_files = [
+            path.join(dst_root, _noto_relative_path(font.filepath))
+            for font in component_list
+        ]
         ttc_utils.build_ttc(dst_ttc, src_files)
         print('Built %s' % dst_ttc)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--dry_run', help='Do not write fonts', action='store_true')
     parser.add_argument(
-        '--dst_root', help='root of destination (default /tmp/swat)', metavar='dst', default='/tmp/swat'
+        '-n', '--dry_run', help='Do not write fonts', action='store_true'
     )
-    parser.add_argument('--details', help='show change details', action='store_true')
+    parser.add_argument(
+        '--dst_root',
+        help='root of destination (default /tmp/swat)',
+        metavar='dst',
+        default='/tmp/swat',
+    )
+    parser.add_argument(
+        '--details', help='show change details', action='store_true'
+    )
     args = parser.parse_args()
 
     _swat_fonts(args.dst_root, args.dry_run)
@@ -417,7 +480,11 @@ def main():
             for old_val in sorted(old_vals):
                 print(
                     '    from %s (%d files)%s'
-                    % ('\'%s\'' % old_val if old_val else 'None', len(old_vals[old_val]), ':' if args.details else '')
+                    % (
+                        '\'%s\'' % old_val if old_val else 'None',
+                        len(old_vals[old_val]),
+                        ':' if args.details else '',
+                    )
                 )
                 if args.details:
                     for file_name in sorted(old_vals[old_val]):

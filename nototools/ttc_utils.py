@@ -62,7 +62,9 @@ class TTCFile(object):
             self.tables = []
 
     def _build(self, data):
-        tag, version, font_count = struct.unpack(_ttcHeader, data[:_ttcHeaderSize])
+        tag, version, font_count = struct.unpack(
+            _ttcHeader, data[:_ttcHeaderSize]
+        )
         if tag not in ['ttcf']:
             raise ValueError('not a font collection')
         if version not in [0x10000, 0x20000]:
@@ -77,7 +79,9 @@ class TTCFile(object):
 
     def _build_font_entry(self, data, offset):
         limit = offset + _sfntHeaderSize
-        version, num_tables = struct.unpack(_sfntHeader, data[offset:limit])[:2]
+        version, num_tables = struct.unpack(_sfntHeader, data[offset:limit])[
+            :2
+        ]
         if version == 0x10000:
             # version_str = '1.0'
             font_fmt = 'ttf'
@@ -96,7 +100,9 @@ class TTCFile(object):
 
     def _build_table_entry(self, data, offset):
         limit = offset + _sfntHeaderEntrySize
-        tag, checksum, offset, length = struct.unpack(_sfntHeaderEntry, data[offset:limit])
+        tag, checksum, offset, length = struct.unpack(
+            _sfntHeaderEntry, data[offset:limit]
+        )
         entry = TableEntry(tag, offset, length)
         for i, e in enumerate(self.tables):
             if e == entry:
@@ -129,10 +135,16 @@ def ttc_dump(ttc, data):
             table = ttc.tables[table_entry]
             if table_entry not in table_map:
                 table_map[table_entry] = (font_index, table_index)
-                print('  [%2d] %s %8d %8d' % (table_index, table.tag, table.offset, table.length))
+                print(
+                    '  [%2d] %s %8d %8d'
+                    % (table_index, table.tag, table.offset, table.length)
+                )
             else:
                 table_from = table_map[table_entry]
-                print('  [%2d] %s @%d.%d' % (table_index, table.tag, table_from[0], table_from[1]))
+                print(
+                    '  [%2d] %s @%d.%d'
+                    % (table_index, table.tag, table_from[0], table_from[1])
+                )
 
 
 def ttcfile_filenames(ttcfile):
@@ -146,11 +158,12 @@ def ttcfile_filenames(ttcfile):
 def ttc_filenames(ttc, data):
     """Returns likely filenames for each ttc file.
 
-  The filenames are based on the postscript name from the name table for each
-  font.  When there is no information, the string '<unknown x>' is provided with
-  either 'ttf' or 'otf' in place of 'x' depending on the info in the sfnt
-  header.
-  """
+    The filenames are based on the postscript name from the name table for each
+    font.
+    When there is no information, the string '<unknown x>' is provided with
+    either 'ttf' or 'otf' in place of 'x' depending on the info in the sfnt
+    header.
+    """
     names = []
     for font_entry in ttc.fonts:
         name_entry = None
@@ -166,7 +179,12 @@ def ttc_filenames(ttc, data):
             name_table.decompile(data[offset:limit], None)
             ps_name = None
             for r in name_table.names:
-                if (r.nameID, r.platformID, r.platEncID, r.langID) == (6, 3, 1, 0x409):
+                if (r.nameID, r.platformID, r.platEncID, r.langID) == (
+                    6,
+                    3,
+                    1,
+                    0x409,
+                ):
                     ps_name = r.string.decode('UTF-16BE')
                     break
             if ps_name:
@@ -194,7 +212,9 @@ def ttc_namesfile_name(ttc_path):
     return path.splitext(path.basename(ttc_path))[0] + '_names.txt'
 
 
-def ttcfile_build_from_namesfile(output_ttc_path, file_dir, namesfile_name=None, tool_path=_BUILD_TOOL_PATH):
+def ttcfile_build_from_namesfile(
+    output_ttc_path, file_dir, namesfile_name=None, tool_path=_BUILD_TOOL_PATH
+):
     """Read names of files from namesfile and pass them to build_ttc to build
   a .ttc file.  The names file will default to one named after output_ttc and
   located in file_dir."""
@@ -213,13 +233,18 @@ def ttcfile_build_from_namesfile(output_ttc_path, file_dir, namesfile_name=None,
         fontpath_list = [tool_utils.resolve_path(n) for n in filenames]
     missing = [n for n in fontpath_list if not path.isfile(n)]
     if missing:
-        raise ValueError('%d files were missing:\n  %s' % (len(missing), '\n  '.join(missing)))
+        raise ValueError(
+            '%d files were missing:\n  %s'
+            % (len(missing), '\n  '.join(missing))
+        )
     ttcfile_build(output_ttc_path, fontpath_list)
 
 
 def ttcfile_extract(input_ttc_path, output_dir, tool_path=_EXTRACT_TOOL_PATH):
-    """Extract .ttf/.otf fonts from a .ttc file, and return a list of the names of
-  the extracted fonts."""
+    """
+    Extract .ttf/.otf fonts from a .ttc file,
+    and return a list of the names of the extracted fonts.
+    """
 
     otc2otf = tool_utils.resolve_path(tool_path)
     if not otc2otf:
@@ -234,11 +259,17 @@ def ttcfile_extract(input_ttc_path, output_dir, tool_path=_EXTRACT_TOOL_PATH):
 
 
 def ttcfile_extract_and_write_namesfile(
-    input_ttc_path, output_dir, namesfile_name=None, extract_tool=_EXTRACT_TOOL_PATH
+    input_ttc_path,
+    output_dir,
+    namesfile_name=None,
+    extract_tool=_EXTRACT_TOOL_PATH,
 ):
-    """Call ttcfile_extract and in addition write a file to output dir containing
-  the names of the extracted files.  The name of the names file will default to
-  one based on the basename of the input path. It is written to output_dir."""
+    """
+    Call ttcfile_extract and in addition write a file to output dir containing
+    the names of the extracted files.
+    The name of the names file will default to
+    one based on the basename of the input path. It is written to output_dir.
+    """
     names = ttcfile_extract(input_ttc_path, output_dir, extract_tool)
     if not namesfile_name:
         namesfile_name = ttc_namesfile_name(input_ttc_path)
@@ -270,9 +301,20 @@ def main():
         epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('-f', '--ttcfile', help='ttc file to operate on', metavar='ttc', required=True)
     parser.add_argument(
-        '-d', '--dir', dest='filedir', help='directory for individual files', metavar='dir', default='.'
+        '-f',
+        '--ttcfile',
+        help='ttc file to operate on',
+        metavar='ttc',
+        required=True,
+    )
+    parser.add_argument(
+        '-d',
+        '--dir',
+        dest='filedir',
+        help='directory for individual files',
+        metavar='dir',
+        default='.',
     )
     parser.add_argument(
         '-o',

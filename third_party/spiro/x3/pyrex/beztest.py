@@ -18,7 +18,14 @@ class bez:
         coords = self.coords
         dc.setrgba(0, 0, 0.5, 1)
         dc.moveto(coords[0][0], coords[0][1])
-        dc.curveto(coords[1][0], coords[1][1], coords[2][0], coords[2][1], coords[3][0], coords[3][1])
+        dc.curveto(
+            coords[1][0],
+            coords[1][1],
+            coords[2][0],
+            coords[2][1],
+            coords[3][0],
+            coords[3][1],
+        )
         dc.stroke()
         dc.setrgba(0, 0.5, 0, 0.5)
         dc.moveto(coords[0][0], coords[0][1])

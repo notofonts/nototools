@@ -31,10 +31,11 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
     """Get date from each filename in files, create a folder for it, under
   dst/drops, then extract the files to it."""
 
-    # The zip indicates that the corresponding drop is good and built from it. But
-    # we might have messed up along the way, so:
+    # The zip indicates that the corresponding drop is good and built from it.
+    # But we might have messed up along the way, so:
     # - if we have a drop and a zip, assume it's already handled
-    # - if we have a drop but no zip, assume the drop needs to be rebuilt from the zip
+    # - if we have a drop but no zip, assume the drop needs to be rebuilt
+    #   from the zip
     # - if we have a zip and no drop
     #   - if we have new zip, complain
     #   - else rebuild the drop from the old zip
@@ -59,7 +60,10 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
         zip_filename = os.path.join(zip_dir, filename)
         if os.path.exists(drop_dir):
             if os.path.exists(zip_filename):
-                print('already have a %s drop and zip for %s' % (src_vendor, filename))
+                print(
+                    'already have a %s drop and zip for %s'
+                    % (src_vendor, filename)
+                )
                 continue
             else:
                 # clean up, assume needs rebuild
@@ -67,7 +71,10 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
         else:
             if os.path.exists(zip_filename):
                 if os.path.realpath(f) != os.path.realpath(zip_filename):
-                    print('already have a zip file named %s for %s' % (zip_filename, f))
+                    print(
+                        'already have a zip file named %s for %s'
+                        % (zip_filename, f)
+                    )
                     continue
 
         os.mkdir(drop_dir)
@@ -79,7 +86,9 @@ def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
 
 
 def matching_files_in_dir(src, namere):
-    """Iterate over files in src with names matching namere, returning the list."""
+    """
+    Iterate over files in src with names matching namere, returning the list.
+    """
     filelist = []
     for f in os.listdir(src):
         path = os.path.join(src, f)
@@ -93,26 +102,33 @@ def matching_files_in_dir(src, namere):
     return filelist
 
 
-def invoke_main(src_vendor, name_date_re, extract_fn, default_params={}):  # TODO: Mutable defaults!  # noqa:B006
+def invoke_main(
+    src_vendor, name_date_re, extract_fn, default_params={}
+):  # TODO: Mutable defaults!  # noqa:B006
     """Grab the files.
 
-  src_vendor is a string, currently either Adobe or Monotype.
-  name_date_re is a regex, it should extract name, year, month, and day fields from the filename
-  extract_fn is a fn to to extract a file, it takes two args, a dest dir and the zip file name.
+    src_vendor is a string, currently either Adobe or Monotype.
+    name_date_re is a regex, it should extract name, year, month, and day
+    fields from the filename
+    extract_fn is a fn to to extract a file, it takes two args,
+    a dest dir and the zip file name.
 
-  default_params are default values for argparse.  They can be:
-  - default_srcdir
-  - default_dstdir
-  - default_regex
+    default_params are default values for argparse.  They can be:
+    - default_srcdir
+    - default_dstdir
+    - default_regex
 
-  The default regex and the name_date_re are superficially similar, but different in
-  purpose.  The default_regex is used to select files under the src directory. The
-  name_date_re is used to extract the date from the file name.  Both apply to the
-  file name, but the default_regex can be anything, while name_date_re needs to select
-  four groups, where the 2nd, 3rd, and 4th are the year, month, and day (yes this is
-  brittle, but all of this is).
+    The default regex and the name_date_re are superficially similar,
+    but different in purpose.
+    The default_regex is used to select files under the src directory.
+    The name_date_re is used to extract the date from the file name.
+    Both apply to the file name, but the default_regex can be anything,
+    while name_date_re needs to select four groups,
+    where the 2nd, 3rd, and 4th are the year, month, and day
+    (yes this is brittle, but all of this is).
 
-  The dest directory must exist and should have 'zips' and 'drops' subdirs."""
+    The dest directory must exist and should have 'zips' and 'drops' subdirs.
+    """
 
     if not src_vendor:
         print('must define src_vendor')
@@ -128,7 +144,9 @@ def invoke_main(src_vendor, name_date_re, extract_fn, default_params={}):  # TOD
     default_dstdir = default_params.get('default_dstdir')
     default_regex = default_params.get('default_regex')
 
-    parser = argparse.ArgumentParser(description='Copy and extract drop from %s.' % src_vendor)
+    parser = argparse.ArgumentParser(
+        description='Copy and extract drop from %s.' % src_vendor
+    )
     parser.add_argument(
         '-dd',
         '--dstdir',
@@ -137,13 +155,23 @@ def invoke_main(src_vendor, name_date_re, extract_fn, default_params={}):  # TOD
         metavar='dst',
     )
     parser.add_argument(
-        '-sd', '--srcdir', help='source directory (default %s)' % default_srcdir, default=default_srcdir, metavar='src'
+        '-sd',
+        '--srcdir',
+        help='source directory (default %s)' % default_srcdir,
+        default=default_srcdir,
+        metavar='src',
     )
     parser.add_argument(
-        '--name', help='file name regex to match (default \'%s\')' % default_regex, default=default_regex, metavar='re'
+        '--name',
+        help='file name regex to match (default \'%s\')' % default_regex,
+        default=default_regex,
+        metavar='re',
     )
     parser.add_argument(
-        '--srcs', help='source files (if defined, use instead of srcdir+name)', nargs="*", metavar='zip'
+        '--srcs',
+        help='source files (if defined, use instead of srcdir+name)',
+        nargs="*",
+        metavar='zip',
     )
     args = parser.parse_args()
 

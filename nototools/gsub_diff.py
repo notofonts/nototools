@@ -27,13 +27,19 @@ import tempfile
 
 
 class GsubDiffFinder(object):
-    """Provides methods to report diffs in GSUB content between ttxn outputs."""
+    """
+    Provides methods to report diffs in GSUB content between ttxn outputs.
+    """
 
     def __init__(self, file_a, file_b, output_lines=20):
         ttxn_file_a = tempfile.NamedTemporaryFile()
         ttxn_file_b = tempfile.NamedTemporaryFile()
-        subprocess.call(['ttxn', '-q', '-t', 'GSUB', '-o', ttxn_file_a.name, '-f', file_a])
-        subprocess.call(['ttxn', '-q', '-t', 'GSUB', '-o', ttxn_file_b.name, '-f', file_b])
+        subprocess.call(
+            ['ttxn', '-q', '-t', 'GSUB', '-o', ttxn_file_a.name, '-f', file_a]
+        )
+        subprocess.call(
+            ['ttxn', '-q', '-t', 'GSUB', '-o', ttxn_file_b.name, '-f', file_b]
+        )
         self.text_a = ttxn_file_a.read()
         self.text_b = ttxn_file_b.read()
         self.file_a = file_a
@@ -74,7 +80,10 @@ class GsubDiffFinder(object):
         rules = set()
         for name in re.findall(feature_name_rx, text):
             contents = re.findall(contents_rx % (name, name), text, re.S)
-            assert len(contents) == 1, 'Multiple %s features in %s' % (name, filename)
+            assert len(contents) == 1, 'Multiple %s features in %s' % (
+                name,
+                filename,
+            )
             contents = contents[0]
             for lhs, rhs in re.findall(rule_rx, contents):
                 rules.add((name, lhs, rhs))

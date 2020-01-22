@@ -117,7 +117,13 @@ def _get_script_to_samples():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--outfile', help='name of output file', metavar='file', default='sample_text.html')
+    parser.add_argument(
+        '-o',
+        '--outfile',
+        help='name of output file',
+        metavar='file',
+        default='sample_text.html',
+    )
     args = parser.parse_args()
     generate_table(args.outfile)
 

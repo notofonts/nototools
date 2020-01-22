@@ -14,14 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Merges fonts.
+"""
+Merges fonts.
 Two notable differences between merge_noto and this script are:
 1. merge_noto merges all fonts in Noto, or merges a subset of Noto
    clustered by region. While This script merges a selected font subset.
 2. The line metrics in the final merged font are substituted by those in
    NotoSans-Regular.ttf (LGC). This is to optimize the user experience in LGC.
-   The drawback is some tall scripts in the file list (like Balinese, Cuneiform,
-  Javaness) might vertically overlap with each other and also be clipped by the
+   The drawback is some tall scripts in the file list
+   (like Balinese, Cuneiform, Javaness)
+   might vertically overlap with each other and also be clipped by the
   edge of the UI. This should be handled carefully by the UI designer, say
   changing the line height or adding the margin.
 
@@ -54,7 +56,8 @@ directory = ''
 # file names to be merged
 files = [
     # It's recommended to put NotoSans-Regular.ttf as the first element in the
-    # list to maximize the amount of meta data retained in the final merged font.
+    # list to maximize the amount of meta data retained
+    # in the final merged font.
     'NotoSans-Regular.ttf',
     'NotoSansAdlam-Regular.ttf',
     'NotoSansAdlamUnjoined-Regular.ttf',
@@ -203,16 +206,34 @@ def build_valid_filenames(files=files, directory=directory):
 def main():
     t = Timer()
     parser = ArgumentParser()
-    parser.add_argument('-d', '--directory', default='./', help='Path to directory containing the fonts')
-    parser.add_argument('-o', '--output', default='merged.ttf', help='Path to output file.')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode, printing out more info')
+    parser.add_argument(
+        '-d',
+        '--directory',
+        default='./',
+        help='Path to directory containing the fonts',
+    )
+    parser.add_argument(
+        '-o', '--output', default='merged.ttf', help='Path to output file.'
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Verbose mode, printing out more info',
+    )
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING)
+    logging.basicConfig(
+        level=logging.INFO if args.verbose else logging.WARNING
+    )
 
     valid_files = build_valid_filenames(directory=args.directory)
     if len(valid_files) <= 1:
-        log.warning('expecting at least two fonts to merge, but only got %d ' + 'font(s).', len(valid_files))
+        log.warning(
+            'expecting at least two fonts to merge, but only got %d '
+            + 'font(s).',
+            len(valid_files),
+        )
         sys.exit(-1)
 
     for idx, file in enumerate(valid_files):
@@ -233,7 +254,10 @@ def main():
         '%d fonts are merged. %d fonts are skipped. Cost %0.3f s.'
         % (len(valid_files), len(files) - len(valid_files), t.time())
     )
-    print('Please check the result at %s.' % os.path.abspath(os.path.realpath(args.output)))
+    print(
+        'Please check the result at %s.'
+        % os.path.abspath(os.path.realpath(args.output))
+    )
 
 
 if __name__ == '__main__':

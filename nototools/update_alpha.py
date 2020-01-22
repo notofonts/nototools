@@ -110,12 +110,15 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
             if cur_label.find(new_label) != -1:
                 new_label = None
             else:
-                # Using 'uh' would cause find to fail, if we processed unhinted first.
+                # Using 'uh' would cause find to fail,
+                # if we processed unhinted first.
                 # Which we don't, but relying on that is kind of obscure.
                 new_label = 'h/u'
         if new_label:
             name_info[root_name] = new_label
-        names = ', '.join(sorted(['%s(%s)' % (k, v) for k, v in name_info.items()]))
+        names = ', '.join(
+            sorted(['%s(%s)' % (k, v) for k, v in name_info.items()])
+        )
 
     # get date of the drop from srcdir
     result = re.search(r'\d{4}_\d{2}_\d{2}', srcdir)
@@ -138,7 +141,14 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
         print(one_line_msg)
         print()
         compare_summary.compare_summary(
-            alphadir, srcdir, None, compare_summary.tuple_compare, True, False, False, False
+            alphadir,
+            srcdir,
+            None,
+            compare_summary.tuple_compare,
+            True,
+            False,
+            False,
+            False,
         )
 
     # make the changes
@@ -150,18 +160,23 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
         if not dry_run:
             shutil.copy2(src_path, dst_path)
             if need_add:
-                subprocess.check_call(['svn', 'add', rel_path], stderr=subprocess.STDOUT)
+                subprocess.check_call(
+                    ['svn', 'add', rel_path], stderr=subprocess.STDOUT
+                )
 
     # commit the change
-    # leave this out for now, it's useful to check before the commit to make sure
-    # nothing screwed up.
+    # leave this out for now,
+    # it's useful to check before the commit to make sure nothing screwed up.
     # subprocess.check_call(['svn', 'commit', '-F', checkin_msg_file],
     #                       stderr=subprocess.STDOUT)
 
     with open(checkin_msg_file) as f:
         checkin_msg = f.read().strip()
 
-    print('%s\n-----\n%s\n-----' % ('dry run' if dry_run else 'summary', checkin_msg))
+    print(
+        '%s\n-----\n%s\n-----'
+        % ('dry run' if dry_run else 'summary', checkin_msg)
+    )
     if not dry_run:
         print('command to update: svn commit -F \'%s\'' % checkin_msg_file)
 
@@ -172,8 +187,17 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('srcdir', help='source to push to noto-alpha')
-    parser.add_argument('--alpha', help='local noto-alpha svn repo (default %s)' % default_alpha, default=default_alpha)
-    parser.add_argument('--dry-run', dest='dry_run', help='do not stage changes for svn', action='store_true')
+    parser.add_argument(
+        '--alpha',
+        help='local noto-alpha svn repo (default %s)' % default_alpha,
+        default=default_alpha,
+    )
+    parser.add_argument(
+        '--dry-run',
+        dest='dry_run',
+        help='do not stage changes for svn',
+        action='store_true',
+    )
     args = parser.parse_args()
 
     if not os.path.isdir(args.srcdir):
