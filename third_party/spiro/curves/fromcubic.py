@@ -6,7 +6,9 @@ from __future__ import print_function
 
 import sys
 from math import atan2
+from math import cos
 from math import hypot
+from math import sin
 
 import pcorn
 import tocubic
@@ -190,33 +192,18 @@ if __name__ == '__main__':
         # curve = offset.offset(curve, 10)
         print('%', curve.arclen)
         print('%', curve.sstarts)
-        if 0:
-            print('gsave 1 0 0 setrgbcolor')
-            cmd = 'moveto'
-            for i in range(100):
-                s = i * 0.01 * curve.arclen
-                x, y = curve.xy(s)
-                th = curve.th(s)
-                sth = 5 * sin(th)
-                cth = 5 * cos(th)
-                print(x, y, cmd)
-                cmd = 'lineto'
-            print('closepath stroke grestore')
         for i in range(100):
             s = i * 0.01 * curve.arclen
             x, y = curve.xy(s)
             th = curve.th(s)
             sth = 5 * sin(th)
             cth = 5 * cos(th)
-            if 0:
-                print(x - cth, y - sth, 'moveto')
-                print(x + cth, y + sth, 'lineto stroke')
-        if 1:
-            for s in curve.find_breaks():
-                print('gsave 0 1 0 setrgbcolor')
-                x, y = curve.xy(s)
-                print(x, y, 'translate 2 dup scale circle fill')
-                print('grestore')
+
+        for s in curve.find_breaks():
+            print('gsave 0 1 0 setrgbcolor')
+            x, y = curve.xy(s)
+            print(x, y, 'translate 2 dup scale circle fill')
+            print('grestore')
         # plot_segs(segs)
 
         print('gsave 0 0 0 setrgbcolor')

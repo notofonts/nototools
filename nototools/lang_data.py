@@ -121,7 +121,7 @@ def _create_lang_data():
     # Patch: see noto-fonts#133 comment on June 8th.
     all_lang_scripts['tlh'] |= {'Latn', 'Piqd'}
 
-    all_langs = used_lang_scripts.keys() + all_lang_scripts.keys()
+    all_langs = list(used_lang_scripts) + list(all_lang_scripts)
     lang_data = {}
     for lang in all_langs:
         if lang in used_lang_scripts:

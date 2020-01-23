@@ -2827,34 +2827,6 @@ def _assign_legacy_phase2(cmap_ops):
             cmap_ops.add_all(missing_legacy, script)
 
 
-def _check_CJK():
-    # not used
-    # check CJK
-    cmap_ops.log(
-        'check cjk legacy'
-    )  # TODO: cmap_ops is undefined!  # noqa:F821
-    legacy_cjk_chars = set()
-    for script in _MERGED_SCRIPTS_BY_TARGET['CJK']:
-        if (
-            script in legacy_script_to_chars
-        ):  # TODO: legacy_script_to_chars is undefined!  # noqa:F821
-            legacy_cjk_chars |= legacy_script_to_chars[script]  # noqa:F821
-
-    cjk_chars = script_to_chars[
-        'CJK'
-    ]  # TODO: script_to_chars is undefined!  # noqa:F821
-    not_in_legacy = cjk_chars - legacy_cjk_chars
-    # ignore plane 2 and above
-    not_in_legacy -= set(range(0x20000, 0x120000))
-    if not_in_legacy:
-        print('not in legacy (%d):' % len(not_in_legacy))
-        compare_cmap_data._print_detailed(not_in_legacy)
-    not_in_new = legacy_cjk_chars - cjk_chars
-    if not_in_new:
-        print('not in new (%d):' % len(not_in_new))
-        compare_cmap_data._print_detailed(not_in_new)
-
-
 def _assign_bidi_mirroring(cmap_ops):
     """Ensure that if a bidi mirroring char is in a font, its mirrored char
   is too."""
@@ -3093,7 +3065,7 @@ def _assign_symbols_from_groups(cmap_ops):
             try:
                 cps = tool_utils.parse_int_ranges(ranges)
             except Exception as err:
-                sys.stderr.write(err + '\n')
+                sys.stderr.write(str(err) + '\n')
                 sys.stderr.write(cols[2] + '\n')
                 sys.stderr.write('problem on %d "%s"\n' % (lineix, line))
                 raise
