@@ -291,7 +291,7 @@ def get_likely_subtags(lang_tag):
             if not m:
                 if _DEBUG:
                     print(
-                        'regex did not match locale \'%s\'' % loc_tag
+                        'regex did not match locale \'%s\'' % lang_tag
                     )  # TODO: loc_tag is undefined!  # noqa:F821
                 return result
             # lang = m.group(1)

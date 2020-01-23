@@ -116,7 +116,7 @@ def short_path(somepath, basedir=CWD):
     shortest = somepath
     if basedir and somepath.startswith(basedir):
         shortest = '.' + somepath[len(basedir) :]
-    for k, v in notoconfig.values.items():
+    for k, v in notoconfig._values.items():
         if somepath.startswith(v):
             test = ('[%s]' % _name_to_key(k)) + somepath[len(v) :]
             if len(test) < len(shortest):

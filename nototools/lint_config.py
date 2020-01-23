@@ -122,7 +122,7 @@ def parse_int_ranges(range_string, is_hex=True, sep=' '):
         raise ValueError(
             'duplicate values in %s, expected count is %d but result is %s'
             % (
-                hexlist,
+                value_list,
                 count,
                 result,  # TODO: hexlist is not defined!  # noqa:F821
             )

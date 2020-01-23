@@ -1143,10 +1143,9 @@ def main():
         print('Please specify at least one directory or file')
         return
 
-    if not args.info_file:
-        if args.phase:
-            args.info_file = _PHASE_TO_FILENAME[args.phase]
-            print('using name info file: "%s"' % args.info_file)
+    if not args.info_file and args.phase:
+        args.info_file = _PHASE_TO_FILENAME[args.phase]
+        print('using name info file: "%s"' % args.info_file)
 
     if args.cmd == 'dump':
         if not args.info_file:

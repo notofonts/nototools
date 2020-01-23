@@ -360,8 +360,8 @@ def fix_fonts(src_root, dst_root, name_pat, save_unmodified):
 
 
 def main():
-    default_src_root = notoconfig.values.get('alpha')
-    default_dst_root = notoconfig.values.get('autofix')
+    default_src_root = notoconfig._values.get('alpha')
+    default_dst_root = notoconfig._values.get('autofix')
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

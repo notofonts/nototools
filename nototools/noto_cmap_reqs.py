@@ -45,7 +45,6 @@ import sys
 from nototools import cldr_data
 from nototools import cmap_data
 from nototools import collect_cldr_punct
-from nototools import compare_cmap_data
 from nototools import noto_data
 from nototools import opentype_data
 from nototools import tool_utils

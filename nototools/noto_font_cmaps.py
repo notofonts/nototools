@@ -91,18 +91,6 @@ def font_cmap_data(paths):
         cpset = family.charset
         script_to_data[script].append(ScriptData(family_name, script, cpset))
 
-    def report_data_error(index, script_data):
-        sys.stderr.write(
-            '  %d: %s, %d, %s\n'
-            % (
-                index,
-                script_data.family_name,
-                script_data.script,
-                len(script_data.cpset),
-                lint_config.write_int_ranges(script_data.cpset),
-            )
-        )
-
     script_to_cmap = {}
     for script in sorted(script_to_data):
         data = script_to_data[script]

@@ -854,7 +854,6 @@ def compare_samples(
                 print('base does not exist: %s' % base_name)
             continue
 
-        base_text = None
         with codecs.open(base_path, 'r', 'utf8') as f:
             base_text = f.read()
         with codecs.open(trg_path, 'r', 'utf8') as f:

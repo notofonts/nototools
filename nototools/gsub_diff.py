@@ -53,7 +53,6 @@ class GsubDiffFinder(object):
         rules_b = self._get_gsub_rules(self.text_b, self.file_b)
 
         diffs = []
-        report = ['']  # first line replaced by difference count
         for rule in rules_a:
             if rule not in rules_b:
                 diffs.append(('-',) + rule)

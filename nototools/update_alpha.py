@@ -182,7 +182,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
 
 
 def main():
-    values = notoconfig.values
+    values = notoconfig._values
     default_alpha = values.get('alpha')
 
     parser = argparse.ArgumentParser()

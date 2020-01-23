@@ -103,8 +103,8 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=''):
 
 
 def main():
-    default_noto = notoconfig.values.get('noto')
-    default_cldr = notoconfig.values.get('cldr')
+    default_noto = notoconfig._values.get('noto')
+    default_cldr = notoconfig._values.get('cldr')
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
