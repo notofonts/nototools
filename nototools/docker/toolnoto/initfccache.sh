@@ -6,6 +6,6 @@ set -e
 
 cd /app/noto/nototools/nototools
 ./create_image.py --test
-rm *.png *.svg
+rm *.png *.svg ||:
 cd /app/noto
 FONTCONFIG_FILE=/app/noto/nototools/fonts.conf fc-match --verbose 'noto color emoji-32'
