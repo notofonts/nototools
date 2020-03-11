@@ -447,7 +447,9 @@ def open_unicode_data_file(data_file_name):
   Returns:
     A file handle to the data file.
   """
-  return codecs.open(path.join(_DATA_DIR_PATH, data_file_name), "r", 'utf-8')
+  filename = path.join(_DATA_DIR_PATH, data_file_name)
+  print('open unicode data file %s' % filename)
+  return codecs.open(filename, "r", 'utf-8')
 
 
 def _parse_code_ranges(input_data):
@@ -751,8 +753,11 @@ EMOJI_SEQUENCE_TYPES = frozenset([
     'Emoji_Keycap_Sequence',
     'Emoji_Combining_Sequence',
     'Emoji_Flag_Sequence',
-    'Emoji_Tag_Sequence',
+    'RGI_Emoji_Flag_Sequence',
+    'RGI_Emoji_Tag_Sequence',
     'Emoji_Modifier_Sequence',
+    'RGI_Emoji_Modifier_Sequence',
+    'RGI_Emoji_ZWJ_Sequence',
     'Emoji_ZWJ_Sequence',
     'Emoji_Single_Sequence'])
 
@@ -764,7 +769,7 @@ def _read_emoji_data(lines):
   """Parse lines of emoji data and return a map from sequence to tuples of
   name, age, type."""
   line_re = re.compile(
-      r'(?:([0-9A-F ]+)|([0-9A-F]+\.\.[0-9A-F]+)\s*);\s*(%s)\s*;\s*([^#]*)\s*#\s*(\d+\.\d+).*' %
+      r'(?:([0-9A-F ]+)|([0-9A-F]+\.\.[0-9A-F]+)\s*);\s*(%s)\s*;\s*([^#]*)\s*#\s*E?(\d+\.\d+).*' %
       '|'.join(EMOJI_SEQUENCE_TYPES))
   result = {}
   for line in lines:
@@ -773,7 +778,7 @@ def _read_emoji_data(lines):
       continue
     m = line_re.match(line)
     if not m:
-      raise ValueError('Did not match "%s"' % line)
+      raise ValueError('"%s" Did not match "%s"' % (line_re.pattern, line))
 
     # group 1 is a sequence, group 2 is a range of single character sequences.
     # we can't process the range because we don't have a name for each character
