@@ -448,7 +448,6 @@ def open_unicode_data_file(data_file_name):
     A file handle to the data file.
   """
   filename = path.join(_DATA_DIR_PATH, data_file_name)
-  print('open unicode data file %s' % filename)
   return codecs.open(filename, "r", 'utf-8')
 
 
