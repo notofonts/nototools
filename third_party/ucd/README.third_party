@@ -1,14 +1,14 @@
-URL: http://www.unicode.org/Public/8.0.0/ucd/
-Version: 11.0.0d
+URL: https://unicode.org/Public/
+Version: 13.0.0
 License: Unicode
 License File: LICENSE
 
 Description:
-Unicode data files.
+Unicode data files. Accessed 3/7/2020.
 
 Local Modifications:
-1. Unicode 11.0 alpha files have been pulled from
-   http://www.unicode.org/Public/11.0.0/ucd/
+1. Unicode 13.0 files have been pulled from
+   http://www.unicode.org/Public/13.0.0/ucd/
 
-3. emoji-data files are from (copied on 2010-03-06)
-   http://www.unicode.org/Public/emoji/11.0
+3. emoji-data files are from
+   http://www.unicode.org/Public/emoji/13.0
