@@ -131,15 +131,13 @@ def get_glyph_vertical_extents(glyph_id, font_file_name):
     return get_glyph_cleaned_extents(ttglyph, glyf_set)
 
 
-# FIXME: figure out how to make this configurable
-HARFBUZZ_DIR = os.getenv('HOME') + os.sep + 'harfbuzz'
-HB_SHAPE_PATH = HARFBUZZ_DIR + os.sep + 'util' + os.sep + 'hb-shape'
+HB_SHAPE_DIR = os.path.join(os.getenv('HOME'), 'harfbuzz', 'util')
 
 
 def run_harfbuzz_on_text(text, font_file_name, language, extra_parameters=None):
     """Runs HarfBuzz on input text and return JSON shaping information."""
     hb_parameters = [
-        HB_SHAPE_PATH,
+        "hb-shape",
         '--output-format=json',
         '--no-glyph-names',  # Some fonts have empty glyph names
         '--font-file=%s' % font_file_name]
@@ -150,10 +148,21 @@ def run_harfbuzz_on_text(text, font_file_name, language, extra_parameters=None):
     if extra_parameters is not None:
         hb_parameters += extra_parameters
 
+    # In past releases, this function expected hb-shape to have the following
+    # path /Users/user/harfbuzz/util/hb-shape. In order to make this function
+    # more flexible, we simply call 'hb-shape' and expect the user to have the
+    # hb-shape executable reside in a dir which is specified in their PATH
+    # environment variable.
+    # To ensure backwards compatibility, we duplicate the environment
+    # variables and append the legacy path to the PATH. We then call
+    # subprocess using the duplicated environment variables.
+    env_copy = os.environ.copy()
+    env_copy["PATH"] += os.pathsep + HB_SHAPE_DIR
     hb_process = subprocess.Popen(
         hb_parameters,
         stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE)
+        stdout=subprocess.PIPE,
+        env=env_copy)
 
     return hb_process.communicate(input=text.encode('UTF-8'))[0]
 
