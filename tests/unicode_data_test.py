@@ -60,10 +60,11 @@ class UnicodeDataTest(unittest.TestCase):
         """Tests the is_defined() method."""
         self.assertTrue(unicode_data.is_defined(0x20BD))
         self.assertFalse(unicode_data.is_defined(0xFDD0))
+        self.assertFalse(unicode_data.is_defined(0x0870))
         # CJK ranges
         self.assertTrue(unicode_data.is_defined(0x3400))
         self.assertTrue(unicode_data.is_defined(0x4DB5))
-        self.assertFalse(unicode_data.is_defined(0x4DB6))
+        self.assertTrue(unicode_data.is_defined(0x4DB6))
 
     def test_defined_characters(self):
         """Tests the defined_characters() method."""
