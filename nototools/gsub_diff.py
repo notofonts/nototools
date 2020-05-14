@@ -44,41 +44,144 @@ class GsubDiffFinder(object):
 
     def find_gsub_diffs(self):
         """Report differences in substitution rules."""
-
-        rules_a = self._get_gsub_rules(self.text_a, self.file_a)
-        rules_b = self._get_gsub_rules(self.text_b, self.file_b)
-
-        diffs = []
-        report = ['']  # first line replaced by difference count
-        for rule in rules_a:
-            if rule not in rules_b:
-                diffs.append(('-',) + rule)
-        for rule in rules_b:
-            if rule not in rules_a:
-                diffs.append(('+',) + rule)
-        # ('+', 'smcp', 'Q', 'Q.sc')
+        new = [self._format_rule(r, '+') for r in self.find_new_rules()]
+        missing = [self._format_rule(r, '-') for r in self.find_missing_rules()]
+        diffs = missing + new
+        # ('+', 'smcp', 'Q', 'by', Q.sc')
         # Sort order:
         # 1. Feature tag
         # 2. Glyph name before substitution
         # 3. Glyph name after substitution
-        diffs.sort(key=lambda t:(t[1], t[2], t[3]))
+        diffs.sort(key=lambda t:(t[1], t[2], t[4]))
         report = ['%d differences in GSUB rules' % len(diffs)]
         report.extend(' '.join(diff) for diff in diffs)
         return '\n'.join(report[:self.output_lines + 1])
 
-    def _get_gsub_rules(self, text, filename):
-        """Get substitution rules in this ttxn output."""
+    def find_new_rules(self):
+        rules_a = self._get_gsub_rules(self.text_a, self.file_a)
+        rules_b = self._get_gsub_rules(self.text_b, self.file_b)
+        return [r for r in rules_b if r not in rules_a]
 
-        feature_name_rx = r'feature (\w+) {'
-        contents_rx = r'feature %s {(.*?)} %s;'
-        rule_rx = r'sub ([\w.]+) by ([\w.]+);'
+    def find_missing_rules(self):
+        rules_a = self._get_gsub_rules(self.text_a, self.file_a)
+        rules_b = self._get_gsub_rules(self.text_b, self.file_b)
+        return [r for r in rules_a if r not in rules_b]
 
-        rules = set()
-        for name in re.findall(feature_name_rx, text):
-            contents = re.findall(contents_rx % (name, name), text, re.S)
-            assert len(contents) == 1, 'Multiple %s features in %s' % (
-                name, filename)
-            contents = contents[0]
-            for lhs, rhs in re.findall(rule_rx, contents):
-                rules.add((name, lhs, rhs))
+    def _get_gsub_rules(self, text, file):
+        """
+        Parse the ttxn GSUB table in the following manner:
+
+        1. Get features
+        2. Get feature content
+        3. Extract lookup rules from feature content
+
+        Following substitutions are currently implemented:
+        - Type 1: Single substitutions
+        - Type 2: Multiple substitutions
+        - Type 3: Alternate substitutions
+        - Type 4: Ligature substitutionss
+
+        TODO: LookupTypes 5, 6, 8 still need implementing
+        """
+        rules = []
+        features = self._get_gsub_features(text)
+        for feature in features:
+            content = self._get_feature_content(text, feature)
+            lookups_rules = self._get_lookups_rules(text, content[0], feature)
+            rules += lookups_rules
         return rules
+
+    def _get_gsub_features(self, text):
+        features = set()
+        feature_name_rx = r'feature (\w+) {'
+
+        for name in re.findall(feature_name_rx, text):
+            features.add(name)
+        return list(features)
+
+    def _get_feature_content(self, text, feature):
+        contents_rx = r'feature %s {(.*?)} %s;'
+        contents = re.findall(contents_rx % (feature, feature), text, re.S)
+        return contents
+
+    def _get_lookups_rules(self, text, content, feature):
+        """Ignore rules which use "'". These are contextual and not in
+        lookups 1-4"""
+        rule_rx = r"[^C] sub (.*[^\']) (by|from) (.*);"
+        rules = re.findall(rule_rx, content)
+        parsed_rules = self._parse_gsub_rules(rules, feature)
+        return parsed_rules
+
+    def _parse_gsub_rules(self, rules, feature):
+        """
+        Parse GSUB sub LookupTypes 1, 2, 3, 4, 7. Return list of tuples with
+        the following tuple sequence.
+
+        (feature, [input glyphs], operator, [output glyphs])
+
+        Type 1 Single Sub:
+        sub a by a.sc;
+        sub b by b.sc;
+        [
+            (feat, ['a'], 'by' ['a.sc']),
+            (feat, ['b'], 'by' ['b.cs'])
+        ]
+
+
+        Type 2 Multiple Sub:
+        sub f_f by f f;
+        sub f_f_i by f f i;
+        [
+            (feat, ['f_f'], 'by', ['f', 'f']),
+            (feat, ['f_f_i'], 'by', ['f', 'f', 'i'])
+        ]
+
+        Type 3 Alternative Sub:
+        sub ampersand from [ampersand.1 ampersand.2 ampersand.3];
+            [
+                (feat, ['ampersand'], 'from', ['ampersand.1']),
+                (feat, ['ampersand'], 'from', ['ampersand.2']),
+                (feat, ['ampersand'], 'from', ['ampersand.3'])
+            ]
+
+        Type 4 Ligature Sub:
+        sub f f by f_f;
+        sub f f i by f_f_i;
+        [
+            (feat, ['f', 'f'] 'by' ['f_f]),
+            (feat, ['f', 'f', 'i'] 'by' ['f_f_i'])
+        ]
+
+        http://www.adobe.com/devnet/opentype/afdko/topic_feature_file_syntax.html#4.e
+        """
+        parsed = []
+        for idx, (left, op, right) in enumerate(rules):
+
+            left_group, right_group = [], []
+            if left.startswith('[') and left.endswith(']'):
+                left = self._gsub_rule_group_to_string(left)
+
+            if right.startswith('[') and right.endswith(']'):
+                right = self._gsub_rule_group_to_string(right)
+
+            if op == 'by': # parse LookupType 1, 2, 4
+                parsed.append((feature, left.split(), op, right.split()))
+            elif op == 'from': # parse LookupType 3
+                for glyph in right.split(): # 'a.alt a.sc' -> ['a.alt', 'a.sc']
+                    parsed.append((feature, left.split(), op, [glyph]))
+        return parsed
+
+    def _format_rule(self, rule, sign):
+        """Unnest the tuple rule sequence to more report friendly format"""
+        s = [sign]
+        for item in rule:
+            if not isinstance(item, str):
+                for sub_item in item:
+                    s.append(sub_item)
+            else:
+                s.append(item)
+        return s
+
+    def _gsub_rule_group_to_string(self, seq):
+        """[a a.sc a.sups] --> 'a a.sc a.sups'"""
+        return seq[1:-1]
