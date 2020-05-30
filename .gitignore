@@ -6,3 +6,5 @@ build
 dist
 nototools.egg-info/
 venv/
+.eggs/
+nototools/_version.py

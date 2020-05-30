@@ -9,7 +9,7 @@ readme = """Noto font tools are a set of scripts useful for release
 engineering of Noto and similar fonts"""
 
 setup(name='nototools',
-      use_scm_version={"write_to": "src/nanoemoji/_version.py"},
+      use_scm_version={"write_to": "nototools/_version.py"},
       description='Noto font tools',
       license="Apache",
       long_description=readme,
@@ -20,6 +20,7 @@ setup(name='nototools',
       # more examples here http://docs.python.org/distutils/examples.html#pure-python-distribution-by-package
       packages=find_packages() + ['third_party'],
       include_package_data=True,
+      setup_requires=["setuptools_scm"],
       install_requires=[
           'fontTools',
           # On Mac OS X these need to be installed with homebrew
