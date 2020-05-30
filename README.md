@@ -1,5 +1,5 @@
 [![Travis Build Status](https://travis-ci.org/googlefonts/nototools.svg?branch=master)](https://travis-ci.org/googlefonts/nototools)
-[![PyPI](https://img.shields.io/pypi/v/nototools.svg)](https://pypi.org/project/nototools/)
+[![PyPI](https://img.shields.io/pypi/v/notofonttools.svg)](https://pypi.org/project/notofonttools/)
 [![pyup](https://pyup.io/repos/github/googlefonts/nototools/shield.svg)](https://pyup.io/repos/github/googlefonts/nototools)
 
 # Noto Tools
