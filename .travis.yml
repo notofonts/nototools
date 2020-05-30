@@ -24,6 +24,6 @@ deploy:
     secure: HRC2+s2WqM/qVcL67uRnP68ZT3GYA3LERexyuRNMVdZKMf3bO83wPzPGN2AoN1hdredQ5v9tXtPQNP/itPXEjkq+Ns8StDkRoefR2hz91d01RgT6ed5rqx+VX9vKbVc0RdSZsLOmIjjVUQggH0wRDJcyLv4AbXO/GH+GW5AHjx2yeOe6dVrFknDmLjysmSr7Z7+4PEy0h38pUrfMzn9Kh0W0GZ+YpPrWqI/T8fClvvXIZZVA5tfmiInWyhBauSiSPhLQsKRnXetmEOZcTI0iXawaNnm6/tfW6qHp5d1/yTyGwWFCb2OS+ZPDCJxQN8N0WVjtyUT0Pj/LffaOPUTpLCtGLBBhTQBktOSqYdM0d7xtvgsOsBUctjlp40c1aCfLaEjcMWFFoYI9Dh+kPe5D1KLkGZ676ly8pEbPUJZhXgErzudHHtwiwXWPPmT4eN97klrMtLhSUx0kb7KJn4ZLi9alcbv/vAa8u1+cQ3ykud4euWsf4Mp2xjYBjVhxdAZbI4gCaxKkXKpNhYv0Bcx0dZnvO/dCEMyWF4F41h6Qx1QozQe4zVrCPBaflLnT+lJa/ka4HLLM3/5O0VZU+WSNXqrM1391JYtHFZzPQL1fURkmHhP3BD9Af6krLqadyyNFeVg/SFv4jhS1FtGkbZ1URtmga4ajLawTLccOwFU0Sj0=
   on:
     tags: true
-    condition: "$TRAVIS_PYTHON_VERSION = 3.8"
+    condition: "$TRAVIS_PYTHON_VERSION = 3.7"
   distributions: "sdist bdist_wheel"
   skip_existing: true
