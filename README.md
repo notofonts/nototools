@@ -66,5 +66,5 @@ $ git push origin v0.4.3
 ```
 
 This will trigger the CI to build the distribution packages and upload them to the
-[Python Package Index](https://pypi.org/project/nanoemoji/) automatically, if all the tests
+[Python Package Index](https://pypi.org/project/notofonttools/) automatically, if all the tests
 pass successfully.
