@@ -14,7 +14,6 @@ fonttools==4.11.0
 fs==2.4.11
 lxml==4.5.1
 MutatorMath==3.0.1
--e git+git@github.com:googlefonts/nototools.git@e0a39bad11ca47f924b432bb05c3cccd87e68571#egg=nototools
 pathspec==0.8.0
 Pillow==7.1.2
 psautohint==2.0.1
