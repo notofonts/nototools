@@ -9,13 +9,14 @@ readme = """Noto font tools are a set of scripts useful for release
 engineering of Noto and similar fonts"""
 
 setup(name='nototools',
-      version='0.2.0',
+      use_scm_version={"write_to": "src/nanoemoji/_version.py"},
       description='Noto font tools',
       license="Apache",
       long_description=readme,
+      python_requires=">=3.7",
       author='Noto Authors',
       author_email='noto-font@googlegroups.com',
-      url='https://code.google.com/p/noto/',
+      url='https://github.com/googlefonts/nototools',
       # more examples here http://docs.python.org/distutils/examples.html#pure-python-distribution-by-package
       packages=find_packages() + ['third_party'],
       include_package_data=True,
