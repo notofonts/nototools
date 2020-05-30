@@ -4,7 +4,7 @@ color_emoji/waveflag
 packages
 build
 dist
-nototools.egg-info/
+*.egg-info/
 venv/
 .eggs/
 nototools/_version.py
