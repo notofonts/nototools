@@ -3,24 +3,21 @@ language: python
 dist: xenial
 python:
 - '3.7'
-
 install:
-  - python --version
-  - pip install --upgrade pip
-  - pip install -r requirements.txt
-  - pip install -e .
-  - sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
-
+- python --version
+- pip install --upgrade pip
+- pip install -r requirements.txt
+- pip install -e .
+- sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
 script:
-  - cd tests && ./run_tests
-
+- cd tests && ./run_tests
 deploy:
   provider: pypi
-  user: "__token__"
+  user: __token__
   password:
-    secure: "JUsC1l4TuW4LWarP6Axe02YWbXpKYHhgDqGilSay3D2OgYrtEetzimfXGgsNj2TjZZNHkC6vYoKIEq91NrgNRO3wgTPiCsfOTKtDSnCUcX4eFUoZ0wX1HJG82s83hWqqTDRMB+GmXNl94eNpcXrk0nblBdzhai0T/KoftNqI8TPg19qkhE7PftBF8lpRdiU4W51UYA7PyB9VgCN++2bAzQaEwKmOo6HOMX33XHual/gcrKIy7V19ax0FmfaIR4iYF+MqysWoNve8a+GxAbYDoY88TlOja5I4l7ipdpxo/Aik+5vgp/6e/QzcW2C5f8LFCtyTPk0rQhgnAXFko+g5XKIacoFqLRZUqUww/ZZDbDA1Op0g1ue3yNpwY8iwhbQZtA/uXG0KaMkbQN8ihB8y3/Q0APkHA8H+AqOAJdP8cwcPf25axP/67XBmoJLyLEz3rRxPFZFfawDXEXArCmHVehLYneOZKLD1Dhgv4NFSZ3qajPZp4tfofnR042XxOmcSOC9BWDGKS38oAN1RBTUAG2dYZqtLZMBY8ak7smhuIGbsBG+HhHCHVaV8+bpX4XSUncH+UW0KCKhKmLugId3blavW5AYN94Zibv53efUoSsQZ6RtY1Fxo5dGbHv2hHj3ZCtr4gf387/31L/6rX1292j9qzZMZ+WiD+AhqXHiGmtc="
+    secure: dIjxrjnwuoUn0DgofxpLQGYaTJAapYm2Q11L5oQbPfEe59nZ11mngNtusSboMNBpoAzXa5UxpcnbaDtgRD2y2MXFTGomDhU0x2nKE+3akwLmXmfQ7ZyE3m18HBSVGkZYQ92u1x+60eGx0pew9K6XaXj60ttHw3XaqVNXtNtqJvw0r9jj6PgbKYfNb+xZ8GrYIab9Po40FxpC0ISMsk4I/UpGLXNsGWXIOWya2LkjgXkZ3r2nDPoy4ROPRpDGAEBsP/nE7hbg+hS9l7TiY34sLbrak1fzBx4uQl2P7wN//hIsOwseLojsWvUfjcEnVaGhBSnrZWES76C62w0/r9UHi/hgDoFbw121BenNKuFqv18Xro3wOJYgk/7DdUwUaNewUfpHQ+AhtKkz6dBRt6dI0Cj/Kn/PzaiM+iQ4g5fBNb5MWiqs8XleJmv5AoCHCmeIixW3WgOzrEgDTgDI/BhwLsdgYBibSKCPVOvWTRTncVwSoiT3mPchJJQaARL+B4gyebj04WUMqQ2zylfQFXdeTmxoVDl2iNFfYo17kzsfBj3/ldAbdQbu0oPglwbU9olTQT0Jx0yPDcFz14fyYQaIvOhScof1hs5/BNhH2aLUL1axGKrpOTOWWCSEGhUP8KKRahycArJfHH5Ucm089SjS9fGAGDVG2eAdyh3Q3+o0ud8=
   on:
     tags: true
     condition: "$TRAVIS_PYTHON_VERSION = 3.7"
-  distributions: "sdist bdist_wheel"
+  distributions: sdist bdist_wheel
   skip_existing: true
