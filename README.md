@@ -8,7 +8,8 @@ The `nototools` python package contains python scripts used to maintain the [Not
 
 On Mac OS X, install dependencies with [homebrew](https://brew.sh)
 
-    brew install --with-cairo harfbuzz cairo pango pygtk imagemagick
+    # used to ask for pygtk as well
+    brew install harfbuzz cairo pango imagemagick
 
 Install python dependencies,
 
