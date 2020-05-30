@@ -112,35 +112,41 @@ def generate_font_table(compare_data):
 
     def write_lines(key, fdata):
         lines.append(
-            '<tr><td><div class="box %s">&nbsp;</div><td><b>File</b> %s' % (
-                key, fdata.file[pfx_len:]
-            )
+            '<tr><td><div class="box %s">&nbsp;</div><td><b>File</b> %s'
+            % (key, fdata.file[pfx_len:])
         )
 
         version = fdata.version
-        if version.startswith('Version '):
-            version = version[len('Version '):]
-        lines.append('<tr><td><td><b>Version</b> %s' % version)
+        if version.startswith("Version "):
+            version = version[len("Version ") :]
+        lines.append("<tr><td><td><b>Version</b> %s" % version)
 
         lines.append(
-            '<tr><td><td><b>Upem</b> %d, <b>Ascent</b> %d, <b>Descent</b> %d, '
-            '<b>Glyphs</b> %d, <b>CPs</b> %d' % (
-                fdata.upem, fdata.ascent, fdata.descent, fdata.num_glyphs,
-                fdata.codepoints)
+            "<tr><td><td><b>Upem</b> %d, <b>Ascent</b> %d, <b>Descent</b> %d, "
+            "<b>Glyphs</b> %d, <b>CPs</b> %d"
+            % (
+                fdata.upem,
+                fdata.ascent,
+                fdata.descent,
+                fdata.num_glyphs,
+                fdata.codepoints,
+            )
         )
 
-    pfx, paths = tool_utils.commonpathprefix((
-        compare_data.base_fdata.file, compare_data.target_fdata.file))
+    pfx, paths = tool_utils.commonpathprefix(
+        (compare_data.base_fdata.file, compare_data.target_fdata.file)
+    )
     pfx_len = len(pfx)
 
-    write_lines('b', compare_data.base_fdata)
-    write_lines('t', compare_data.target_fdata)
-    return '\n'.join(lines)
+    write_lines("b", compare_data.base_fdata)
+    write_lines("t", compare_data.target_fdata)
+    return "\n".join(lines)
 
 
 def generate_image_data(compare_data):
     import json
     from nototools import unicode_data
+
     bdata = compare_data.base_gdata
     tdata = compare_data.target_gdata
 
@@ -152,7 +158,7 @@ def generate_image_data(compare_data):
             try:
                 name = unicode_data.name(cp)
             except:
-                name = 'u%04X' % cp
+                name = "u%04X" % cp
             cp_map[cp] = name
 
     pair_lines = []
@@ -160,12 +166,11 @@ def generate_image_data(compare_data):
     for name, b, t, similarity in compare_data.pair_data.pair_data:
         bd = bdata[b] if b != -1 else no_data
         td = tdata[t] if t != -1 else no_data
-        pair_lines.append(
-            json.dumps((name + '.png', similarity, b) + bd + (t,) + td))
+        pair_lines.append(json.dumps((name + ".png", similarity, b) + bd + (t,) + td))
         add_cp(bdata[b][1])
         add_cp(tdata[t][1])
     cp_lines = ['%s: "%s"' % t for t in sorted(cp_map.items())]
-    return ',\n      '.join(pair_lines), ',\n      '.join(cp_lines)
+    return ",\n      ".join(pair_lines), ",\n      ".join(cp_lines)
 
 
 def generate_report(title, input_dir, compare_data, output_path):
@@ -175,7 +180,8 @@ def generate_report(title, input_dir, compare_data, output_path):
 
     if compare_data is None:
         compare_data = glyph_image_compare.read_compare_data(
-            path.join(input_dir, 'compare_data.txt'))
+            path.join(input_dir, "compare_data.txt")
+        )
 
     output_path = path.abspath(output_path)
     root = path.dirname(output_path)
@@ -186,20 +192,18 @@ def generate_report(title, input_dir, compare_data, output_path):
     tool_utils.ensure_dir_exists(root)
 
     # Copy supporting js/css files, they are always the same.
-    filedir = tool_utils.resolve_path('[tools]/nototools/glyph_image')
-    for name in ['glyph_image_compare.js', 'glyph_image_compare.css']:
+    filedir = tool_utils.resolve_path("[tools]/nototools/glyph_image")
+    for name in ["glyph_image_compare.js", "glyph_image_compare.css"]:
         shutil.copy2(path.join(filedir, name), path.join(root, name))
 
     # Clean subdir for this html, then copy image files to it
-    full_image_dir = tool_utils.ensure_dir_exists(
-        path.join(root, image_dir), True)
-    for name in [t[0] + '.png' for t in compare_data.pair_data.pair_data]:
-        shutil.copy2(
-            path.join(input_dir, name), path.join(full_image_dir, name))
+    full_image_dir = tool_utils.ensure_dir_exists(path.join(root, image_dir), True)
+    for name in [t[0] + ".png" for t in compare_data.pair_data.pair_data]:
+        shutil.copy2(path.join(input_dir, name), path.join(full_image_dir, name))
 
     bname = compare_data.base_fdata.name
     tname = compare_data.target_fdata.name
-    name = bname if bname == tname else bname + ' / ' + tname
+    name = bname if bname == tname else bname + " / " + tname
 
     image_data, cp_data = generate_image_data(compare_data)
 
@@ -208,37 +212,45 @@ def generate_report(title, input_dir, compare_data, output_path):
     header_height = max(250, compare_data.pair_data.max_frame.h + 20)
 
     # generate html
-    with open(output_path, 'w') as f:
-        f.write(Template(_TEMPLATE).substitute(
-            title=title,
-            ftable=ftable,
-            header_height=header_height,
-            image_dir=image_dir,
-            image_data=image_data,
-            cp_data=cp_data,
-            name=name))
-    print('wrote %s' % output_path)
+    with open(output_path, "w") as f:
+        f.write(
+            Template(_TEMPLATE).substitute(
+                title=title,
+                ftable=ftable,
+                header_height=header_height,
+                image_dir=image_dir,
+                image_data=image_data,
+                cp_data=cp_data,
+                name=name,
+            )
+        )
+    print("wrote %s" % output_path)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-i',
-        '--input_dir',
-        help='directory containing glyph image compare data',
-        metavar='dir',
-        required=True
+        "-i",
+        "--input_dir",
+        help="directory containing glyph image compare data",
+        metavar="dir",
+        required=True,
     )
     parser.add_argument(
-        '-o', '--output_path', help='path of output html file',
-        metavar='file', required=True)
+        "-o",
+        "--output_path",
+        help="path of output html file",
+        metavar="file",
+        required=True,
+    )
     parser.add_argument(
-        '-t', '--title', help='title of report', metavar='str', required=True)
+        "-t", "--title", help="title of report", metavar="str", required=True
+    )
 
     args = parser.parse_args()
 
     generate_report(args.title, args.input_dir, None, args.output_path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

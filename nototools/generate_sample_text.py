@@ -16,7 +16,7 @@
 
 """Generate sample text based on a range given on the command line."""
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+__author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 import sys
 from nototools.py23 import unichr
@@ -31,19 +31,19 @@ def main(argv):
     """Outputs a space-separated list of characters based on input ranges."""
     chars = []
     for arg in argv[1:]:
-        if '-' in arg:
-            hyphen_index = arg.index('-')
+        if "-" in arg:
+            hyphen_index = arg.index("-")
             code1 = char_rep_to_code(arg[:hyphen_index])
-            code2 = char_rep_to_code(arg[hyphen_index+1:])
-            chars += range(code1, code2+1)
+            code2 = char_rep_to_code(arg[hyphen_index + 1 :])
+            chars += range(code1, code2 + 1)
         else:
             chars.append(char_rep_to_code(arg))
-    chars = u' '.join([unichr(code) for code in chars])
+    chars = u" ".join([unichr(code) for code in chars])
     if sys.version_info >= (2, 7):
         print(chars)
     else:
-        print(chars.encode('UTF-8'))
+        print(chars.encode("UTF-8"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

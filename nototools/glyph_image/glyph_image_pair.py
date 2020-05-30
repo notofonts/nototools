@@ -51,8 +51,10 @@ from nototools import font_data
 from nototools.glyph_image import glyph_image
 
 PairInfo = collections.namedtuple(
-    'PairInfo', 'base_path base_hash target_path target_hash cp_pairs '
-                'pri_pairs alt_base_pairs, alt_target_pairs')
+    "PairInfo",
+    "base_path base_hash target_path target_hash cp_pairs "
+    "pri_pairs alt_base_pairs, alt_target_pairs",
+)
 
 
 class HungarianMatcher(object):
@@ -63,8 +65,9 @@ class HungarianMatcher(object):
     def __init__(self, data, rows, cols, dbg=False):
         if len(data) != rows * cols:
             raise ValueError(
-                'data length %d != rows %d x cols %d (%d)' % (
-                    len(data), rows, cols, rows * cols))
+                "data length %d != rows %d x cols %d (%d)"
+                % (len(data), rows, cols, rows * cols)
+            )
 
         self.data = data
         self.rows = rows
@@ -89,19 +92,19 @@ class HungarianMatcher(object):
         return self._get_starred_zero_pairs()
 
     def _print_dbg(self):
-        marks = [' ', '*', "'"]
+        marks = [" ", "*", "'"]
         print(
-            '  ' + ' '.join(
-                '%4s' % ('x' if self._covered_cols[c] else '')
-                for c in range(self.cols)
+            "  "
+            + " ".join(
+                "%4s" % ("x" if self._covered_cols[c] else "") for c in range(self.cols)
             )
         )
         n = 0
         for r in range(self.rows):
-            print('x' if self._covered_rows[r] else ' ', )
+            print("x" if self._covered_rows[r] else " ",)
             print(
-                ' '.join(
-                    '%3d%1s' % (self.data[m], marks[self._marked[m]])
+                " ".join(
+                    "%3d%1s" % (self.data[m], marks[self._marked[m]])
                     for m in range(n, n + self.cols)
                 )
             )
@@ -130,11 +133,11 @@ class HungarianMatcher(object):
         # Step 1. Find the smallest element in each row, and subtract it from
         # every element in the row.
         if self.dbg:
-            print('step 1')
+            print("step 1")
         n = 0
         for r in range(rows):
             lim = n + cols
-            min_val = min(data[n: lim])
+            min_val = min(data[n:lim])
             for m in range(n, lim):
                 data[m] -= min_val
             n = lim
@@ -142,7 +145,7 @@ class HungarianMatcher(object):
         # Step 2. Scan each row for a zero in a column with no starred zero,
         # and star it.
         if self.dbg:
-            print('step 2')
+            print("step 2")
         starred_cols = [False] * cols
         n = 0
         for r in range(rows):
@@ -167,7 +170,7 @@ class HungarianMatcher(object):
         covered_cols = self._covered_cols
 
         if self.dbg:
-            print('step 3')
+            print("step 3")
         n = 0
         for r in range(rows):
             for c in range(cols):
@@ -176,10 +179,7 @@ class HungarianMatcher(object):
                 n += 1
 
         count = sum(covered_cols)
-        return (
-            None if count >= min(rows, cols)
-            else self._4_prime_uncovered_zeros
-        )
+        return None if count >= min(rows, cols) else self._4_prime_uncovered_zeros
 
     def _4_prime_uncovered_zeros(self):
         # Step 4. Find an uncovered zero and prime it.
@@ -217,7 +217,7 @@ class HungarianMatcher(object):
             return -1
 
         if self.dbg:
-            print('step 4')
+            print("step 4")
         while True:
             r, c = find_and_prime_uncovered_zero()
             if r < 0:
@@ -254,10 +254,10 @@ class HungarianMatcher(object):
                 if marked[n] == 2:
                     return c
                 n += 1
-            raise ValueError('should not happen')
+            raise ValueError("should not happen")
 
         if self.dbg:
-            print('step 5')
+            print("step 5")
         while True:
             r, c = path[-1]
             starred_row = find_star_in_col(c)
@@ -295,7 +295,7 @@ class HungarianMatcher(object):
         covered_rows = self._covered_rows
 
         if self.dbg:
-            print('step 6')
+            print("step 6")
         n = 0
         v = None
         for r in range(rows):
@@ -323,14 +323,11 @@ class HungarianMatcher(object):
 
 # Test call of the matcher.
 def _test_matcher():
-    matrix = [
-        1, 2, 3,
-        2, 4, 6,
-        3, 6, 9]
+    matrix = [1, 2, 3, 2, 4, 6, 3, 6, 9]
     m = HungarianMatcher(matrix, 3, 3, dbg=True)
     pairs = m.run()
     for p in pairs:
-        print('row %d, col %d' % p)
+        print("row %d, col %d" % p)
 
 
 def _get_cp_to_glyphix(font):
@@ -342,8 +339,8 @@ def _get_cp_to_glyphix(font):
 
 def _fingerprint(data, frame, size):
     # python 2
-    data_str = ''.join(chr(p) for p in data)
-    im = Image.fromstring('L', (frame.w, frame.h), data_str, 'raw', 'L', 0, 1)
+    data_str = "".join(chr(p) for p in data)
+    im = Image.fromstring("L", (frame.w, frame.h), data_str, "raw", "L", 0, 1)
     im = im.resize(size, resample=Image.BILINEAR)
     return list(im.getdata())
 
@@ -362,7 +359,8 @@ def _diff_fingerprints(base_fp, target_fp):
 
 
 def _get_image_diff_pairs(
-        base_collection, base_unmatched, target_collection, target_unmatched):
+    base_collection, base_unmatched, target_collection, target_unmatched
+):
     """Returns three lists of pair tuples.  Each pair tuple is base ix,
     target ix, difference value.  If the number of base and target differ,
     some are paired with '-1' and for these the difference will also be
@@ -382,33 +380,35 @@ def _get_image_diff_pairs(
     log = False
     if log:
         print(
-            'get image diff pairs, %d base, %d target' % (
-                len(base_unmatched), len(target_unmatched)
-            )
+            "get image diff pairs, %d base, %d target"
+            % (len(base_unmatched), len(target_unmatched))
         )
 
         base_time = time.time()
 
         def elapsed():
-            return '%6d' % int(round((time.time() - base_time) * 1000.0))
+            return "%6d" % int(round((time.time() - base_time) * 1000.0))
 
     # Use common frame for all glyphs.  Among other things this means we
     # don't need to scale the cost, since the scale for all pairs is the same.
     fr = glyph_image.union_frames(
-        [base_collection.common_frame(), target_collection.common_frame()])
+        [base_collection.common_frame(), target_collection.common_frame()]
+    )
 
     # fingerprint size, might want to control
     fp_size = (20, 20)
 
     if log:
-        print(elapsed(), 'get data')
+        print(elapsed(), "get data")
     base_ix_to_fingerprint = _get_ix_to_fingerprint(
-        base_collection, base_unmatched, fr, fp_size)
+        base_collection, base_unmatched, fr, fp_size
+    )
     target_ix_to_fingerprint = _get_ix_to_fingerprint(
-        target_collection, target_unmatched, fr, fp_size)
+        target_collection, target_unmatched, fr, fp_size
+    )
 
     if log:
-        print(elapsed(), 'compute diffs')
+        print(elapsed(), "compute diffs")
 
     pri_pairs = []
 
@@ -425,19 +425,19 @@ def _get_image_diff_pairs(
     exact_matches = []
     for base_ix, base_fp in sorted(base_ix_to_fingerprint.items()):
         if log:
-            print(elapsed(), 'diff base %d' % base_ix)
+            print(elapsed(), "diff base %d" % base_ix)
         exact_match = None
         best_diff = None
         if not target_ix_to_fingerprint:
             if log:
-                print('  no remaining targets')
+                print("  no remaining targets")
             break
         for target_ix, target_fp in sorted(target_ix_to_fingerprint.items()):
             diff = _diff_fingerprints(base_fp, target_fp)
             if diff == 0:
                 exact_match = (base_ix, target_ix)
                 if log:
-                    print('  exact match', target_ix)
+                    print("  exact match", target_ix)
                 break
 
             if best_diff is None or diff < best_diff[0]:
@@ -450,7 +450,7 @@ def _get_image_diff_pairs(
         if best_diff:  # might be no targets left
             best_base_diffs[base_ix] = best_diff
             if log:
-                print('  best diff base %d target %d' % best_diff)
+                print("  best diff base %d target %d" % best_diff)
 
     # ok, now remove the exact match base indexes
     for base_ix, target_ix in sorted(exact_matches):
@@ -481,11 +481,7 @@ def _get_image_diff_pairs(
         if other is not None and other[1] == base_ix:
             reciprocal_pairs.append((base_ix, t, diff))
             if log:
-                print(
-                    'reciprocal pair: %d target %d diff %d' % (
-                        base_ix, t, diff
-                    )
-                )
+                print("reciprocal pair: %d target %d diff %d" % (base_ix, t, diff))
 
     # We've collected the 'cost' for all pairs.
     # If there are no rows or targets, nothing left to match.  Else use the
@@ -501,7 +497,7 @@ def _get_image_diff_pairs(
         target_to_col = {t: i for i, t in enumerate(col_to_target)}
 
         if log:
-            print(elapsed(), 'match remaining %d x %d' % (nrows, ncols))
+            print(elapsed(), "match remaining %d x %d" % (nrows, ncols))
 
         max_diff = 255 * fr.w * fr.h
         mat = [max_diff] * (nrows * ncols)
@@ -515,11 +511,9 @@ def _get_image_diff_pairs(
         rcpairs = matcher.run()
 
         if log:
-            print(elapsed(), 'report paired')
+            print(elapsed(), "report paired")
 
-        btpairs = [
-            (row_to_base[r], col_to_target[c]) for r, c in sorted(rcpairs)
-        ]
+        btpairs = [(row_to_base[r], col_to_target[c]) for r, c in sorted(rcpairs)]
         for b, t in btpairs:
             del base_ix_to_fingerprint[b]
             del target_ix_to_fingerprint[t]
@@ -532,17 +526,16 @@ def _get_image_diff_pairs(
         if p not in pri_pairs:
             missing_rp_count += 1
             if log:
-                print('!! missing reciprocal pair %s' % str(p))
+                print("!! missing reciprocal pair %s" % str(p))
     if log and missing_rp_count:
         num = len(reciprocal_pairs)
         print(
-            'missing %d of %d reciprocal pair%s' % (
-                missing_rp_count, num, '' if num == 1 else 's'
-            )
+            "missing %d of %d reciprocal pair%s"
+            % (missing_rp_count, num, "" if num == 1 else "s")
         )
 
     if log:
-        print(elapsed(), 'report unmatched')
+        print(elapsed(), "report unmatched")
 
     # All unmatched rows or cols report difference as -1
     for base_ix in sorted(base_ix_to_fingerprint):
@@ -551,7 +544,7 @@ def _get_image_diff_pairs(
         pri_pairs.append((-1, target_ix, -1))
 
     if log:
-        print(elapsed(), 'matched primary pairs')
+        print(elapsed(), "matched primary pairs")
 
     # For all primary pairs, look up the best match for the base and target.
     # If the diff < the current match, add that to the alternate.  This way we
@@ -566,14 +559,12 @@ def _get_image_diff_pairs(
             alt_base_pairs.append((b, best_base_alt[1], best_base_alt[0]))
         best_target_alt = best_target_diffs.get(t)
         if best_target_alt and (d < 0 or best_target_alt[0] < d):
-            alt_target_pairs.append(
-                (best_target_alt[1], t, best_target_alt[0])
-            )
+            alt_target_pairs.append((best_target_alt[1], t, best_target_alt[0]))
     alt_base_pairs = sorted(alt_base_pairs, key=lambda t: t[0])
     alt_target_pairs = sorted(alt_target_pairs, key=lambda t: t[1])
 
     if log:
-        print(elapsed(), 'done')
+        print(elapsed(), "done")
 
     return pri_pairs, alt_base_pairs, alt_target_pairs
 
@@ -622,24 +613,29 @@ def get_collection_pairs(base_collection, target_collection):
         if target_ix in target_unmatched:
             target_unmatched.remove(target_ix)
     pri_pairs, alt_base_pairs, alt_target_pairs = _get_image_diff_pairs(
-        base_collection, base_unmatched, target_collection, target_unmatched)
+        base_collection, base_unmatched, target_collection, target_unmatched
+    )
 
     base_hash = filehash(base_font_path)
     target_hash = filehash(target_font_path)
 
     return PairInfo(
-        base_font_path, base_hash, target_font_path, target_hash, cp_pairs,
-        pri_pairs, alt_base_pairs, alt_target_pairs)
+        base_font_path,
+        base_hash,
+        target_font_path,
+        target_hash,
+        cp_pairs,
+        pri_pairs,
+        alt_base_pairs,
+        alt_target_pairs,
+    )
 
 
 def generate_pairs(base_glyphs, target_glyphs):
     if not path.isfile(base_glyphs):
-        raise Exception(
-            'base glyph image file %s does not exist' % base_glyphs
-        )
+        raise Exception("base glyph image file %s does not exist" % base_glyphs)
     if not path.isfile(target_glyphs):
-        raise Exception(
-            'target glyph image file %s does not exist' % target_glyphs)
+        raise Exception("target glyph image file %s does not exist" % target_glyphs)
 
     base_collection = glyph_image.read_file(base_glyphs)
     target_collection = glyph_image.read_file(target_glyphs)
@@ -648,49 +644,49 @@ def generate_pairs(base_glyphs, target_glyphs):
 
 def filehash(filepath):
     import hashlib
-    data = open(filepath, 'rb').read()
-    return 'sha256:' + hashlib.sha256(data).hexdigest()
+
+    data = open(filepath, "rb").read()
+    return "sha256:" + hashlib.sha256(data).hexdigest()
 
 
 def date_str(timestamp=None):
     import datetime
+
     if timestamp is None:
         import time
+
         timestamp = time.time()
-    return datetime.datetime.fromtimestamp(timestamp).strftime(
-        '%Y-%m-%d %H:%M:%S')
+    return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def write_pair_info(pair_info, output_file):
     """Write pair_info to a file."""
 
     def _write_data(fd):
-        fd.write('# %s\n' % date_str())
-        fd.write('> base: %s\n' % pair_info.base_path)
-        fd.write('> base_hash: %s\n' % pair_info.base_hash)
-        fd.write('> target: %s\n' % pair_info.target_path)
-        fd.write('> target_hash: %s\n' % pair_info.target_hash)
+        fd.write("# %s\n" % date_str())
+        fd.write("> base: %s\n" % pair_info.base_path)
+        fd.write("> base_hash: %s\n" % pair_info.base_hash)
+        fd.write("> target: %s\n" % pair_info.target_path)
+        fd.write("> target_hash: %s\n" % pair_info.target_hash)
         if pair_info.cp_pairs is not None:
-            fd.write('> cp_pairs: %d\n' % len(pair_info.cp_pairs))
+            fd.write("> cp_pairs: %d\n" % len(pair_info.cp_pairs))
             for p in pair_info.cp_pairs:
-                fd.write('%d;%d;%04x\n' % p)
+                fd.write("%d;%d;%04x\n" % p)
         if pair_info.pri_pairs is not None:
-            fd.write('> pri_pairs: %d\n' % len(pair_info.pri_pairs))
+            fd.write("> pri_pairs: %d\n" % len(pair_info.pri_pairs))
             for p in pair_info.pri_pairs:
-                fd.write('%d;%d;%d\n' % p)
+                fd.write("%d;%d;%d\n" % p)
         if pair_info.alt_base_pairs is not None:
-            fd.write('> alt_base_pairs: %d\n' % len(pair_info.alt_base_pairs))
+            fd.write("> alt_base_pairs: %d\n" % len(pair_info.alt_base_pairs))
             for p in pair_info.alt_base_pairs:
-                fd.write('%d;%d;%d\n' % p)
+                fd.write("%d;%d;%d\n" % p)
         if pair_info.alt_target_pairs is not None:
-            fd.write(
-                '> alt_target_pairs: %d\n' % len(pair_info.alt_target_pairs)
-            )
+            fd.write("> alt_target_pairs: %d\n" % len(pair_info.alt_target_pairs))
             for p in pair_info.alt_target_pairs:
-                fd.write('%d;%d;%d\n' % p)
+                fd.write("%d;%d;%d\n" % p)
 
     if output_file:
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             _write_data(f)
     else:
         _write_data(sys.stdout)
@@ -699,18 +695,21 @@ def write_pair_info(pair_info, output_file):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-b', '--base', help='base glyph image data file', metavar='file',
-        required=True)
+        "-b", "--base", help="base glyph image data file", metavar="file", required=True
+    )
     parser.add_argument(
-        '-t', '--target', help='target glyph image data file', metavar='file',
-        required=True)
-    parser.add_argument(
-        '-o', '--output', help='name of output file', metavar='file')
+        "-t",
+        "--target",
+        help="target glyph image data file",
+        metavar="file",
+        required=True,
+    )
+    parser.add_argument("-o", "--output", help="name of output file", metavar="file")
     args = parser.parse_args()
 
     write_pair_info(generate_pairs(args.base, args.target), args.output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
     # _test_matcher()

@@ -16,7 +16,7 @@
 
 """Rendering-related test routines."""
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+__author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 import json
 import os
@@ -25,6 +25,7 @@ import subprocess
 from nototools import font_caching
 
 from fontTools.pens.boundsPen import BoundsPen
+
 
 def min_with_none(first, second):
     """Returns the minimum of the two inputs, ignoring Nones."""
@@ -55,7 +56,7 @@ def get_glyph_cleaned_extents(ttglyph, glyf_set):
     pen = BoundsPen(glyf_set, ignoreSinglePoints=True)
     ttglyph.draw(pen)
     if not pen.bounds:
-      return None, None
+        return None, None
     return pen.bounds[1], pen.bounds[3]
 
 
@@ -80,21 +81,22 @@ def get_glyph_cleaned_extents_OLD(glyph, glyf_table):
             min_height = None
             for component in glyph.components:
                 component_ymin, component_ymax = get_glyph_cleaned_extents(
-                    glyf_table.glyphs[component.glyphName],
-                    glyf_table)
+                    glyf_table.glyphs[component.glyphName], glyf_table
+                )
 
-                if hasattr(component, 'transform'):
+                if hasattr(component, "transform"):
                     transform = component.transform
-                    assert transform[1][0] == transform[0][1] == 0, (
-                        "Can't handle complex transforms")
+                    assert (
+                        transform[1][0] == transform[0][1] == 0
+                    ), "Can't handle complex transforms"
                 else:
                     transform = [[1, 0], [0, 1]]
                 max_height = max_with_none(
-                    max_height,
-                    transform_y(transform, component_ymax) + component.y)
+                    max_height, transform_y(transform, component_ymax) + component.y
+                )
                 min_height = min_with_none(
-                    min_height,
-                    transform_y(transform, component_ymin) + component.y)
+                    min_height, transform_y(transform, component_ymin) + component.y
+                )
         else:
             # Set points_to_ignore to the list of all single-point contours
             points_to_ignore = set()
@@ -131,19 +133,20 @@ def get_glyph_vertical_extents(glyph_id, font_file_name):
     return get_glyph_cleaned_extents(ttglyph, glyf_set)
 
 
-HB_SHAPE_DIR = os.path.join(os.getenv('HOME'), 'harfbuzz', 'util')
+HB_SHAPE_DIR = os.path.join(os.getenv("HOME"), "harfbuzz", "util")
 
 
 def run_harfbuzz_on_text(text, font_file_name, language, extra_parameters=None):
     """Runs HarfBuzz on input text and return JSON shaping information."""
     hb_parameters = [
         "hb-shape",
-        '--output-format=json',
-        '--no-glyph-names',  # Some fonts have empty glyph names
-        '--font-file=%s' % font_file_name]
+        "--output-format=json",
+        "--no-glyph-names",  # Some fonts have empty glyph names
+        "--font-file=%s" % font_file_name,
+    ]
 
     if language:
-        hb_parameters.append('--language=%s' % language)
+        hb_parameters.append("--language=%s" % language)
 
     if extra_parameters is not None:
         hb_parameters += extra_parameters
@@ -159,12 +162,10 @@ def run_harfbuzz_on_text(text, font_file_name, language, extra_parameters=None):
     env_copy = os.environ.copy()
     env_copy["PATH"] += os.pathsep + HB_SHAPE_DIR
     hb_process = subprocess.Popen(
-        hb_parameters,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        env=env_copy)
+        hb_parameters, stdin=subprocess.PIPE, stdout=subprocess.PIPE, env=env_copy
+    )
 
-    return hb_process.communicate(input=text.encode('UTF-8'))[0]
+    return hb_process.communicate(input=text.encode("UTF-8"))[0]
 
 
 def get_line_extents_from_json(json_data, font_file_name):
@@ -172,39 +173,35 @@ def get_line_extents_from_json(json_data, font_file_name):
     max_height = None
     min_height = None
     for glyph_position in json.loads(json_data):
-        glyph_id = glyph_position['g']
-        glyph_ymin, glyph_ymax = get_glyph_vertical_extents(
-            glyph_id, font_file_name)
+        glyph_id = glyph_position["g"]
+        glyph_ymin, glyph_ymax = get_glyph_vertical_extents(glyph_id, font_file_name)
 
         if glyph_ymax is not None:
-            glyph_vertical_offset = glyph_position['dy']
-            max_height = max_with_none(
-                max_height, glyph_ymax + glyph_vertical_offset)
-            min_height = min_with_none(
-                min_height, glyph_ymin + glyph_vertical_offset)
+            glyph_vertical_offset = glyph_position["dy"]
+            max_height = max_with_none(max_height, glyph_ymax + glyph_vertical_offset)
+            min_height = min_with_none(min_height, glyph_ymin + glyph_vertical_offset)
 
     return min_height, max_height
 
 
 def test_text_vertical_extents(
-    text, font_file_name, min_allowed, max_allowed, language=None):
+    text, font_file_name, min_allowed, max_allowed, language=None
+):
     """Runs given text through HarfBuzz to find cases that go out of bounds."""
 
     hb_output = run_harfbuzz_on_text(text, font_file_name, language)
 
-    split_text = text.split('\n')
+    split_text = text.split("\n")
     exceeding_lines = []
-    for line_no, output_line in enumerate(hb_output.split('\n')):
+    for line_no, output_line in enumerate(hb_output.split("\n")):
         if not output_line:
             continue
 
-        min_height, max_height = get_line_extents_from_json(
-            output_line, font_file_name)
+        min_height, max_height = get_line_extents_from_json(output_line, font_file_name)
 
         if min_height is None:
             continue
         if min_height < min_allowed or max_height > max_allowed:
-            exceeding_lines.append(((min_height, max_height),
-                                    split_text[line_no]))
+            exceeding_lines.append(((min_height, max_height), split_text[line_no]))
 
     return exceeding_lines

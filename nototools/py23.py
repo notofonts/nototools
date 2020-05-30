@@ -1,4 +1,3 @@
-
 try:
     unicode = unicode
 except NameError:
@@ -10,6 +9,6 @@ except NameError:
     unichr = chr
 
 try:
-  basestring = basestring
+    basestring = basestring
 except NameError:
-  basestring = str
+    basestring = str

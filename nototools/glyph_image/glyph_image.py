@@ -38,10 +38,11 @@ import sys
 
 from PIL import Image
 
-Frame = collections.namedtuple('Frame', 'l t w h')
-Advance = collections.namedtuple('Advance', 'int frac')
+Frame = collections.namedtuple("Frame", "l t w h")
+Advance = collections.namedtuple("Advance", "int frac")
 FileHeader = collections.namedtuple(
-    'FileHeader', 'file name upem ascent descent size font_glyphs num_glyphs')
+    "FileHeader", "file name upem ascent descent size font_glyphs num_glyphs"
+)
 
 
 class GlyphImage(object):
@@ -58,8 +59,8 @@ class GlyphImage(object):
         return self.index < rhs.index
 
     def __repr__(self):
-        return 'index: %3d, adv: %3d+%3d, ltwh: %3d %3d %3d %3d' % (
-                (self.index,) + self.adv + self.frame
+        return "index: %3d, adv: %3d+%3d, ltwh: %3d %3d %3d %3d" % (
+            (self.index,) + self.adv + self.frame
         )
 
     def get(self, x, y, val):
@@ -133,13 +134,13 @@ class GlyphImage(object):
         lines = []
         ix = 0
         for y in range(self.frame.h):
-            line = [':']
+            line = [":"]
             for x in range(self.frame.w):
                 val = self.data[ix]
                 ix += 1
-                line.append('  ' if val == 0 else '%02x' % val)
-            lines.append(''.join(line).rstrip())
-        return '\n'.join(lines)
+                line.append("  " if val == 0 else "%02x" % val)
+            lines.append("".join(line).rstrip())
+        return "\n".join(lines)
 
 
 class GlyphImageCollection(object):
@@ -164,9 +165,7 @@ class GlyphImageCollection(object):
         if fr is None:
             frames = [gi.frame for gi in self.image_dict.values()]
             if include_metrics:
-                frames.extend(
-                    gi.metrics_frame() for gi in self.image_dict.values()
-                )
+                frames.extend(gi.metrics_frame() for gi in self.image_dict.values())
             fr = union_frames(frames)
             if include_metrics:
                 self._cmframe = fr
@@ -185,7 +184,7 @@ class LineStripper(object):
     def next(self):
         while True:
             line = next(self.it)
-            ix = line.find('#')
+            ix = line.find("#")
             if ix >= 0:
                 line = line[:ix].rstrip()
             if line:
@@ -193,38 +192,36 @@ class LineStripper(object):
 
 
 _glyph_header_re = re.compile(
-    r'^>\s*glyph:\s*(\d+)\s*;'
-    r'\s*(\d+)(?:\s*,\s*(\d+))?\s*;'
-    r'\s*(-?\d+)\s+(-?\d+)\s+(\d+)\s+(\d+)\s*$')
+    r"^>\s*glyph:\s*(\d+)\s*;"
+    r"\s*(\d+)(?:\s*,\s*(\d+))?\s*;"
+    r"\s*(-?\d+)\s+(-?\d+)\s+(\d+)\s+(\d+)\s*$"
+)
 
 
 def write_file_header(file_header, fd):
     for k in FileHeader._fields:
-        print('> %s: %s' % (k, getattr(file_header, k)), file=fd)
+        print("> %s: %s" % (k, getattr(file_header, k)), file=fd)
 
 
 def write_glyph_image(im, glyph_header_only, fd):
     # > glyph: 0;64,1;6 -92 52 92
     adv_string = str(im.adv.int)
     if im.adv.frac:
-        adv_string += ',%d' % im.adv.frac
-    print(
-        '> glyph: %d;%s;%d %d %d %d' % ((im.index, adv_string) + im.frame),
-        file=fd
-    )
+        adv_string += ",%d" % im.adv.frac
+    print("> glyph: %d;%s;%d %d %d %d" % ((im.index, adv_string) + im.frame), file=fd)
     if not glyph_header_only:
         print(im.image_str(), file=fd)
 
 
 def _next_file_header(it):
     def get_val(k):
-        regex = r'>\s*%s:\s*(.*)\s*$' % k
+        regex = r">\s*%s:\s*(.*)\s*$" % k
         line = next(it)
         m = re.match(regex, line)
         if not m:
             raise Exception('regex %s failed to match "%s"' % (k, line))
         val = m.group(1)
-        if k not in ['name', 'file']:
+        if k not in ["name", "file"]:
             val = int(val)
         return val
 
@@ -246,17 +243,15 @@ def _next_glyph_image(it, file_header):
     row_base = 0
     for i in range(image.frame.h):
         line = next(it).rstrip()
-        assert (line.startswith(':'))
+        assert line.startswith(":")
         ix = 0
         row_data = line[1:]
         while row_data:
             if ix >= image.frame.w:
                 raise Exception(
-                    'line has more than %d values: "%s"' % (
-                        image.frame.w, line
-                    )
+                    'line has more than %d values: "%s"' % (image.frame.w, line)
                 )
-            if row_data[:2] != '  ':
+            if row_data[:2] != "  ":
                 image.data[row_base + ix] = int(row_data[:2], 16)
             row_data = row_data[2:]
             ix += 1
@@ -265,7 +260,7 @@ def _next_glyph_image(it, file_header):
 
 
 def read_file(filename):
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         it = LineStripper(f)
         file_header = _next_file_header(it)
         image_dict = {}
@@ -317,7 +312,7 @@ def pad_frame(frame, pad):
         elif len(pad) == 4:
             pl, pt, pr, pb = pad
         else:
-            raise ValueError('bad pad length: %d' % len(pad))
+            raise ValueError("bad pad length: %d" % len(pad))
 
         frame = Frame(fr.l - pl, fr.t - pt, fr.w + pl + pr, fr.h + pt + pb)
     return frame
@@ -332,10 +327,8 @@ def compute_frame(gi1, gi2, include_metrics=False, pad=None):
     if gi1 is None or gi2 is None:
         gi = gi1 or gi2
         if gi is None:
-            raise ValueError('both arguments are None')
-        return pad_frame(
-            gi.metrics_frame() if include_metrics else gi.frame, pad
-        )
+            raise ValueError("both arguments are None")
+        return pad_frame(gi.metrics_frame() if include_metrics else gi.frame, pad)
 
     frames = [gi1.frame, gi2.frame]
     if include_metrics:
@@ -368,7 +361,7 @@ def create_compare_image(gi1, gi2, frame, decorate=False):
 
     matched = 0
     marked = 0
-    image = Image.new('RGB', (frame.w, frame.h))
+    image = Image.new("RGB", (frame.w, frame.h))
     data = list(image.getdata())
     for i in range(len(data)):
         rd = red_data[i]
@@ -396,6 +389,6 @@ def test(glyph_image_file):
 
 # a file generated by the glyph_image executable,
 # e.g. 'glyph_image/gujarati_test.txt'
-if __name__ == '__main__':
-    print('input file: %s' % sys.argv[1])
+if __name__ == "__main__":
+    print("input file: %s" % sys.argv[1])
     test(sys.argv[1])

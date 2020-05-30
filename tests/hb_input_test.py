@@ -28,7 +28,7 @@ from fontTools.ttLib.tables._c_m_a_p import cmap_format_4
 from nototools.hb_input import HbInputGenerator
 
 
-def make_font(feature_source, fea_type='fea'):
+def make_font(feature_source, fea_type="fea"):
     """Return font with GSUB compiled from given source.
 
     Adds a bunch of filler tables so the font can be saved if needed, for
@@ -66,7 +66,7 @@ def make_font(feature_source, fea_type='fea'):
     font.setGlyphOrder(glyphs)
     glyph_order = font.getGlyphOrder()
 
-    font['cmap'] = cmap = newTable('cmap')
+    font["cmap"] = cmap = newTable("cmap")
     table = cmap_format_4(4)
     table.platformID = 3
     table.platEncID = 1
@@ -75,78 +75,114 @@ def make_font(feature_source, fea_type='fea'):
     cmap.tableVersion = 0
     cmap.tables = [table]
 
-    font['glyf'] = glyf = newTable('glyf')
+    font["glyf"] = glyf = newTable("glyf")
     glyf.glyphs = {}
     glyf.glyphOrder = glyph_order
     for name in glyph_order:
         pen = TTGlyphPen(None)
         glyf[name] = pen.glyph()
 
-    font['head'] = head = newTable('head')
+    font["head"] = head = newTable("head")
     head.tableVersion = 1.0
     head.fontRevision = 1.0
-    head.flags = head.checkSumAdjustment = head.magicNumber =\
-        head.created = head.modified = head.macStyle = head.lowestRecPPEM =\
-        head.fontDirectionHint = head.indexToLocFormat =\
-        head.glyphDataFormat =\
-        head.xMin = head.xMax = head.yMin = head.yMax = 0
+    head.flags = (
+        head.checkSumAdjustment
+    ) = (
+        head.magicNumber
+    ) = (
+        head.created
+    ) = (
+        head.modified
+    ) = (
+        head.macStyle
+    ) = (
+        head.lowestRecPPEM
+    ) = (
+        head.fontDirectionHint
+    ) = (
+        head.indexToLocFormat
+    ) = head.glyphDataFormat = head.xMin = head.xMax = head.yMin = head.yMax = 0
     head.unitsPerEm = 1000
 
-    font['hhea'] = hhea = newTable('hhea')
+    font["hhea"] = hhea = newTable("hhea")
     hhea.tableVersion = 0x00010000
-    hhea.ascent = hhea.descent = hhea.lineGap =\
-        hhea.caretSlopeRise = hhea.caretSlopeRun = hhea.caretOffset =\
-        hhea.reserved0 = hhea.reserved1 = hhea.reserved2 = hhea.reserved3 =\
-        hhea.metricDataFormat = hhea.advanceWidthMax = hhea.xMaxExtent =\
-        hhea.minLeftSideBearing = hhea.minRightSideBearing =\
-        hhea.numberOfHMetrics = 0
+    hhea.ascent = (
+        hhea.descent
+    ) = (
+        hhea.lineGap
+    ) = (
+        hhea.caretSlopeRise
+    ) = (
+        hhea.caretSlopeRun
+    ) = (
+        hhea.caretOffset
+    ) = (
+        hhea.reserved0
+    ) = (
+        hhea.reserved1
+    ) = (
+        hhea.reserved2
+    ) = (
+        hhea.reserved3
+    ) = (
+        hhea.metricDataFormat
+    ) = (
+        hhea.advanceWidthMax
+    ) = (
+        hhea.xMaxExtent
+    ) = hhea.minLeftSideBearing = hhea.minRightSideBearing = hhea.numberOfHMetrics = 0
 
-    font['hmtx'] = hmtx = newTable('hmtx')
+    font["hmtx"] = hmtx = newTable("hmtx")
     hmtx.metrics = {}
     for name in glyph_order:
         hmtx[name] = (600, 50)
 
-    font['loca'] = newTable('loca')
+    font["loca"] = newTable("loca")
 
-    font['maxp'] = maxp = newTable('maxp')
+    font["maxp"] = maxp = newTable("maxp")
     maxp.tableVersion = 0x00005000
     maxp.numGlyphs = 0
 
-    font['post'] = post = newTable('post')
+    font["post"] = post = newTable("post")
     post.formatType = 2.0
     post.extraNames = []
     post.mapping = {}
     post.glyphOrder = glyph_order
-    post.italicAngle = post.underlinePosition = post.underlineThickness =\
-        post.isFixedPitch = post.minMemType42 = post.maxMemType42 =\
-        post.minMemType1 = post.maxMemType1 = 0
+    post.italicAngle = (
+        post.underlinePosition
+    ) = (
+        post.underlineThickness
+    ) = (
+        post.isFixedPitch
+    ) = post.minMemType42 = post.maxMemType42 = post.minMemType1 = post.maxMemType1 = 0
 
-    if fea_type == 'fea':
+    if fea_type == "fea":
         addOpenTypeFeaturesFromString(font, feature_source)
-    elif fea_type == 'mti':
-        font['GSUB'] = mtiLib.build(UnicodeIO(feature_source), font)
+    elif fea_type == "mti":
+        font["GSUB"] = mtiLib.build(UnicodeIO(feature_source), font)
 
     return font
 
 
 class HbInputGeneratorTest(unittest.TestCase):
-    def _make_generator(self, feature_source, fea_type='fea'):
+    def _make_generator(self, feature_source, fea_type="fea"):
         """Return input generator for GSUB compiled from given source."""
 
         font = make_font(feature_source, fea_type)
         return HbInputGenerator(font)
 
     def test_no_gsub(self):
-        g = self._make_generator('')
-        self.assertEqual(g.input_from_name('a'), ((), 'a'))
-        self.assertEqual(g.input_from_name('acute', pad=True), ((), ' \u00b4'))
+        g = self._make_generator("")
+        self.assertEqual(g.input_from_name("a"), ((), "a"))
+        self.assertEqual(g.input_from_name("acute", pad=True), ((), " \u00b4"))
 
     def test_input_not_found(self):
-        g = self._make_generator('')
-        self.assertEqual(g.input_from_name('A.sc'), None)
+        g = self._make_generator("")
+        self.assertEqual(g.input_from_name("A.sc"), None)
 
     def test_cyclic_rules_not_followed(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             feature onum {
                 sub zero by zero.oldstyle;
             } onum;
@@ -154,18 +190,22 @@ class HbInputGeneratorTest(unittest.TestCase):
             feature lnum {
                 sub zero.oldstyle by zero;
             } lnum;
-        ''')
-        self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
+        """
+        )
+        self.assertEqual(g.input_from_name("zero.oldstyle"), (("onum",), "0"))
 
     def test_onum_after_lnum(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             feature onum {
                 sub zero by zero.oldstyle;
             } onum;
-        ''')
-        self.assertEqual(g.input_from_name('zero'), ((), '0'))
-        self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
-        g = self._make_generator('''
+        """
+        )
+        self.assertEqual(g.input_from_name("zero"), ((), "0"))
+        self.assertEqual(g.input_from_name("zero.oldstyle"), (("onum",), "0"))
+        g = self._make_generator(
+            """
             feature onum {
                 sub zero by zero.oldstyle;
             } onum;
@@ -173,21 +213,25 @@ class HbInputGeneratorTest(unittest.TestCase):
             feature lnum {
                 sub zero.oldstyle by zero;
             } lnum;
-        ''')
-        self.assertEqual(g.input_from_name('zero'), ((), '0'))
-        self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
+        """
+        )
+        self.assertEqual(g.input_from_name("zero"), ((), "0"))
+        self.assertEqual(g.input_from_name("zero.oldstyle"), (("onum",), "0"))
 
     def test_lnum_after_onum(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             feature onum {
                 sub zero by zero.oldstyle;
             } onum;
-        ''')
-        self.assertEqual(g.input_from_name('zero.oldstyle'), (('onum',), '0'))
-        self.assertEqual(g.input_from_name('zero'), ((), '0'))
+        """
+        )
+        self.assertEqual(g.input_from_name("zero.oldstyle"), (("onum",), "0"))
+        self.assertEqual(g.input_from_name("zero"), ((), "0"))
 
     def test_contextual_substitution_type1(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             FontDame GSUB table
 
             feature table begin
@@ -201,11 +245,14 @@ class HbInputGeneratorTest(unittest.TestCase):
             lookup\ttest-lookup-sub\tsingle
             a\tA.sc
             lookup end
-        ''', fea_type='mti')
-        self.assertEqual(g.input_from_name('A.sc'), (('test',), 'ba'))
+        """,
+            fea_type="mti",
+        )
+        self.assertEqual(g.input_from_name("A.sc"), (("test",), "ba"))
 
     def test_contextual_substitution_type2(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             FontDame GSUB table
 
             feature table begin
@@ -226,12 +273,15 @@ class HbInputGeneratorTest(unittest.TestCase):
             A.sc\ta\tb\tc
             D.sc\td\tb\tc
             lookup end
-        ''', fea_type='mti')
-        self.assertEqual(g.input_from_name('A.sc'), (('test',), 'abca'))
-        self.assertEqual(g.input_from_name('D.sc'), (('test',), 'dbca'))
+        """,
+            fea_type="mti",
+        )
+        self.assertEqual(g.input_from_name("A.sc"), (("test",), "abca"))
+        self.assertEqual(g.input_from_name("D.sc"), (("test",), "dbca"))
 
     def test_chaining_substitution_type1(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             FontDame GSUB table
 
             feature table begin
@@ -245,11 +295,14 @@ class HbInputGeneratorTest(unittest.TestCase):
             lookup\ttest-lookup-sub\tsingle
             a\tA.sc
             lookup end
-        ''', fea_type='mti')
-        self.assertEqual(g.input_from_name('A.sc'), (('test',), 'bac'))
+        """,
+            fea_type="mti",
+        )
+        self.assertEqual(g.input_from_name("A.sc"), (("test",), "bac"))
 
     def test_chaining_substitution_type3(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             lookup CNTXT_LIGS {
                 substitute f i by f_i;
                 substitute c t by c_t;
@@ -266,59 +319,71 @@ class HbInputGeneratorTest(unittest.TestCase):
                 substitute [a e i o u]
                     c' lookup CNTXT_LIGS t' s' lookup CNTXT_SUB;
             } test;
-        ''')
-        self.assertEqual(g.input_from_name('f_i'), (('test',), 'afin'))
-        self.assertEqual(g.input_from_name('c_t'), (('test',), 'acts'))
-        self.assertEqual(g.input_from_name('n.end'), (('test',), 'afin'))
-        self.assertEqual(g.input_from_name('s.end'), (('test',), 'acts'))
+        """
+        )
+        self.assertEqual(g.input_from_name("f_i"), (("test",), "afin"))
+        self.assertEqual(g.input_from_name("c_t"), (("test",), "acts"))
+        self.assertEqual(g.input_from_name("n.end"), (("test",), "afin"))
+        self.assertEqual(g.input_from_name("s.end"), (("test",), "acts"))
 
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             feature test {
                 substitute [a e n] d' by d.alt;
             } test;
-        ''')
-        self.assertEqual(g.input_from_name('d.alt'), (('test',), 'ad'))
+        """
+        )
+        self.assertEqual(g.input_from_name("d.alt"), (("test",), "ad"))
 
     def test_no_feature_rule_takes_precedence(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             feature test {
                 substitute [A-Z] [A.sc-Z.sc]' by [a-z];
             } test;
-        ''')
-        self.assertEqual(g.input_from_name('a'), ((), 'a'))
+        """
+        )
+        self.assertEqual(g.input_from_name("a"), ((), "a"))
 
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             feature test {
                 substitute [e e.begin]' t' c by ampersand;
             } test;
-        ''')
-        self.assertEqual(g.input_from_name('ampersand'), ((), '&'))
+        """
+        )
+        self.assertEqual(g.input_from_name("ampersand"), ((), "&"))
 
     def test_chaining_substitution_backtrack_reversed(self):
-        g = self._make_generator('''
+        g = self._make_generator(
+            """
             feature test {
                 substitute [b e] [c f] a' [d g] by A.sc;
             } test;
-        ''')
-        self.assertEqual(g.input_from_name('A.sc'), (('test',), 'bcad'))
+        """
+        )
+        self.assertEqual(g.input_from_name("A.sc"), (("test",), "bcad"))
 
     def test_is_sublist(self):
-        g = self._make_generator('')
+        g = self._make_generator("")
         self.assertTrue(g._is_sublist([], []))
         self.assertFalse(g._is_sublist([], [1]))
         self.assertTrue(g._is_sublist([1, 2, 3], [2, 3]))
         self.assertFalse(g._is_sublist([1, 2, 3], [1, 3]))
 
     def test_min_permutation(self):
-        g = self._make_generator('')
-        self.assertEqual(g._min_permutation(
-            [[1, 2], [3, 4], [5, 6]], [2, 3]), [2, 3, 5])
-        self.assertEqual(g._min_permutation(
-            [[1, 2], [3, 4], [5, 6]], [3, 6]), [1, 3, 6])
-        self.assertEqual(g._min_permutation(
-            [[1, 2], [3, 4], [5, 6]], [1, 4, 5]), [1, 4, 5])
-        self.assertEqual(g._min_permutation(
-            [[1], [], [2]], [1]), [])
+        g = self._make_generator("")
+        self.assertEqual(
+            g._min_permutation([[1, 2], [3, 4], [5, 6]], [2, 3]), [2, 3, 5]
+        )
+        self.assertEqual(
+            g._min_permutation([[1, 2], [3, 4], [5, 6]], [3, 6]), [1, 3, 6]
+        )
+        self.assertEqual(
+            g._min_permutation([[1, 2], [3, 4], [5, 6]], [1, 4, 5]), [1, 4, 5]
+        )
+        self.assertEqual(g._min_permutation([[1], [], [2]], [1]), [])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

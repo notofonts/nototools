@@ -16,7 +16,7 @@
 
 """Saves memory by reusing an already-open font."""
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+__author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 from fontTools import ttLib
 

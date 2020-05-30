@@ -16,7 +16,7 @@
 
 """Drop hints from a font."""
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+__author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 import array
 import sys
@@ -26,13 +26,13 @@ from fontTools import ttLib
 
 def drop_hints_from_glyphs(font):
     """Drops the hints from a font's glyphs."""
-    glyf_table = font['glyf']
+    glyf_table = font["glyf"]
     for glyph_index in range(len(glyf_table.glyphOrder)):
         glyph_name = glyf_table.glyphOrder[glyph_index]
         glyph = glyf_table[glyph_name]
         if glyph.numberOfContours > 0:
             if glyph.program.bytecode:
-                glyph.program.bytecode = array.array('B')
+                glyph.program.bytecode = array.array("B")
 
 
 def drop_tables(font, tables):
@@ -47,10 +47,10 @@ def main(argv):
     font = ttLib.TTFont(argv[1])
 
     drop_hints_from_glyphs(font)
-    drop_tables(font, ['cvt ', 'fpgm', 'hdmx', 'LTSH', 'prep', 'VDMX'])
+    drop_tables(font, ["cvt ", "fpgm", "hdmx", "LTSH", "prep", "VDMX"])
 
     font.save(argv[2])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

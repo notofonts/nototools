@@ -58,42 +58,43 @@ from nototools import grab_download
 
 
 def unzip_to_directory_tree(drop_dir, filepath):
-  skip_re = re.compile('.*/OTF-Fallback/.*')
-  zf = zipfile.ZipFile(filepath, 'r')
-  print('extracting files from %s to %s' % (filepath, drop_dir))
-  count = 0
-  for name in zf.namelist():
-    # skip names representing portions of the path
-    if name.endswith('/'):
-      continue
-    # skip names for data we don't use
-    if skip_re.match(name):
-      continue
-    # get the blob
-    try:
-      data = zf.read(name)
-    except KeyError:
-      print('did not find %s in zipfile' % name)
-      continue
-    dst_file = os.path.join(drop_dir, os.path.basename(name))
-    with open(dst_file, 'wb') as f:
-      f.write(data)
-    count += 1
-    print('extracted \'%s\'' % name)
-  print('extracted %d files' % count)
+    skip_re = re.compile(".*/OTF-Fallback/.*")
+    zf = zipfile.ZipFile(filepath, "r")
+    print("extracting files from %s to %s" % (filepath, drop_dir))
+    count = 0
+    for name in zf.namelist():
+        # skip names representing portions of the path
+        if name.endswith("/"):
+            continue
+        # skip names for data we don't use
+        if skip_re.match(name):
+            continue
+        # get the blob
+        try:
+            data = zf.read(name)
+        except KeyError:
+            print("did not find %s in zipfile" % name)
+            continue
+        dst_file = os.path.join(drop_dir, os.path.basename(name))
+        with open(dst_file, "wb") as f:
+            f.write(data)
+        count += 1
+        print("extracted '%s'" % name)
+    print("extracted %d files" % count)
 
 
 def main():
-  params = {
-      'default_srcdir': os.path.expanduser('~/Downloads'),
-      'default_dstdir': notoconfig._values.get('adobe_data'),
-      'default_regex': r'Noto_Sans_CJK-\d{4}-\d{2}-\d{2}\.zip'
-  }
-  grab_download.invoke_main(
-      src_vendor='Adobe',
-      name_date_re=re.compile(r'(.*)-(\d{4})-(\d{2})-(\d{2})\.zip'),
-      extract_fn=unzip_to_directory_tree,
-      default_params=params)
+    params = {
+        "default_srcdir": os.path.expanduser("~/Downloads"),
+        "default_dstdir": notoconfig._values.get("adobe_data"),
+        "default_regex": r"Noto_Sans_CJK-\d{4}-\d{2}-\d{2}\.zip",
+    }
+    grab_download.invoke_main(
+        src_vendor="Adobe",
+        name_date_re=re.compile(r"(.*)-(\d{4})-(\d{2})-(\d{2})\.zip"),
+        extract_fn=unzip_to_directory_tree,
+        default_params=params,
+    )
 
 
 if __name__ == "__main__":

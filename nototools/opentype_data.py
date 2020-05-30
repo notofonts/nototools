@@ -16,12 +16,14 @@
 
 """OpenType-related data."""
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+__author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 
 from nototools import unicode_data
 
 OMPL = {}
+
+
 def _set_ompl():
     """Set up OMPL.
 
@@ -32,8 +34,11 @@ def _set_ompl():
     global OMPL
     unicode_data.load_data()
     bmg_data = unicode_data._bidi_mirroring_glyph_data
-    OMPL = {char:bmg for (char, bmg) in bmg_data.items()
-            if float(unicode_data.age(char)) <= 5.1}
+    OMPL = {
+        char: bmg
+        for (char, bmg) in bmg_data.items()
+        if float(unicode_data.age(char)) <= 5.1
+    }
 
 
 ZWSP = [0x200B]
@@ -44,30 +49,30 @@ DOTTED_CIRCLE = [0x25CC]
 # From the various script-specific specs at
 # http://www.microsoft.com/typography/SpecificationsOverview.mspx
 SPECIAL_CHARACTERS_NEEDED = {
-    'Arab': JOINERS + BIDI_MARKS + DOTTED_CIRCLE,
-    'Beng': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Bugi': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Deva': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Gujr': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Guru': ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Arab": JOINERS + BIDI_MARKS + DOTTED_CIRCLE,
+    "Beng": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Bugi": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Deva": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Gujr": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Guru": ZWSP + JOINERS + DOTTED_CIRCLE,
     # Hangul may not need the special characters:
     # https://code.google.com/p/noto/issues/detail?id=147#c2
     # 'Hang': ZWSP + JOINERS,
-    'Hebr': BIDI_MARKS + DOTTED_CIRCLE,
-    'Java': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Khmr': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Knda': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Laoo': ZWSP + DOTTED_CIRCLE,
-    'Mlym': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Mymr': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Orya': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Sinh': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Syrc': JOINERS + BIDI_MARKS + DOTTED_CIRCLE,
-    'Taml': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Telu': ZWSP + JOINERS + DOTTED_CIRCLE,
-    'Thaa': BIDI_MARKS + DOTTED_CIRCLE,
-    'Thai': ZWSP + DOTTED_CIRCLE,
-    'Tibt': ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Hebr": BIDI_MARKS + DOTTED_CIRCLE,
+    "Java": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Khmr": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Knda": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Laoo": ZWSP + DOTTED_CIRCLE,
+    "Mlym": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Mymr": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Orya": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Sinh": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Syrc": JOINERS + BIDI_MARKS + DOTTED_CIRCLE,
+    "Taml": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Telu": ZWSP + JOINERS + DOTTED_CIRCLE,
+    "Thaa": BIDI_MARKS + DOTTED_CIRCLE,
+    "Thai": ZWSP + DOTTED_CIRCLE,
+    "Tibt": ZWSP + JOINERS + DOTTED_CIRCLE,
 }
 
 # www.microsoft.com/typography/otspec/os2.html#ur
@@ -246,6 +251,7 @@ _unicoderange_data = """0\tBasic Latin\t0000-007F
 ur_data = []
 ur_bucket_info = [[] for i in range(128)]
 
+
 def _setup_unicoderange_data():
     """The unicoderange data used in the os/2 table consists of slightly under
     128 'buckets', each of which consists of one or more 'ranges' of codepoints.
@@ -266,8 +272,8 @@ def _setup_unicoderange_data():
         return
     index = 0
     for line in _unicoderange_data.splitlines():
-        index_str, name, urange = line.split('\t')
-        range_start_str, range_end_str = urange.split('-')
+        index_str, name, urange = line.split("\t")
+        range_start_str, range_end_str = urange.split("-")
         range_start = int(range_start_str, 16)
         range_end = int(range_end_str, 16)
         if index_str:
@@ -308,7 +314,7 @@ def collect_unicoderange_info(cmap):
 
 
 def unicoderange_bucket_info_name(bucket_info):
-    return ', '.join(t[3] for t in bucket_info)
+    return ", ".join(t[3] for t in bucket_info)
 
 
 def unicoderange_bucket_info_size(bucket_info):
@@ -317,13 +323,15 @@ def unicoderange_bucket_info_size(bucket_info):
 
 def unicoderange_bucket_index_to_info(bucket_index):
     if bucket_index < 0 or bucket_index >= 128:
-        raise ValueError('bucket_index %s out of range' % bucket_index)
+        raise ValueError("bucket_index %s out of range" % bucket_index)
     _setup_unicoderange_data()
     return ur_bucket_info[bucket_index]
 
 
 def unicoderange_bucket_index_to_name(bucket_index):
-    return unicoderange_bucket_info_name(unicoderange_bucket_index_to_info(bucket_index))
+    return unicoderange_bucket_info_name(
+        unicoderange_bucket_index_to_info(bucket_index)
+    )
 
 
 if not OMPL:

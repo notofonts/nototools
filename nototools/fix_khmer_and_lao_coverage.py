@@ -42,9 +42,9 @@ def merge_chars_from_bank(orig_font, bank_font, target_font, chars):
     for char in sorted(chars):
         assert char in bank_cmap
         bank_glyph_name = bank_cmap[char]
-        assert bank_glyph_name not in orig_font['glyf'].glyphs
-        orig_font['glyf'][bank_glyph_name] = bank_font['glyf'][bank_glyph_name]
-        orig_font['hmtx'][bank_glyph_name] = bank_font['hmtx'][bank_glyph_name]
+        assert bank_glyph_name not in orig_font["glyf"].glyphs
+        orig_font["glyf"][bank_glyph_name] = bank_font["glyf"][bank_glyph_name]
+        orig_font["hmtx"][bank_glyph_name] = bank_font["hmtx"][bank_glyph_name]
         extra_cmap[char] = bank_glyph_name
     font_data.add_to_cmap(orig_font, extra_cmap)
     orig_font.save(target_font)
@@ -52,11 +52,9 @@ def merge_chars_from_bank(orig_font, bank_font, target_font, chars):
 
 _UNHINTED_FONTS_DIR = os.path.abspath(
     os.path.join(
-        os.path.dirname(__file__),
-        os.pardir,
-       'fonts',
-       'individual',
-       'unhinted'))
+        os.path.dirname(__file__), os.pardir, "fonts", "individual", "unhinted"
+    )
+)
 
 
 def main(argv):
@@ -66,14 +64,15 @@ def main(argv):
     are Khmer fonts, make sure they have ZWSP, joiners, and dotted circle."""
 
     for font_name in argv[1:]:
-        if 'Khmer' in font_name:
-            script = 'Khmr'
-        elif 'Lao' in font_name:
-            script = 'Laoo'
+        if "Khmer" in font_name:
+            script = "Khmr"
+        elif "Lao" in font_name:
+            script = "Laoo"
         needed_chars = set(opentype_data.SPECIAL_CHARACTERS_NEEDED[script])
 
         lgc_font_name = (
-            os.path.basename(font_name).replace('Khmer', '').replace('Lao', ''))
+            os.path.basename(font_name).replace("Khmer", "").replace("Lao", "")
+        )
         lgc_font_name = os.path.join(_UNHINTED_FONTS_DIR, lgc_font_name)
 
         font_charset = coverage.character_set(font_name)
@@ -82,9 +81,10 @@ def main(argv):
             merge_chars_from_bank(
                 font_name,
                 lgc_font_name,
-                os.path.dirname(font_name)+'/new/'+os.path.basename(font_name),
-                missing_chars)
+                os.path.dirname(font_name) + "/new/" + os.path.basename(font_name),
+                missing_chars,
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

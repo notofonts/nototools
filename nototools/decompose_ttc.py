@@ -16,7 +16,7 @@
 
 """Decompose a TTC file to its pieces."""
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+__author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 import sys
 
@@ -27,13 +27,13 @@ from fontTools.ttLib import sfnt
 def main(argv):
     """Decompose all fonts provided in the command line."""
     for font_file_name in argv[1:]:
-        with open(font_file_name, 'rb') as font_file:
+        with open(font_file_name, "rb") as font_file:
             font = sfnt.SFNTReader(font_file, fontNumber=0)
             num_fonts = font.numFonts
         for font_number in range(num_fonts):
             font = ttLib.TTFont(font_file_name, fontNumber=font_number)
-            font.save('%s-part%d' % (font_file_name, font_number))
+            font.save("%s-part%d" % (font_file_name, font_number))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main(sys.argv)
-

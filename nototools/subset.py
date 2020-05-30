@@ -16,7 +16,7 @@
 
 """Routines for subsetting fonts."""
 
-__author__ = 'roozbeh@google.com (Roozbeh Pournader)'
+__author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 import sys
 
@@ -25,8 +25,7 @@ from fontTools import subset
 from nototools import coverage
 
 
-def subset_font(source_file, target_file,
-                include=None, exclude=None, options=None):
+def subset_font(source_file, target_file, include=None, exclude=None, options=None):
     """Subsets a font file.
 
     Subsets a font file based on a specified character set. If only include is
@@ -48,15 +47,15 @@ def subset_font(source_file, target_file,
     """
     opt = subset.Options()
 
-    opt.name_IDs = ['*']
+    opt.name_IDs = ["*"]
     opt.name_legacy = True
-    opt.name_languages = ['*']
-    opt.layout_features = ['*']
+    opt.name_languages = ["*"]
+    opt.layout_features = ["*"]
     opt.notdef_outline = True
     opt.recalc_bounds = True
     opt.recalc_timestamp = True
     opt.canonical_order = True
-    opt.drop_tables = ['+TTFA']
+    opt.drop_tables = ["+TTFA"]
 
     if options is not None:
         for name, value in options.items():
@@ -65,7 +64,8 @@ def subset_font(source_file, target_file,
     if include is not None:
         if exclude is not None:
             raise NotImplementedError(
-                'Subset cannot include and exclude a set at the same time.')
+                "Subset cannot include and exclude a set at the same time."
+            )
         target_charset = include
     else:
         if exclude is None:
@@ -86,5 +86,5 @@ def main(argv):
     subset_font(argv[1], argv[2])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

@@ -32,25 +32,26 @@ def main(font_path_a, font_path_b, specimen_path):
     generator = hb_input.HbInputGenerator(ttLib.TTFont(font_path_b))
     inputs_b = set(generator.all_inputs(warn=True))
 
-    to_ignore = ('\00', '\02')
-    to_replace = (('&', '&amp;'), ('<', '&lt;'), ('>', '&gt;'))
-    out_lines = ['<html>']
+    to_ignore = ("\00", "\02")
+    to_replace = (("&", "&amp;"), ("<", "&lt;"), (">", "&gt;"))
+    out_lines = ["<html>"]
     for features, text in [i for i in inputs_a if i in inputs_b]:
         if any(char in text for char in to_ignore):
             continue
         for old, new in to_replace:
             text = text.replace(old, new)
-        style = ''
+        style = ""
         if features:
-            style = (' style="font-feature-settings: %s;"' %
-                     ', '.join("'%s'" % f for f in features))
-        out_lines.append('<p%s>%s</p>' % (style, text))
-    out_lines.append('</html>')
-    out_text = '\n'.join(out_lines)
+            style = ' style="font-feature-settings: %s;"' % ", ".join(
+                "'%s'" % f for f in features
+            )
+        out_lines.append("<p%s>%s</p>" % (style, text))
+    out_lines.append("</html>")
+    out_text = "\n".join(out_lines)
 
-    with open(specimen_path, 'w') as out_file:
-        out_file.write(out_text.encode('utf-8'))
+    with open(specimen_path, "w") as out_file:
+        out_file.write(out_text.encode("utf-8"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(*sys.argv[1:])
