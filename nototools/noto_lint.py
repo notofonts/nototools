@@ -552,7 +552,7 @@ def check_font(
 
         # Assumes "info" only and always comes at the end of
         # processing a file.
-        if category_name is "info":
+        if category_name == "info":
 
             def pluralize_errmsg(count, is_error=True):
                 msg = "error" if is_error else "warning"
@@ -615,7 +615,7 @@ def check_font(
             print_file_name()
 
         err_type = (
-            "Info" if category_name is "info" else "Error" if is_error else "Warning"
+            "Info" if category_name == "info" else "Error" if is_error else "Warning"
         )
         if csv_flag:
             names = []
@@ -642,7 +642,7 @@ def check_font(
                 ).encode("UTF-8")
             )
         else:
-            print("%s <%s> %s" % (err_type[0], test_name, message.encode("UTF-8")))
+            print("%s <%s> %s" % (err_type[0], test_name, message.encode("UTF-8").decode("UTF-8")))
         sys.stdout.flush()
 
     _script_key_to_font_name = {
@@ -953,6 +953,8 @@ def check_font(
                 pua_filter = pua_filter[1].accept
 
             def is_unwanted_pua(char):
+                if not needed_chars:
+                    return False
                 if char in needed_chars:
                     return False
                 if not unicode_data.is_private_use(char):
@@ -1792,7 +1794,7 @@ def check_font(
             # print("command: %s" % ' '.join(command)
             result = subprocess.check_output(command)
             for src, res in zip(strs, result.splitlines()):
-                if res.find("|") != -1:
+                if res.find(b"|") != -1:
                     errors.append((src, context, res))
         finally:
             temp_file.close()
