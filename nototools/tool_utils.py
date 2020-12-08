@@ -34,7 +34,7 @@ from nototools import notoconfig
 def temp_chdir(path):
     """Usage: with temp_chdir(path):
     do_something
-  """
+    """
     saved_dir = os.getcwd()
     try:
         os.chdir(path)
@@ -50,8 +50,8 @@ noto_re = re.compile(
 
 def resolve_path(somepath):
     """Resolve a path that might start with noto path shorthand. If
-  the path is empty, is '-', or the shorthand is not defined,
-  returns None. Example: '[fonts]/hinted'."""
+    the path is empty, is '-', or the shorthand is not defined,
+    returns None. Example: '[fonts]/hinted'."""
 
     if not somepath or somepath == "-":
         return None
@@ -75,13 +75,13 @@ def resolve_path(somepath):
 
 def commonpathprefix(paths):
     """Return the common path prefix and a tuple of the relative subpaths for the
-  provided paths.  Uses resolve_path to convert to absolute paths and returns
-  the common absolute path.  Some subpaths might be the empty string and joining
-  these will produce paths ending in '/', use normpath if you don't want this.
+    provided paths.  Uses resolve_path to convert to absolute paths and returns
+    the common absolute path.  Some subpaths might be the empty string and joining
+    these will produce paths ending in '/', use normpath if you don't want this.
 
-  Python 2.7 only has path.commonprefix, which returns a common string prefix,
-  not a common path prefix.
-  """
+    Python 2.7 only has path.commonprefix, which returns a common string prefix,
+    not a common path prefix.
+    """
     norm_paths = [resolve_path(p) + path.sep for p in paths]
     prefix = path.dirname(path.commonprefix(norm_paths))
     prefix_len = len(prefix)
@@ -103,8 +103,8 @@ def _name_to_key(keyname):
 
 def short_path(somepath, basedir=os.getcwd()):
     """Return a short version of somepath, either relative to one of the noto path
-  shorthands or to the provided base directory (defaults to current).  For
-  logging/debugging output of file paths."""
+    shorthands or to the provided base directory (defaults to current).  For
+    logging/debugging output of file paths."""
     shortest = somepath
     if basedir and somepath.startswith(basedir):
         shortest = "." + somepath[len(basedir) :]
@@ -141,7 +141,7 @@ def ensure_dir_exists(path, clean=False):
 
 def generate_zip_with_7za(root_dir, file_paths, archive_path):
     """file_paths is a list of files relative to root_dir, these will be the names
-  in the archive at archive_path."""
+    in the archive at archive_path."""
 
     arg_list = ["7za", "a", archive_path, "-tzip", "-mx=7", "-bd", "--"]
     arg_list.extend(file_paths)
@@ -152,7 +152,7 @@ def generate_zip_with_7za(root_dir, file_paths, archive_path):
 
 def generate_zip_with_7za_from_filepairs(pairs, archive_path):
     """Pairs are source/destination path pairs. The source will be put into the
-  zip with name destination."""
+    zip with name destination."""
 
     staging_dir = "/tmp/stage_7za"
     if os.path.exists(staging_dir):
@@ -211,7 +211,7 @@ def git_mv(repo, old, new):
 
 def git_file_lastlog(repo, filepath):
     """Return a string containing the short hash, date, author email, and title
-  of most recent commit of filepath, separated by tab."""
+    of most recent commit of filepath, separated by tab."""
     with temp_chdir(repo):
         return subprocess.check_output(
             [
@@ -229,9 +229,9 @@ def git_file_lastlog(repo, filepath):
 
 def git_tags(repo):
     """Return a list of info about annotated tags.  The list consists of tuples
-  of the commit hash (as a string), the  tag name, and the time, sorted in
-  in reverse chronological order (most recent first).  The hash is for the
-  referenced commit and not the tag itself, but the date is the tag date."""
+    of the commit hash (as a string), the  tag name, and the time, sorted in
+    in reverse chronological order (most recent first).  The hash is for the
+    referenced commit and not the tag itself, but the date is the tag date."""
     with temp_chdir(repo):
         text = subprocess.check_output(
             [
@@ -242,7 +242,8 @@ def git_tags(repo):
                 "%(taggerdate:format:%Y-%m-%d %T %Z)",
                 "--sort=-taggerdate",
             ]
-        )
+        ).decode("utf-8")
+        print(text)
         return [
             tuple(line.split("|"))
             for line in text.splitlines()
@@ -252,7 +253,7 @@ def git_tags(repo):
 
 def git_tag_info(repo, tag_name):
     """Return the annotation for this tag in the repo.  It is limited to no more
-  than 50 lines."""
+    than 50 lines."""
     # Unfortunately, I can't get the other formatted tag info and also limit
     # to the tag annotation without more serious munging of tag or show output.
     with temp_chdir(repo):
@@ -263,18 +264,18 @@ def git_tag_info(repo, tag_name):
 
 def get_tool_generated(repo, subdir, commit_title_prefix="Updated by tool"):
     """
-  Return a list of the names of tool-generated files in the provided directory.
-  The idea is that when we check in files that are generated by a tool, the
-  commit will start with the given prefix.  If a files' most recent log entry
-  matches this, it means that we've not applied patches or fixes to the file
-  since it was generated, so we can overwrite it with new tool-generated data.
+    Return a list of the names of tool-generated files in the provided directory.
+    The idea is that when we check in files that are generated by a tool, the
+    commit will start with the given prefix.  If a files' most recent log entry
+    matches this, it means that we've not applied patches or fixes to the file
+    since it was generated, so we can overwrite it with new tool-generated data.
 
-  The motivation for this is mantaining the sample texts.  The original source
-  for most of these is UDHR data, but subsequently we have fixed things in
-  some of the samples.  We generally do not want to blindly overwrite these
-  fixes, but do want to be able to regenerate the samples if we get new source
-  data.
-  """
+    The motivation for this is mantaining the sample texts.  The original source
+    for most of these is UDHR data, but subsequently we have fixed things in
+    some of the samples.  We generally do not want to blindly overwrite these
+    fixes, but do want to be able to regenerate the samples if we get new source
+    data.
+    """
     files_not_under_version_control = []
     protected_files = []
     tool_generated_files = []
@@ -390,7 +391,7 @@ def git_is_clean(repo, print_errors=False):
 
 def git_head_commit(repo):
     """Return the commit hash at head, the date and time of the commit as
-  YYYY-mm-dd HH:MM:SS, and the subject line, as a tuple of three strings."""
+    YYYY-mm-dd HH:MM:SS, and the subject line, as a tuple of three strings."""
     with temp_chdir(repo):
         text = subprocess.check_output(
             [
@@ -408,8 +409,8 @@ def git_head_commit(repo):
 
 def git_check_remote_commit(repo, commit, remote="upstream", branch="master"):
     """Return true if the commit exists in the remote repo at the given branch
-  (or any branch if branch is None). This has the side effect of calling
-  'git fetch {remote}'."""
+    (or any branch if branch is None). This has the side effect of calling
+    'git fetch {remote}'."""
     with temp_chdir(repo):
         subprocess.check_call(["git", "fetch", remote])
         # the following will throw an exception if commit is unrecognized
@@ -438,7 +439,7 @@ def git_add_all(repo_subdir):
 def svn_get_version(repo):
     with temp_chdir(repo):
         version_string = subprocess.check_output(["svnversion", "-c"]).strip()
-        colon_index = version_string.find(":")
+        colon_index = version_string.find(":".encode("utf-8"))
         if colon_index >= 0:
             version_string = version_string[colon_index + 1 :]
     return version_string
@@ -458,20 +459,20 @@ def parse_int_ranges(
     allow_compressed=False,
 ):
     """Returns a set/list of ints from a string of numbers or ranges separated by
-  sep.  A range is two values separated by hyphen with no intervening separator;
-  ranges are inclusive.  If allow_compressed is true, '/' is also allowed
-  as a separator, and ranges following it or hyphen are interpreted as suffixes
-  that replace the same number of characters at the end of the previous value.
-  '-' generates the range of intervening characters as before, while '/' does
-  not.  Returns a set or a list depending on return_set.
+    sep.  A range is two values separated by hyphen with no intervening separator;
+    ranges are inclusive.  If allow_compressed is true, '/' is also allowed
+    as a separator, and ranges following it or hyphen are interpreted as suffixes
+    that replace the same number of characters at the end of the previous value.
+    '-' generates the range of intervening characters as before, while '/' does
+    not.  Returns a set or a list depending on return_set.
 
-  For example, with compressed ranges the following:
-    1ee42/7/9/b/d-f 1ee51-2/4/7/9/b/d/f
+    For example, with compressed ranges the following:
+      1ee42/7/9/b/d-f 1ee51-2/4/7/9/b/d/f
 
-  expands to:
-    1ee42 1ee47 1ee49 1ee4b 1ee4d-1ee4f 1ee51-1ee52 1ee54 1ee57 1ee59 1ee5b
-    1ee5d 1ee5f
-  """
+    expands to:
+      1ee42 1ee47 1ee49 1ee4b 1ee4d-1ee4f 1ee51-1ee52 1ee54 1ee57 1ee59 1ee5b
+      1ee5d 1ee5f
+    """
 
     base = 16 if is_hex else 10
     vals = []
@@ -584,8 +585,8 @@ def parse_int_ranges(
 
 def write_int_ranges(int_values, in_hex=True, sep=" "):
     """From a set or list of ints, generate a string representation that can be
-  parsed by parse_int_ranges to return the original values (not
-  order_preserving)."""
+    parsed by parse_int_ranges to return the original values (not
+    order_preserving)."""
 
     if not int_values:
         return ""
@@ -617,12 +618,12 @@ def write_int_ranges(int_values, in_hex=True, sep=" "):
 def setup_logging(loglevel, quiet_ttx=True):
     """Set up logging to stream to stdout.
 
-  The loglevel is a logging level name or a level value (int or string).
+    The loglevel is a logging level name or a level value (int or string).
 
-  ttx/fontTools uses 'info' to report when it is reading/writing tables,
-  but when we want 'info' in our own tools we usually don't want this detail.
-  When quiet_ttx is true, set up logging to treat 'info' logs from
-  fontTools misc.xmlReader and ttLib as though they were at level 19."""
+    ttx/fontTools uses 'info' to report when it is reading/writing tables,
+    but when we want 'info' in our own tools we usually don't want this detail.
+    When quiet_ttx is true, set up logging to treat 'info' logs from
+    fontTools misc.xmlReader and ttLib as though they were at level 19."""
 
     try:
         loglevel = int(loglevel)
@@ -651,7 +652,7 @@ def write_lines(lines, outfile):
 
 def read_lines(infile, ignore_comments=True, strip=True, skip_empty=True):
     """Read lines from infile and return as a list, optionally stripping comments,
-  whitespace, and/or skipping blank lines."""
+    whitespace, and/or skipping blank lines."""
     lines = []
     with codecs.open(infile, "r", "utf-8") as f:
         for line in f:
@@ -678,10 +679,10 @@ NOTO_FONT_PATHS = ["[fonts]/hinted", "[fonts]/unhinted", "[emoji]/fonts", "[cjk]
 
 def collect_paths(dirs, files):
     """Return a collection of all files in any of the listed dirs, and
-  the listed files.  Can use noto short paths.  A file name starting
-  with '@' is interpreted as the name of a file containing a list
-  of filenames one per line.  The short name '[noto]' refers to
-  the noto (phase 2) font paths."""
+    the listed files.  Can use noto short paths.  A file name starting
+    with '@' is interpreted as the name of a file containing a list
+    of filenames one per line.  The short name '[noto]' refers to
+    the noto (phase 2) font paths."""
 
     paths = []
     if dirs:

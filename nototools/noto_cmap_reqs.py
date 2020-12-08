@@ -342,13 +342,13 @@ def _build_block_to_primary_script():
                 max_script = assigned_primaries[block]
                 # print('assigning primary', block_info, '->', max_script)
             else:
-                sys.stderr.write("ERROR: no primary\n", block, block_info)
+                print("ERROR: no inherited primary\n %s\n %s\n" % (block, block_info), file=sys.stderr)
                 max_script = None
         elif max_script == "Zinh":
             if block in inherited_primaries:
                 max_script = inherited_primaries[block]
             else:
-                sys.stderr.write("ERROR: no inherited primary\n", block, block_info)
+                print("ERROR: no inherited primary\n %s\n %s\n" % (block, block_info), file=sys.stderr)
                 max_script = None
         block_to_script[block] = max_script
     return block_to_script
@@ -518,7 +518,15 @@ def _reassign_common_by_block(cmap_ops):
         "Alchemical Symbols": "Zsym",
         "Geometric Shapes Extended": "SYM2",
         "Supplemental Arrows-C": "SYM2",
+        "Chess Symbols": "SYM2",
+        "Ideographic Symbols and Punctuation": "CJK",
+        "Symbols and Pictographs Extended-A": "SYM2",
+        "Symbols for Legacy Computing": "SYM2",
         "Supplemental Symbols and Pictographs": "SYM2",
+        "Counting Rod Numerals": "SYM2",
+        "Mayan Numerals": "Zmth",
+        "Ottoman Siyaq Numbers": "Arab",
+        "Indic Siyaq Numbers": "Arab",
         "Tags": "EXCL",
     }
 

@@ -56,7 +56,7 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=""):
     tool_utils.check_dir_exists(cldr_repo)
 
     if not tool_utils.git_is_clean(noto_repo):
-        print("Please fix")
+        print("git in %s is not clean: please fix" % noto_repo)
         return
 
     if update:
@@ -77,7 +77,9 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=""):
         src = os.path.join(cldr_repo, subdir)
         dst = os.path.join(noto_cldr, subdir)
         print("replacing directory %s..." % subdir)
-        shutil.rmtree(dst)
+        print("...by copying from %s to %s" % (src, dst))
+        if os.path.exists(dst):
+            shutil.rmtree(dst)
         shutil.copytree(src, dst)
 
     # replace files
@@ -96,8 +98,8 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=""):
 
 
 def main():
-    default_noto = notoconfig.values.get("noto")
-    default_cldr = notoconfig.values.get("cldr")
+    default_noto = notoconfig.get("noto")
+    default_cldr = notoconfig.get("cldr")
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

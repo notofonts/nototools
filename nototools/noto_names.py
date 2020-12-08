@@ -60,7 +60,7 @@ ORIGINAL_FAMILY_LIMIT = 32
 
 # Regex values returned in NameTableData must start with ^ and end with $,
 # since lint uses this to understand the value is a regex.
-GOOGLE_COPYRIGHT_RE = r"^Copyright 20\d\d Google Inc. All Rights Reserved\.$"
+GOOGLE_COPYRIGHT_RE = r"^Copyright 20\d\d Google (Inc|LLC). All Rights Reserved\.$"
 
 ADOBE_COPYRIGHT_RE = (
     u"^Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
@@ -146,7 +146,7 @@ def preferred_script_name(script_key):
 # circular dependencies.
 def _prettify(root, indent=""):
     """Pretty-print the root element if it has no text and children
-     by adding to the root text and each child's tail."""
+    by adding to the root text and each child's tail."""
     if not root.text and len(root):
         indent += "  "
         sfx = "\n" + indent
@@ -179,9 +179,9 @@ def _preferred_cjk_parts(noto_font):
 def _preferred_non_cjk_parts(noto_font):
     """Return a tuple of preferred_family, preferred_subfamily).
 
-  The preferred family is based on the family, style, script, and variant, the
-  preferred_subfamily is based on the remainder.
-  """
+    The preferred family is based on the family, style, script, and variant, the
+    preferred_subfamily is based on the remainder.
+    """
 
     family_parts = [
         noto_font.family,
@@ -223,12 +223,12 @@ def _preferred_parts(noto_font):
 
 def _shift_parts(family_parts, subfamily_parts, stop_fn):
     """Iterate over subfamily parts, removing from
-  subfamily and appending to family, until stop_fn(part)
-  returns true.  If subfamily_parts is empty, add
-  'Regular'.  This works because for both original and
-  wws subfamilies the order of parts is such that all
-  parts that fail the stop_fn precede any that pass.
-  Does not modify the input parts lists."""
+    subfamily and appending to family, until stop_fn(part)
+    returns true.  If subfamily_parts is empty, add
+    'Regular'.  This works because for both original and
+    wws subfamilies the order of parts is such that all
+    parts that fail the stop_fn precede any that pass.
+    Does not modify the input parts lists."""
 
     result_family_parts = family_parts[:]
     limit = len(subfamily_parts)
@@ -274,7 +274,7 @@ def _is_limited_original_part(part):
 
 def _original_parts(family_parts, subfamily_parts, no_style_linking=False):
     """Set no_style_linking to true if weight should be in the family and not
-  the subfamily."""
+    the subfamily."""
     stop_fn = _is_limited_original_part if no_style_linking else _is_original_part
     return _shift_parts(family_parts, subfamily_parts, stop_fn)
 
@@ -345,8 +345,8 @@ _SHORT_SCRIPTS = {
 
 def _name_style_for_length(parts, limit):
     """Return a value indicating whether to use normal, short, very short, or
-  extra short names to represent these parts, depending on what is
-  required to ensure the length <= limit."""
+    extra short names to represent these parts, depending on what is
+    required to ensure the length <= limit."""
 
     if limit == 0:
         return "normal"
@@ -471,7 +471,7 @@ def _version_re(noto_font, phase):
 
 
 def _trademark(noto_font):
-    return "%s is a trademark of Google Inc." % noto_font.family
+    return "%s is a trademark of Google LLC" % noto_font.family
 
 
 def _manufacturer(noto_font):
@@ -485,8 +485,16 @@ def _manufacturer(noto_font):
         return "JamraPatel LLC"
     if noto_font.manufacturer == "Khmertype":
         return "Danh Hong"
-    if noto_font.manufacturer == "Google":
-        return "Google, Inc."
+    if noto_font.manufacturer.startswith("Google"):
+        return "Google LLC"
+    if noto_font.manufacturer == "Dalton Maag":
+        return "Dalton Maag Ltd"
+    if noto_font.manufacturer == "Dalton Maag Ltd":
+        return "Dalton Maag Ltd"
+    if noto_font.manufacturer == "Lisa Huang":
+        return "Lisa Huang"
+    if noto_font.manufacturer == "Mangu Purty":
+        return "Mangu Purty"
     raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
@@ -502,6 +510,25 @@ DESIGNER_STRINGS = {
     "ek-type-gonm": "Ek Type & Mukund Gokhale",
     "ek-type-gong": "Ek Type",
     "jamra-patel": "JamraPatel",
+    "dama": "Dalton Maag Ltd",
+    "ab-sm": "Amélie Bonet and Sol Matas",
+    "bn": "Ben Nathan",
+    "mti-bosma-itf": "Indian type Foundry, Jelle Bosma, Monotype Design Team",
+    "mti-grace-itf": "Indian Type Foundry, Tom Grace, and the Monotype Design Team",
+    "mti-bosma-thist": "Jelle Bosma - Monotype Design Team, Universal Thirst",
+    "mti-thirst-bruce": "Juan Bruce, Universal Thirst, Indian Type Foundry and the Monotype Design Team.",
+    "huang": "Lisa Huang",
+    "purty": "Mangu Purty",
+    "patel-jamra": "Mark Jamra, Neil Patel",
+    "mti-martins-other": "Monotype Design Team (Regular), Sérgio L. Martins (other weights)",
+    "mti-williams-2020": "Monotype Design Team 2013. Revised by David WIlliams 2020",
+    "mti-dama": "Monotype Design Team and DaltonMaag",
+    "mti-kshetrimayum": "Monotype Design Team and Neelakash Kshetrimayum",
+    "mti-akaki": "Monotype Design Team, Akaki Razmadze",
+    "mti-mcguffie": "Monotype Design Team, Lewis McGuffie",
+    "mti-chahine-qandah": "Monotype Design Team, Nadine Chahine and Nizar Qandah",
+    "mti-martins": "Monotype Design Team, Sérgio Martins",
+    "mti-williams": "Monotype Design Team. David Williams.",
 }
 
 
@@ -530,6 +557,7 @@ FAMILY_ID_TO_DESIGNER_KEY_P3 = {
     "sans-tfng-rhissaixa": "jamra-patel",
     "sans-tfng-sil": "jamra-patel",
     "sans-tfng-tawellemmet": "jamra-patel",
+    "serif-yezi": "dama",
 }
 
 
@@ -567,13 +595,15 @@ def _designer(noto_font, phase):
     if noto_font.manufacturer == "JamraPatel LLC":
         if phase == 3:
             family_id = noto_fonts.noto_font_to_family_id(noto_font)
+            if family_id.startswith("sans-tfng"):
+                return "JamraPatel"
             designer_key = FAMILY_ID_TO_DESIGNER_KEY_P3.get(family_id)
             if designer_key:
                 return DESIGNER_STRINGS[designer_key]
     if noto_font.manufacturer == "Khmertype":
         return "Danh Hong"
     if noto_font.manufacturer == "Google":
-        return "Google, Inc."
+        return "Google LLC"
     raise ValueError('unknown manufacturer "%s"' % noto_font.manufacturer)
 
 
@@ -704,7 +734,7 @@ def name_table_data(noto_font, family_to_name_info, phase):
 
 def _create_family_to_subfamilies(notofonts):
     """Return a map from preferred family name to set of preferred subfamilies.
-  Note these are WWS family/subfamilies now."""
+    Note these are WWS family/subfamilies now."""
     family_to_subfamilies = collections.defaultdict(set)
     for noto_font in notofonts:
         family, subfamily = _names(*_wws_parts(*_preferred_parts(noto_font)))
@@ -909,7 +939,7 @@ def read_family_name_info(text):
 
 def _create_family_to_faces(notofonts, name_fn):
     """Notofonts is a collection of NotoFonts.  Return a map from
-  preferred family to a list of preferred subfamily."""
+    preferred family to a list of preferred subfamily."""
 
     family_to_faces = collections.defaultdict(set)
     for noto_font in notofonts:
@@ -963,7 +993,7 @@ def _dump(fonts, info_file, phase):
 
 def _write(fonts, info_file, phase, extra_styles):
     """Build family name info from font_paths and write to info_file.
-  Write to stdout if info_file is None."""
+    Write to stdout if info_file is None."""
     family_to_name_info = create_family_to_name_info(fonts, phase, extra_styles)
     if info_file:
         write_family_name_info_file(family_to_name_info, info_file, pretty=True)
