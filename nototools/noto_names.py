@@ -60,7 +60,7 @@ ORIGINAL_FAMILY_LIMIT = 32
 
 # Regex values returned in NameTableData must start with ^ and end with $,
 # since lint uses this to understand the value is a regex.
-GOOGLE_COPYRIGHT_RE = r"^Copyright 20\d\d Google (Inc|LLC). All Rights Reserved\.$"
+GOOGLE_COPYRIGHT_RE = r"^Copyright 20\d\d Google (Inc|LLC)\.* All Rights Reserved\.$"
 
 ADOBE_COPYRIGHT_RE = (
     u"^Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
@@ -471,7 +471,7 @@ def _version_re(noto_font, phase):
 
 
 def _trademark(noto_font):
-    return "%s is a trademark of Google LLC" % noto_font.family
+    return "^%s is a trademark of Google (Inc|LLC)\.*$" % noto_font.family
 
 
 def _manufacturer(noto_font):

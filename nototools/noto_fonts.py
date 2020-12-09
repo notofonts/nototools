@@ -245,9 +245,9 @@ def get_noto_font(
         else:
             script = "LGC"
     elif script == "IndicSiyaqNumbers":
-        script = "Aran"
+        script = "Arab"
     elif script == "MayanNumerals":
-        script = "Maya"
+        script = "Zmth"
     elif script == "Urdu":
         # Use 'Aran' for languages written in the Nastaliq Arabic style, like Urdu.
         # The font naming uses 'Urdu' which is not a script, but a language.
