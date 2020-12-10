@@ -193,7 +193,7 @@ def test_text_vertical_extents(
 
     split_text = text.split("\n")
     exceeding_lines = []
-    for line_no, output_line in enumerate(hb_output.split("\n")):
+    for line_no, output_line in enumerate((hb_output.split(b"\n"))):
         if not output_line:
             continue
 
