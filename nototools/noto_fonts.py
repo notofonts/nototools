@@ -158,7 +158,7 @@ WEIGHTS = {
 _FONT_NAME_REGEX = (
     # family should be prepended - this is so Roboto can be used with unittests
     # that use this regex to parse.
-    "(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji|Music|Rashi|Traditional)?"
+    "(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji|Music|Rashi|Traditional|Looped)?"
     "(Mono(?:space)?)?"
     "(.*?)"
     "(Adrar|AgrawImazighen|Ahaggar|Air|APT|Azawagh|Eastern|Estrangela|Ghat|Hawad|Looped|New|RhissaIxa|SIL|Slanted|Supplement|Tawellemmet|Unjoined|Western)?"

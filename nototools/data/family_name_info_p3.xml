@@ -86,7 +86,8 @@
     <info family="sans-kthi" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-lana" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-laoo" family_name_style="short" include_regular="t" use_preferred="t" />
-    <info family="sans-laoo-looped" family_name_style="short" include_regular="t" use_preferred="t" />
+    <info family="looped-laoo-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+    <info family="looped-laoo" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-laoo-ui" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-lepc" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-lgc" family_name_style="short" include_regular="t" use_preferred="t" />
@@ -185,7 +186,8 @@
     <info family="sans-tglg" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-thaa" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-thai" family_name_style="short" include_regular="t" use_preferred="t" />
-    <info family="sans-thai-looped" family_name_style="short" include_regular="t" use_preferred="t" />
+    <info family="looped-thai-ui" family_name_style="short" include_regular="t" use_preferred="t" />
+    <info family="looped-thai" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-thai-new" family_name_style="short" include_regular="t" use_preferred="t" />
     <info family="sans-thai-new-ui" family_name_style="very short" include_regular="t" use_preferred="t" />
     <info family="sans-thai-ui" family_name_style="short" include_regular="t" use_preferred="t" />

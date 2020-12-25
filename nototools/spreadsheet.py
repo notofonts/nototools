@@ -46,7 +46,7 @@ def check_spreadsheet(src_file):
 
             # family script style (variant UI) weight, mostly
             m = re.match(
-                r"Noto (Kufi|Naskh|Color Emoji|Emoji|Sans|Serif|Nastaliq|Rashi|Traditional)"
+                r"Noto (Kufi|Naskh|Color Emoji|Emoji|Sans|Serif|Nastaliq|Rashi|Traditional|Looped)"
                 r"(?: (.*?))?"
                 r"(?: (UI))?"
                 r" (Thin|Light|DemiLight|Regular|Medium|Bold Italic"
