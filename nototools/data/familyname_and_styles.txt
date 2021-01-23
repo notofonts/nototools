@@ -1,5 +1,5 @@
 # See planning spreadsheet for more info.
-# This includes some 'grandfathered' fonts from phase 2,
+# This includes some 'legacy' fonts from phase 2,
 # might not want to include them.
 
 -- TRBH/CR/RI --

@@ -332,12 +332,12 @@ class ShapeDiffFinder:
             self.names -= set(mismatched.keys())
 
     @staticmethod
-    def dump(stats, whitelist, out_lines, include_vals, multiple_fonts):
+    def dump(stats, allowlist, out_lines, include_vals, multiple_fonts):
         """Return the results of run diffs.
 
         Args:
             stats: List of tuples with diff data which is sorted and printed.
-            whitelist: Names of glyphs to exclude from report.
+            allowlist: Names of glyphs to exclude from report.
             out_lines: Number of diff lines to print.
             include_vals: Include the values that have been diffed in report.
             multiple_fonts: Designates whether stats have been accumulated from
@@ -346,7 +346,7 @@ class ShapeDiffFinder:
 
         report = []
 
-        compared = sorted(s for s in stats["compared"] if s[1] not in whitelist)
+        compared = sorted(s for s in stats["compared"] if s[1] not in allowlist)
         compared.reverse()
         fmt = "%s %s"
         if include_vals:

@@ -1504,7 +1504,7 @@ def check_font(
             return
 
         if variable:
-            # ignore these for variable font masters
+            # ignore these for variable font mains
             return
 
         if not tests.check("paths"):
@@ -1853,7 +1853,7 @@ def check_font(
         if not tests.check("complex"):
             return
 
-        whitelist = [
+        allowlist = [
             "Hluw",  # Anatolian Hieroglyphs
             "Cari",  # Carian
             "Xsux",  # Cuneiform
@@ -1879,7 +1879,7 @@ def check_font(
             "Vaii",  # Vai
             "Yiii",  # Yi
         ]
-        if font_props.script in whitelist:
+        if font_props.script in allowlist:
             return
 
         if "GPOS" not in font:
@@ -2483,7 +2483,7 @@ def main():
     parser.add_argument(
         "-v",
         "--variable",
-        help="do checks appropriate to masters for variable fonts.",
+        help="do checks appropriate to mains for variable fonts.",
         action="store_true",
     )
 
