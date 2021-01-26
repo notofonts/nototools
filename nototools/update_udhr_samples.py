@@ -188,10 +188,10 @@ BCP_FIXES = {
 
 def fix_index(bcp_to_codes):
     """Take a mapping from bcp47 to a set of file codes, and
-  select the mappings we want using a whitelist.  We return
+  select the mappings we want using a allowlist.  We return
   a mapping from one bcp47 code to one file code.
 
-  We use this opportunity to validate the whitelist, and if there are
+  We use this opportunity to validate the allowlist, and if there are
   any errors, we fail once we're finished."""
     errors = []
     used_fixes = set()
@@ -260,7 +260,7 @@ def fix_index(bcp_to_codes):
         print("fix_index had %d errors:" % len(errors))
         for e in errors:
             print(" ", e)
-        raise Exception("correct the fixes whitelist")
+        raise Exception("correct the fixes allowlist")
 
     return result
 
@@ -401,7 +401,7 @@ def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
   1) parse the index.xml file to determine a mapping from bcp47 to code.
      the bcp47 code has at least lang and script, and perhaps region/variant.
      Multiple codes might share the same bcp47 code.
-  2) Use a whitelist to fix cases where a bcp47 code maps to multiple codes,
+  2) Use a allowlist to fix cases where a bcp47 code maps to multiple codes,
      either by selecting one code, or assigning a separate bcp47 value
      to other codes.
   3) Load samples for each bcp47 code using article 1 from the file
