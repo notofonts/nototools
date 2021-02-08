@@ -470,7 +470,7 @@ def get_sample_names_for_lang_scr_typ(lang_scr, typ):
 def get_sample_from_sample_file(lang_scr_typ):
     filepath = path.join(SAMPLE_TEXT_DIR, lang_scr_typ + ".txt")
     if path.exists(filepath):
-        return open(filepath).read().strip().decode("UTF-8")
+        return open(filepath).read().strip()
     return None
 
 
