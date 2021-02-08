@@ -24,14 +24,18 @@ import codecs
 import os
 from os import path
 import string
+import gi
+gi.require_version("Gtk", "3.0")
 
 from nototools import notoconfig
 from nototools.py23 import basestring
 from nototools.py23 import unichr
 
 import cairo
-import pango
-import pangocairo
+gi.require_version('Pango', '1.0')
+from gi.repository import Pango
+gi.require_version('PangoCairo', '1.0')
+from gi.repository import PangoCairo
 
 
 _fonts_conf_template = """<?xml version="1.0"?>
@@ -104,9 +108,9 @@ class DrawParams:
         width=1370,
         font_size=32,
         line_spacing=50,
-        weight=pango.WEIGHT_NORMAL,
-        style=pango.STYLE_NORMAL,
-        stretch=pango.STRETCH_NORMAL,
+        weight=Pango.Weight.NORMAL,
+        style=Pango.Style.NORMAL,
+        stretch=Pango.Stretch.NORMAL,
         maxheight=0,
         horiz_margin=0,
     ):
@@ -139,25 +143,28 @@ def make_drawparams(**kwargs):
 
 def draw_on_surface(surface, text, params):
     """Draw the string on a pre-created surface and return height."""
-    pangocairo_ctx = pangocairo.CairoContext(cairo.Context(surface))
-    layout = pangocairo_ctx.create_layout()
+    # pangocairo_ctx = pangocairo.CairoContext(cairo.Context(surface))
+    pangocairo_ctx = cairo.Context(surface)
+    # layout = pangocairo_ctx.create_layout()
+    layout = PangoCairo.create_layout(pangocairo_ctx)
 
     pango_ctx = layout.get_context()
-    if params.language is not None:
-        pango_ctx.set_language(pango.Language(params.language))
+    # RN: Don't know how to make this work, commenting it out for now
+    # if params.language is not None:
+        # pango_ctx.set_language(Pango.Language(params.language))
 
     if params.rtl:
         if params.vertical:
-            base_dir = pango.DIRECTION_TTB_RTL
+            base_dir = Pango.Direction.TTB_RTL
         else:
-            base_dir = pango.DIRECTION_RTL
-        alignment = pango.ALIGN_RIGHT
+            base_dir = Pango.Direction.RTL
+        alignment = Pango.Alignment.RIGHT
     else:
         if params.vertical:
-            base_dir = pango.DIRECTION_TTB_LTR
+            base_dir = Pango.Direction.TTB_LTR
         else:
-            base_dir = pango.DIRECTION_LTR
-        alignment = pango.ALIGN_LEFT
+            base_dir = Pango.Direction.LTR
+        alignment = Pango.Alignment.LEFT
 
     # The actual meaning of alignment is confusing.
     #
@@ -197,18 +204,18 @@ def draw_on_surface(surface, text, params):
     # width minus the margin.
     width = params.width - 2 * params.horiz_margin
 
-    font = pango.FontDescription()
+    font = Pango.FontDescription()
     font.set_family(params.family)
-    font.set_size(params.font_size * pango.SCALE)
+    font.set_size(params.font_size * Pango.SCALE)
     font.set_style(params.style)
     font.set_weight(params.weight)
     font.set_stretch(params.stretch)
 
     layout.set_font_description(font)
     layout.set_alignment(alignment)
-    layout.set_width(width * pango.SCALE)
-    layout.set_wrap(pango.WRAP_WORD_CHAR)
-    layout.set_spacing((params.line_spacing - params.font_size) * pango.SCALE)
+    layout.set_width(width * Pango.SCALE)
+    layout.set_wrap(Pango.WrapMode.WORD_CHAR)
+    layout.set_spacing((params.line_spacing - params.font_size) * Pango.SCALE)
     pango_ctx.set_base_dir(base_dir)
     layout.context_changed()
     layout.set_text(text)
@@ -231,8 +238,15 @@ def draw_on_surface(surface, text, params):
                     break
 
     extents = layout.get_pixel_extents()
-    ovl = -extents[0][0] > params.horiz_margin
-    ovr = extents[0][2] > width + params.horiz_margin
+
+    # RN: don't know how to fix this error, so setting these
+    # to False for now
+    # TypeError: 'Rectangle' object is not subscriptable
+    # ovl = -extents[0][0] > params.horiz_margin
+    # ovr = extents[0][2] > width + params.horiz_margin
+    ovl = False
+    ovr = False
+
     if ovl or ovr:
         if ovl:
             print("Error: image overflows left bounds")
@@ -242,8 +256,14 @@ def draw_on_surface(surface, text, params):
             "extents: %s, width: %s, margin: %s"
             % (extents, params.width, params.horiz_margin)
         )
-    top_usage = min(extents[0][1], extents[1][1], 0)
-    bottom_usage = max(extents[0][3], extents[1][3])
+
+    # RN: don't know how to fix this error, so setting these
+    # to 0 for now
+    # TypeError: 'Rectangle' object is not subscriptable
+    # top_usage = min(extents[0][1], extents[1][1], 0)
+    # bottom_usage = max(extents[0][3], extents[1][3])
+    top_usage = 0
+    bottom_usage = 0
 
     pangocairo_ctx.set_antialias(cairo.ANTIALIAS_GRAY)
     pangocairo_ctx.set_source_rgb(1, 1, 1)  # White background
@@ -251,6 +271,9 @@ def draw_on_surface(surface, text, params):
 
     pangocairo_ctx.translate(params.horiz_margin, -top_usage)
     pangocairo_ctx.set_source_rgb(0, 0, 0)  # Black text color
+
+    # RN: can't get past this:
+    # AttributeError: 'cairo.Context' object has no attribute 'show_layout'
     pangocairo_ctx.show_layout(layout)
 
     return bottom_usage - top_usage
@@ -336,7 +359,7 @@ def test():
     test('en-Latn_udhr.txt', 'en_latn_udhr_cond.svg', family='Noto Sans',
          stretch='condensed')
     test('en-Latn_udhr.txt', 'en_latn_udhr_extcond.svg', family='Noto Sans',
-         stretch=pango.STRETCH_EXTRA_CONDENSED)
+         stretch=Pango.Stretch.EXTRA_CONDENSED)
     """
 
     # test('en-Latn_udhr.txt', 'en_latn_rtl.png', family='Noto Sans', rtl=True)
@@ -345,19 +368,19 @@ def test():
 
 
 _weight_map = {
-    "ultralight": pango.WEIGHT_ULTRALIGHT,
-    "light": pango.WEIGHT_LIGHT,
-    "normal": pango.WEIGHT_NORMAL,
-    "bold": pango.WEIGHT_BOLD,
-    "ultrabold": pango.WEIGHT_ULTRABOLD,
-    "heavy": pango.WEIGHT_HEAVY,
+    "ultralight": Pango.Weight.ULTRALIGHT,
+    "light": Pango.Weight.LIGHT,
+    "normal": Pango.Weight.NORMAL,
+    "bold": Pango.Weight.BOLD,
+    "ultrabold": Pango.Weight.ULTRABOLD,
+    "heavy": Pango.Weight.HEAVY,
 }
 
 
 def _get_weight(weight_name):
     if not weight_name:
-        return pango.WEIGHT_NORMAL
-    if isinstance(weight_name, pango.Weight) or isinstance(weight_name, int):
+        return Pango.Weight.NORMAL
+    if isinstance(weight_name, Pango.Weight) or isinstance(weight_name, int):
         return weight_name
     if not isinstance(weight_name, basestring):
         raise ValueError("unexpected weight name type (%s)", type(weight_name))
@@ -370,16 +393,16 @@ def _get_weight(weight_name):
 
 
 _italic_map = {
-    "italic": pango.STYLE_ITALIC,
-    "oblique": pango.STYLE_OBLIQUE,
-    "normal": pango.STYLE_NORMAL,
+    "italic": Pango.Style.ITALIC,
+    "oblique": Pango.Style.OBLIQUE,
+    "normal": Pango.Style.NORMAL,
 }
 
 
 def _get_style(style_name):
     if not style_name:
-        return pango.STYLE_NORMAL
-    if isinstance(style_name, pango.Style):
+        return Pango.Style.NORMAL
+    if isinstance(style_name, Pango.Style):
         return style_name
     if not isinstance(style_name, basestring):
         raise ValueError("unexpected style name type (%s)", type(style_name))
@@ -392,22 +415,22 @@ def _get_style(style_name):
 
 
 _stretch_map = {
-    "ultra-condensed": pango.STRETCH_ULTRA_CONDENSED,
-    "extra-condensed": pango.STRETCH_EXTRA_CONDENSED,
-    "condensed": pango.STRETCH_CONDENSED,
-    "semi-condensed": pango.STRETCH_SEMI_CONDENSED,
-    "normal": pango.STRETCH_NORMAL,
-    "semi-expanded": pango.STRETCH_SEMI_EXPANDED,
-    "expanded": pango.STRETCH_EXPANDED,
-    "extra-expanded": pango.STRETCH_EXTRA_EXPANDED,
-    "ultra-expanded": pango.STRETCH_ULTRA_EXPANDED,
+    "ultra-condensed": Pango.Stretch.ULTRA_CONDENSED,
+    "extra-condensed": Pango.Stretch.EXTRA_CONDENSED,
+    "condensed": Pango.Stretch.CONDENSED,
+    "semi-condensed": Pango.Stretch.SEMI_CONDENSED,
+    "normal": Pango.Stretch.NORMAL,
+    "semi-expanded": Pango.Stretch.SEMI_EXPANDED,
+    "expanded": Pango.Stretch.EXPANDED,
+    "extra-expanded": Pango.Stretch.EXTRA_EXPANDED,
+    "ultra-expanded": Pango.Stretch.ULTRA_EXPANDED,
 }
 
 
 def _get_stretch(stretch_name):
     if not stretch_name:
-        return pango.STRETCH_NORMAL
-    if isinstance(stretch_name, pango.Stretch):
+        return Pango.Stretch.NORMAL
+    if isinstance(stretch_name, Pango.Stretch):
         return stretch_name
     if not isinstance(stretch_name, basestring):
         raise ValueError("unexpected stretch name type (%s)", type(stretch_name))
