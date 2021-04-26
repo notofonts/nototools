@@ -63,7 +63,7 @@ class TTCFile(object):
 
     def _build(self, data):
         tag, version, font_count = struct.unpack(_ttcHeader, data[:_ttcHeaderSize])
-        if tag not in ["ttcf"]:
+        if tag not in [b"ttcf"]:
             raise ValueError("not a font collection")
         if version not in [0x10000, 0x20000]:
             raise ValueError("unrecognized version %s" % version)
@@ -164,7 +164,7 @@ def ttc_filenames(ttc, data):
         name_entry = None
         file_name = None
         for ix in font_entry.tables:
-            if ttc.tables[ix].tag == "name":
+            if ttc.tables[ix].tag == b"name":
                 name_entry = ttc.tables[ix]
                 break
         if name_entry:
