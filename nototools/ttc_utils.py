@@ -98,6 +98,7 @@ def ttfont_filename(font):
                 file_name += "-Regular"
             font_fmt = ttfont_format_as_extension(font)
             file_name += "." + font_fmt
+            return file_name
     return None
 
 
