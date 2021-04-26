@@ -89,20 +89,16 @@ def ttc_filenames(ttc):
 
 
 def ttfont_filename(font):
-    font_fmt = ttfont_format_as_extension(font)
     name_table = font.get("name")
     if name_table:
-        ps_name = None
-        for r in name_table.names:
-            if (r.nameID, r.platformID, r.platEncID, r.langID) == (6, 3, 1, 0x409):
-                ps_name = r.string.decode("UTF-16BE")
-                break
+        ps_name = name_table.getDebugName(6)
         if ps_name:
             file_name = ps_name
             if "-" not in ps_name:
                 file_name += "-Regular"
+            font_fmt = ttfont_format_as_extension(font)
             file_name += "." + font_fmt
-    return file_name
+    return None
 
 
 def ttfont_format_as_extension(font):
