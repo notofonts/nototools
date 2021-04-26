@@ -31,6 +31,75 @@ from nototools import tool_utils
 TableEntry = collections.namedtuple("TableEntry", "tag,offset,length")
 
 
+_EXTRACT_TOOL_PATH = "[afdko]/FDK/Tools/linux/otc2otf"
+_BUILD_TOOL_PATH = "[afdko]/FDK/Tools/linux/otf2otc"
+
+
+class TTCFile(object):
+    """Holds some information from the sfnt headers in a .ttc file.
+
+  - fonts is a list of FontEntry objects, in order.  It holds
+  the format ('ttf' or 'otf') and a list of indices into the
+  tables list.
+  - tables is the list of TableEntry objects, in order. Each holds
+  the table tag, offset, and length.  Offsets are relative to
+  the very start of the data.  There is one entry for each unique
+  table in the ttc.
+  """
+
+    def __init__(self, data=None):
+        if data:
+            self._build(data)
+        else:
+            self.fonts = []
+            self.tables = []
+
+    def _build(self, data):
+        tag, version, font_count = struct.unpack(_ttcHeader, data[:_ttcHeaderSize])
+        if tag not in [b"ttcf"]:
+            raise ValueError("not a font collection")
+        if version not in [0x10000, 0x20000]:
+            raise ValueError("unrecognized version %s" % version)
+
+        self.fonts = []
+        self.tables = []
+        for i in range(font_count):
+            pos = _ttcHeaderSize + i * 4
+            offset = struct.unpack(">L", data[pos : pos + 4])[0]
+            self._build_font_entry(data, offset)
+
+    def _build_font_entry(self, data, offset):
+        limit = offset + _sfntHeaderSize
+        version, num_tables = struct.unpack(_sfntHeader, data[offset:limit])[:2]
+        if version == 0x10000:
+            version_str = "1.0"
+            font_fmt = "ttf"
+        elif version == 0x4F54544F:
+            version_str = "OTTO"
+            font_fmt = "otf"
+        else:
+            raise ValueError("unrecognized sfnt version %x" % version)
+
+        font_table_indices = []
+        for j in range(num_tables):
+            entry_pos = limit + j * _sfntHeaderEntrySize
+            font_table_indices.append(self._build_table_entry(data, entry_pos))
+
+        self.fonts.append(FontEntry(font_fmt, font_table_indices))
+
+    def _build_table_entry(self, data, offset):
+        limit = offset + _sfntHeaderEntrySize
+        tag, checksum, offset, length = struct.unpack(
+            _sfntHeaderEntry, data[offset:limit]
+        )
+        entry = TableEntry(tag, offset, length)
+        for i, e in enumerate(self.tables):
+            if e == entry:
+                return i
+        self.tables.append(entry)
+        return len(self.tables) - 1
+
+      
 def ttcfile_dump(ttcfile):
     """Reads the file and dumps the information."""
     ttc = TTCollection(ttcfile)
@@ -84,7 +153,6 @@ def ttc_filenames(ttc):
         file_name = ttfont_filename(font)
         names.append(file_name
                      or ("<unknown %s>" % ttfont_format_as_extension(font)))
-
     return names
 
 
