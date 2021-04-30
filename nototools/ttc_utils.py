@@ -99,7 +99,7 @@ class TTCFile(object):
         self.tables.append(entry)
         return len(self.tables) - 1
 
-      
+
 def ttcfile_dump(ttcfile):
     """Reads the file and dumps the information."""
     ttc = TTCollection(ttcfile)
@@ -151,8 +151,7 @@ def ttc_filenames(ttc):
     names = []
     for font in ttc.fonts:
         file_name = ttfont_filename(font)
-        names.append(file_name
-                     or ("<unknown %s>" % ttfont_format_as_extension(font)))
+        names.append(file_name or ("<unknown %s>" % ttfont_format_as_extension(font)))
     return names
 
 
@@ -176,8 +175,7 @@ def ttfont_format_as_extension(font):
         return "ttf"
     if sfnt_version == b"OTTO":
         return "otf"
-    raise ValueError("unrecognized sfnt version '%s'" %
-                     sfnt_version.decode("ascii"))
+    raise ValueError("unrecognized sfnt version '%s'" % sfnt_version.decode("ascii"))
 
 
 def ttcfile_build(output_ttc_path, fontpath_list):
@@ -194,9 +192,7 @@ def ttc_namesfile_name(ttc_path):
     return path.splitext(path.basename(ttc_path))[0] + "_names.txt"
 
 
-def ttcfile_build_from_namesfile(output_ttc_path,
-                                 file_dir,
-                                 namesfile_name=None):
+def ttcfile_build_from_namesfile(output_ttc_path, file_dir, namesfile_name=None):
     """Read names of files from namesfile and pass them to build_ttc to build
   a .ttc file.  The names file will default to one named after output_ttc and
   located in file_dir."""
@@ -235,9 +231,9 @@ def ttcfile_extract(input_ttc_path, output_dir):
     return filenames
 
 
-def ttcfile_extract_and_write_namesfile(input_ttc_path,
-                                        output_dir,
-                                        namesfile_name=None):
+def ttcfile_extract_and_write_namesfile(
+    input_ttc_path, output_dir, namesfile_name=None
+):
     """Call ttcfile_extract and in addition write a file to output dir containing
   the names of the extracted files.  The name of the names file will default to
   one based on the basename of the input path. It is written to output_dir."""
