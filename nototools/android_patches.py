@@ -126,18 +126,65 @@ def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
         font_data.delete_from_cmap(font, exclude)
         font.save(outfile)
 
-    EMOJI = (
-        [0x26BD, 0x26BE, 0x1F18E]
-        + list(range(0x1F191, 0x1F19A + 1))
-        + [0x1F201, 0x1F21A, 0x1F22F]
-        + list(range(0x1F232, 0x1F236 + 1))
-        + [0x1F238, 0x1F239, 0x1F23A, 0x1F250, 0x1F251]
-    )
+    # Characters supported in Noto CJK fonts that UTR #51 recommends default to
+    # emoji-style.
+    EMOJI_IN_CJK = {
+        0x26BD,  # ⚽ SOCCER BALL
+        0x26BE,  # ⚾ BASEBALL
+        0x1F18E,  # 🆎 NEGATIVE SQUARED AB
+        0x1F191,  # 🆑 SQUARED CL
+        0x1F192,  # 🆒 SQUARED COOL
+        0x1F193,  # 🆓 SQUARED FREE
+        0x1F194,  # 🆔 SQUARED ID
+        0x1F195,  # 🆕 SQUARED NEW
+        0x1F196,  # 🆖 SQUARED NG
+        0x1F197,  # 🆗 SQUARED OK
+        0x1F198,  # 🆘 SQUARED SOS
+        0x1F199,  # 🆙 SQUARED UP WITH EXCLAMATION MARK
+        0x1F19A,  # 🆚 SQUARED VS
+        0x1F201,  # 🈁 SQUARED KATAKANA KOKO
+        0x1F21A,  # 🈚 SQUARED CJK UNIFIED IDEOGRAPH-7121
+        0x1F22F,  # 🈯 SQUARED CJK UNIFIED IDEOGRAPH-6307
+        0x1F232,  # 🈲 SQUARED CJK UNIFIED IDEOGRAPH-7981
+        0x1F233,  # 🈳 SQUARED CJK UNIFIED IDEOGRAPH-7A7A
+        0x1F234,  # 🈴 SQUARED CJK UNIFIED IDEOGRAPH-5408
+        0x1F235,  # 🈵 SQUARED CJK UNIFIED IDEOGRAPH-6E80
+        0x1F236,  # 🈶 SQUARED CJK UNIFIED IDEOGRAPH-6709
+        0x1F238,  # 🈸 SQUARED CJK UNIFIED IDEOGRAPH-7533
+        0x1F239,  # 🈹 SQUARED CJK UNIFIED IDEOGRAPH-5272
+        0x1F23A,  # 🈺 SQUARED CJK UNIFIED IDEOGRAPH-55B6
+        0x1F250,  # 🉐 CIRCLED IDEOGRAPH ADVANTAGE
+        0x1F251,  # 🉑 CIRCLED IDEOGRAPH ACCEPT
+    }
+
+    # Characters we have decided we are doing as emoji-style in Android,
+    # despite UTR #51's recommendation
+    ANDROID_EMOJI = {
+        0x2600,  # ☀ BLACK SUN WITH RAYS
+        0x2601,  # ☁ CLOUD
+        0x260E,  # ☎ BLACK TELEPHONE
+        0x261D,  # ☝ WHITE UP POINTING INDEX
+        0x263A,  # ☺ WHITE SMILING FACE
+        0x2660,  # ♠ BLACK SPADE SUIT
+        0x2663,  # ♣ BLACK CLUB SUIT
+        0x2665,  # ♥ BLACK HEART SUIT
+        0x2666,  # ♦ BLACK DIAMOND SUIT
+        0x270C,  # ✌ VICTORY HAND
+        0x2744,  # ❄ SNOWFLAKE
+        0x2764,  # ❤ HEAVY BLACK HEART
+    }
+
+    # We don't want support for ASCII control chars.
+    CONTROL_CHARS = tool_utils.parse_int_ranges("0000-001F")
+
+    EXCLUDED_CODEPOINTS = sorted(EMOJI_IN_CJK | ANDROID_EMOJI | CONTROL_CHARS)
 
     for font_name in cjk_font_names:
         print("remove cjk emoji", font_name)
         _remove_from_cmap(
-            path.join(srcdir, font_name), path.join(dstdir, font_name), exclude=EMOJI
+            path.join(srcdir, font_name),
+            path.join(dstdir, font_name),
+            exclude=EXCLUDED_CODEPOINTS,
         )
 
 
