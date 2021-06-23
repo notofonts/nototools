@@ -43,7 +43,7 @@ except ImportError:
 from nototools import tool_utils  # parse_int_ranges
 
 # Update this when we update the base version data we use
-UNICODE_VERSION = 12.0
+UNICODE_VERSION = 13.0
 
 _data_is_loaded = False
 _property_value_aliases_data = {}
