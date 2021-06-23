@@ -166,7 +166,7 @@ _FONT_NAME_REGEX = (
     "(Display)?"
     "-?"
     "((?:Semi|Extra)?Condensed)?"
-    "(|%s)?" % "|".join(WEIGHTS.keys()) + "(Italic)?"
+    "(|%s)?" % "|".join(WEIGHTS.keys()) + "((?<!Old)Italic)?"
     "\.(ttf|ttc|otf)"
 )
 
@@ -248,6 +248,8 @@ def get_noto_font(
         script = "Arab"
     elif script == "MayanNumerals":
         script = "Zmth"
+    elif script == "Old":
+        script = "Ital"
     elif script == "Urdu":
         # Use 'Aran' for languages written in the Nastaliq Arabic style, like Urdu.
         # The font naming uses 'Urdu' which is not a script, but a language.
