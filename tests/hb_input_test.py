@@ -19,11 +19,12 @@ import unittest
 
 from fontTools.agl import AGL2UV
 from fontTools.feaLib.builder import addOpenTypeFeaturesFromString
-from fontTools.misc import UnicodeIO
 from fontTools import mtiLib
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import newTable, TTFont
 from fontTools.ttLib.tables._c_m_a_p import cmap_format_4
+
+from io import StringIO
 
 from nototools.hb_input import HbInputGenerator
 
@@ -159,7 +160,7 @@ def make_font(feature_source, fea_type="fea"):
     if fea_type == "fea":
         addOpenTypeFeaturesFromString(font, feature_source)
     elif fea_type == "mti":
-        font["GSUB"] = mtiLib.build(UnicodeIO(feature_source), font)
+        font["GSUB"] = mtiLib.build(StringIO(feature_source), font)
 
     return font
 
