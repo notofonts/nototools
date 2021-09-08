@@ -15,7 +15,7 @@ fs==2.4.11
 lxml==4.6.3
 MutatorMath==3.0.1
 pathspec==0.8.0
-Pillow==8.2.0
+Pillow==8.3.2
 psautohint==2.0.1
 pyclipper==1.1.0.post1
 pytz==2020.1
