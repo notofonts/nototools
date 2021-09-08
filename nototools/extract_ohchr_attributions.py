@@ -181,9 +181,9 @@ class ParseOhchr(html.HTMLParser):
 def get_ohchr_status(ohchr_code, lang, attrib):
     """Decide the status based on the attribution text.
 
-  'original' are in the public domain and need no attribution.
-  'UN' are official UN translations and should be attributed as such.
-  'other' are not official UN translations and should be attributed as such."""
+    'original' are in the public domain and need no attribution.
+    'UN' are official UN translations and should be attributed as such.
+    'other' are not official UN translations and should be attributed as such."""
 
     if ohchr_code in ["eng", "frn", "spn", "rus", "chn", "arz"]:
         return "original"

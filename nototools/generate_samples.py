@@ -218,7 +218,7 @@ class SampleGen(object):
 
 def _strip_comments(definition_lines):
     """Not as straightforward as usual, because comments can be escaped
-  by backslash, and backslash can escape space."""
+    by backslash, and backslash can escape space."""
     out_lines = []
     for line in definition_lines:
         pos = 0
@@ -412,7 +412,7 @@ _PAT_RE = re.compile(r"\s*(?:<([a-zA-Z0-9_]+)>|\()")
 
 def _parse_pattern(value, groups):
     """Return a list of lists (groups) or tuples of lists
-  (parenthesized groups)."""
+    (parenthesized groups)."""
     pat_list = []
     while value:
         m = _PAT_RE.match(value)

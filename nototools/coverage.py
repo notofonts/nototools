@@ -32,12 +32,12 @@ from nototools.py23 import unichr
 def character_set(font):
     """Returns the character coverage of a font.
 
-  Args:
-    font: The input font's file name, or a TTFont.
+    Args:
+      font: The input font's file name, or a TTFont.
 
-  Returns:
-    A frozenset listing the characters supported in the font.
-  """
+    Returns:
+      A frozenset listing the characters supported in the font.
+    """
     if isinstance(font, str):
         font = ttLib.TTFont(font, fontNumber=0)
     cmap_table = font["cmap"]

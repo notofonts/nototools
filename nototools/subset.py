@@ -81,8 +81,7 @@ def subset_font(source_file, target_file, include=None, exclude=None, options=No
 
 
 def main(argv):
-    """Subset the first argument to second, dropping unused parts of the font.
-    """
+    """Subset the first argument to second, dropping unused parts of the font."""
     subset_font(argv[1], argv[2])
 
 

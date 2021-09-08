@@ -29,7 +29,7 @@ import shutil
 
 def grab_files(dst, files, src_vendor, name_date_re, extract_fn):
     """Get date from each filename in files, create a folder for it, under
-  dst/drops, then extract the files to it."""
+    dst/drops, then extract the files to it."""
 
     # The zip indicates that the corresponding drop is good and built from it. But
     # we might have messed up along the way, so:
@@ -96,23 +96,23 @@ def matching_files_in_dir(src, namere):
 def invoke_main(src_vendor, name_date_re, extract_fn, default_params={}):
     """Grab the files.
 
-  src_vendor is a string, currently either Adobe or Monotype.
-  name_date_re is a regex, it should extract name, year, month, and day fields from the filename
-  extract_fn is a fn to to extract a file, it takes two args, a dest dir and the zip file name.
+    src_vendor is a string, currently either Adobe or Monotype.
+    name_date_re is a regex, it should extract name, year, month, and day fields from the filename
+    extract_fn is a fn to to extract a file, it takes two args, a dest dir and the zip file name.
 
-  default_params are default values for argparse.  They can be:
-  - default_srcdir
-  - default_dstdir
-  - default_regex
+    default_params are default values for argparse.  They can be:
+    - default_srcdir
+    - default_dstdir
+    - default_regex
 
-  The default regex and the name_date_re are superficially similar, but different in
-  purpose.  The default_regex is used to select files under the src directory. The
-  name_date_re is used to extract the date from the file name.  Both apply to the
-  file name, but the default_regex can be anything, while name_date_re needs to select
-  four groups, where the 2nd, 3rd, and 4th are the year, month, and day (yes this is
-  brittle, but all of this is).
+    The default regex and the name_date_re are superficially similar, but different in
+    purpose.  The default_regex is used to select files under the src directory. The
+    name_date_re is used to extract the date from the file name.  Both apply to the
+    file name, but the default_regex can be anything, while name_date_re needs to select
+    four groups, where the 2nd, 3rd, and 4th are the year, month, and day (yes this is
+    brittle, but all of this is).
 
-  The dest directory must exist and should have 'zips' and 'drops' subdirs."""
+    The dest directory must exist and should have 'zips' and 'drops' subdirs."""
 
     if not src_vendor:
         print("must define src_vendor")

@@ -44,8 +44,7 @@ from nototools import render
 
 
 def _regular_expression_from_set(character_set):
-    """Returns a regexp matching any sequence of a set of input characters.
-    """
+    """Returns a regexp matching any sequence of a set of input characters."""
     character_set -= set(range(0x00, 0x20))  # Remove ASCII controls
 
     literal_list = []
@@ -60,7 +59,7 @@ def _regular_expression_from_set(character_set):
 
 def test_rendering(data, font_file_name, min_allowed, max_allowed, language=None):
     """Test the rendering of the input data in a given font.
-    
+
     The input data is first filtered for sequences supported in the font.
     """
     font_characters = coverage.character_set(font_file_name)
@@ -85,7 +84,7 @@ def test_rendering_from_file(
     file_handle, font_file_name, min_allowed, max_allowed, language=None
 ):
     """Test the rendering of the contents of a file for vertical extents.
-    
+
     Supports both text files and XTB files.
     """
 
@@ -104,7 +103,7 @@ def test_rendering_from_file(
 
     else:
         # Assume text file, with all the data as one large string
-        #input_data = input_data.decode("UTF-8")
+        # input_data = input_data.decode("UTF-8")
         pass
 
     # Now, input_data is just a long string, with new lines as separators.
@@ -143,9 +142,11 @@ def main(argv):
     """Test vertical extents to make sure they stay within specified bounds."""
 
     if len(argv) <= 1:
-        print("test_vertical_extents.py font.ttf [language [ymin ymax]] < sample_text.[txt|xtb]")
+        print(
+            "test_vertical_extents.py font.ttf [language [ymin ymax]] < sample_text.[txt|xtb]"
+        )
         return
-    
+
     font_file_name = argv[1]
 
     if len(argv) > 2:
