@@ -53,10 +53,10 @@ _SLOPE_KEY_TO_NAMES = {
 
 def _get_stylenames(styles):
     """Returns the list of style names for the encoded styles.  These are the
-  (master-ish) style names encoded as weights / widths / italic, where each
-  field is one of the above key values.
-  If there's not an italic then the italic is omitted, if there's only
-  regular width and no italic then widths are omitted."""
+    (master-ish) style names encoded as weights / widths / italic, where each
+    field is one of the above key values.
+    If there's not an italic then the italic is omitted, if there's only
+    regular width and no italic then widths are omitted."""
     m = _extended_style_re.match(styles)
     if not m:
         raise ValueError('could not match style "%s"' % styles)
@@ -99,15 +99,15 @@ def check_familyname(name, styles):
 
 def generate_family_filenames(name, styles):
     """Name is the family name portion of a Noto filename.  Styles is the
-  encoding of the styles, see _get_stylenames."""
+    encoding of the styles, see _get_stylenames."""
     stylenames = _get_stylenames(styles)
     return [name + "-" + s + ".ttf" for s in stylenames]
 
 
 def _for_all_familynames(namefile, fn):
     """Call fn passing the family name and style descriptor for
-  all families in namefile. '#' is a comment to eol, blank lines are
-  ignored."""
+    all families in namefile. '#' is a comment to eol, blank lines are
+    ignored."""
     styles = None
     with open(namefile, "r") as f:
         for name in f:

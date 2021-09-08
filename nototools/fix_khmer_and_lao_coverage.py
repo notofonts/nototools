@@ -30,7 +30,7 @@ from nototools import opentype_data
 
 def merge_chars_from_bank(orig_font, bank_font, target_font, chars):
     """Merge glyphs from a bank font to another font.
-    
+
     Only the glyphs themselves, the horizontal metrics, and the cmaps will be
     copied.
     """
@@ -59,7 +59,7 @@ _UNHINTED_FONTS_DIR = os.path.abspath(
 
 def main(argv):
     """Fix all the fonts given in the command line.
-    
+
     If they are Lao fonts, make sure they have ZWSP and dotted circle. If they
     are Khmer fonts, make sure they have ZWSP, joiners, and dotted circle."""
 

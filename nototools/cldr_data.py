@@ -668,7 +668,7 @@ def get_exemplar_and_source(loc_tag):
 
 def loc_tag_to_lsrv(loc_tag):
     """Convert a locale tag to a tuple of lang, script, region, and variant.
-  Supplies likely script if missing."""
+    Supplies likely script if missing."""
     m = LSRV_RE.match(loc_tag)
     if not m:
         if _DEBUG:
@@ -732,8 +732,8 @@ def _init_lang_scr_to_lit_pops():
 
 def get_lang_scr_to_lit_pops():
     """Return a mapping from lang_scr to a list of tuples of region and
-  population sorted in descending order by population.
-  """
+    population sorted in descending order by population.
+    """
     if not _lang_scr_to_lit_pops:
         _init_lang_scr_to_lit_pops()
     return _lang_scr_to_lit_pops

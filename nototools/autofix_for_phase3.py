@@ -58,8 +58,8 @@ _version_info_re = re.compile(
 
 def _check_version_info(version_info):
     """ensure version info looks reasonable, for example:
-  'GOOG;noto-fonts:20170220:a8a215d2e889'.  Raise an exception
-  if it does not."""
+    'GOOG;noto-fonts:20170220:a8a215d2e889'.  Raise an exception
+    if it does not."""
     m = _version_info_re.match(version_info)
     if not m:
         raise Exception(
@@ -89,7 +89,7 @@ def _check_version_info(version_info):
 
 def _get_version_info(fonts):
     """If fonts are all from noto-fonts, use information from the current
-  state of the repo to build a version string.  Otherwise return None."""
+    state of the repo to build a version string.  Otherwise return None."""
 
     # add '/' to distinguish between noto-fonts/ and noto-fonts-alpha/
     for repo_tag in ["[fonts]", "[fonts_alpha]", "[source]"]:
@@ -137,7 +137,7 @@ def _check_autohint(script):
 
 def _expand_font_names(font_names, result=None):
     """font names can include names of files containing a list of names, open
-  those recursively and add to the set."""
+    those recursively and add to the set."""
 
     def strip_comment(line):
         ix = line.find("#")
@@ -240,14 +240,14 @@ def _mm_to_version_str(mm):
 
 def get_new_version(font, relfont, nversion):
     """Return a new version number.  font is the font we're updating,
-  relfont is the released version of this font if it exists, or None,
-  and nversion is the new version, 'keep', or None. If a new version is
-  passed to us, use it unless it is lower than either existing version,
-  in which case we raise an exception.  If the version is 'keep' and
-  there is an existing release version, keep that.  Otherwise bump the
-  release version, if it exists, or convert the old version to a 2.0 version
-  as appropriate.  If the old version is a 2.0 version (e.g. Armenian was
-  was '2.30' in phase 2), that value is mapped to 2.40."""
+    relfont is the released version of this font if it exists, or None,
+    and nversion is the new version, 'keep', or None. If a new version is
+    passed to us, use it unless it is lower than either existing version,
+    in which case we raise an exception.  If the version is 'keep' and
+    there is an existing release version, keep that.  Otherwise bump the
+    release version, if it exists, or convert the old version to a 2.0 version
+    as appropriate.  If the old version is a 2.0 version (e.g. Armenian was
+    was '2.30' in phase 2), that value is mapped to 2.40."""
 
     version = _extract_version(font)
     rversion = _extract_version(relfont) if relfont else None
@@ -311,8 +311,8 @@ def _is_ui_metrics(f):
 
 def _autohint_code(f, script):
     """Return 'not-hinted' if we don't hint this, else return the ttfautohint
-  code, which might be None if ttfautohint doesn't support the script.
-  Note that LGC and MONO return None."""
+    code, which might be None if ttfautohint doesn't support the script.
+    Note that LGC and MONO return None."""
 
     if script == "no-script":
         return script
@@ -364,7 +364,7 @@ def _alert(val_name, cur_val, new_val):
 
 def _alert_and_check(val_name, cur_val, expected_val, max_diff):
     """if max_diff >= 0, curval must be <= expected_val + maxdiff,
-  else curval must be >= expected_val + maxdiff"""
+    else curval must be >= expected_val + maxdiff"""
     _alert(val_name, cur_val, expected_val)
     if max_diff >= 0:
         err = cur_val > expected_val + max_diff
@@ -376,9 +376,9 @@ def _alert_and_check(val_name, cur_val, expected_val, max_diff):
 
 def _get_release_fontpath(f, rel_dir):
     """If rel_dir is not None, look for a font under 'hinted' or 'unhinted'
-  depending on which of these is in the path f.  If neither is in f,
-  look under rel_dir, and then rel_dir/unhinted.  If a match is found,
-  return the path."""
+    depending on which of these is in the path f.  If neither is in f,
+    look under rel_dir, and then rel_dir/unhinted.  If a match is found,
+    return the path."""
 
     if rel_dir is None:
         return None

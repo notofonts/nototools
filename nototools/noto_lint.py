@@ -642,7 +642,10 @@ def check_font(
                 ).encode("UTF-8")
             )
         else:
-            print("%s <%s> %s" % (err_type[0], test_name, message.encode("UTF-8").decode("UTF-8")))
+            print(
+                "%s <%s> %s"
+                % (err_type[0], test_name, message.encode("UTF-8").decode("UTF-8"))
+            )
         sys.stdout.flush()
 
     _script_key_to_font_name = {
@@ -2385,7 +2388,7 @@ def check_font(
 
 def get_lint_spec(spec_file, extra_specs):
     """Return a LintSpec from spec_file supplemented with extra_specs.
-  If spec_file is None, only use extra_specs."""
+    If spec_file is None, only use extra_specs."""
 
     spec = None
     if spec_file != "None":

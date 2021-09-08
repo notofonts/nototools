@@ -85,8 +85,8 @@ def _get_cldr_files(cldr_dirs):
 
 def _collect_script_to_punct(files):
     """Builds script to punct from provided cldr files.  Builds 'LGC'
-  data from component scripts.  Adds ASCII single and double quotes if
-  corresponding quotes are in the punct."""
+    data from component scripts.  Adds ASCII single and double quotes if
+    corresponding quotes are in the punct."""
 
     script_to_punct = collections.defaultdict(set)
     curly_quotes_to_standard = [

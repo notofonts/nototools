@@ -55,8 +55,8 @@ _fonts_conf_template = """<?xml version="1.0"?>
 
 def setup_fonts_conf():
     """We first look for fonts.conf under the root nototools, and if we don't
-  find it we write it.  The fontconfig cache also goes there.  This of course
-  requires nototools to be writable."""
+    find it we write it.  The fontconfig cache also goes there.  This of course
+    requires nototools to be writable."""
 
     # We require notoconfig because we don't know where this code is located,
     # nor whether the font directories might be relative to it.
@@ -129,7 +129,7 @@ class DrawParams:
 
 def make_drawparams(**kwargs):
     """Create a DrawParams from kwargs, but converting weight, style, and stretch
-  from values from string to the pango value types if needed."""
+    from values from string to the pango value types if needed."""
     dp = DrawParams(**kwargs)
     dp.weight = _get_weight(kwargs.get("weight", "normal"))
     dp.style = _get_style(kwargs.get("style", "normal"))
@@ -291,7 +291,7 @@ def create_png(text, output_path, **kwargs):
 
 def create_img(text, output_path, **kwargs):
     """Creates a PNG or SVG image based on the output_path extension,
-       from the given text"""
+    from the given text"""
     ext = (path.splitext(output_path)[1]).lower()
     if ext == ".png":
         create_png(text, output_path, **kwargs)

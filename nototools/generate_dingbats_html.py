@@ -92,7 +92,7 @@ def _cleanlines(textfile):
 
 class CodeList(object):
     """An ordered list of code points (ints).  These might map to other (PUA) code
-  points that the font knows how to display."""
+    points that the font knows how to display."""
 
     @staticmethod
     def fromfile(filename):
@@ -500,19 +500,19 @@ class CodeTableTarget(Target):
 
 def _load_fonts(data_list, data_dir, codelist_map):
     """data_list is a list of tuples of two to four items.  The first item is
-  the key, the second is the name of the font file in data_dir.  The
-  second can be None, otherwise it must exist.  The third item, if
-  present, is the name to use for the font, otherwise it will be read
-  from the font, it must be present where there is no font.  The
-  fourth item, if present, is the name of a codelist file, it must be present
-  where there is no font.  If present and None, the the unicode cmap from the
-  font is used.  otherwise the font file name is stripped of its extension and
-  try to find a file from which to create a codelist.
-  Multiple tuples can share the same key, these form one column and the order
-  of the files composing the tuple defines the order in which they are searched
-  for a glyph.
-  Returns a list of tuples of key, keyinfo, where keyinfo is
-  a list of tuples of filepath, name, codelist."""
+    the key, the second is the name of the font file in data_dir.  The
+    second can be None, otherwise it must exist.  The third item, if
+    present, is the name to use for the font, otherwise it will be read
+    from the font, it must be present where there is no font.  The
+    fourth item, if present, is the name of a codelist file, it must be present
+    where there is no font.  If present and None, the the unicode cmap from the
+    font is used.  otherwise the font file name is stripped of its extension and
+    try to find a file from which to create a codelist.
+    Multiple tuples can share the same key, these form one column and the order
+    of the files composing the tuple defines the order in which they are searched
+    for a glyph.
+    Returns a list of tuples of key, keyinfo, where keyinfo is
+    a list of tuples of filepath, name, codelist."""
 
     def _load_font(data, codelist_map):
         if len(data) < 4:
@@ -559,10 +559,10 @@ def _load_fonts(data_list, data_dir, codelist_map):
 
 def _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts):
     """Return the fonts we want to use to display the codelist, in order.
-  If not None, prefer_fonts is a key or list of keys for fonts to order
-  at the end.  If not None, omit_fonts is key or list of keys to omit
-  even if they would otherwise be used by default, however prefer_fonts
-  takes precedence over omit_fonts if the same key is in both."""
+    If not None, prefer_fonts is a key or list of keys for fonts to order
+    at the end.  If not None, omit_fonts is key or list of keys to omit
+    even if they would otherwise be used by default, however prefer_fonts
+    takes precedence over omit_fonts if the same key is in both."""
 
     if prefer_fonts is not None:
         if isinstance(prefer_fonts, basestring):
@@ -604,10 +604,10 @@ def _select_used_fonts(codelist, fonts, prefer_fonts, omit_fonts):
 
 def _load_targets(target_data, fonts, data_dir, codelist_map):
     """Target data is a list of tuples of target names, codelist files, an
-  optional preferred font key or list of keys, and an optional omitted font
-  key or list of keys. All files should be in data_dir.  Codelist_map is a
-  cache in case the codelist file has already been read.  Returns a list of
-  tuples of target name, codelist, and fontlist."""
+    optional preferred font key or list of keys, and an optional omitted font
+    key or list of keys. All files should be in data_dir.  Codelist_map is a
+    cache in case the codelist file has already been read.  Returns a list of
+    tuples of target name, codelist, and fontlist."""
 
     def _create_suffix(charlist):
         return charlist.decode("unicode-escape")
@@ -644,8 +644,8 @@ def _load_targets(target_data, fonts, data_dir, codelist_map):
 
 def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
     """Processes expr_list in order, building a codeset.
-  See _read_flag_data_from_file for information on expr_list.
-  This can modify flag_sets and codelist_map."""
+    See _read_flag_data_from_file for information on expr_list.
+    This can modify flag_sets and codelist_map."""
 
     result = ()
     for op, exp in expr_list:
@@ -661,8 +661,9 @@ def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
                 if codes_or_spec is None:
                     # we only know about '_emoji_' and '_math_'
                     if exp == "_emoji_":
-                        codes = unicode_data.get_emoji() - unicode_data.get_unicode_emoji_variants(
-                            "proposed_extra"
+                        codes = (
+                            unicode_data.get_emoji()
+                            - unicode_data.get_unicode_emoji_variants("proposed_extra")
                         )
                     elif exp == "_math_":
                         codes = unicode_data.chars_with_property("Math")
@@ -692,13 +693,13 @@ def _create_codeset_from_expr(expr_list, flag_sets, data_dir, codelist_map):
 
 def _load_flags(flag_data, data_dir, codelist_map):
     """Flag data is a list of tuples of defined sets or flags and expressions, see
-  _read_flag_data_from_file for more info.
-  This returns a map from set name to a tuple of (cp_set, bool) where True
-  means the flag is set for a cp if it is in the cp_set, and false means the
-  flag is set if the cp is not in the cp_set.
+    _read_flag_data_from_file for more info.
+    This returns a map from set name to a tuple of (cp_set, bool) where True
+    means the flag is set for a cp if it is in the cp_set, and false means the
+    flag is set if the cp is not in the cp_set.
 
-  This can fail since the code processing the flag_data does not actually try
-  to load the codelists."""
+    This can fail since the code processing the flag_data does not actually try
+    to load the codelists."""
 
     flag_sets = {}
     flag_map = {}
@@ -753,53 +754,53 @@ def _read_font_data_from_file(filename):
 
 def _read_target_data_from_file(filename):
     """Target data uses # to indicate a comment to end of line.
-  Comments are stripped, then an empty or blank line is ignored.
+    Comments are stripped, then an empty or blank line is ignored.
 
-  Targets are either tables or sequences, the default
-  is a table.
+    Targets are either tables or sequences, the default
+    is a table.
 
-  Each line in a table target defines a tuple of four values:
-  target name, codelist, preferred font ids, and omitted font
-  ids.  Each line in a sequence target defines a tuple of
-  four values: target name, codelist, suffix, and font id.
-  A line can also start with one of tree directives,
-  !define, !default, or !type.
+    Each line in a table target defines a tuple of four values:
+    target name, codelist, preferred font ids, and omitted font
+    ids.  Each line in a sequence target defines a tuple of
+    four values: target name, codelist, suffix, and font id.
+    A line can also start with one of tree directives,
+    !define, !default, or !type.
 
-  If a line starts with '!define ' we expect a key followed
-  by '=' and then one or more names separated by space. The
-  names are turned into a list, and entered into a dictionary
-  for the key.  Once defined a key cannot be redefined.
+    If a line starts with '!define ' we expect a key followed
+    by '=' and then one or more names separated by space. The
+    names are turned into a list, and entered into a dictionary
+    for the key.  Once defined a key cannot be redefined.
 
-  If a line starts with '!default ' we expect a key of either
-  'prefer' or 'omit' optionally followed by '=' and a list of
-  names to prefer or omit; these will become the default
-  values until the next '!default ' directive.  If there is
-  no '=' the value is reset.  An omitted or empty prefer or
-  omit field will get the fallback, to explicitly request None
-  and override the fallback the field should contain 'None'.
+    If a line starts with '!default ' we expect a key of either
+    'prefer' or 'omit' optionally followed by '=' and a list of
+    names to prefer or omit; these will become the default
+    values until the next '!default ' directive.  If there is
+    no '=' the value is reset.  An omitted or empty prefer or
+    omit field will get the fallback, to explicitly request None
+    and override the fallback the field should contain 'None'.
 
-  If a line starts with '!type ' we expect either 'table' or
-  'sequence' to follow.  This will become the type of the
-  following lines until the next '!type ' directive.
+    If a line starts with '!type ' we expect either 'table' or
+    'sequence' to follow.  This will become the type of the
+    following lines until the next '!type ' directive.
 
-  Normally, a line consists of 2-4 fields separated by ';'.
-  The first two are a target name and a codelist spec.
+    Normally, a line consists of 2-4 fields separated by ';'.
+    The first two are a target name and a codelist spec.
 
-  For table targets, the third is the preferred font ids
-  separated by space, previously !defined keys can be used
-  here instead of this list and the list defined for that key
-  will be used.  The fourth is the omitted font ids separated
-  by space, they are treated similarly.  If the preferred or
-  omit field is missing or empty and a default value for it
-  has been set, that value is used.
+    For table targets, the third is the preferred font ids
+    separated by space, previously !defined keys can be used
+    here instead of this list and the list defined for that key
+    will be used.  The fourth is the omitted font ids separated
+    by space, they are treated similarly.  If the preferred or
+    omit field is missing or empty and a default value for it
+    has been set, that value is used.
 
-  For sequence targets, the third is a hex sequence indicating
-  the suffix string to apply after each codepoint, and the
-  fourth is the font id; these must both be present.
+    For sequence targets, the third is a hex sequence indicating
+    the suffix string to apply after each codepoint, and the
+    fourth is the font id; these must both be present.
 
-  This returns a list of the tuples of the type name followed
-  by the data for that type.
-  """
+    This returns a list of the tuples of the type name followed
+    by the data for that type.
+    """
 
     def add_index_list_or_defined(info, index, fallback, defines):
         """Extend or update info[index], possibly using defines"""
@@ -876,9 +877,9 @@ def _read_target_data_from_file(filename):
 
 def _flagged_name(cp, flag_sets):
     """Prepend any flags to cp's unicode name, and return.  Flag_sets
-  is a map from flag name to a tuple of cp set and boolean.
-  True means add flag if cp in set, False means add flag if it is
-  not in the set."""
+    is a map from flag name to a tuple of cp set and boolean.
+    True means add flag if cp in set, False means add flag if it is
+    not in the set."""
     try:
         name = unicode_data.name(cp)
     except:
@@ -1039,35 +1040,35 @@ def _scan_expr(expr, def_names, used_names):
 
 def _read_flag_data_from_file(filename):
     """Read flag data file and generate a list of tuples for creating
-  the flag data map.  If filename is None, returns an empty list.
+    the flag data map.  If filename is None, returns an empty list.
 
-  Lines in the file either define a set used by a flag, or define
-  a flag.  Define lines start with '!define ' followed by the name
-  of the set (_0-9A-Za-z), '=', and the definition (a codelist).
+    Lines in the file either define a set used by a flag, or define
+    a flag.  Define lines start with '!define ' followed by the name
+    of the set (_0-9A-Za-z), '=', and the definition (a codelist).
 
-  Definition lines have three fields separated by semicolon,
-  the name of the flag, 'in' or 'not in', and the definition
-  which can either be a codelist or an expression formed from
-  names of !defined sets joined with '&' (intersection), '|'
-  (union), or '-' (set difference).  These operations are performed
-  in order left to right, there's no predecence.
+    Definition lines have three fields separated by semicolon,
+    the name of the flag, 'in' or 'not in', and the definition
+    which can either be a codelist or an expression formed from
+    names of !defined sets joined with '&' (intersection), '|'
+    (union), or '-' (set difference).  These operations are performed
+    in order left to right, there's no predecence.
 
-  Predefined sets are '_emoji_', the unicode extended emoji values,
-  and '_math_', codepoints with the 'Math' property.
+    Predefined sets are '_emoji_', the unicode extended emoji values,
+    and '_math_', codepoints with the 'Math' property.
 
-  '#' is a comment to end-of line.  Blank lines are ignored.
+    '#' is a comment to end-of line.  Blank lines are ignored.
 
-  It's an error if there are multiple defined sets
-  with the same name or multiple flags with the same name.
+    It's an error if there are multiple defined sets
+    with the same name or multiple flags with the same name.
 
-  This returns a list of 3-tuples, one for each set used by a
-  flag, then one for each flag.  Tuple for defined sets are
-    ('!define', set_name, set_spec),
-  there set_spec is None if the set_name is special, like '_emoji_'.
-  Tuples for flags are
-    (flag_name, True/False, [(op,expr)]),
-  where the list of op, expr tuples has the op character
-  ('|' '&', '-') and a define name or a codelist."""
+    This returns a list of 3-tuples, one for each set used by a
+    flag, then one for each flag.  Tuple for defined sets are
+      ('!define', set_name, set_spec),
+    there set_spec is None if the set_name is special, like '_emoji_'.
+    Tuples for flags are
+      (flag_name, True/False, [(op,expr)]),
+    where the list of op, expr tuples has the op character
+    ('|' '&', '-') and a define name or a codelist."""
 
     if not filename:
         return []
@@ -1164,7 +1165,7 @@ def generate_html(
     relpath,
 ):
     """If not None, relpath is the relative path from the outfile to
-  the datadir, for use when generating font paths."""
+    the datadir, for use when generating font paths."""
 
     template = string.Template(_HTML_HEADER_TEMPLATE)
     styles = _generate_styles(fonts, relpath)
@@ -1193,7 +1194,7 @@ def generate_html(
 
 def _build_cp_to_targets(targets):
     """Return a map from cp to a list of pairs of target group index and
-  name."""
+    name."""
     cp_to_targets = collections.defaultdict(list)
     #  for i, (name, codelist, _) in enumerate(targets):
     for i, target in enumerate(targets):

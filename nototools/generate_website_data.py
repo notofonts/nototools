@@ -77,7 +77,7 @@ ODD_SCRIPTS = {
 
 
 def convert_to_four_letter(script):
-    """"Converts a script name from a Noto font file name to ISO 15924 code."""
+    """ "Converts a script name from a Noto font file name to ISO 15924 code."""
     if script in ODD_SCRIPTS:
         script = ODD_SCRIPTS[script]
     elif script in unicode_data._script_long_name_to_code:
@@ -747,8 +747,7 @@ def css_style(style_value):
 
 
 def fonts_are_basically_the_same(font1, font2):
-    """Returns true if the fonts are the same, except perhaps hint or platform.
-    """
+    """Returns true if the fonts are the same, except perhaps hint or platform."""
     return (
         font1.family == font2.family
         and font1.script == font2.script
@@ -952,7 +951,10 @@ def create_families_object(target_platform):
         font_list = []
         for font in members:
             font_list.append(
-                {"style": css_style(font.style), "weight": css_weight(font.weight),}
+                {
+                    "style": css_style(font.style),
+                    "weight": css_weight(font.weight),
+                }
             )
         if len(font_list) not in [1, 2, 4, 7]:
             print(key, font_list)

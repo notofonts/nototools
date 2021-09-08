@@ -54,7 +54,7 @@ def fetch_udhr(fetch_dir):
 
 def update_udhr(udhr_dir, fetch_dir, in_repo):
     """Delete udhr_dir and rebuild with files extracted from udhr_xml.zip
-  in fetch_dir. Stage if udhr_dir is in the repo."""
+    in fetch_dir. Stage if udhr_dir is in the repo."""
 
     zippath = os.path.join(fetch_dir, UDHR_XML_ZIP_NAME)
     tool_utils.check_file_exists(zippath)
@@ -80,14 +80,14 @@ def update_udhr(udhr_dir, fetch_dir, in_repo):
 
 def parse_index(src_dir):
     """Parse the index.xml file in src_dir and return a map from bcp to a set of
-  file codes, and a map from file code to ohchr code.
+    file codes, and a map from file code to ohchr code.
 
-  Skip files at stages 1 (missing) or 2 (not started). Stage 3 files have
-  article 1, which is what we want.  Stage 4 and 5 are ok, the vast majority are
-  unreviewed (4).
+    Skip files at stages 1 (missing) or 2 (not started). Stage 3 files have
+    article 1, which is what we want.  Stage 4 and 5 are ok, the vast majority are
+    unreviewed (4).
 
-  In some cases more than one file is mapped to the same bcp47 code, this gets
-  dealt with in fix_index."""
+    In some cases more than one file is mapped to the same bcp47 code, this gets
+    dealt with in fix_index."""
 
     tree = ET.parse(os.path.join(src_dir, "index.xml"))
     bcp_to_codes = collections.defaultdict(set)
@@ -153,16 +153,47 @@ def parse_index(src_dir):
 # We also need to make sure we don't assign a new code that udhr already uses.
 
 BCP_FIXES = {
-    "acu-Latn": {"acu": "acu-Latn", "acu_1": None,},
-    "ak": {"ak_asante": "ak", "ak_fante": "ak-fante",},
-    "chr-Cher": {"chr_cased": "chr-Cher-cased", "chr_uppercase": "chr-Cher-monocase",},
-    "cjk-Latn": {"cjk": "cjk-Latn", "cjk_AO": "cjk-Latn-AO",},
-    "ht-Latn": {"hat_popular": "ht-Latn-popular", "hat_kreyol": "ht-Latn-kreyol",},
-    "hus-Latn": {"hus": "hus-Latn", "hva": None, "hsf": None,},
-    "kg-Latn": {"kng": "kg-Latn", "kng_AO": "kg-Latn-AO",},
-    "kmb-Latn": {"009": None, "kmb": "kmb-Latn",},
-    "la-Latn": {"lat": "la-Latn", "lat_1": None,},
-    "ln-Latn": {"lin_tones": "ln-Latn", "lin": None,},
+    "acu-Latn": {
+        "acu": "acu-Latn",
+        "acu_1": None,
+    },
+    "ak": {
+        "ak_asante": "ak",
+        "ak_fante": "ak-fante",
+    },
+    "chr-Cher": {
+        "chr_cased": "chr-Cher-cased",
+        "chr_uppercase": "chr-Cher-monocase",
+    },
+    "cjk-Latn": {
+        "cjk": "cjk-Latn",
+        "cjk_AO": "cjk-Latn-AO",
+    },
+    "ht-Latn": {
+        "hat_popular": "ht-Latn-popular",
+        "hat_kreyol": "ht-Latn-kreyol",
+    },
+    "hus-Latn": {
+        "hus": "hus-Latn",
+        "hva": None,
+        "hsf": None,
+    },
+    "kg-Latn": {
+        "kng": "kg-Latn",
+        "kng_AO": "kg-Latn-AO",
+    },
+    "kmb-Latn": {
+        "009": None,
+        "kmb": "kmb-Latn",
+    },
+    "la-Latn": {
+        "lat": "la-Latn",
+        "lat_1": None,
+    },
+    "ln-Latn": {
+        "lin_tones": "ln-Latn",
+        "lin": None,
+    },
     "ny-Latn": {
         "nya_chinyanja": "ny-Latn-chinyan",  # max 8 chars in bcp47
         "nya_chechewa": "ny-Latn-chechewa",
@@ -176,23 +207,45 @@ BCP_FIXES = {
         "oci_4": None,
         "prv": None,
     },
-    "pov-Latn": {"008": None, "pov": "pov-Latn",},
-    "ro-Latn": {"ron_2006": "ro-Latn", "ron_1993": None, "ron_1953": None,},
-    "rom-Latn": {"rmn": "rom-Latn", "rmn_1": None,},
-    "th-Thai": {"tha": "th-Thai", "tha2": None,},
-    "ts-Latn": {"tso_MZ": "ts-Latn-MZ", "tso_ZW": "ts-Latn-ZW",},
-    "umb-Latn": {"011": None, "umb": "umb-Latn",},
-    "ur-Arab": {"urd": "ur-Arab", "urd_2": None,},
+    "pov-Latn": {
+        "008": None,
+        "pov": "pov-Latn",
+    },
+    "ro-Latn": {
+        "ron_2006": "ro-Latn",
+        "ron_1993": None,
+        "ron_1953": None,
+    },
+    "rom-Latn": {
+        "rmn": "rom-Latn",
+        "rmn_1": None,
+    },
+    "th-Thai": {
+        "tha": "th-Thai",
+        "tha2": None,
+    },
+    "ts-Latn": {
+        "tso_MZ": "ts-Latn-MZ",
+        "tso_ZW": "ts-Latn-ZW",
+    },
+    "umb-Latn": {
+        "011": None,
+        "umb": "umb-Latn",
+    },
+    "ur-Arab": {
+        "urd": "ur-Arab",
+        "urd_2": None,
+    },
 }
 
 
 def fix_index(bcp_to_codes):
     """Take a mapping from bcp47 to a set of file codes, and
-  select the mappings we want using a allowlist.  We return
-  a mapping from one bcp47 code to one file code.
+    select the mappings we want using a allowlist.  We return
+    a mapping from one bcp47 code to one file code.
 
-  We use this opportunity to validate the allowlist, and if there are
-  any errors, we fail once we're finished."""
+    We use this opportunity to validate the allowlist, and if there are
+    any errors, we fail once we're finished."""
     errors = []
     used_fixes = set()
     result = {}
@@ -274,7 +327,7 @@ CODE_TO_BCP = {"evn": "evn-Cyrl", "ojb": "oj-Cans"}
 
 def add_likely_scripts(bcp_to_code):
     """Add script subtags where they are not present in the bcp code.  If
-  we don't know the script"""
+    we don't know the script"""
     result = {}
     for bcp, code in bcp_to_code.items():
         if code in CODE_TO_BCP:
@@ -336,9 +389,9 @@ OPTION_MAP = {
 
 def add_default_lang_script(bcp_to_code_attrib_sample):
     """When we query this data, typically we have only language and
-  script.  Some of the bcp codes have variants or regions as well, and in
-  particular sometimes none of these has just a language and script.
-  Select one of these to be used for that, and update the map."""
+    script.  Some of the bcp codes have variants or regions as well, and in
+    particular sometimes none of these has just a language and script.
+    Select one of these to be used for that, and update the map."""
 
     errors = []
     options = collections.defaultdict(set)
@@ -397,22 +450,22 @@ def get_code_to_attrib(src_dir):
 
 def get_bcp_to_code_attrib_sample(src_dir, ohchr_dir):
     """Return a mapping from bcp47 to code (for debugging), attribution, and
-  sample.  The process is:
-  1) parse the index.xml file to determine a mapping from bcp47 to code.
-     the bcp47 code has at least lang and script, and perhaps region/variant.
-     Multiple codes might share the same bcp47 code.
-  2) Use a allowlist to fix cases where a bcp47 code maps to multiple codes,
-     either by selecting one code, or assigning a separate bcp47 value
-     to other codes.
-  3) Load samples for each bcp47 code using article 1 from the file
-     identified by the code.  If there is no article 1, skip that bcp47 code.
-  4) Do more checking on the samples to make sure they look legit and
-     in particular contain only the scripts we expect them to have based
-     on the script code in the bcp47 code.
-  5) Add an attribution based on the code and the attributions file.
-  6) Find cases where all the bcp47's sharing a lang and script have
-     regions and/or variants, and select one of these to assign to
-     the lang_script bcp47 code."""
+    sample.  The process is:
+    1) parse the index.xml file to determine a mapping from bcp47 to code.
+       the bcp47 code has at least lang and script, and perhaps region/variant.
+       Multiple codes might share the same bcp47 code.
+    2) Use a allowlist to fix cases where a bcp47 code maps to multiple codes,
+       either by selecting one code, or assigning a separate bcp47 value
+       to other codes.
+    3) Load samples for each bcp47 code using article 1 from the file
+       identified by the code.  If there is no article 1, skip that bcp47 code.
+    4) Do more checking on the samples to make sure they look legit and
+       in particular contain only the scripts we expect them to have based
+       on the script code in the bcp47 code.
+    5) Add an attribution based on the code and the attributions file.
+    6) Find cases where all the bcp47's sharing a lang and script have
+       regions and/or variants, and select one of these to assign to
+       the lang_script bcp47 code."""
 
     bcp_to_codes, code_to_ohchr = parse_index(src_dir)
     bcp_to_code = fix_index(bcp_to_codes)
@@ -445,7 +498,7 @@ def print_bcp_to_code_attrib_sample(bcp_to_code_attrib_sample):
 
 def extract_para(src_path):
     """Extract the text of article 1 from the sample, or None if we can't find
-  it."""
+    it."""
     tree = ET.parse(src_path)
     root = tree.getroot()
     ns = {"udhr": "http://www.unhchr.ch/udhr"}
@@ -583,9 +636,9 @@ def check_bcp_sample(bcp, sample):
 
 def check_bcp_to_sample(bcp_to_sample):
     """For each bcp/sample pair, check the sample script histogram.  If
-  anything looks funny (mismatching scripts, bcp script doesn't match
-  histogram), delete the mapping, and if there are any rejects, at the
-  end report them."""
+    anything looks funny (mismatching scripts, bcp script doesn't match
+    histogram), delete the mapping, and if there are any rejects, at the
+    end report them."""
 
     errors = []
     for bcp in sorted(bcp_to_sample):
@@ -603,9 +656,9 @@ def check_bcp_to_sample(bcp_to_sample):
 
 def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_stage):
     """Create samples in sample_dir based on the bcp to c_a_s map.  Stage
-  if sample_dir is in the repo.  If sample_dir is in the repo, don't
-  overwrite samples whose most recent log entry does not start with
-  'Updated by tool'."""
+    if sample_dir is in the repo.  If sample_dir is in the repo, don't
+    overwrite samples whose most recent log entry does not start with
+    'Updated by tool'."""
 
     tool_utils.check_dir_exists(udhr_dir)
 
@@ -669,7 +722,7 @@ def update_samples(sample_dir, udhr_dir, bcp_to_code_attrib_sample, in_repo, no_
 
 def get_scripts(text):
     """Return the set of scripts in this text.  Excludes
-  some common chars."""
+    some common chars."""
     # ignore these chars, we assume they are ok in any script
     exclusions = {0x00, 0x0A, 0x0D, 0x20, 0xA0, 0xFEFF}
     zyyy_chars = set()
@@ -688,7 +741,7 @@ def get_scripts(text):
 
 def get_script_histogram(utext):
     """Return a map from script to character count + chars, excluding some common
-  whitespace, and inherited characters.  utext is a unicode string."""
+    whitespace, and inherited characters.  utext is a unicode string."""
     exclusions = {0x00, 0x0A, 0x0D, 0x20, 0xA0, 0xFEFF}
     result = {}
     for cp in utext:
@@ -768,8 +821,8 @@ def test_sample_scripts(sample_dir):
 
 def compare_samples(base_dir, trg_dir, trg_to_base_name=lambda x: x, opts=None):
     """Report on differences between samples in base and target directories.
-  The trg_to_base_name fn takes a target file name and returns the source
-  file name to use in the comparisons."""
+    The trg_to_base_name fn takes a target file name and returns the source
+    file name to use in the comparisons."""
 
     if not os.path.isdir(base_dir):
         print("Original sample dir '%s' does not exist" % base_dir)

@@ -52,8 +52,8 @@ _config_path = None  # so we know
 
 def _setup():
     """The config consists of lines of the form <name> = <value>.
-  values will hold a mapping from the <name> to value.
-  Blank lines and lines starting with '#' are ignored."""
+    values will hold a mapping from the <name> to value.
+    Blank lines and lines starting with '#' are ignored."""
     global _config_path
 
     paths = [path.expanduser("~/.notoconfig"), "/usr/local/share/noto/config"]
@@ -84,7 +84,7 @@ _setup()
 
 def noto_tools(default=""):
     """Local path to nototools git repo.  If this is called, we require config
-  to be set up."""
+    to be set up."""
     result = _values.get("noto_tools", default)
     if result:
         return result

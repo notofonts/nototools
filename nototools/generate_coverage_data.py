@@ -56,7 +56,7 @@ def get_cps_from_cmap_data_file(data_file):
 
 def _create_metadata(**kwargs):
     """Create a MetaData object from the args.  'date' defaults to today's
-  date."""
+    date."""
     date = str(kwargs.pop("date", datetime.date.today()))
     program = str(kwargs.pop("program", "generate_coverage_data"))
     arglist = [(k, v) for k, v in sorted(kwargs.items()) if v is not None]
@@ -77,7 +77,7 @@ def create(name, cps, paths=None, cmap_data=None):
 
 def _common_path_prefix(items):
     """Assuming items is an array of paths using path.sep as a path separator,
-  return a common path prefix of the items."""
+    return a common path prefix of the items."""
     prefix = None
     if len(items) <= 1:
         return ""
@@ -142,7 +142,7 @@ def _build_cmap_elem(cmapdata):
 
 def _prettify(root, indent=""):
     """Pretty-print the root element if it has no text and children
-     by adding to the root text and each child's tail."""
+    by adding to the root text and each child's tail."""
     if not root.text and len(root):
         indent += "  "
         sfx = "\n" + indent
