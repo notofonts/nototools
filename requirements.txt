@@ -4,7 +4,7 @@ attrs==19.3.0
 black==21.8b0
 booleanOperations==0.9.0
 Brotli==1.0.9
-click==7.1.2
+click==8.0.1
 cu2qu==1.6.7
 defcon==0.6.0
 fontMath==0.6.0
