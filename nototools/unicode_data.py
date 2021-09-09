@@ -43,7 +43,7 @@ except ImportError:
 from nototools import tool_utils  # parse_int_ranges
 
 # Update this when we update the base version data we use
-UNICODE_VERSION = 12.0
+UNICODE_VERSION = 14.0
 
 _data_is_loaded = False
 _property_value_aliases_data = {}
@@ -940,11 +940,6 @@ fe82b ; fully-qualified # ? unknown flag PUA codepoint
 #
 # This data is in the format of emoji-sequences.txt and emoji-zwj-sequences.txt
 _LEGACY_ANDROID_SEQUENCES = """
-1F91D 1F3FB                ; Emoji_Modifier_Sequence; handshake: light skin tone # 9.0
-1F91D 1F3FC                ; Emoji_Modifier_Sequence; handshake: medium-light skin tone # 9.0
-1F91D 1F3FD                ; Emoji_Modifier_Sequence; handshake: medium skin tone # 9.0
-1F91D 1F3FE                ; Emoji_Modifier_Sequence; handshake: medium-dark skin tone # 9.0
-1F91D 1F3FF                ; Emoji_Modifier_Sequence; handshake: dark skin tone # 9.0
 1F93C 1F3FB                ; Emoji_Modifier_Sequence ; people wrestling: light skin tone # 9.0
 1F93C 1F3FC                ; Emoji_Modifier_Sequence ; people wrestling: medium-light skin tone # 9.0
 1F93C 1F3FD                ; Emoji_Modifier_Sequence ; people wrestling: medium skin tone # 9.0
@@ -966,12 +961,6 @@ _LEGACY_ANDROID_SEQUENCES = """
 # have been nice to merge it into the above legacy data but that would have
 # required a format change.
 _LEGACY_ANDROID_ORDER = """
--1F91D  # handshake
-1F91D 1F3FB
-1F91D 1F3FC
-1F91D 1F3FD
-1F91D 1F3FE
-1F91D 1F3FF
 -1F93C  # people wrestling
 1F93C 1F3FB
 1F93C 1F3FC
@@ -1205,7 +1194,11 @@ def _load_emoji_sequence_data():
         if is_default_text_presentation:
             seq = (cp, EMOJI_VS)
 
-        emoji_age = float(age(cp)) or PROPOSED_EMOJI_AGE
+        emoji_age = age(cp)
+        if emoji_age is not None:
+            emoji_age = float(emoji_age)
+        emoji_age = PROPOSED_EMOJI_AGE
+
         current_data = _emoji_sequence_data.get(seq) or (
             emoji_name,
             emoji_age,
