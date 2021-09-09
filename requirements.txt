@@ -14,7 +14,7 @@ fonttools==4.11.0
 fs==2.4.11
 lxml==4.6.3
 MutatorMath==3.0.1
-pathspec==0.8.0
+pathspec>=0.9.0
 Pillow==8.3.2
 psautohint==2.0.1
 pyclipper==1.2.1
