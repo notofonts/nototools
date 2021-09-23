@@ -10,7 +10,7 @@ defcon==0.6.0
 fontMath==0.6.0
 fontParts==0.9.2
 fontPens==0.2.4
-fonttools==4.11.0
+fonttools==4.27.1
 fs==2.4.11
 lxml==4.6.3
 MutatorMath==3.0.1
