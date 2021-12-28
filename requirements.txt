@@ -6,7 +6,7 @@ booleanOperations==0.9.0
 Brotli==1.0.9
 click==8.0.3
 cu2qu==1.6.7.post1
-defcon==0.9.0
+defcon==0.10.0
 fontMath==0.9.1
 fontParts==0.10.0
 fontPens==0.2.4
