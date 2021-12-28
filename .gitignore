@@ -1,3 +1,4 @@
+
 *.pyc
 *~
 color_emoji/waveflag
@@ -8,3 +9,15 @@ dist
 venv/
 .eggs/
 nototools/_version.py
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+.idea/
+.dccache
+.vscode/
