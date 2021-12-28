@@ -38,14 +38,14 @@ _BUILD_TOOL_PATH = "[afdko]/FDK/Tools/linux/otf2otc"
 class TTCFile(object):
     """Holds some information from the sfnt headers in a .ttc file.
 
-  - fonts is a list of FontEntry objects, in order.  It holds
-  the format ('ttf' or 'otf') and a list of indices into the
-  tables list.
-  - tables is the list of TableEntry objects, in order. Each holds
-  the table tag, offset, and length.  Offsets are relative to
-  the very start of the data.  There is one entry for each unique
-  table in the ttc.
-  """
+    - fonts is a list of FontEntry objects, in order.  It holds
+    the format ('ttf' or 'otf') and a list of indices into the
+    tables list.
+    - tables is the list of TableEntry objects, in order. Each holds
+    the table tag, offset, and length.  Offsets are relative to
+    the very start of the data.  There is one entry for each unique
+    table in the ttc.
+    """
 
     def __init__(self, data=None):
         if data:
@@ -109,10 +109,10 @@ def ttcfile_dump(ttcfile):
 def ttc_dump(ttc):
     """Dumps the ttc information.
 
-  It provides a likely filename for each file, and lists the tables, providing
-  either the TableEntry data, or the table tag and index of the file that first
-  referenced the table.
-  """
+    It provides a likely filename for each file, and lists the tables, providing
+    either the TableEntry data, or the table tag and index of the file that first
+    referenced the table.
+    """
     names = ttc_filenames(ttc)
 
     table_map = {}
@@ -143,11 +143,11 @@ def ttcfile_filenames(ttcfile):
 def ttc_filenames(ttc):
     """Returns likely filenames for each ttc file.
 
-  The filenames are based on the postscript name from the name table for each
-  font.  When there is no information, the string '<unknown x>' is provided with
-  either 'ttf' or 'otf' in place of 'x' depending on the info in the sfnt
-  header.
-  """
+    The filenames are based on the postscript name from the name table for each
+    font.  When there is no information, the string '<unknown x>' is provided with
+    either 'ttf' or 'otf' in place of 'x' depending on the info in the sfnt
+    header.
+    """
     names = []
     for font in ttc.fonts:
         file_name = ttfont_filename(font)
@@ -194,8 +194,8 @@ def ttc_namesfile_name(ttc_path):
 
 def ttcfile_build_from_namesfile(output_ttc_path, file_dir, namesfile_name=None):
     """Read names of files from namesfile and pass them to build_ttc to build
-  a .ttc file.  The names file will default to one named after output_ttc and
-  located in file_dir."""
+    a .ttc file.  The names file will default to one named after output_ttc and
+    located in file_dir."""
 
     output_ttc_path = tool_utils.resolve_path(output_ttc_path)
     if not namesfile_name:
@@ -219,7 +219,7 @@ def ttcfile_build_from_namesfile(output_ttc_path, file_dir, namesfile_name=None)
 
 def ttcfile_extract(input_ttc_path, output_dir):
     """Extract .ttf/.otf fonts from a .ttc file, and return a list of the names of
-  the extracted fonts."""
+    the extracted fonts."""
     input_ttc_path = tool_utils.resolve_path(input_ttc_path)
     output_dir = tool_utils.ensure_dir_exists(output_dir)
     ttc = TTCollection(input_ttc_path)
@@ -235,8 +235,8 @@ def ttcfile_extract_and_write_namesfile(
     input_ttc_path, output_dir, namesfile_name=None
 ):
     """Call ttcfile_extract and in addition write a file to output dir containing
-  the names of the extracted files.  The name of the names file will default to
-  one based on the basename of the input path. It is written to output_dir."""
+    the names of the extracted files.  The name of the names file will default to
+    one based on the basename of the input path. It is written to output_dir."""
     names = ttcfile_extract(input_ttc_path, output_dir)
     if not namesfile_name:
         namesfile_name = ttc_namesfile_name(input_ttc_path)

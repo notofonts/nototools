@@ -90,8 +90,8 @@ value_list: -- numbers or ranges separated by whitespace, no space around hyphen
 
 def parse_int_ranges(range_string, is_hex=True, sep=" "):
     """Returns a set of ints from a string of numbers or ranges separated by sep.
-  A range is two values separated by hyphen with no intervening separator.
-  Result can be empty if range_string is empty."""
+    A range is two values separated by hyphen with no intervening separator.
+    Result can be empty if range_string is empty."""
     result = set()
     count = 0
     base = 16 if is_hex else 10
@@ -123,7 +123,7 @@ def parse_int_ranges(range_string, is_hex=True, sep=" "):
 
 def write_int_ranges(int_values, in_hex=True, sep=" "):
     """From a set or list of ints, generate a string representation that can
-  be parsed by parse_int_ranges to return the original values (not order_preserving)."""
+    be parsed by parse_int_ranges to return the original values (not order_preserving)."""
 
     if not int_values:
         return ""
@@ -261,8 +261,8 @@ class FontCondition(object):
         version=None,
     ):
         """Each arg is either a string, or a pair of a fn of two args returning bool, and an object.
-    When the arg is a pair, the target string is passed to the fn as the first arg and the
-    second element of the pair is passed as the second arg."""
+        When the arg is a pair, the target string is passed to the fn as the first arg and the
+        second element of the pair is passed as the second arg."""
 
         self.filename = filename
         self.name = name
@@ -503,7 +503,7 @@ class TestSpec(object):
     # 4: optional '--' followed by comment to end of line
     def _process_data(data):
         """data is a hierarchy of tags. any level down to root can be enabled or disabled.  this
-    builds a representation of the tag hierarchy from the text description."""
+        builds a representation of the tag hierarchy from the text description."""
         _data_line_re = re.compile(
             r"(\s*)([a-z0-9_]+)(?:\s+([^\s]+)\s+([^\s]+))?\s*(?:--\s*(.+)\s*)?$"
         )
@@ -711,7 +711,7 @@ class LintTests(object):
 
     def valuetype(self, tag):
         """If the tag filters values, return the type of the value ('gid' or 'cp')
-    being filtered, or None."""
+        being filtered, or None."""
         if tag in self.tag_filters:
             return self.tag_filters[tag][0]
         return None

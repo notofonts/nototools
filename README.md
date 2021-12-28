@@ -1,6 +1,7 @@
-[![Travis Build Status](https://travis-ci.org/googlefonts/nototools.svg?branch=master)](https://travis-ci.org/googlefonts/nototools)
+[![CI Build Status](https://github.com/googlefonts/nototools/workflows/Continuous%20Test%20+%20Deploy/badge.svg)](https://github.com/googlefonts/nototools/actions/workflows/ci.yml?query=workflow%3ATest)
 [![PyPI](https://img.shields.io/pypi/v/notofonttools.svg)](https://pypi.org/project/notofonttools/)
-[![pyup](https://pyup.io/repos/github/googlefonts/nototools/shield.svg)](https://pyup.io/repos/github/googlefonts/nototools)
+[![Dependencies](https://badgen.net/github/dependabot/googlefonts/nototools)](https://github.com/googlefonts/nototools/network/updates)
+
 
 # Noto Tools
 

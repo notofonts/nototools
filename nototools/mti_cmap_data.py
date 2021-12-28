@@ -63,8 +63,8 @@ def get_script_to_cmaps(csvdata):
     # would be difficult at this point, so we just note the addition.
 
     """This returns a map from 'script' to a tuple of cmap, xcmap where
-  xcmap is None if the header has not been checked, and contains the
-  marked codepoints otherwise (and might be empty)."""
+    xcmap is None if the header has not been checked, and contains the
+    marked codepoints otherwise (and might be empty)."""
 
     header = None
     data = None

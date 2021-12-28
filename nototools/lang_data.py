@@ -45,9 +45,9 @@ def is_excluded_script(script_code):
 
 def script_includes(script_code):
     """Returns a set of script codes 'included' by the provided one.  Intended to
-  deal with script codes like 'Jpan' used to describe writing systems that
-  use/require multiple scripts.  The script code itself (and other subsets)
-  are also included in the result."""
+    deal with script codes like 'Jpan' used to describe writing systems that
+    use/require multiple scripts.  The script code itself (and other subsets)
+    are also included in the result."""
     if script_code not in scripts():
         raise ValueError("!not a script code: %s" % script_code)
     if script_code == "Hrkt":
@@ -61,9 +61,9 @@ def script_includes(script_code):
 
 def _create_lang_data():
     """Generates language data from CLDR plus extensions.
-  Returns a mapping from lang to a tuple of:
-  - a set of scripts used in some region
-  - a set of scripts not used in any region."""
+    Returns a mapping from lang to a tuple of:
+    - a set of scripts used in some region
+    - a set of scripts not used in any region."""
 
     all_lang_scripts = collections.defaultdict(set)
     used_lang_scripts = collections.defaultdict(set)
@@ -151,13 +151,13 @@ def _remove_keys_from_dict(keys, some_dict):
 
 def _create_script_to_default_lang(lang_script_data):
     """Iterates over all the scripts in lang_script_data, and returns a map
-  from each script to the default language code, generally based on cldr
-  likely subtag data.  This assigns 'en' to Latn by fiat (cldr defaults to
-  'und').  Some other scripts (e.g. Dsrt) just get 'und'.
+    from each script to the default language code, generally based on cldr
+    likely subtag data.  This assigns 'en' to Latn by fiat (cldr defaults to
+    'und').  Some other scripts (e.g. Dsrt) just get 'und'.
 
-  This checks that the default lang for a script actually uses that script
-  in lang_script_data, when the default lang is not 'und'.
-  """
+    This checks that the default lang for a script actually uses that script
+    in lang_script_data, when the default lang is not 'und'.
+    """
 
     script_to_default_lang = {}
     all_scripts = set()
@@ -209,12 +209,12 @@ def _create_script_to_default_lang(lang_script_data):
 
 def _create_lang_script_to_names(lang_script_data):
     """Generate a map from lang-script to English (and possibly native) names.
-  Whether the script is included in the name depends on the number of used
-  and unused scripts.  If there's one used script, that script is omitted.
-  Else if there's no used script and one unused script, that script is
-  omitted.  Else the script is included.  If there's no English name for
-  the lang_script, it is excluded.
-  """
+    Whether the script is included in the name depends on the number of used
+    and unused scripts.  If there's one used script, that script is omitted.
+    Else if there's no used script and one unused script, that script is
+    omitted.  Else the script is included.  If there's no English name for
+    the lang_script, it is excluded.
+    """
 
     lang_to_names = {}
     for lang in lang_script_data:
