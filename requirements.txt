@@ -19,7 +19,7 @@ Pillow==8.3.2
 psautohint==2.3.1
 pyclipper==1.2.1
 pytz==2021.3
-regex==2020.5.14
+regex==2021.11.10
 scour==0.38.2
 six==1.16.0
 toml==0.10.2
