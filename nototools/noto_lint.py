@@ -552,7 +552,7 @@ def check_font(
 
         # Assumes "info" only and always comes at the end of
         # processing a file.
-        if category_name is "info":
+        if category_name == "info":
 
             def pluralize_errmsg(count, is_error=True):
                 msg = "error" if is_error else "warning"
@@ -615,7 +615,7 @@ def check_font(
             print_file_name()
 
         err_type = (
-            "Info" if category_name is "info" else "Error" if is_error else "Warning"
+            "Info" if category_name == "info" else "Error" if is_error else "Warning"
         )
         if csv_flag:
             names = []
@@ -642,7 +642,10 @@ def check_font(
                 ).encode("UTF-8")
             )
         else:
-            print("%s <%s> %s" % (err_type[0], test_name, message.encode("UTF-8")))
+            print(
+                "%s <%s> %s"
+                % (err_type[0], test_name, message.encode("UTF-8").decode("UTF-8"))
+            )
         sys.stdout.flush()
 
     _script_key_to_font_name = {
@@ -953,6 +956,8 @@ def check_font(
                 pua_filter = pua_filter[1].accept
 
             def is_unwanted_pua(char):
+                if not needed_chars:
+                    return False
                 if char in needed_chars:
                     return False
                 if not unicode_data.is_private_use(char):
@@ -1502,7 +1507,7 @@ def check_font(
             return
 
         if variable:
-            # ignore these for variable font masters
+            # ignore these for variable font mains
             return
 
         if not tests.check("paths"):
@@ -1792,7 +1797,7 @@ def check_font(
             # print("command: %s" % ' '.join(command)
             result = subprocess.check_output(command)
             for src, res in zip(strs, result.splitlines()):
-                if res.find("|") != -1:
+                if res.find(b"|") != -1:
                     errors.append((src, context, res))
         finally:
             temp_file.close()
@@ -1851,7 +1856,7 @@ def check_font(
         if not tests.check("complex"):
             return
 
-        whitelist = [
+        allowlist = [
             "Hluw",  # Anatolian Hieroglyphs
             "Cari",  # Carian
             "Xsux",  # Cuneiform
@@ -1877,7 +1882,7 @@ def check_font(
             "Vaii",  # Vai
             "Yiii",  # Yi
         ]
-        if font_props.script in whitelist:
+        if font_props.script in allowlist:
             return
 
         if "GPOS" not in font:
@@ -2383,7 +2388,7 @@ def check_font(
 
 def get_lint_spec(spec_file, extra_specs):
     """Return a LintSpec from spec_file supplemented with extra_specs.
-  If spec_file is None, only use extra_specs."""
+    If spec_file is None, only use extra_specs."""
 
     spec = None
     if spec_file != "None":
@@ -2481,7 +2486,7 @@ def main():
     parser.add_argument(
         "-v",
         "--variable",
-        help="do checks appropriate to masters for variable fonts.",
+        help="do checks appropriate to mains for variable fonts.",
         action="store_true",
     )
 

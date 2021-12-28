@@ -22,21 +22,14 @@ from os import path
 import struct
 import subprocess
 
+from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
+from fontTools.ttLib.ttCollection import TTCollection
 
 from nototools import tool_utils
 
-_ttcHeader = ">4sLL"
-_ttcHeaderSize = struct.calcsize(_ttcHeader)
-
-_sfntHeader = ">LHHHH"
-_sfntHeaderSize = struct.calcsize(_sfntHeader)
-
-_sfntHeaderEntry = ">4sLLL"
-_sfntHeaderEntrySize = struct.calcsize(_sfntHeaderEntry)
-
-FontEntry = collections.namedtuple("FontEntry", "fmt,tables")
 TableEntry = collections.namedtuple("TableEntry", "tag,offset,length")
+
 
 _EXTRACT_TOOL_PATH = "[afdko]/FDK/Tools/linux/otc2otf"
 _BUILD_TOOL_PATH = "[afdko]/FDK/Tools/linux/otf2otc"
@@ -45,14 +38,14 @@ _BUILD_TOOL_PATH = "[afdko]/FDK/Tools/linux/otf2otc"
 class TTCFile(object):
     """Holds some information from the sfnt headers in a .ttc file.
 
-  - fonts is a list of FontEntry objects, in order.  It holds
-  the format ('ttf' or 'otf') and a list of indices into the
-  tables list.
-  - tables is the list of TableEntry objects, in order. Each holds
-  the table tag, offset, and length.  Offsets are relative to
-  the very start of the data.  There is one entry for each unique
-  table in the ttc.
-  """
+    - fonts is a list of FontEntry objects, in order.  It holds
+    the format ('ttf' or 'otf') and a list of indices into the
+    tables list.
+    - tables is the list of TableEntry objects, in order. Each holds
+    the table tag, offset, and length.  Offsets are relative to
+    the very start of the data.  There is one entry for each unique
+    table in the ttc.
+    """
 
     def __init__(self, data=None):
         if data:
@@ -63,7 +56,7 @@ class TTCFile(object):
 
     def _build(self, data):
         tag, version, font_count = struct.unpack(_ttcHeader, data[:_ttcHeaderSize])
-        if tag not in ["ttcf"]:
+        if tag not in [b"ttcf"]:
             raise ValueError("not a font collection")
         if version not in [0x10000, 0x20000]:
             raise ValueError("unrecognized version %s" % version)
@@ -109,26 +102,24 @@ class TTCFile(object):
 
 def ttcfile_dump(ttcfile):
     """Reads the file and dumps the information."""
-    with open(ttcfile, "rb") as f:
-        data = f.read()
-    ttc = TTCFile(data=data)
-    ttc_dump(ttc, data)
+    ttc = TTCollection(ttcfile)
+    ttc_dump(ttc)
 
 
-def ttc_dump(ttc, data):
+def ttc_dump(ttc):
     """Dumps the ttc information.
 
-  It provides a likely filename for each file, and lists the tables, providing
-  either the TableEntry data, or the table tag and index of the file that first
-  referenced the table.
-  """
-    names = ttc_filenames(ttc, data)
+    It provides a likely filename for each file, and lists the tables, providing
+    either the TableEntry data, or the table tag and index of the file that first
+    referenced the table.
+    """
+    names = ttc_filenames(ttc)
 
     table_map = {}
-    for font_index, font_entry in enumerate(ttc.fonts):
+    for font_index, font in enumerate(ttc):
         print("[%2d] %s" % (font_index, names[font_index]))
-        for table_index, table_entry in enumerate(font_entry.tables):
-            table = ttc.tables[table_entry]
+        for table_index, (tag, table) in enumerate(font.reader.tables.items()):
+            table_entry = TableEntry(tag, table.offset, table.length)
             if table_entry not in table_map:
                 table_map[table_entry] = (font_index, table_index)
                 print(
@@ -145,69 +136,66 @@ def ttc_dump(ttc, data):
 
 def ttcfile_filenames(ttcfile):
     """Reads the file and returns the filenames."""
-    with open(ttcfile, "rb") as f:
-        data = f.read()
-    ttc = TTCFile(data=data)
-    return ttc_filenames(ttc, data)
+    ttc = TTCollection(ttcfile)
+    return ttc_filenames(ttc)
 
 
-def ttc_filenames(ttc, data):
+def ttc_filenames(ttc):
     """Returns likely filenames for each ttc file.
 
-  The filenames are based on the postscript name from the name table for each
-  font.  When there is no information, the string '<unknown x>' is provided with
-  either 'ttf' or 'otf' in place of 'x' depending on the info in the sfnt
-  header.
-  """
+    The filenames are based on the postscript name from the name table for each
+    font.  When there is no information, the string '<unknown x>' is provided with
+    either 'ttf' or 'otf' in place of 'x' depending on the info in the sfnt
+    header.
+    """
     names = []
-    for font_entry in ttc.fonts:
-        name_entry = None
-        file_name = None
-        for ix in font_entry.tables:
-            if ttc.tables[ix].tag == "name":
-                name_entry = ttc.tables[ix]
-                break
-        if name_entry:
-            offset = name_entry.offset
-            limit = offset + name_entry.length
-            name_table = NameTable()
-            name_table.decompile(data[offset:limit], None)
-            ps_name = None
-            for r in name_table.names:
-                if (r.nameID, r.platformID, r.platEncID, r.langID) == (6, 3, 1, 0x409):
-                    ps_name = r.string.decode("UTF-16BE")
-                    break
-            if ps_name:
-                file_name = ps_name
-                if "-" not in ps_name:
-                    file_name += "-Regular"
-                file_name += "." + font_entry.fmt
-        names.append(file_name or ("<unknown %s>" % font_entry.fmt))
-
+    for font in ttc.fonts:
+        file_name = ttfont_filename(font)
+        names.append(file_name or ("<unknown %s>" % ttfont_format_as_extension(font)))
     return names
 
 
-def ttcfile_build(output_ttc_path, fontpath_list, tool_path=_BUILD_TOOL_PATH):
-    """Build a .ttc from a list of font files."""
-    otf2otc = tool_utils.resolve_path(tool_path)
-    if not otf2otc:
-        raise ValueError("can not resolve %s" % tool_path)
+def ttfont_filename(font):
+    name_table = font.get("name")
+    if name_table:
+        ps_name = name_table.getDebugName(6)
+        if ps_name:
+            file_name = ps_name
+            if "-" not in ps_name:
+                file_name += "-Regular"
+            font_fmt = ttfont_format_as_extension(font)
+            file_name += "." + font_fmt
+            return file_name
+    return None
 
+
+def ttfont_format_as_extension(font):
+    sfnt_version = font.reader.sfntVersion
+    if sfnt_version == b"\x00\x01\x00\x00":
+        return "ttf"
+    if sfnt_version == b"OTTO":
+        return "otf"
+    raise ValueError("unrecognized sfnt version '%s'" % sfnt_version.decode("ascii"))
+
+
+def ttcfile_build(output_ttc_path, fontpath_list):
+    """Build a .ttc from a list of font files."""
     tool_utils.ensure_dir_exists(path.dirname(output_ttc_path))
-    # capture and discard standard output, the tool is noisy
-    subprocess.check_output([otf2otc, "-o", output_ttc_path] + fontpath_list)
+    ttc = TTCollection()
+    for fontpath in fontpath_list:
+        font = TTFont(fontpath)
+        ttc.fonts.append(font)
+    ttc.save(output_ttc_path)
 
 
 def ttc_namesfile_name(ttc_path):
     return path.splitext(path.basename(ttc_path))[0] + "_names.txt"
 
 
-def ttcfile_build_from_namesfile(
-    output_ttc_path, file_dir, namesfile_name=None, tool_path=_BUILD_TOOL_PATH
-):
+def ttcfile_build_from_namesfile(output_ttc_path, file_dir, namesfile_name=None):
     """Read names of files from namesfile and pass them to build_ttc to build
-  a .ttc file.  The names file will default to one named after output_ttc and
-  located in file_dir."""
+    a .ttc file.  The names file will default to one named after output_ttc and
+    located in file_dir."""
 
     output_ttc_path = tool_utils.resolve_path(output_ttc_path)
     if not namesfile_name:
@@ -229,29 +217,27 @@ def ttcfile_build_from_namesfile(
     ttcfile_build(output_ttc_path, fontpath_list)
 
 
-def ttcfile_extract(input_ttc_path, output_dir, tool_path=_EXTRACT_TOOL_PATH):
+def ttcfile_extract(input_ttc_path, output_dir):
     """Extract .ttf/.otf fonts from a .ttc file, and return a list of the names of
-  the extracted fonts."""
-
-    otc2otf = tool_utils.resolve_path(tool_path)
-    if not otc2otf:
-        raise ValueError("can not resolve %s" % tool_path)
-
+    the extracted fonts."""
     input_ttc_path = tool_utils.resolve_path(input_ttc_path)
     output_dir = tool_utils.ensure_dir_exists(output_dir)
-    with tool_utils.temp_chdir(output_dir):
-        # capture and discard standard output, the tool is noisy
-        subprocess.check_output([otc2otf, input_ttc_path])
-    return ttcfile_filenames(input_ttc_path)
+    ttc = TTCollection(input_ttc_path)
+    filenames = []
+    for font in ttc:
+        filename = ttfont_filename(font)
+        font.save(path.join(output_dir, filename))
+        filenames.append(filename)
+    return filenames
 
 
 def ttcfile_extract_and_write_namesfile(
-    input_ttc_path, output_dir, namesfile_name=None, extract_tool=_EXTRACT_TOOL_PATH
+    input_ttc_path, output_dir, namesfile_name=None
 ):
     """Call ttcfile_extract and in addition write a file to output dir containing
-  the names of the extracted files.  The name of the names file will default to
-  one based on the basename of the input path. It is written to output_dir."""
-    names = ttcfile_extract(input_ttc_path, output_dir, extract_tool)
+    the names of the extracted files.  The name of the names file will default to
+    one based on the basename of the input path. It is written to output_dir."""
+    names = ttcfile_extract(input_ttc_path, output_dir)
     if not namesfile_name:
         namesfile_name = ttc_namesfile_name(input_ttc_path)
     tool_utils.write_lines(names, path.join(output_dir, namesfile_name))

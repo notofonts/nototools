@@ -236,7 +236,8 @@ def _swat_font(noto_font, dst_root, dry_run):
         new_description = None
 
     if re.match(
-        r"^Copyright 201\d Google Inc. All Rights Reserved\.$", names[_COPYRIGHT_ID]
+        r"^Copyright 20[12]\d Google (Inc|LLC). All Rights Reserved\.$",
+        names[_COPYRIGHT_ID],
     ):
         new_copyright = None
     else:
@@ -280,6 +281,8 @@ def _swat_font(noto_font, dst_root, dry_run):
     if names.get(_MANUFACTURER_ID) in [
         "Monotype Imaging Inc.",
         "Danh Hong",
+        "Google LLC",
+        "Google Inc.",
     ]:
         new_manufacturer = None
     else:

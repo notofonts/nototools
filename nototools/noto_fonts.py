@@ -34,7 +34,12 @@ from nototools import unicode_data
 # The '[xxx]' syntax is used to get the noto-xxx value from notoconfig.
 # for now we exclude alpha, the phase 3 fonts are here but we don't use
 # them yet.
-NOTO_FONT_PATHS = ["[fonts]/hinted", "[fonts]/unhinted", "[emoji]/fonts", "[cjk]"]
+NOTO_FONT_PATHS = [
+    "[fonts]/hinted",
+    "[fonts]/unhinted",
+    "[emoji]/fonts",
+    "[cjk]",
+]
 
 
 ODD_SCRIPTS = {
@@ -54,8 +59,12 @@ ODD_SCRIPTS = {
     "Symbols": "Zsym",
     "Emoji": "Zsye",
     "TifinaghAPT": "Tfng",
+    "TifinaghAdrar": "Tfng",
     "TifinaghAgrawImazighen": "Tfng",
     "TifinaghAhaggar": "Tfng",
+    "TifinaghAir": "Tfng",
+    "TifinaghAzawagh": "Tfng",
+    "TifinaghGhat": "Tfng",
     "TifinaghHawad": "Tfng",
     "TifinaghRhissaIxa": "Tfng",
     "TifinaghSIL": "Tfng",
@@ -149,15 +158,15 @@ WEIGHTS = {
 _FONT_NAME_REGEX = (
     # family should be prepended - this is so Roboto can be used with unittests
     # that use this regex to parse.
-    "(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji|Music)?"
+    "(Sans|Serif|Naskh|Kufi|Nastaliq|Emoji|ColorEmoji|Music|Rashi|Traditional|Looped)?"
     "(Mono(?:space)?)?"
     "(.*?)"
-    "(Eastern|Estrangela|Western|Slanted|New|Unjoined|APT|AgrawImazighen|Ahaggar|Hawad|RhissaIxa|SIL|Tawellemmet)?"
+    "(Adrar|AgrawImazighen|Ahaggar|Air|APT|Azawagh|Eastern|Estrangela|Ghat|Hawad|Looped|New|RhissaIxa|SIL|Slanted|Supplement|Tawellemmet|Unjoined|Western)?"
     "(UI)?"
     "(Display)?"
     "-?"
     "((?:Semi|Extra)?Condensed)?"
-    "(|%s)?" % "|".join(WEIGHTS.keys()) + "(Italic)?"
+    "(|%s)?" % "|".join(WEIGHTS.keys()) + "((?<!Old)Italic)?"
     "\.(ttf|ttc|otf)"
 )
 
@@ -167,7 +176,7 @@ _EXT_REGEX = re.compile(r".*\.(?:ttf|ttc|otf)$")
 
 def get_noto_font(filepath, family_name="Arimo|Cousine|Tinos|Noto", phase=3):
     """Return a NotoFont if filepath points to a noto font, or None if we can't
-  process the path."""
+    process the path."""
 
     filedir, filename = os.path.split(filepath)
     if not filedir:
@@ -213,7 +222,13 @@ def get_noto_font(filepath, family_name="Arimo|Cousine|Tinos|Noto", phase=3):
 
     is_mono = mono == "Mono"
 
-    if width not in [None, "", "Condensed", "SemiCondensed", "ExtraCondensed"]:
+    if width not in [
+        None,
+        "",
+        "Condensed",
+        "SemiCondensed",
+        "ExtraCondensed",
+    ]:
         sys.stderr.write('noto_fonts: Unexpected width "%s"\n' % width)
         if width in ["SemiCond", "Narrow"]:
             width = "SemiCondensed"
@@ -227,6 +242,12 @@ def get_noto_font(filepath, family_name="Arimo|Cousine|Tinos|Noto", phase=3):
             script = "MONO"
         else:
             script = "LGC"
+    elif script == "IndicSiyaqNumbers":
+        script = "Arab"
+    elif script == "MayanNumerals":
+        script = "Zmth"
+    elif script == "Old":
+        script = "Ital"
     elif script == "Urdu":
         # Use 'Aran' for languages written in the Nastaliq Arabic style, like Urdu.
         # The font naming uses 'Urdu' which is not a script, but a language.
@@ -320,11 +341,11 @@ def parse_weight(name):
 
 def script_key_to_scripts(script_key):
     """Return a set of scripts for a script key.  The script key is used by
-  a font to define the set of scripts it supports.  Some keys are ours,
-  e.g. 'LGC', and some are standard script codes that map to multiple
-  scripts, like 'Jpan'.  In either case we need to be able to map a script
-  code (either unicode character script code, or more general iso script
-  code) to a font, and we do so by finding it in the list returned here."""
+    a font to define the set of scripts it supports.  Some keys are ours,
+    e.g. 'LGC', and some are standard script codes that map to multiple
+    scripts, like 'Jpan'.  In either case we need to be able to map a script
+    code (either unicode character script code, or more general iso script
+    code) to a font, and we do so by finding it in the list returned here."""
     if script_key == "LGC":
         return frozenset(["Latn", "Grek", "Cyrl"])
     elif script_key == "Aran":
@@ -343,9 +364,9 @@ def script_key_to_scripts(script_key):
 
 def script_key_to_primary_script(script_key):
     """We need a default script for a font, and fonts using a 'script key' support
-  multiple fonts.  This lets us pick a default sample for a font based on it.
-  The sample is named with a script that can include 'Jpan' so 'Jpan' should be
-  the primary script in this case."""
+    multiple fonts.  This lets us pick a default sample for a font based on it.
+    The sample is named with a script that can include 'Jpan' so 'Jpan' should be
+    the primary script in this case."""
     if script_key == "LGC":
         return "Latn"
     if script_key == "Aran":
@@ -398,13 +419,13 @@ def noto_font_to_family_id(notofont):
 
 def noto_font_to_wws_family_id(notofont):
     """Return an id roughly corresponding to the wws family.  Used to identify
-  naming rules for the corresponding fonts. Compare to noto_font_to_family_id,
-  which corresponds to a preferred family and is used to determine the language
-  support for those fonts.  For example, 'Noto Sans Devanagari UI' and
-  'Noto Sans Devanagari' support the same languages (e.g. have the same cmap)
-  but have different wws family names and different name rules (names for the
-  UI variant use very short abbreviations).
-  CJK font naming does reflect 'mono' so we add it back to the id."""
+    naming rules for the corresponding fonts. Compare to noto_font_to_family_id,
+    which corresponds to a preferred family and is used to determine the language
+    support for those fonts.  For example, 'Noto Sans Devanagari UI' and
+    'Noto Sans Devanagari' support the same languages (e.g. have the same cmap)
+    but have different wws family names and different name rules (names for the
+    UI variant use very short abbreviations).
+    CJK font naming does reflect 'mono' so we add it back to the id."""
     id = noto_font_to_family_id(notofont)
     if notofont.is_cjk and notofont.is_mono:
         id += "-mono"
@@ -483,18 +504,26 @@ def wws_family_id_to_name_parts(wws_id):
         elif extra == "ui":
             parts.append("UI")
         elif extra in [
-            "eastern",
-            "estrangela",
-            "western",
-            "display",
-            "unjoined",
-            "apt",
-            "hawad",
+            "adrar",
             "agrawimazighen",
             "ahaggar",
+            "air",
+            "apt",
+            "azawagh",
+            "display",
+            "eastern",
+            "estrangela",
+            "ghat",
+            "hawad",
+            "looped",
+            "new",
             "rhissaixa",
             "sil",
+            "slanted",
+            "supplement",
             "tawellemmet",
+            "unjoined",
+            "western",
         ]:
             parts.append(extra.title())
         else:
@@ -504,7 +533,7 @@ def wws_family_id_to_name_parts(wws_id):
 
 def get_noto_fonts(paths=NOTO_FONT_PATHS):
     """Scan paths for fonts, and create a NotoFont for each one, returning a list
-  of these.  'paths' defaults to the standard noto font paths, using notoconfig."""
+    of these.  'paths' defaults to the standard noto font paths, using notoconfig."""
 
     font_dirs = list(filter(None, [tool_utils.resolve_path(p) for p in paths]))
     print("Getting fonts from: %s" % font_dirs)
@@ -563,7 +592,7 @@ NotoFamily = collections.namedtuple(
 
 def get_families(fonts):
     """Group fonts into families, separate into hinted and unhinted, select
-  representative."""
+    representative."""
 
     family_id_to_fonts = collections.defaultdict(set)
     families = {}
@@ -612,7 +641,12 @@ def get_families(fonts):
             charset = None
 
         families[family_id] = NotoFamily(
-            name, family_id, rep_member, charset, hinted_members, unhinted_members
+            name,
+            family_id,
+            rep_member,
+            charset,
+            hinted_members,
+            unhinted_members,
         )
 
     return families
@@ -620,8 +654,8 @@ def get_families(fonts):
 
 def get_family_filename(family):
     """Returns a filename to use for a family zip of hinted/unhinted members.
-     This is basically the postscript name with weight/style removed.
-  """
+    This is basically the postscript name with weight/style removed.
+    """
     font = ttLib.TTFont(family.rep_member.filepath, fontNumber=0)
     name_record = font_data.get_name_records(font)
     try:

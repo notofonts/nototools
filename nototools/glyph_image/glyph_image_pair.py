@@ -101,7 +101,9 @@ class HungarianMatcher(object):
         )
         n = 0
         for r in range(self.rows):
-            print("x" if self._covered_rows[r] else " ",)
+            print(
+                "x" if self._covered_rows[r] else " ",
+            )
             print(
                 " ".join(
                     "%3d%1s" % (self.data[m], marks[self._marked[m]])

@@ -286,12 +286,12 @@ class CmapOps(object):
 
 def _build_block_to_primary_script():
     """Create a map from block to the primary script in a block.
-  If there are no characters defined in the block, it gets the script 'EXCL',
-  for 'exclude.'  We don't define characters in this block.
-  If the most common script accounts for less than 80% of the defined characters
-  in the block, we use the primary from assigned_primaries, which might be None.
-  It's an error if there's no default primary and it's not listed in
-  assigned_primaries."""
+    If there are no characters defined in the block, it gets the script 'EXCL',
+    for 'exclude.'  We don't define characters in this block.
+    If the most common script accounts for less than 80% of the defined characters
+    in the block, we use the primary from assigned_primaries, which might be None.
+    It's an error if there's no default primary and it's not listed in
+    assigned_primaries."""
 
     assigned_primaries = {
         "Basic Latin": "Latn",
@@ -342,13 +342,19 @@ def _build_block_to_primary_script():
                 max_script = assigned_primaries[block]
                 # print('assigning primary', block_info, '->', max_script)
             else:
-                sys.stderr.write("ERROR: no primary\n", block, block_info)
+                print(
+                    "ERROR: no inherited primary\n %s\n %s\n" % (block, block_info),
+                    file=sys.stderr,
+                )
                 max_script = None
         elif max_script == "Zinh":
             if block in inherited_primaries:
                 max_script = inherited_primaries[block]
             else:
-                sys.stderr.write("ERROR: no inherited primary\n", block, block_info)
+                print(
+                    "ERROR: no inherited primary\n %s\n %s\n" % (block, block_info),
+                    file=sys.stderr,
+                )
                 max_script = None
         block_to_script[block] = max_script
     return block_to_script
@@ -367,7 +373,7 @@ def _primary_script_for_block(block):
 
 def _remove_unicode_assignments(cmap_ops):
     """The starting point is based on the script and script extensions data from
-  Unicode.  Sometimes the assignments seem premature."""
+    Unicode.  Sometimes the assignments seem premature."""
     cmap_ops.phase("remove unicode assignments")
 
     # Jelle says A8F1 makes no sense for Bengali since other characters needed
@@ -378,7 +384,7 @@ def _remove_unicode_assignments(cmap_ops):
 
 def _unassign_inherited_and_common_with_extensions(cmap_ops):
     """Inherited and common characters with an extension that is neither of
-  these get removed from inherited/common scripts."""
+    these get removed from inherited/common scripts."""
 
     def remove_cps_with_extensions(script):
         for cp in cmap_ops.script_chars(script):
@@ -395,7 +401,7 @@ def _unassign_inherited_and_common_with_extensions(cmap_ops):
 
 def _reassign_inherited(cmap_ops):
     """Assign all 'Zinh' chars to the primary script in their block.
-  Fail if there's no primary script.  'Zinh' is removed from script_to_chars."""
+    Fail if there's no primary script.  'Zinh' is removed from script_to_chars."""
     cmap_ops.phase("reassign inherited")
     for cp in cmap_ops.script_chars("Zinh"):
         primary_script = _primary_script_for_block(unicode_data.block(cp))
@@ -412,7 +418,7 @@ def _reassign_inherited(cmap_ops):
 
 def _reassign_common(cmap_ops):
     """Move 'Zyyy' chars in blocks where 'Zyyy' is not primary to the primary
-  script."""
+    script."""
     cmap_ops.phase("reassign common")
     for cp in cmap_ops.script_chars("Zyyy"):
         primary_script = _primary_script_for_block(unicode_data.block(cp))
@@ -424,7 +430,7 @@ def _reassign_common(cmap_ops):
 
 def _unassign_latin(cmap_ops):
     """Remove some characters that extensions assigns to Latin but which we don't
-  need there."""
+    need there."""
     unwanted_latn = tool_utils.parse_int_ranges(
         """
     0951 0952  # devanagari marks
@@ -518,7 +524,15 @@ def _reassign_common_by_block(cmap_ops):
         "Alchemical Symbols": "Zsym",
         "Geometric Shapes Extended": "SYM2",
         "Supplemental Arrows-C": "SYM2",
+        "Chess Symbols": "SYM2",
+        "Ideographic Symbols and Punctuation": "CJK",
+        "Symbols and Pictographs Extended-A": "SYM2",
+        "Symbols for Legacy Computing": "SYM2",
         "Supplemental Symbols and Pictographs": "SYM2",
+        "Counting Rod Numerals": "SYM2",
+        "Mayan Numerals": "Zmth",
+        "Ottoman Siyaq Numbers": "Arab",
+        "Indic Siyaq Numbers": "Arab",
         "Tags": "EXCL",
     }
 
@@ -787,8 +801,8 @@ def _reassign_symbols(cmap_ops):
 
 def _reassign_emoji(cmap_ops):
     """Reassign all emoji to emoji-color. Then assign all emoji with default
-  text presentation, plus those with variation selectors, plus select
-  others, to SYM2."""
+    text presentation, plus those with variation selectors, plus select
+    others, to SYM2."""
 
     cmap_ops.phase("reassign emoji")
 
@@ -2815,7 +2829,7 @@ def _check_CJK():
 
 def _assign_bidi_mirroring(cmap_ops):
     """Ensure that if a bidi mirroring char is in a font, its mirrored char
-  is too."""
+    is too."""
     cmap_ops.phase("bidi mirroring")
     script_to_chars = cmap_ops.create_script_to_chars()
     mirrored = unicode_data.mirrored_chars()
@@ -2850,8 +2864,8 @@ def _unassign_lgc_from_symbols(cmap_ops):
 
 def _assign_programming_lang_symbols(cmap_ops):
     """Assign characters used in programming languages, which generally
-  should be in MONO and in some cases need to be compatible with math
-  in general."""
+    should be in MONO and in some cases need to be compatible with math
+    in general."""
 
     def add_mirrored(cps):
         mirrored_cps = set()
@@ -2989,9 +3003,9 @@ def _assign_programming_lang_symbols(cmap_ops):
 
 def _assign_symbols_from_groups(cmap_ops):
     """Use 'group data' to assign various symbols to Zmth, Zsym, SYM2,
-  MONO, MUSIC' based on character groups.  This fine-tunes the block
-  assignments (some related symbols are scattered across blocks,
-  and symbols blocks are themselves mixed)."""
+    MONO, MUSIC' based on character groups.  This fine-tunes the block
+    assignments (some related symbols are scattered across blocks,
+    and symbols blocks are themselves mixed)."""
 
     cmap_ops.phase("assign symbols from groups")
     with open("codepoint_groups.txt", "r") as f:
@@ -3065,7 +3079,7 @@ def _assign_symbols_from_groups(cmap_ops):
 
 def _assign_mono(cmap_ops):
     """Monospace should be similar to LGC, with the addition of box drawing
-  and block elements.  It should also include all CP437 codepoints."""
+    and block elements.  It should also include all CP437 codepoints."""
 
     cmap_ops.phase("assign mono")
     lgc_chars = cmap_ops.script_chars("LGC")
@@ -3098,9 +3112,9 @@ def _assign_sym2(cmap_ops):
 
 def _assign_math(cmap_ops):
     """No longer use STIX character set, we will just fallback for characters
-  not in math. However, we want much of math to work without fallback, for
-  instance we need character ranges for the combining marks, and want a serif
-  form of the ASCII, so we duplicate more than usual."""
+    not in math. However, we want much of math to work without fallback, for
+    instance we need character ranges for the combining marks, and want a serif
+    form of the ASCII, so we duplicate more than usual."""
 
     cmap_ops.phase("assign math")
 
@@ -3189,7 +3203,7 @@ def _assign_math(cmap_ops):
 
 def _assign_dotted_circle(cmap_ops):
     """All scripts with combining marks should provide dotted circle (and provide
-  an appropriate rendering of the mark in combination with it)."""
+    an appropriate rendering of the mark in combination with it)."""
     cmap_ops.phase("assign dotted circle")
 
     def is_combining(cp):
@@ -3246,7 +3260,7 @@ def _remove_unwanted(cmap_ops):
 
 def _assign_wanted(cmap_ops):
     """After we remove the characters we 'never want', add exceptions back in
-  to particular fonts."""
+    to particular fonts."""
     wanted_chars = {
         "LGC": "20bf feff",  # Bitcoin (not in Unicode 9 data yet), BOM
         "MONO": "feff",  # BOM

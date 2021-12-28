@@ -1,6 +1,7 @@
-[![Travis Build Status](https://travis-ci.org/googlefonts/nototools.svg?branch=master)](https://travis-ci.org/googlefonts/nototools)
+[![CI Build Status](https://github.com/googlefonts/nototools/workflows/Continuous%20Test%20+%20Deploy/badge.svg)](https://github.com/googlefonts/nototools/actions/workflows/ci.yml?query=workflow%3ATest)
 [![PyPI](https://img.shields.io/pypi/v/notofonttools.svg)](https://pypi.org/project/notofonttools/)
-[![pyup](https://pyup.io/repos/github/googlefonts/nototools/shield.svg)](https://pyup.io/repos/github/googlefonts/nototools)
+[![Dependencies](https://badgen.net/github/dependabot/googlefonts/nototools)](https://github.com/googlefonts/nototools/network/updates)
+
 
 # Noto Tools
 
@@ -48,23 +49,6 @@ The following tools are provided:
 
 * `notodiff`
 
-## How to cut a new release
+## Releasing
 
-Use `git tag -a` to make a new annotated tag, or `git tag -s` for a GPG-signed annotated tag,
-if you prefer.
-
-Name the new tag with with a leading 'v' followed by three MAJOR.MINOR.PATCH digits, like in
-[semantic versioning](https://semver.org/). Look at the existing tags for examples.
-
-In the tag message write some short release notes describing the changes since the previous
-tag.
-
-Finally, push the tag to the remote repository (e.g. assuming upstream is called `origin`):
-
-```
-$ git push origin v0.4.3
-```
-
-This will trigger the CI to build the distribution packages and upload them to the
-[Python Package Index](https://pypi.org/project/notofonttools/) automatically, if all the tests
-pass successfully.
+See https://googlefonts.github.io/python#make-a-release.

@@ -43,7 +43,7 @@ CmapData = collections.namedtuple("CmapData", "meta, table")
 
 def _prettify(root, indent=""):
     """Pretty-print the root element if it has no text and children
-     by adding to the root text and each child's tail."""
+    by adding to the root text and each child's tail."""
     if not root.text and len(root):
         indent += "  "
         sfx = "\n" + indent
@@ -163,9 +163,9 @@ def create_metadata(program, args=None, date=datetime.date.today()):
 
 def create_table(header, rows):
     """Create a TableData object from the header and rows.  Header
-  is a string, rows is a list of strings.  In each, columns are
-  separated by ',' which cannot otherwise appear in the text.
-  Each row must have the same number of columns as the header does."""
+    is a string, rows is a list of strings.  In each, columns are
+    separated by ',' which cannot otherwise appear in the text.
+    Each row must have the same number of columns as the header does."""
     header = [t.strip() for t in header.split(",")]
     RowData = collections.namedtuple("RowData", header)
     rowdatas = []
@@ -182,14 +182,14 @@ def create_table(header, rows):
 
 def create_table_from_map(script_to_cmap):
     """Create a table from a map from script to cmaps.  Outputs
-  the script code, script name, count of code points, the
-  codepoint ranges in hex separated by space, the count of
-  excluded/fallback code points, and their ranges separated by
-  space.  script_to_cmap can have values either of cmap or of
-  a tuple of cmap, xcmap; in the first case xcmap is assumed
-  None.  xcmaps that are None are marked as having an xcount of -1.
-  This makes it possible to distinguish an empty xcmap from one
-  that doesn't exist."""
+    the script code, script name, count of code points, the
+    codepoint ranges in hex separated by space, the count of
+    excluded/fallback code points, and their ranges separated by
+    space.  script_to_cmap can have values either of cmap or of
+    a tuple of cmap, xcmap; in the first case xcmap is assumed
+    None.  xcmaps that are None are marked as having an xcount of -1.
+    This makes it possible to distinguish an empty xcmap from one
+    that doesn't exist."""
 
     table_header = "script,name,count,ranges,xcount,xranges".split(",")
     RowData = collections.namedtuple("RowData", table_header)
@@ -224,7 +224,13 @@ def create_map_from_table(table):
 
 def _test():
     meta = create_metadata("test", [("this", 5), ("that", 12.3)])
-    table = create_table("foo,bar", ["1,5.3", "2,6.4",])
+    table = create_table(
+        "foo,bar",
+        [
+            "1,5.3",
+            "2,6.4",
+        ],
+    )
     cmapdata = CmapData(meta, table)
     print(cmapdata)
     xml_text = write_cmap_data(cmapdata)

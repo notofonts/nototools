@@ -39,18 +39,18 @@ from fontTools import ttLib
 def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
     """Add hyphen-minus glyphs to fonts that need it.
 
-  This is to enable languages to be hyphenated properly,
-  since Minikin's itemizer currently shows tofus if an
-  automatically hyphenated word is displated in a font
-  that has neither HYPHEN nor HYPHEN-MINUS.
+    This is to enable languages to be hyphenated properly,
+    since Minikin's itemizer currently shows tofus if an
+    automatically hyphenated word is displated in a font
+    that has neither HYPHEN nor HYPHEN-MINUS.
 
-  The list of font names comes from LANG_TO_SCRIPT in
-  tools/font/fontchain_lint.py.
+    The list of font names comes from LANG_TO_SCRIPT in
+    tools/font/fontchain_lint.py.
 
-  (In practice only U+002D HYPHEN-MINUS is added, since Noto LGC fonts
-  don't have U+2010 HYPHEN.)
+    (In practice only U+002D HYPHEN-MINUS is added, since Noto LGC fonts
+    don't have U+2010 HYPHEN.)
 
-  Bug: 21570828"""
+    Bug: 21570828"""
 
     # Names of fonts for which Android requires a hyphen.
     # This list omits Japanese and Korean.
@@ -106,15 +106,15 @@ def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
 
 def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
     """
-  Remove default emoji characters from CJK fonts.
+    Remove default emoji characters from CJK fonts.
 
-  Twenty-six characters that Unicode Technical Report #51 "Unicode
-  Emoji" defines as defaulting to emoji styles used to be displayed as
-  black and white ("text" style) before this. This patch removes those
-  characters from Noto CJK fonts, so they get displayed as color.
+    Twenty-six characters that Unicode Technical Report #51 "Unicode
+    Emoji" defines as defaulting to emoji styles used to be displayed as
+    black and white ("text" style) before this. This patch removes those
+    characters from Noto CJK fonts, so they get displayed as color.
 
-  (1c4749e20391a4)
-  """
+    (1c4749e20391a4)
+    """
 
     # Since subsetting changes tables in a way that would prevent a compact
     # .ttc file, this simply removes entries from the cmap table.  This
@@ -126,24 +126,71 @@ def _remove_cjk_emoji(cjk_font_names, srcdir, dstdir):
         font_data.delete_from_cmap(font, exclude)
         font.save(outfile)
 
-    EMOJI = (
-        [0x26BD, 0x26BE, 0x1F18E]
-        + list(range(0x1F191, 0x1F19A + 1))
-        + [0x1F201, 0x1F21A, 0x1F22F]
-        + list(range(0x1F232, 0x1F236 + 1))
-        + [0x1F238, 0x1F239, 0x1F23A, 0x1F250, 0x1F251]
-    )
+    # Characters supported in Noto CJK fonts that UTR #51 recommends default to
+    # emoji-style.
+    EMOJI_IN_CJK = {
+        0x26BD,  # ⚽ SOCCER BALL
+        0x26BE,  # ⚾ BASEBALL
+        0x1F18E,  # 🆎 NEGATIVE SQUARED AB
+        0x1F191,  # 🆑 SQUARED CL
+        0x1F192,  # 🆒 SQUARED COOL
+        0x1F193,  # 🆓 SQUARED FREE
+        0x1F194,  # 🆔 SQUARED ID
+        0x1F195,  # 🆕 SQUARED NEW
+        0x1F196,  # 🆖 SQUARED NG
+        0x1F197,  # 🆗 SQUARED OK
+        0x1F198,  # 🆘 SQUARED SOS
+        0x1F199,  # 🆙 SQUARED UP WITH EXCLAMATION MARK
+        0x1F19A,  # 🆚 SQUARED VS
+        0x1F201,  # 🈁 SQUARED KATAKANA KOKO
+        0x1F21A,  # 🈚 SQUARED CJK UNIFIED IDEOGRAPH-7121
+        0x1F22F,  # 🈯 SQUARED CJK UNIFIED IDEOGRAPH-6307
+        0x1F232,  # 🈲 SQUARED CJK UNIFIED IDEOGRAPH-7981
+        0x1F233,  # 🈳 SQUARED CJK UNIFIED IDEOGRAPH-7A7A
+        0x1F234,  # 🈴 SQUARED CJK UNIFIED IDEOGRAPH-5408
+        0x1F235,  # 🈵 SQUARED CJK UNIFIED IDEOGRAPH-6E80
+        0x1F236,  # 🈶 SQUARED CJK UNIFIED IDEOGRAPH-6709
+        0x1F238,  # 🈸 SQUARED CJK UNIFIED IDEOGRAPH-7533
+        0x1F239,  # 🈹 SQUARED CJK UNIFIED IDEOGRAPH-5272
+        0x1F23A,  # 🈺 SQUARED CJK UNIFIED IDEOGRAPH-55B6
+        0x1F250,  # 🉐 CIRCLED IDEOGRAPH ADVANTAGE
+        0x1F251,  # 🉑 CIRCLED IDEOGRAPH ACCEPT
+    }
+
+    # Characters we have decided we are doing as emoji-style in Android,
+    # despite UTR #51's recommendation
+    ANDROID_EMOJI = {
+        0x2600,  # ☀ BLACK SUN WITH RAYS
+        0x2601,  # ☁ CLOUD
+        0x260E,  # ☎ BLACK TELEPHONE
+        0x261D,  # ☝ WHITE UP POINTING INDEX
+        0x263A,  # ☺ WHITE SMILING FACE
+        0x2660,  # ♠ BLACK SPADE SUIT
+        0x2663,  # ♣ BLACK CLUB SUIT
+        0x2665,  # ♥ BLACK HEART SUIT
+        0x2666,  # ♦ BLACK DIAMOND SUIT
+        0x270C,  # ✌ VICTORY HAND
+        0x2744,  # ❄ SNOWFLAKE
+        0x2764,  # ❤ HEAVY BLACK HEART
+    }
+
+    # We don't want support for ASCII control chars.
+    CONTROL_CHARS = tool_utils.parse_int_ranges("0000-001F")
+
+    EXCLUDED_CODEPOINTS = sorted(EMOJI_IN_CJK | ANDROID_EMOJI | CONTROL_CHARS)
 
     for font_name in cjk_font_names:
         print("remove cjk emoji", font_name)
         _remove_from_cmap(
-            path.join(srcdir, font_name), path.join(dstdir, font_name), exclude=EMOJI
+            path.join(srcdir, font_name),
+            path.join(dstdir, font_name),
+            exclude=EXCLUDED_CODEPOINTS,
         )
 
 
 def patch_cjk_ttc(ttc_srcfile, ttc_dstfile):
     """Take the source ttc, break it apart, remove the cjk emoji
-  from each file, then repackage them into a new ttc."""
+    from each file, then repackage them into a new ttc."""
 
     tmp_dir = tempfile.mkdtemp()
     font_names = ttc_utils.ttcfile_extract(ttc_srcfile, tmp_dir)
@@ -158,7 +205,7 @@ def patch_cjk_ttc(ttc_srcfile, ttc_dstfile):
 
 def patch_cjk_ttcs(srcdir, dstdir):
     """Call patch_cjk_ttc for each ttc file in srcdir, writing the
-  result to dstdir using the same name."""
+    result to dstdir using the same name."""
 
     if not path.isdir(srcdir):
         print("%s is not a directory" % srcdir)
@@ -302,30 +349,30 @@ def _format_set(char_set, name, filename):
 def subset_symbols(srcdir, dstdir):
     """Subset Noto Sans Symbols in a curated way.
 
-  Noto Sans Symbols is now subsetted in a curated way. Changes include:
+    Noto Sans Symbols is now subsetted in a curated way. Changes include:
 
-  * Currency symbols now included in Roboto are removed.
+    * Currency symbols now included in Roboto are removed.
 
-  * All combining marks for symbols (except for combining keycap) are
-    added, to combine with other symbols if needed.
+    * All combining marks for symbols (except for combining keycap) are
+      added, to combine with other symbols if needed.
 
-  * Characters in symbol blocks that are also covered by Noto CJK fonts
-    are added, for better harmony with the rest of the fonts in non-CJK
-    settings. The dentistry characters at U+23BE..23CC are not added,
-    since they appear to be Japan-only and full-width.
+    * Characters in symbol blocks that are also covered by Noto CJK fonts
+      are added, for better harmony with the rest of the fonts in non-CJK
+      settings. The dentistry characters at U+23BE..23CC are not added,
+      since they appear to be Japan-only and full-width.
 
-  * Characters that UTR #51 defines as default text are added, although
-    they may also exist in the color emoji font, to make sure they get
-    a default text style.
+    * Characters that UTR #51 defines as default text are added, although
+      they may also exist in the color emoji font, to make sure they get
+      a default text style.
 
-  * Characters that UTR #51 defines as default emoji are removed, to
-    make sure they don't block the fallback to the color emoji font.
+    * Characters that UTR #51 defines as default emoji are removed, to
+      make sure they don't block the fallback to the color emoji font.
 
-  * A few math symbols that are currently included in Roboto are added,
-    to prepare for potentially removing them from Roboto when they are
-    lower-quality in Roboto.
+    * A few math symbols that are currently included in Roboto are added,
+      to prepare for potentially removing them from Roboto when they are
+      lower-quality in Roboto.
 
-  Based on subset_noto_sans_symbols.py from AOSP external/noto-fonts."""
+    Based on subset_noto_sans_symbols.py from AOSP external/noto-fonts."""
 
     # TODO see if we need to change this subset based on Noto Serif coverage
     # (so the serif fallback chain would support them)
@@ -382,7 +429,7 @@ def patch_post_table(srcdir, dstdir):
 
 def patch_fonts(srcdir, dstdir):
     """Remove dstdir and repopulate with patched contents of srcdir (and
-  its 'cjk' subdirectory if it exists)."""
+    its 'cjk' subdirectory if it exists)."""
 
     srcdir = tool_utils.resolve_path(srcdir)
     dstdir = tool_utils.resolve_path(dstdir)

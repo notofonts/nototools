@@ -154,7 +154,7 @@ def main():
     )
     parser.add_argument(
         "-w",
-        "--whitelist",
+        "--allowlist",
         nargs="+",
         default=(),
         help="list of one or more glyph names to ignore for "
@@ -214,7 +214,7 @@ def main():
             print(
                 shape_diff.ShapeDiffFinder.dump(
                     stats,
-                    args.whitelist,
+                    args.allowlist,
                     args.out_lines,
                     include_vals=(args.diff_type in ("area", "area-shape-product")),
                     multiple_fonts=bool(args.match),

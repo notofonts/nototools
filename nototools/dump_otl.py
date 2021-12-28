@@ -66,10 +66,14 @@ def printable_glyph_list(glyph_list, quote=False):
 
 def dump_lang_sys(script, lang, lang_sys):
     """Dumps a language system."""
-    print("%s %s:" % (script, lang),)
+    print(
+        "%s %s:" % (script, lang),
+    )
     assert lang_sys.LookupOrder is None
     if lang_sys.ReqFeatureIndex != 65535:
-        print("<%s>" % lang_sys.ReqFeatureIndex,)
+        print(
+            "<%s>" % lang_sys.ReqFeatureIndex,
+        )
     print(lang_sys.FeatureIndex)
 
 

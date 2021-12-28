@@ -33,6 +33,8 @@ _REPO_PATHS = [tool_utils.resolve_path("[%s]" % r) for r in _REPOS]
 
 def noto_check_clean():
     errors = []
+    print(_REPOS)
+    print(_REPO_PATHS)
     for r, p in zip(_REPOS, _REPO_PATHS):
         if not tool_utils.git_is_clean(p):
             errors.append(r)
@@ -48,7 +50,7 @@ def noto_check_clean():
 
 def noto_checkout_master(dry_run=False):
     """Check out the noto repos at master.  Return True if ok, else log
-  error and return False."""
+    error and return False."""
 
     if not noto_check_clean():
         return False
@@ -66,12 +68,12 @@ def noto_checkout(
     fonts_tag="latest",
     emoji_tag="latest",
     cjk_tag="latest",
-    verbose=False,
+    verbose=True,
     dry_run=False,
 ):
     """Check out the noto repos at the provided tags.  Return True if ok,
-  else log error and return False.  Default is 'latest' for the latest
-  tag."""
+    else log error and return False.  Default is 'latest' for the latest
+    tag."""
 
     if not noto_check_clean():
         return False

@@ -252,8 +252,8 @@ def get_char_to_lang_map(loc_map):
 
 def char_lang_info(num_locales, char_to_lang_map):
     """Returns a tuple containing
-  - characters ordered by the number of langs that use them
-  - a list mapping number of shared langs to number of chars shared by those langs"""
+    - characters ordered by the number of langs that use them
+    - a list mapping number of shared langs to number of chars shared by those langs"""
 
     freq_list = []
     hist = [0] * (num_locales + 1)
@@ -297,7 +297,7 @@ def show_shared_langs_hist(hist):
 
 def get_upper_case_list(char_list):
     """Return the upper case versions where they differ.
-  If no char in the list is a lower case variant, the result is empty."""
+    If no char in the list is a lower case variant, the result is empty."""
     # keep in same order as input list.
     upper_case_chars = []
     for cp in char_list:
@@ -325,8 +325,8 @@ def show_tiers(char_list, num_tiers, tier_size):
 
 def get_rare_char_info(char_to_lang_map, shared_lang_threshold):
     """Returns a tuple of:
-  - a set of 'rare_chars' (those used threshold langs or fewer),
-  - a mapping from each locale with rare chars to a set of its rare chars"""
+    - a set of 'rare_chars' (those used threshold langs or fewer),
+    - a mapping from each locale with rare chars to a set of its rare chars"""
 
     rare_chars = set()
     locs_with_rare_chars = collections.defaultdict(set)
@@ -370,7 +370,7 @@ def select_rare_chars_for_loc(
     script, locs_with_rare_chars, shared_lang_threshold, char_to_lang_map
 ):
     """Return a list of 2-tuples of loc and selected rare chars,
-  ordered by decreasing literate population of the locale."""
+    ordered by decreasing literate population of the locale."""
 
     rarity_threshold_map = {}
     for lang_tag in locs_with_rare_chars:

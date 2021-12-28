@@ -43,7 +43,7 @@ except ImportError:
 from nototools import tool_utils  # parse_int_ranges
 
 # Update this when we update the base version data we use
-UNICODE_VERSION = 12.0
+UNICODE_VERSION = 14.0
 
 _data_is_loaded = False
 _property_value_aliases_data = {}
@@ -96,9 +96,9 @@ _namealiases_alt_names = None
 def load_data():
     """Loads the data files needed for the module.
 
-  Could be used by processes that care about controlling when the data is
-  loaded. Otherwise, data will be loaded the first time it's needed.
-  """
+    Could be used by processes that care about controlling when the data is
+    loaded. Otherwise, data will be loaded the first time it's needed.
+    """
     global _data_is_loaded
 
     if not _data_is_loaded:
@@ -125,9 +125,9 @@ def load_data():
 def name(char, *args):
     """Returns the name of a character.
 
-  Raises a ValueError exception if the character is undefined, unless an
-  extra argument is given, in which case it will return that argument.
-  """
+    Raises a ValueError exception if the character is undefined, unless an
+    extra argument is given, in which case it will return that argument.
+    """
     if isinstance(char, int):
         char = unichr(char)
     # First try and get the name from unidata, which is faster and supports
@@ -187,8 +187,8 @@ def combining(char):
 
 def to_upper(char):
     """Returns the upper case for a lower case character.
-  This is not full upper casing, but simply reflects the 1-1
-  mapping in UnicodeData.txt."""
+    This is not full upper casing, but simply reflects the 1-1
+    mapping in UnicodeData.txt."""
     load_data()
     cp = _char_to_int(char)
     try:
@@ -200,8 +200,7 @@ def to_upper(char):
 
 
 def canonical_decomposition(char):
-    """Returns the canonical decomposition of a character as a Unicode string.
-  """
+    """Returns the canonical decomposition of a character as a Unicode string."""
     load_data()
     char = _char_to_int(char)
     try:
@@ -223,8 +222,8 @@ def script(char):
 def script_extensions(char):
     """Returns the script extensions property of a character.
 
-  The return value is a frozenset of four-letter script codes.
-  """
+    The return value is a frozenset of four-letter script codes.
+    """
     load_data()
     char = _char_to_int(char)
     try:
@@ -265,7 +264,7 @@ def block_names():
 def age(char):
     """Returns the age property of a character as a string.
 
-  Returns None if the character is unassigned."""
+    Returns None if the character is unassigned."""
     load_data()
     char = _char_to_int(char)
     try:
@@ -351,7 +350,7 @@ def indic_syllabic_category(char):
 
 def create_script_to_chars():
     """Returns a mapping from script to defined characters, based on script and
-  extensions, for all scripts."""
+    extensions, for all scripts."""
     load_data()
     result = collections.defaultdict(set)
     for cp in _defined_characters:
@@ -406,8 +405,7 @@ def _folded_script_name(script_name):
 
 
 def script_code(script_name):
-    """Returns the four-letter ISO 15924 code of a script from its long name.
-  """
+    """Returns the four-letter ISO 15924 code of a script from its long name."""
     load_data()
     folded_script_name = _folded_script_name(script_name)
     try:
@@ -459,12 +457,12 @@ _DATA_DIR_PATH = path.join(
 def open_unicode_data_file(data_file_name):
     """Opens a Unicode data file.
 
-  Args:
-    data_file_name: A string containing the filename of the data file.
+    Args:
+      data_file_name: A string containing the filename of the data file.
 
-  Returns:
-    A file handle to the data file.
-  """
+    Returns:
+      A file handle to the data file.
+    """
     filename = path.join(_DATA_DIR_PATH, data_file_name)
     return codecs.open(filename, "r", "utf-8")
 
@@ -472,27 +470,27 @@ def open_unicode_data_file(data_file_name):
 def _parse_code_ranges(input_data):
     """Reads Unicode code ranges with properties from an input string.
 
-  Reads a Unicode data file already imported into a string. The format is
-  the typical Unicode data file format with either one character or a
-  range of characters separated by a semicolon with a property value (and
-  potentially comments after a number sign, that will be ignored).
+    Reads a Unicode data file already imported into a string. The format is
+    the typical Unicode data file format with either one character or a
+    range of characters separated by a semicolon with a property value (and
+    potentially comments after a number sign, that will be ignored).
 
-  Example source data file:
-    http://www.unicode.org/Public/UNIDATA/Scripts.txt
+    Example source data file:
+      http://www.unicode.org/Public/UNIDATA/Scripts.txt
 
-  Example data:
-    0000..001F    ; Common # Cc  [32] <control-0000>..<control-001F>
-    0020          ; Common # Zs       SPACE
+    Example data:
+      0000..001F    ; Common # Cc  [32] <control-0000>..<control-001F>
+      0020          ; Common # Zs       SPACE
 
-  Args:
-    input_data: An input string, containing the data.
+    Args:
+      input_data: An input string, containing the data.
 
-  Returns:
-    A list of tuples corresponding to the input data, with each tuple
-    containing the beginning of the range, the end of the range, and the
-    property value for the range. For example:
-    [(0, 31, 'Common'), (32, 32, 'Common')]
-  """
+    Returns:
+      A list of tuples corresponding to the input data, with each tuple
+      containing the beginning of the range, the end of the range, and the
+      property value for the range. For example:
+      [(0, 31, 'Common'), (32, 32, 'Common')]
+    """
     ranges = []
     line_regex = re.compile(
         r"^"
@@ -522,26 +520,26 @@ def _parse_code_ranges(input_data):
 def _parse_semicolon_separated_data(input_data):
     """Reads semicolon-separated Unicode data from an input string.
 
-  Reads a Unicode data file already imported into a string. The format is
-  the Unicode data file format with a list of values separated by
-  semicolons. The number of the values on different lines may be different
-  from another.
+    Reads a Unicode data file already imported into a string. The format is
+    the Unicode data file format with a list of values separated by
+    semicolons. The number of the values on different lines may be different
+    from another.
 
-  Example source data file:
-    http://www.unicode.org/Public/UNIDATA/PropertyValueAliases.txt
+    Example source data file:
+      http://www.unicode.org/Public/UNIDATA/PropertyValueAliases.txt
 
-  Example data:
-    sc;  Cher  ; Cherokee
-    sc;  Copt  ; Coptic   ; Qaac
+    Example data:
+      sc;  Cher  ; Cherokee
+      sc;  Copt  ; Coptic   ; Qaac
 
-  Args:
-    input_data: An input string, containing the data.
+    Args:
+      input_data: An input string, containing the data.
 
-  Returns:
-    A list of lists corresponding to the input data, with each individual
-    list containing the values as strings. For example:
-    [['sc', 'Cher', 'Cherokee'], ['sc', 'Copt', 'Coptic', 'Qaac']]
-  """
+    Returns:
+      A list of lists corresponding to the input data, with each individual
+      list containing the values as strings. For example:
+      [['sc', 'Cher', 'Cherokee'], ['sc', 'Copt', 'Coptic', 'Qaac']]
+    """
     all_data = []
     for line in input_data.split("\n"):
         line = line.split("#", 1)[0].strip()  # remove the comment
@@ -786,7 +784,7 @@ EMOJI_SEQUENCE_TYPES = frozenset(
 # use that data, but still have to parse the line.
 def _read_emoji_data(lines):
     """Parse lines of emoji data and return a map from sequence to tuples of
-  name, age, type."""
+    name, age, type."""
     line_re = re.compile(
         r"(?:([0-9A-F ]+)|([0-9A-F]+\.\.[0-9A-F]+)\s*);\s*(%s)\s*;\s*([^#]*)\s*#\s*E?(\d+\.\d+).*"
         % "|".join(EMOJI_SEQUENCE_TYPES)
@@ -830,10 +828,10 @@ _EMOJI_QUAL_TYPES = [
 
 def _read_emoji_test_data(data_string):
     """Parse the emoji-test.txt data.  This has names of proposed emoji that are
-  not yet in the full Unicode data file.  Returns a list of tuples of
-  sequence, group, subgroup, name.
+    not yet in the full Unicode data file.  Returns a list of tuples of
+    sequence, group, subgroup, name.
 
-  The data is a string."""
+    The data is a string."""
     line_re = re.compile(
         r"([0-9a-fA-F ]+)\s*;\s*(%s)\s*#\s*(?:[^\s]+)\s+(.*)\s*"
         % "|".join(_EMOJI_QUAL_TYPES)
@@ -942,11 +940,6 @@ fe82b ; fully-qualified # ? unknown flag PUA codepoint
 #
 # This data is in the format of emoji-sequences.txt and emoji-zwj-sequences.txt
 _LEGACY_ANDROID_SEQUENCES = """
-1F91D 1F3FB                ; Emoji_Modifier_Sequence; handshake: light skin tone # 9.0
-1F91D 1F3FC                ; Emoji_Modifier_Sequence; handshake: medium-light skin tone # 9.0
-1F91D 1F3FD                ; Emoji_Modifier_Sequence; handshake: medium skin tone # 9.0
-1F91D 1F3FE                ; Emoji_Modifier_Sequence; handshake: medium-dark skin tone # 9.0
-1F91D 1F3FF                ; Emoji_Modifier_Sequence; handshake: dark skin tone # 9.0
 1F93C 1F3FB                ; Emoji_Modifier_Sequence ; people wrestling: light skin tone # 9.0
 1F93C 1F3FC                ; Emoji_Modifier_Sequence ; people wrestling: medium-light skin tone # 9.0
 1F93C 1F3FD                ; Emoji_Modifier_Sequence ; people wrestling: medium skin tone # 9.0
@@ -968,12 +961,6 @@ _LEGACY_ANDROID_SEQUENCES = """
 # have been nice to merge it into the above legacy data but that would have
 # required a format change.
 _LEGACY_ANDROID_ORDER = """
--1F91D  # handshake
-1F91D 1F3FB
-1F91D 1F3FC
-1F91D 1F3FD
-1F91D 1F3FE
-1F91D 1F3FF
 -1F93C  # people wrestling
 1F93C 1F3FB
 1F93C 1F3FC
@@ -997,9 +984,9 @@ _LEGACY_ANDROID_ORDER = """
 
 def _get_order_patch(order_text, seq_to_name):
     """Create a mapping from a key sequence to a list of sequence, name tuples.
-  This will be used to insert additional sequences after the key sequence
-  in the order data.  seq_to_name is a mapping from new sequence to name,
-  so the names don't have to be duplicated in the order data."""
+    This will be used to insert additional sequences after the key sequence
+    in the order data.  seq_to_name is a mapping from new sequence to name,
+    so the names don't have to be duplicated in the order data."""
 
     patch_map = {}
     patch_key = None
@@ -1041,11 +1028,11 @@ def _get_android_order_patch():
 
 def _apply_order_patch(patch, group_list):
     """patch is a map from a key sequence to list of sequence, name pairs, and
-  group_list is an ordered list of sequence, group, subgroup, name tuples.
-  Iterate through the group list appending each item to a new list, and
-  after appending an item matching a key sequence, also append all of its
-  associated sequences in order using the same group and subgroup.
-  Return the new list.  If there are any unused patches, raise an exception."""
+    group_list is an ordered list of sequence, group, subgroup, name tuples.
+    Iterate through the group list appending each item to a new list, and
+    after appending an item matching a key sequence, also append all of its
+    associated sequences in order using the same group and subgroup.
+    Return the new list.  If there are any unused patches, raise an exception."""
 
     result = []
     patched = set()
@@ -1101,9 +1088,9 @@ def _load_emoji_group_data():
 
 def get_emoji_group_data(seq):
     """Return group data for the canonical sequence seq, or None.
-  Group data is a tuple of index, group, subgroup, and name.  The
-  index is a unique global sort index for the sequence among all
-  sequences in the group data."""
+    Group data is a tuple of index, group, subgroup, and name.  The
+    index is a unique global sort index for the sequence among all
+    sequences in the group data."""
     _load_emoji_group_data()
     return _emoji_group_data.get(seq, None)
 
@@ -1122,7 +1109,7 @@ def get_emoji_groups():
 
 def get_emoji_subgroups(group):
     """Return the subgroups of this group, in order, or None
-  if the group is not recognized."""
+    if the group is not recognized."""
     _load_emoji_group_data()
     subgroups = []
     subgroup = None
@@ -1136,8 +1123,8 @@ def get_emoji_subgroups(group):
 
 def get_emoji_in_group(group, subgroup=None):
     """Return the sorted list of the emoji sequences in the group (limiting to
-  subgroup if subgroup is not None).  Returns None if group does not
-  exist, and an empty list if subgroup does not exist in group."""
+    subgroup if subgroup is not None).  Returns None if group does not
+    exist, and an empty list if subgroup does not exist in group."""
     _load_emoji_group_data()
     result = None
     for seq, (index, g, sg, _) in _emoji_group_data.items():
@@ -1153,9 +1140,9 @@ def get_emoji_in_group(group, subgroup=None):
 
 def get_sorted_emoji_sequences(seqs):
     """Seqs is a collection of canonical emoji sequences.  Returns a list of
-  these sequences in the canonical emoji group order.  Sequences that are not
-  canonical are placed at the end, in unicode code point order.
-  """
+    these sequences in the canonical emoji group order.  Sequences that are not
+    canonical are placed at the end, in unicode code point order.
+    """
     _load_emoji_group_data()
     return sorted(seqs, key=lambda s: (_emoji_group_data.get(s, 100000), s))
 
@@ -1207,7 +1194,11 @@ def _load_emoji_sequence_data():
         if is_default_text_presentation:
             seq = (cp, EMOJI_VS)
 
-        emoji_age = float(age(cp)) or PROPOSED_EMOJI_AGE
+        emoji_age = age(cp)
+        if emoji_age is not None:
+            emoji_age = float(emoji_age)
+        emoji_age = PROPOSED_EMOJI_AGE
+
         current_data = _emoji_sequence_data.get(seq) or (
             emoji_name,
             emoji_age,
@@ -1247,9 +1238,9 @@ def _load_emoji_sequence_data():
 
 def get_emoji_sequences(age=None, types=None):
     """Return the set of canonical emoji sequences, filtering to those <= age
-  if age is not None, and those with type in types (if not a string) or
-  type == types (if type is a string) if types is not None.  By default
-  all sequences are returned, including those for single emoji."""
+    if age is not None, and those with type in types (if not a string) or
+    type == types (if type is a string) if types is not None.  By default
+    all sequences are returned, including those for single emoji."""
     _load_emoji_sequence_data()
 
     result = _emoji_sequence_data.keys()
@@ -1265,7 +1256,7 @@ def get_emoji_sequences(age=None, types=None):
 
 def get_emoji_sequence_data(seq):
     """Return a tuple of the name, age, and type for the (possibly non-canonical)
-  sequence, or None if not recognized as a sequence."""
+    sequence, or None if not recognized as a sequence."""
     _load_emoji_sequence_data()
 
     seq = get_canonical_emoji_sequence(seq)
@@ -1276,15 +1267,15 @@ def get_emoji_sequence_data(seq):
 
 def get_emoji_sequence_name(seq):
     """Return the name of the (possibly non-canonical)  sequence, or None if
-  not recognized as a sequence."""
+    not recognized as a sequence."""
     data = get_emoji_sequence_data(seq)
     return None if not data else data[0]
 
 
 def get_emoji_sequence_age(seq):
     """Return the age of the (possibly non-canonical)  sequence, or None if
-  not recognized as a sequence.  Proposed sequences have PROPOSED_EMOJI_AGE
-  as the age."""
+    not recognized as a sequence.  Proposed sequences have PROPOSED_EMOJI_AGE
+    as the age."""
     # floats are a pain since the actual values are decimal.  maybe use
     # strings to represent age.
     data = get_emoji_sequence_data(seq)
@@ -1293,21 +1284,21 @@ def get_emoji_sequence_age(seq):
 
 def get_emoji_sequence_type(seq):
     """Return the type of the (possibly non-canonical)  sequence, or None if
-  not recognized as a sequence.  Types are in EMOJI_SEQUENCE_TYPES."""
+    not recognized as a sequence.  Types are in EMOJI_SEQUENCE_TYPES."""
     data = get_emoji_sequence_data(seq)
     return None if not data else data[2]
 
 
 def is_canonical_emoji_sequence(seq):
     """Return true if this is a canonical emoji sequence (has 'vs' where Unicode
-  says it should), and is known."""
+    says it should), and is known."""
     _load_emoji_sequence_data()
     return seq in _emoji_sequence_data
 
 
 def get_canonical_emoji_sequence(seq):
     """Return the canonical version of this emoji sequence if the sequence is
-  known, or None."""
+    known, or None."""
     if is_canonical_emoji_sequence(seq):
         return seq
     seq = strip_emoji_vs(seq)
@@ -1316,8 +1307,8 @@ def get_canonical_emoji_sequence(seq):
 
 def strip_emoji_vs(seq):
     """Return a version of this emoji sequence with emoji variation selectors
-  stripped. This is the 'non-canonical' version used by the color emoji font,
-  which doesn't care how the sequence is represented in text."""
+    stripped. This is the 'non-canonical' version used by the color emoji font,
+    which doesn't care how the sequence is represented in text."""
     if EMOJI_VS in seq:
         return tuple([cp for cp in seq if cp != EMOJI_VS])
     return seq
@@ -1425,8 +1416,8 @@ def is_emoji_modifier_base(cp):
 
 def _load_unicode_emoji_variants():
     """Parse StandardizedVariants.txt and initialize a set of characters
-  that have a defined emoji variant presentation.  All such characters
-  also have a text variant presentation so a single set works for both."""
+    that have a defined emoji variant presentation.  All such characters
+    also have a text variant presentation so a single set works for both."""
 
     global _emoji_variants, _emoji_variants_proposed
     if _emoji_variants:
@@ -1471,10 +1462,10 @@ def _load_unicode_emoji_variants():
 
 def get_unicode_emoji_variants(include_proposed="proposed"):
     """Returns the emoji characters that have both emoji and text presentations.
-  If include_proposed is 'proposed', include the ones proposed in 2016/08.  If
-  include_proposed is 'proposed_extra', also include the emoji Noto proposes
-  for text presentation treatment to align related characters.  Else
-  include_proposed should resolve to boolean False."""
+    If include_proposed is 'proposed', include the ones proposed in 2016/08.  If
+    include_proposed is 'proposed_extra', also include the emoji Noto proposes
+    for text presentation treatment to align related characters.  Else
+    include_proposed should resolve to boolean False."""
     _load_unicode_emoji_variants()
     if not include_proposed:
         return _emoji_variants
@@ -1492,12 +1483,12 @@ def get_unicode_emoji_variants(include_proposed="proposed"):
 
 def _load_variant_data():
     """Parse StandardizedVariants.txt and initialize all non-emoji variant
-  data.  The data is a mapping from codepoint to a list of tuples of:
-  - variant selector
-  - compatibility character (-1 if there is none)
-  - shaping context (bitmask, 1 2 4 8 for isolate initial medial final)
-  The compatibility character is for cjk mappings that map to 'the same'
-  glyph as another CJK character."""
+    data.  The data is a mapping from codepoint to a list of tuples of:
+    - variant selector
+    - compatibility character (-1 if there is none)
+    - shaping context (bitmask, 1 2 4 8 for isolate initial medial final)
+    The compatibility character is for cjk mappings that map to 'the same'
+    glyph as another CJK character."""
 
     global _variant_data, _variant_data_cps
     if _variant_data:
@@ -1559,7 +1550,7 @@ def variant_data_cps():
 
 def _load_proposed_emoji_data():
     """Parse proposed-emoji.txt if it exists to get cps/names of proposed emoji
-     (but not approved) for this version of Unicode."""
+    (but not approved) for this version of Unicode."""
 
     global _proposed_emoji_data, _proposed_emoji_data_cps
     if _proposed_emoji_data:
@@ -1622,7 +1613,7 @@ def read_codeset(text):
 
 def codeset(cpname):
     """Return a set of the unicode codepoints in the code page named cpname, or
-  None."""
+    None."""
     filename = ("%s.txt" % cpname).upper()
     filepath = path.join(
         path.dirname(__file__), os.pardir, "third_party", "unicode", filename

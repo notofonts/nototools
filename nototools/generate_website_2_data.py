@@ -357,7 +357,7 @@ def get_named_lang_scrs(family_id_to_lang_scr_to_sample_key):
 
 def get_lang_scr_sort_order(lang_scrs):
     """Return a sort order for lang_scrs based on the english name, but
-  clustering related languages."""
+    clustering related languages."""
 
     def lang_key(lang_scr):
         name = lang_data.lang_script_to_names(lang_scr)[0]
@@ -419,14 +419,14 @@ def get_lang_scr_sort_order(lang_scrs):
 def get_charset_info(charset):
 
     """Returns an encoding of the charset as pairs of lengths of runs of chars
-  to skip and chars to include.  Each length is written as length - 1 in
-  hex-- except when length == 1, which is written as the empty string-- and
-  separated from the next length by a comma.  Thus successive commas
-  indicate a length of 1, a 1 indicates a length of 2, and so on.  Since
-  the minimum representable length is 1, the base is -1 so that the first
-  run (a skip) of 1 can be output as a comma to then start the first
-  included character at 0 if need be.  Only as many pairs of values as are
-  needed to encode the last run of included characters."""
+    to skip and chars to include.  Each length is written as length - 1 in
+    hex-- except when length == 1, which is written as the empty string-- and
+    separated from the next length by a comma.  Thus successive commas
+    indicate a length of 1, a 1 indicates a length of 2, and so on.  Since
+    the minimum representable length is 1, the base is -1 so that the first
+    run (a skip) of 1 can be output as a comma to then start the first
+    included character at 0 if need be.  Only as many pairs of values as are
+    needed to encode the last run of included characters."""
 
     ranges = coverage.convert_set_to_ranges(charset)
     prev = -1
@@ -451,8 +451,8 @@ _sample_names = []
 
 def get_sample_names_for_lang_scr_typ(lang_scr, typ):
     """Sample names are of the form 'lang-scr(-var)*typ.txt', return
-  names starting with lang-scr and ending with typ, stripping the extension,
-  and sorted with lang-scr_typ first and the rest in alphabetical order."""
+    names starting with lang-scr and ending with typ, stripping the extension,
+    and sorted with lang-scr_typ first and the rest in alphabetical order."""
     global _sample_names
 
     if not _sample_names:
@@ -508,15 +508,15 @@ def sample_text_from_exemplar(exemplar):
 
 def get_sample_infos(lang_scr):
     """Return a list of tuples of:
-  - a short sample text string
-  - an attribution key, one of
-    UN: official UN translation, needs attribution
-    other: not an official UN translation, needs non-attribution
-    original: public domain translation, does not need attribution
-    none: we have no attribution info on this, does not need attribution
-  - source key.
-  The list is in order of priority: language texts, udhr samples, exemplars for
-  the language, sample chars for the script, exemplars for the script."""
+    - a short sample text string
+    - an attribution key, one of
+      UN: official UN translation, needs attribution
+      other: not an official UN translation, needs non-attribution
+      original: public domain translation, does not need attribution
+      none: we have no attribution info on this, does not need attribution
+    - source key.
+    The list is in order of priority: language texts, udhr samples, exemplars for
+    the language, sample chars for the script, exemplars for the script."""
 
     assert "-" in lang_scr
 
@@ -555,9 +555,9 @@ def get_sample_infos(lang_scr):
 
 def get_family_id_to_default_lang_scr(family_id_to_lang_scrs, families):
     """Return a mapping from family id to default lang tag, for families
-  that have multiple lang tags.  This is based on likely subtags and
-  the script of the family (Latn for LGC).
-  """
+    that have multiple lang tags.  This is based on likely subtags and
+    the script of the family (Latn for LGC).
+    """
 
     family_id_to_default_lang_scr = {}
     for family_id, lang_scrs in family_id_to_lang_scrs.items():
@@ -804,8 +804,8 @@ class WebGen(object):
 
     def build_readmes(self):
         """Create README files for the zips.  These are named README
-    and are put into /tmp/readmes/{fonts|cjk|emoji|all} before
-    being copied to zip files."""
+        and are put into /tmp/readmes/{fonts|cjk|emoji|all} before
+        being copied to zip files."""
 
         date_str = str(datetime.date.today())
         names = self.get_readme_keys()
@@ -1338,7 +1338,7 @@ class WebGen(object):
 
     def build_subset_zips(self):
         """Generate zipped versions of the CJK subset families for access via
-    the link on the cjk help page."""
+        the link on the cjk help page."""
 
         # The font family code skips the subset files, but we want them in the
         # package directory. Like the ttcs, we handle them separately.
@@ -1641,13 +1641,13 @@ class WebGen(object):
 
 def get_repo_info(skip_checks):
     """Looks at the three noto fonts repos (fonts, cjk, emoji) and
-  gets information about the current state of each.  Returns
-  a mapping from 'fonts', 'cjk', and 'emoji' to the corresponding
-  info.
+    gets information about the current state of each.  Returns
+    a mapping from 'fonts', 'cjk', and 'emoji' to the corresponding
+    info.
 
-  If skip_checks is not set, checks that the repos are in a good
-  state (at a known annotated tag and there are no pending commits),
-  otherwise an exception is raised."""
+    If skip_checks is not set, checks that the repos are in a good
+    state (at a known annotated tag and there are no pending commits),
+    otherwise an exception is raised."""
 
     repo_info = {}
     errors = []
