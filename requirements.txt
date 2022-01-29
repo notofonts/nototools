@@ -1,7 +1,7 @@
 afdko==3.7.1
 appdirs==1.4.4
 attrs==21.4.0
-black==21.12b0
+black==22.1.0
 booleanOperations==0.9.0
 Brotli==1.0.9
 click==8.0.3
