@@ -1,4 +1,4 @@
-afdko==3.7.1
+afdko==3.8.0
 appdirs==1.4.4
 attrs==21.4.0
 black==21.12b0
