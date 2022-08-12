@@ -88,7 +88,7 @@ def get_script_to_cmaps(csvdata):
             )
         for i, v in enumerate(rowdata):
             v = v.strip(" \n\t")
-            if not v or v == u"\u001a":
+            if not v or v == "\u001a":
                 continue
             try:
                 if v[-1] == "*":

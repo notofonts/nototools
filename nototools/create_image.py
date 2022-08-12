@@ -430,7 +430,7 @@ def render_codes(
     lang,
     ext,
 ):
-    text = u"".join([unichr(int(s, 16)) for s in code_list])
+    text = "".join([unichr(int(s, 16)) for s in code_list])
     render_text(
         file_name,
         text,

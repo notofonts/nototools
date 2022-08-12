@@ -237,7 +237,7 @@ def _create_lang_script_to_names(lang_script_data):
             if not en_name:
                 # Easier than patching the cldr_data, not sure I want to go there.
                 if lang_script == "tlh-Piqd":
-                    en_name = u"Klingon"
+                    en_name = "Klingon"
                 else:
                     _log("No english name for %s" % lang_script)
                     continue

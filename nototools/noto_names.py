@@ -63,8 +63,8 @@ ORIGINAL_FAMILY_LIMIT = 32
 GOOGLE_COPYRIGHT_RE = r"^Copyright 20\d\d Google (Inc|LLC)\.* All Rights Reserved\.$"
 
 ADOBE_COPYRIGHT_RE = (
-    u"^Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
-    u"\(http://www.adobe.com/\)\.$"
+    "^Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
+    "\(http://www.adobe.com/\)\.$"
 )
 
 NOTO_URL = "http://www.google.com/get/noto/"

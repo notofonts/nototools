@@ -149,7 +149,7 @@ def name(char, *args):
 
 def _char_to_int(char):
     """Converts a potential character to its scalar value."""
-    if type(char) in [str, type(u"")]:
+    if type(char) in [str, type("")]:
         return ord(char)
     else:
         return char
@@ -206,7 +206,7 @@ def canonical_decomposition(char):
     try:
         return _decomposition_data[char]
     except KeyError:
-        return u""
+        return ""
 
 
 def script(char):
@@ -1562,7 +1562,7 @@ def _load_proposed_emoji_data():
         with open_unicode_data_file("proposed-emoji.txt") as f:
             for line in f:
                 line = line.strip()
-                if not line or line[0] == "#" or line.startswith(u"\u2022"):
+                if not line or line[0] == "#" or line.startswith("\u2022"):
                     continue
 
                 m = line_re.match(line)
