@@ -127,7 +127,7 @@ def get_script_to_exemplar_data_map():
                     % (
                         src,
                         ", ".join(
-                            [u"\u200e%s\u200e (%x)" % (cp, ord(cp)) for cp in dup_chars]
+                            ["\u200e%s\u200e (%x)" % (cp, ord(cp)) for cp in dup_chars]
                         ),
                     )
                 )
@@ -285,7 +285,7 @@ def show_char_use_info(script, chars_by_num_langs, char_to_lang_map):
         without_script_str = ", ".join(sorted(without_script))
         if count > limit:
             without_script_str += "..."
-        print(u"char %s\u200e (%x): %d %s" % (cp, ord(cp), count, without_script_str))
+        print("char %s\u200e (%x): %d %s" % (cp, ord(cp), count, without_script_str))
     print("total chars listed: %d" % len(char_to_lang_map))
 
 

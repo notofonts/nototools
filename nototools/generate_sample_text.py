@@ -38,7 +38,7 @@ def main(argv):
             chars += range(code1, code2 + 1)
         else:
             chars.append(char_rep_to_code(arg))
-    chars = u" ".join([unichr(code) for code in chars])
+    chars = " ".join([unichr(code) for code in chars])
     if sys.version_info >= (2, 7):
         print(chars)
     else:

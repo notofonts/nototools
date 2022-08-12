@@ -256,7 +256,7 @@ def probably_intersect(piece1, piece2):
     return arrayTools.sectRect(bounds1, bounds2)[0]
 
 
-_EPSILON = 1.0 / (2 ** 14)
+_EPSILON = 1.0 / (2**14)
 _MAX_DEPTH = 30
 
 
@@ -351,7 +351,7 @@ def printable_font_revision(font, accuracy=2):
     font_revision = font["head"].fontRevision
     font_revision_int = int(font_revision)
     font_revision_frac = int(
-        round((font_revision - font_revision_int) * 10 ** accuracy)
+        round((font_revision - font_revision_int) * 10**accuracy)
     )
 
     font_revision_int = str(font_revision_int)

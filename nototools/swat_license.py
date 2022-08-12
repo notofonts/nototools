@@ -166,7 +166,7 @@ def get_bumped_version(ttfont, is_hinted=None):
     fixed_revision = misc.fixedTools.floatToFixed(float_revision, 16)
     rt_float_rev = misc.fixedTools.fixedToFloat(fixed_revision, 16)
     rt_float_rev_int = int(rt_float_rev)
-    rt_float_rev_frac = int(round((rt_float_rev - rt_float_rev_int) * 10 ** accuracy))
+    rt_float_rev_frac = int(round((rt_float_rev - rt_float_rev_int) * 10**accuracy))
     rt_new_revision = (
         str(rt_float_rev_int) + "." + str(rt_float_rev_frac).zfill(accuracy)
     )

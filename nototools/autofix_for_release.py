@@ -94,7 +94,7 @@ NAME_CORRECTIONS = {
     "Sans Emoji": "Emoji",
 }
 
-TRADEMARK_TEMPLATE = u"%s is a trademark of Google Inc."
+TRADEMARK_TEMPLATE = "%s is a trademark of Google Inc."
 
 
 def fix_name_table(font):
@@ -105,7 +105,7 @@ def fix_name_table(font):
     copyright_data = name_records[0]
     years = re.findall("20[0-9][0-9]", copyright_data)
     year = min(years)
-    copyright_data = u"Copyright %s Google Inc. All Rights Reserved." % year
+    copyright_data = "Copyright %s Google Inc. All Rights Reserved." % year
 
     if copyright_data != name_records[0]:
         print('Updated copyright message to "%s"' % copyright_data)

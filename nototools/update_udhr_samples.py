@@ -506,7 +506,7 @@ def extract_para(src_path):
     if article is None:
         # file kjh.xml is damaged, arrgh. Cyrillic small 'ie' looks just like 'e', and
         # the 'number' attribute is written with the Cyrillic e!
-        article = root.find(u'udhr:article[@numb\u0435r="1"]', ns)
+        article = root.find('udhr:article[@numb\u0435r="1"]', ns)
     if article is not None:
         text = "\n".join([para.text for para in article.findall("udhr:para", ns)])
         return text.strip() + "\n"
@@ -517,9 +517,9 @@ def fix_sample(sample, bcp):
     """Fix samples that have known fixable issues."""
     new_sample = None
     if bcp == "zh-Hans":
-        new_sample = sample.replace(u",", u"\uff0c")
+        new_sample = sample.replace(",", "\uff0c")
     elif bcp == "hu-Latn":
-        new_sample = sample.replace(u"Minden.", u"Minden")
+        new_sample = sample.replace("Minden.", "Minden")
 
     if not new_sample:
         return sample
