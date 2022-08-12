@@ -59,7 +59,7 @@ class UnicodeDataTest(unittest.TestCase):
         """Tests the is_defined() method."""
         self.assertTrue(unicode_data.is_defined(0x20BD))
         self.assertFalse(unicode_data.is_defined(0xFDD0))
-        self.assertFalse(unicode_data.is_defined(0x0870))
+        self.assertFalse(unicode_data.is_defined(0x088F))
         # CJK ranges
         self.assertTrue(unicode_data.is_defined(0x3400))
         self.assertTrue(unicode_data.is_defined(0x4DB5))
