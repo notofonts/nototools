@@ -12,7 +12,7 @@ fontParts==0.10.7
 fontPens==0.2.4
 fonttools==4.34.4
 fs==2.4.16
-lxml==4.9.1
+lxml==4.9.2
 MutatorMath==3.0.1
 pathspec>=0.9.0
 Pillow==9.2.0
