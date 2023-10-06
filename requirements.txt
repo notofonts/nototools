@@ -27,4 +27,4 @@ typed-ast>=1.4.2
 ufonormalizer==0.6.1
 ufoProcessor==1.9.0
 unicodedata2==15.0.0
-zopfli==0.2.2
+zopfli==0.2.3
