@@ -17,15 +17,11 @@ jobs:
       with:
         # pytype currently doesn't work with python >= 3.9
         python-version: 3.8
-    # - name: Install tox
-    #   run: pip install tox
-    # - name: Run style and typing checks
-    #   run: tox -e lint
   test:
     runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.9]
         platform: [ubuntu-latest]
     steps:
     - uses: actions/checkout@v2

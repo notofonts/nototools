@@ -2671,6 +2671,7 @@ _SCRIPT_REQUIRED = [
     ),
 ]
 
+
 # This is a utility function that parses the _script_required data
 # and spits it out again in the above format.  When editing the
 # above data, just type in the hex values, then run this to regenerate

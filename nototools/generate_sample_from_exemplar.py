@@ -97,6 +97,7 @@ def get_script_to_exemplar_data_map():
                 no_latin = True
             else:
                 no_latin = False
+
             # exclude exemplar strings, and restrict to letters and digits
             def accept_cp(cp):
                 if len(cp) != 1:

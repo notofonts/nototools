@@ -207,7 +207,6 @@ class TestNames(FontTest):
         """Tests the family name."""
 
         for font_file, records in zip(self.font_files, self.names):
-
             family, weight, _ = self.parse_filename(font_file)
 
             # check that family name includes weight, if not regular or bold
@@ -398,7 +397,6 @@ class TestFeatures(FontTest):
         def run_test(
             glyph_order, glyph_set, fontfile, tags, proportional=False, oldstyle=False
         ):
-
             num = glyph_order[layout.get_glyphs("1", fontfile)[0]]
             styled = glyph_order[
                 layout.get_glyphs("1", fontfile, "--features=" + ",".join(tags))[0]

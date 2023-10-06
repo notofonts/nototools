@@ -131,7 +131,6 @@ class HbInputGenerator(object):
             return inputs
         for lookup_index, lookup in enumerate(gsub.LookupList.Lookup):
             for st in lookup.SubTable:
-
                 # see if this glyph can be a single-glyph substitution
                 if lookup.LookupType == 1:
                     for glyph, subst in st.mapping.items():

@@ -123,7 +123,8 @@ def parse_int_ranges(range_string, is_hex=True, sep=" "):
 
 def write_int_ranges(int_values, in_hex=True, sep=" "):
     """From a set or list of ints, generate a string representation that can
-    be parsed by parse_int_ranges to return the original values (not order_preserving)."""
+    be parsed by parse_int_ranges to return the original values (not order_preserving).
+    """
 
     if not int_values:
         return ""

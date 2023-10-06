@@ -45,7 +45,6 @@ _VERSION_ID = 5  # name table version string ID
 
 
 def subset_font_cmap(srcname, dstname, exclude=None, include=None, bump_version=True):
-
     opt = _DEFAULT_OPTIONS
 
     font = subset.load_font(srcname, opt)

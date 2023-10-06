@@ -32,6 +32,7 @@ import collections
 from nototools import cldr_data
 from nototools import unicode_data
 
+
 # controls printing of debug/trace information
 # normally disabled
 def _log(msg):
