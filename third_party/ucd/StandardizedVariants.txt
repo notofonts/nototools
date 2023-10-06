@@ -1,5 +1,5 @@
-# StandardizedVariants-15.0.0.txt
-# Date: 2022-01-28, 21:31:00 GMT [KW]
+# StandardizedVariants-15.1.0.txt
+# Date: 2022-12-19, 23:53:00 GMT [KW]
 # © 2022 Unicode®, Inc.
 # For terms of use, see https://www.unicode.org/terms_of_use.html
 #
@@ -364,10 +364,10 @@ A868 FE00; phags-pa letter reversed shaping subjoined ya; # PHAGS-PA SUBJOINED L
 
 # Egyptian hieroglyph expanded variants
 
-13443 FE00; expanded ; # LOST SIGN
-13444 FE00; expanded ; # HALF LOST SIGN
-13445 FE00; expanded ; # TALL LOST SIGN
-13446 FE00; expanded ; # WIDE LOST SIGN
+13443 FE00; expanded ; # EGYPTIAN HIEROGLYPH LOST SIGN
+13444 FE00; expanded ; # EGYPTIAN HIEROGLYPH HALF LOST SIGN
+13445 FE00; expanded ; # EGYPTIAN HIEROGLYPH TALL LOST SIGN
+13446 FE00; expanded ; # EGYPTIAN HIEROGLYPH WIDE LOST SIGN
 
 # CJK compatibility ideographs
 
