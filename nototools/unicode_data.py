@@ -778,6 +778,7 @@ EMOJI_SEQUENCE_TYPES = frozenset(
     ]
 )
 
+
 # Unicode 12 decided to be 'helpful' and included single emoji in the sequence
 # data, but unlike all the other data represents these in batches as XXXX..XXXX
 # rather than one per line.  We can't get name data for these so we can't

@@ -492,7 +492,6 @@ def parse_sample_gen(definition):
 def generate_samples(
     defs_file, out_file, patterns=None, group=False, sep="\t", label=False, sort=False
 ):
-
     with codecs.open(defs_file, "r", "utf-8") as f:
         sample_gen = parse_sample_gen(f.read())
     if sample_gen:

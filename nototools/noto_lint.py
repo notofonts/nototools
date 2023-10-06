@@ -1331,7 +1331,6 @@ def check_font(
             proportion_val = os2_table.panose.bProportion
             is_mono = proportion_val == 9
             if proportion_val <= 1:
-
                 warn(
                     "head/os2/panose/proportion",
                     "OS/2",

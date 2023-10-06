@@ -127,7 +127,6 @@ def _list_range(
     only_scripts,
     details,
 ):
-
     if limit_cp != start_cp + 1:
         range_text = "%04x-%04x" % (start_cp, limit_cp - 1)
     else:

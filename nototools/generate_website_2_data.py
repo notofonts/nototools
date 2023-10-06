@@ -79,7 +79,6 @@ def check_families(family_map):
             and unhinted_members
             and len(hinted_members) != len(unhinted_members)
         ):
-
             # Let's not consider this an error for now.  Just drop the members with
             # the higher number of fonts, assuming it's a superset of the fonts in the
             # smaller set, so that the fonts we provide and display are available to
@@ -197,7 +196,6 @@ def get_family_id_to_lang_scrs(lang_scrs, script_to_family_ids):
 def get_family_id_to_lang_scr_to_sample_key(
     family_id_to_lang_scrs, families, lang_scr_to_sample_infos
 ):
-
     """For each lang_scr + family combination, determine which sample to use
     from those available for the lang_scr.  If the family can't display any
     of the samples, report an error, the lang will not be added to those
@@ -417,7 +415,6 @@ def get_lang_scr_sort_order(lang_scrs):
 
 
 def get_charset_info(charset):
-
     """Returns an encoding of the charset as pairs of lengths of runs of chars
     to skip and chars to include.  Each length is written as length - 1 in
     hex-- except when length == 1, which is written as the empty string-- and
@@ -926,7 +923,6 @@ class WebGen(object):
         family_id_to_regions,
         region_to_family_ids,
     ):
-
         data_obj = collections.OrderedDict()
         families_obj = collections.OrderedDict()
 
@@ -1074,7 +1070,6 @@ class WebGen(object):
         css_info,
         default_lang_scr,
     ):
-
         family_obj = collections.OrderedDict()
         category = get_css_generic_family(family.name)
         if category:
