@@ -46,7 +46,6 @@ setup(
         "nototools/fix_khmer_and_lao_coverage.py",
         "nototools/fix_noto_cjk_thin.py",
         "nototools/generate_sample_text.py",
-        "nototools/generate_website_2_data.py",
         "nototools/merge_noto.py",
         "nototools/merge_fonts.py",
         "nototools/noto_lint.py",
