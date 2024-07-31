@@ -24,7 +24,7 @@ scour==0.38.2
 six==1.16.0
 toml==0.10.2
 typed-ast>=1.4.2
-ufonormalizer==0.6.1
+ufonormalizer==0.6.2
 ufoProcessor==1.9.0
 unicodedata2==15.1.0
 zopfli==0.2.3
