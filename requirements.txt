@@ -1,6 +1,6 @@
 afdko==4.0.0
 appdirs==1.4.4
-attrs==23.1.0
+attrs==24.3.0
 black==24.4.2
 booleanOperations==0.9.0
 Brotli==1.1.0
