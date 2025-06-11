@@ -8,7 +8,7 @@ click==8.1.7
 cu2qu==1.6.7.post2
 defcon==0.10.3
 fontMath==0.9.3
-fontParts==0.12.1
+fontParts==0.13.1
 fontPens==0.2.4
 fonttools==4.53.0
 fs==2.4.16
