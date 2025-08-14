@@ -43,7 +43,7 @@ except ImportError:
 from nototools import tool_utils  # parse_int_ranges
 
 # Update this when we update the base version data we use
-UNICODE_VERSION = 14.0
+UNICODE_VERSION = 17.0
 
 _data_is_loaded = False
 _property_value_aliases_data = {}
@@ -935,53 +935,6 @@ _SUPPLEMENTAL_EMOJI_GROUP_DATA = """
 fe82b ; fully-qualified # ? unknown flag PUA codepoint
 """
 
-# These are skin tone sequences that Unicode decided not to define.  Android
-# shipped with them, so we're stuck with them forever regardless of what
-# Unicode says.
-#
-# This data is in the format of emoji-sequences.txt and emoji-zwj-sequences.txt
-_LEGACY_ANDROID_SEQUENCES = """
-1F93C 1F3FB                ; Emoji_Modifier_Sequence ; people wrestling: light skin tone # 9.0
-1F93C 1F3FC                ; Emoji_Modifier_Sequence ; people wrestling: medium-light skin tone # 9.0
-1F93C 1F3FD                ; Emoji_Modifier_Sequence ; people wrestling: medium skin tone # 9.0
-1F93C 1F3FE                ; Emoji_Modifier_Sequence ; people wrestling: medium-dark skin tone # 9.0
-1F93C 1F3FF                ; Emoji_Modifier_Sequence ; people wrestling: dark skin tone # 9.0
-1F93C 1F3FB 200D 2642 FE0F ; Emoji_ZWJ_Sequence ; men wrestling: light skin tone # 9.0
-1F93C 1F3FC 200D 2642 FE0F ; Emoji_ZWJ_Sequence ; men wrestling: medium-light skin tone # 9.0
-1F93C 1F3FD 200D 2642 FE0F ; Emoji_ZWJ_Sequence ; men wrestling: medium skin tone # 9.0
-1F93C 1F3FE 200D 2642 FE0F ; Emoji_ZWJ_Sequence ; men wrestling: medium-dark skin tone # 9.0
-1F93C 1F3FF 200D 2642 FE0F ; Emoji_ZWJ_Sequence ; men wrestling: dark skin tone # 9.0
-1F93C 1F3FB 200D 2640 FE0F ; Emoji_ZWJ_Sequence ; women wrestling: light skin tone # 9.0
-1F93C 1F3FC 200D 2640 FE0F ; Emoji_ZWJ_Sequence ; women wrestling: medium-light skin tone # 9.0
-1F93C 1F3FD 200D 2640 FE0F ; Emoji_ZWJ_Sequence ; women wrestling: medium skin tone # 9.0
-1F93C 1F3FE 200D 2640 FE0F ; Emoji_ZWJ_Sequence ; women wrestling: medium-dark skin tone # 9.0
-1F93C 1F3FF 200D 2640 FE0F ; Emoji_ZWJ_Sequence ; women wrestling: dark skin tone # 9.0
-"""
-
-# Defines how to insert the new sequences into the standard order data.  Would
-# have been nice to merge it into the above legacy data but that would have
-# required a format change.
-_LEGACY_ANDROID_ORDER = """
--1F93C  # people wrestling
-1F93C 1F3FB
-1F93C 1F3FC
-1F93C 1F3FD
-1F93C 1F3FE
-1F93C 1F3FF
--1F93C 200D 2642 FE0F  # men wrestling
-1F93C 1F3FB 200D 2642 FE0F
-1F93C 1F3FC 200D 2642 FE0F
-1F93C 1F3FD 200D 2642 FE0F
-1F93C 1F3FE 200D 2642 FE0F
-1F93C 1F3FF 200D 2642 FE0F
--1F93C 200D 2640 FE0F  # women wrestling
-1F93C 1F3FB 200D 2640 FE0F
-1F93C 1F3FC 200D 2640 FE0F
-1F93C 1F3FD 200D 2640 FE0F
-1F93C 1F3FE 200D 2640 FE0F
-1F93C 1F3FF 200D 2640 FE0F
-"""
-
 
 def _get_order_patch(order_text, seq_to_name):
     """Create a mapping from a key sequence to a list of sequence, name tuples.
@@ -1018,47 +971,6 @@ def _get_order_patch(order_text, seq_to_name):
     return patch_map
 
 
-def _get_android_order_patch():
-    """Get an order patch using the legacy android data."""
-
-    # maps from sequence to (name, age, type), we only need the name
-    seq_data = _read_emoji_data(_LEGACY_ANDROID_SEQUENCES.splitlines())
-    seq_to_name = {k: v[0] for k, v in seq_data.items()}
-    return _get_order_patch(_LEGACY_ANDROID_ORDER, seq_to_name)
-
-
-def _apply_order_patch(patch, group_list):
-    """patch is a map from a key sequence to list of sequence, name pairs, and
-    group_list is an ordered list of sequence, group, subgroup, name tuples.
-    Iterate through the group list appending each item to a new list, and
-    after appending an item matching a key sequence, also append all of its
-    associated sequences in order using the same group and subgroup.
-    Return the new list.  If there are any unused patches, raise an exception."""
-
-    result = []
-    patched = set()
-    for t in group_list:
-        result.append(t)
-        if t[0] in patch:
-            patched.add(t[0])
-            _, group, subgroup, _ = t
-            for seq, name in patch[t[0]]:
-                result.append((seq, group, subgroup, name))
-
-    unused = set(patch.keys()) - patched
-    if unused:
-        raise Exception(
-            "%d unused patch%s\n  %s: "
-            % (
-                len(unused),
-                "" if len(unused) == 1 else "es",
-                "\n  ".join(seq_to_string(seq) for seq in sorted(unused)),
-            )
-        )
-
-    return result
-
-
 def _load_emoji_group_data():
     global _emoji_group_data
     if _emoji_group_data:
@@ -1070,10 +982,6 @@ def _load_emoji_group_data():
         text = f.read()
     group_list = _read_emoji_test_data(text)
 
-    # patch with android items
-    patch = _get_android_order_patch()
-    group_list = _apply_order_patch(patch, group_list)
-
     group_list.extend(_read_emoji_test_data(_SUPPLEMENTAL_EMOJI_GROUP_DATA))
     for i, (seq, group, subgroup, name) in enumerate(group_list):
         if seq in _emoji_group_data:
@@ -1084,7 +992,7 @@ def _load_emoji_group_data():
             print("    new value would be %s" % str((i, group, subgroup, name)))
         _emoji_group_data[seq] = (i, group, subgroup, name)
 
-    assert len(group_list) == len(_emoji_group_data)
+    assert len(group_list) == len(_emoji_group_data), f"{len(group_list)} != {len(_emoji_group_data)}"
 
 
 def get_emoji_group_data(seq):
@@ -1168,7 +1076,6 @@ def _load_emoji_sequence_data():
 
     for datafile in ["emoji-zwj-sequences.txt", "emoji-sequences.txt"]:
         add_data(_read_emoji_data_file(datafile))
-    add_data(_read_emoji_data(_LEGACY_ANDROID_SEQUENCES.splitlines()))
 
     _load_unicode_data_txt()  # ensure character_names_data is populated
     _load_emoji_data()  # ensure presentation_default_text is populated
