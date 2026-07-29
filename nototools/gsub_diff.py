@@ -76,6 +76,7 @@ class GsubDiffFinder(object):
         rule_rx = r"sub ([\w.]+) by ([\w.]+);"
 
         rules = set()
+        text = text.decode("utf-8") if isinstance(text, bytes) else text
         for name in re.findall(feature_name_rx, text):
             contents = re.findall(contents_rx % (name, name), text, re.S)
             assert len(contents) == 1, "Multiple %s features in %s" % (name, filename)
