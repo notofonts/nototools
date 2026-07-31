@@ -1,6 +1,6 @@
-# IndicPositionalCategory-17.0.0.txt
-# Date: 2025-07-29, 13:35:52 GMT
-# © 2025 Unicode®, Inc.
+# IndicPositionalCategory-18.0.0.txt
+# Date: 2026-04-29, 14:13:54 GMT
+# © 2026 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use and license, see https://www.unicode.org/terms_of_use.html
 #
@@ -426,7 +426,7 @@ AABB..AABC    ; Visual_Order_Left # Lo   [2] TAI VIET VOWEL AUE..TAI VIET VOWEL 
 0AFA..0AFF    ; Top # Mn   [6] GUJARATI SIGN SUKUN..GUJARATI SIGN TWO-CIRCLE NUKTA ABOVE
 0B01          ; Top # Mn       ORIYA SIGN CANDRABINDU
 0B3F          ; Top # Mn       ORIYA VOWEL SIGN I
-0B55..0B56    ; Top # Mn   [2] ORIYA SIGN OVERLINE..ORIYA AI LENGTH MARK
+0B53..0B56    ; Top # Mn   [4] ORIYA SIGN DOT ABOVE..ORIYA AI LENGTH MARK
 0B82          ; Top # Mn       TAMIL SIGN ANUSVARA
 0BC0          ; Top # Mn       TAMIL VOWEL SIGN II
 0BCD          ; Top # Mn       TAMIL SIGN VIRAMA
@@ -610,6 +610,7 @@ ABE5          ; Top # Mn       MEETEI MAYEK VOWEL SIGN ANAP
 11D43         ; Top # Mn       MASARAM GONDI SIGN CANDRA
 11D90..11D91  ; Top # Mn   [2] GUNJALA GONDI VOWEL SIGN EE..GUNJALA GONDI VOWEL SIGN AI
 11D95         ; Top # Mn       GUNJALA GONDI SIGN ANUSVARA
+11DF0         ; Top # Mn       BENGALI SIGN COMBINING ANUSVARA ABOVE
 11EF3         ; Top # Mn       MAKASAR VOWEL SIGN I
 11F00..11F01  ; Top # Mn   [2] KAWI SIGN CANDRABINDU..KAWI SIGN ANUSVARA
 11F02         ; Top # Lo       KAWI SIGN REPHA
@@ -618,6 +619,7 @@ ABE5          ; Top # Mn       MEETEI MAYEK VOWEL SIGN ANAP
 11F5A         ; Top # Mn       KAWI SIGN NUKTA
 1611E..16129  ; Top # Mn  [12] GURUNG KHEMA VOWEL SIGN AA..GURUNG KHEMA VOWEL LENGTH MARK
 1612D         ; Top # Mn       GURUNG KHEMA SIGN ANUSVARA
+16D98         ; Top # Mn       CHISOI SIGN ANUSVARA
 
 # Indic_Positional_Category=Bottom
 
@@ -773,6 +775,7 @@ ABED          ; Bottom # Mn       MEETEI MAYEK APUN IYEK
 11EF4         ; Bottom # Mn       MAKASAR VOWEL SIGN U
 11F38..11F3A  ; Bottom # Mn   [3] KAWI VOWEL SIGN U..KAWI VOWEL SIGN VOCALIC R
 1612E..1612F  ; Bottom # Mn   [2] GURUNG KHEMA CONSONANT SIGN MEDIAL RA..GURUNG KHEMA SIGN THOLHOMA
+16D9D         ; Bottom # Mn       CHISOI SIGN SISO
 
 # Indic_Positional_Category=Top_And_Bottom
 
