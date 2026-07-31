@@ -1,6 +1,6 @@
-# StandardizedVariants-17.0.0.txt
-# Date: 2025-07-30
-# © 2025 Unicode®, Inc.
+# StandardizedVariants-18.0.0.txt
+# Date: 2026-01-26
+# © 2026 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
 # For terms of use and license, see https://www.unicode.org/terms_of_use.html
 #
@@ -87,6 +87,16 @@
 2ACC FE00; with stroke through bottom members; # SUPERSET OF ABOVE NOT EQUAL TO
 FF10 FE00; short diagonal stroke form; # FULLWIDTH DIGIT ZERO
 
+1DB10 FE00; with descender; # CARTESIAN EQUALS SIGN
+223D FE00; using lazy S; # REVERSED TILDE
+2243 FE00; using lazy S; # ASYMPTOTICALLY EQUAL TO
+22CD FE00; using lazy S; # REVERSED TILDE EQUALS
+2242 FE00; using lazy S; # MINUS TILDE
+2248 FE00; using lazy S; # ALMOST EQUAL TO
+2A6C FE00; using lazy S; # SIMILAR MINUS SIMILAR
+22DC FE00; with horizontal equal; # EQUAL TO OR LESS-THAN
+22DD FE00; with horizontal equal; # EQUAL TO OR GREATER-THAN
+
 # Mathematical alphabet script variants
 
 1D49C FE00; chancery style; #  MATHEMATICAL SCRIPT CAPITAL A
@@ -143,6 +153,8 @@ FF10 FE00; short diagonal stroke form; # FULLWIDTH DIGIT ZERO
 1D4B4 FE01; roundhand style; #  MATHEMATICAL SCRIPT CAPITAL Y
 1D4B5 FE01; roundhand style; #  MATHEMATICAL SCRIPT CAPITAL Z
 
+1D4CF FE02; kurrent style; #  MATHEMATICAL SCRIPT SMALL Z
+
 # East Asian punctuation positional and width variants
 
 2018 FE00; non-fullwidth form; # LEFT SINGLE QUOTATION MARK
@@ -173,6 +185,26 @@ FF1B FE00; corner-justified form; # FULLWIDTH SEMICOLON
 FF1B FE01; centered form; # FULLWIDTH SEMICOLON
 FF1F FE00; corner-justified form; # FULLWIDTH QUESTION MARK
 FF1F FE01; centered form; # FULLWIDTH QUESTION MARK
+
+# CJK strokes
+
+31C0 FE00; dotted T form; # CJK STROKE T
+31C6 FE00; curved Z form; # CJK STROKE HZG
+31C6 FE01; rising H form; # CJK STROKE HZG
+31C9 FE00; slanted S form; # CJK STROKE SZWG
+31CF FE00; curved starting N form; # CJK STROKE N
+31CF FE01; flat N form; # CJK STROKE N
+31D0 FE00; rising H form; # CJK STROKE H
+31D1 FE00; slanted S form; # CJK STROKE S
+31D2 FE00; flat P form; # CJK STROKE P
+31D4 FE00; to bottom left form; # CJK STROKE D
+31D5 FE00; slanted Z form; # CJK STROKE HZ
+31D7 FE00; slanted S form; # CJK STROKE SZ
+31DB FE00; slanted SD form; # CJK STROKE PD
+31DC FE00; upwards T form; # CJK STROKE PZ
+31DD FE00; horizontal H curved N form; # CJK STROKE TN
+31DD FE01; upwards T flat N form; # CJK STROKE TN
+31E5 FE00; slanted S form; # CJK STROKE SZP
 
 # Myanmar
 
