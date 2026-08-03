@@ -21,7 +21,7 @@ setup(
     # more examples here http://docs.python.org/distutils/examples.html#pure-python-distribution-by-package
     packages=find_packages() + ["third_party"],
     include_package_data=True,
-    setup_requires=["setuptools_scm"],
+    setup_requires=["setuptools_scm", "vcs-versioning"],
     install_requires=[
         "fontTools",
         # On Mac OS X these need to be installed with homebrew
