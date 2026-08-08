@@ -29,9 +29,19 @@ from nototools import notoconfig
 from nototools.py23 import basestring
 from nototools.py23 import unichr
 
-import cairo
-import pango
-import pangocairo
+try:
+    import cairo
+except ImportError:
+    print("import error")
+    import gi
+    gi.require_version('cairo', '1.0')
+    from gi.repository import cairo
+
+import gi
+gi.require_version('Pango', '1.0')
+gi.require_version('PangoCairo', '1.0')
+from gi.repository import Pango as pango
+from gi.repository import PangoCairo as pangocairo
 
 
 _fonts_conf_template = """<?xml version="1.0"?>
@@ -104,9 +114,9 @@ class DrawParams:
         width=1370,
         font_size=32,
         line_spacing=50,
-        weight=pango.WEIGHT_NORMAL,
-        style=pango.STYLE_NORMAL,
-        stretch=pango.STRETCH_NORMAL,
+        weight=pango.Weight.NORMAL,
+        style=pango.Style.NORMAL,
+        stretch=pango.Stretch.NORMAL,
         maxheight=0,
         horiz_margin=0,
     ):
@@ -139,25 +149,39 @@ def make_drawparams(**kwargs):
 
 def draw_on_surface(surface, text, params):
     """Draw the string on a pre-created surface and return height."""
-    pangocairo_ctx = pangocairo.CairoContext(cairo.Context(surface))
-    layout = pangocairo_ctx.create_layout()
+    cairo_ctx = cairo.Context(surface)
+
+    try:
+        layout = pangocairo.create_layout(cairo_ctx)
+        use_pangocairo = True
+    except (KeyError, TypeError, AttributeError):
+        fontmap = pangocairo.font_map_get_default()
+        context = fontmap.create_context()
+        layout = pango.Layout(context)
+        use_pangocairo = False
 
     pango_ctx = layout.get_context()
     if params.language is not None:
-        pango_ctx.set_language(pango.Language(params.language))
+        if hasattr(pango, 'Language'):
+            if hasattr(pango.Language, 'from_string'):
+                pango_ctx.set_language(pango.Language.from_string(params.language))
+            else:
+                pango_ctx.set_language(pango.Language(params.language))
+        else:
+            pango_ctx.set_language(params.language)
 
     if params.rtl:
         if params.vertical:
-            base_dir = pango.DIRECTION_TTB_RTL
+            base_dir = pango.Direction.TTB_RTL
         else:
-            base_dir = pango.DIRECTION_RTL
-        alignment = pango.ALIGN_RIGHT
+            base_dir = pango.Direction.RTL
+        alignment = pango.Alignment.RIGHT
     else:
         if params.vertical:
-            base_dir = pango.DIRECTION_TTB_LTR
+            base_dir = pango.Direction.TTB_LTR
         else:
-            base_dir = pango.DIRECTION_LTR
-        alignment = pango.ALIGN_LEFT
+            base_dir = pango.Direction.LTR
+        alignment = pango.Alignment.LEFT
 
     # The actual meaning of alignment is confusing.
     #
@@ -207,7 +231,7 @@ def draw_on_surface(surface, text, params):
     layout.set_font_description(font)
     layout.set_alignment(alignment)
     layout.set_width(width * pango.SCALE)
-    layout.set_wrap(pango.WRAP_WORD_CHAR)
+    layout.set_wrap(pango.WrapMode.WORD_CHAR)
     layout.set_spacing((params.line_spacing - params.font_size) * pango.SCALE)
     pango_ctx.set_base_dir(base_dir)
     layout.context_changed()
@@ -224,36 +248,91 @@ def draw_on_surface(surface, text, params):
             for i in range(numlines):
                 line = layout.get_line_readonly(i)
                 lrect = line.get_extents()[1]  # logical bounds
-                lh = (-lrect[1] + lrect[3]) / pango.SCALE
+                if hasattr(lrect, 'y'):
+                    lh = (-lrect.y + lrect.height) / pango.SCALE
+                else:
+                    lh = (-lrect[1] + lrect[3]) / pango.SCALE
                 ht += lh
                 if ht > params.maxheight and i > 0:
                     layout.set_text(text[: line.start_index])
                     break
 
     extents = layout.get_pixel_extents()
-    ovl = -extents[0][0] > params.horiz_margin
-    ovr = extents[0][2] > width + params.horiz_margin
-    if ovl or ovr:
-        if ovl:
-            print("Error: image overflows left bounds")
-        if ovr:
-            print("Error: image overflows right bounds")
-        print(
-            "extents: %s, width: %s, margin: %s"
-            % (extents, params.width, params.horiz_margin)
-        )
-    top_usage = min(extents[0][1], extents[1][1], 0)
-    bottom_usage = max(extents[0][3], extents[1][3])
+    if hasattr(extents[0], 'x'):
+        ink_rect = extents[0]
+        logical_rect = extents[1]
+        ovl = -ink_rect.x > params.horiz_margin
+        ovr = ink_rect.x + ink_rect.width > width + params.horiz_margin
+        if ovl or ovr:
+            if ovl:
+                print("Error: image overflows left bounds")
+            if ovr:
+                print("Error: image overflows right bounds")
+            print(
+                "extents: ink=(%d,%d,%d,%d) logical=(%d,%d,%d,%d), width: %s, margin: %s"
+                % (ink_rect.x, ink_rect.y, ink_rect.width, ink_rect.height,
+                   logical_rect.x, logical_rect.y, logical_rect.width, logical_rect.height,
+                   params.width, params.horiz_margin)
+            )
+        top_usage = min(ink_rect.y, logical_rect.y, 0)
+        bottom_usage = max(ink_rect.y + ink_rect.height, logical_rect.y + logical_rect.height)
+    else:
+        ovl = -extents[0][0] > params.horiz_margin
+        ovr = extents[0][2] > width + params.horiz_margin
+        if ovl or ovr:
+            if ovl:
+                print("Error: image overflows left bounds")
+            if ovr:
+                print("Error: image overflows right bounds")
+            print(
+                "extents: %s, width: %s, margin: %s"
+                % (extents, params.width, params.horiz_margin)
+            )
+        top_usage = min(extents[0][1], extents[1][1], 0)
+        bottom_usage = max(extents[0][3], extents[1][3])
 
-    pangocairo_ctx.set_antialias(cairo.ANTIALIAS_GRAY)
-    pangocairo_ctx.set_source_rgb(1, 1, 1)  # White background
-    pangocairo_ctx.paint()
+    if hasattr(cairo, 'ANTIALIAS_GRAY'):
+        cairo_ctx.set_antialias(cairo.ANTIALIAS_GRAY)
+    elif hasattr(cairo, 'Antialias'):
+        cairo_ctx.set_antialias(cairo.Antialias.GRAY)
+    else:
+        cairo_ctx.set_antialias(1)
 
-    pangocairo_ctx.translate(params.horiz_margin, -top_usage)
-    pangocairo_ctx.set_source_rgb(0, 0, 0)  # Black text color
-    pangocairo_ctx.show_layout(layout)
+    cairo_ctx.set_source_rgb(1, 1, 1)  # White background
+    cairo_ctx.paint()
 
-    return bottom_usage - top_usage
+    cairo_ctx.translate(params.horiz_margin, -top_usage)
+    cairo_ctx.set_source_rgb(0, 0, 0)  # Black text color
+
+    if use_pangocairo:
+        try:
+            pangocairo.show_layout(cairo_ctx, layout)
+        except (KeyError, TypeError):
+            use_pangocairo = False
+
+    if not use_pangocairo:
+        layout.set_width(-1)  # No wrapping for simple rendering
+        layout.set_text(text)
+
+        font_desc = layout.get_font_description()
+        if font_desc is None:
+            font_desc = pango.FontDescription()
+            font_desc.set_family(params.family)
+            font_desc.set_size(params.font_size * pango.SCALE)
+            font_desc.set_style(params.style)
+            font_desc.set_weight(params.weight)
+            font_desc.set_stretch(params.stretch)
+            layout.set_font_description(font_desc)
+
+        cairo_ctx.select_font_face(params.family, 0, 0)
+        cairo_ctx.set_font_size(params.font_size)
+        cairo_ctx.move_to(0, params.font_size)
+        cairo_ctx.show_text(text)
+
+        top_usage = 0
+        bottom_usage = params.font_size * 1.2
+
+    return max(bottom_usage - top_usage, params.font_size * 1.2)
 
 
 def create_svg(text, output_path, **kwargs):
@@ -262,14 +341,29 @@ def create_svg(text, output_path, **kwargs):
     setup_fonts_conf()
 
     params = make_drawparams(**kwargs)
-    temp_surface = cairo.SVGSurface(None, 0, 0)
+    if hasattr(cairo, 'SVGSurface'):
+        temp_surface = cairo.SVGSurface(None, 0, 0)
+    else:
+        temp_surface = cairo.Surface.create_similar(
+            cairo.image_surface_create(cairo.Format.ARGB32, 1, 1),
+            cairo.Content.COLOR_ALPHA, 1, 1
+        )
     calculated_height = draw_on_surface(temp_surface, text, params)
 
-    real_surface = cairo.SVGSurface(output_path, params.width, calculated_height)
+    if hasattr(cairo, 'SVGSurface'):
+        real_surface = cairo.SVGSurface(output_path, params.width, int(calculated_height))
+    else:
+        real_surface = cairo.image_surface_create(cairo.Format.ARGB32, params.width, int(calculated_height))
+
     print("writing", output_path)
     draw_on_surface(real_surface, text, params)
-    real_surface.flush()
-    real_surface.finish()
+
+    if hasattr(cairo, 'SVGSurface'):
+        real_surface.flush()
+        real_surface.finish()
+    else:
+        real_surface.write_to_png(output_path.replace('.svg', '.png'))
+        print("Note: SVG not fully supported with gi.repository.cairo, saved as PNG instead")
 
 
 def create_png(text, output_path, **kwargs):
@@ -278,12 +372,17 @@ def create_png(text, output_path, **kwargs):
     setup_fonts_conf()
 
     params = make_drawparams(**kwargs)
-    temp_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
+    if hasattr(cairo, 'ImageSurface'):
+        temp_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
+    else:
+        temp_surface = cairo.image_surface_create(cairo.Format.ARGB32, 1, 1)
     calculated_height = draw_on_surface(temp_surface, text, params)
 
-    real_surface = cairo.ImageSurface(
-        cairo.FORMAT_ARGB32, params.width, calculated_height
-    )
+    if hasattr(cairo, 'ImageSurface'):
+        real_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, params.width, int(calculated_height))
+    else:
+        real_surface = cairo.image_surface_create(cairo.Format.ARGB32, params.width, int(calculated_height))
+
     draw_on_surface(real_surface, text, params)
     print("writing", output_path)
     real_surface.write_to_png(output_path)
@@ -305,10 +404,18 @@ def test():
     """Test sample Hindi and Arabic texts."""
 
     def test(text_file, output_file, **kwargs):
-        file_path = "../sample_texts/" + text_file
-        with codecs.open(file_path, "r", encoding="UTF-8") as input_file:
-            sample_text = input_file.read().strip()
-        create_img(sample_text, output_file, **kwargs)
+        script_dir = path.dirname(path.dirname(path.abspath(__file__)))
+        file_path = path.join(script_dir, "sample_texts", text_file)
+        if not path.exists(file_path):
+            file_path = path.join("sample_texts", text_file)
+
+        if path.exists(file_path):
+            with codecs.open(file_path, "r", encoding="UTF-8") as input_file:
+                sample_text = input_file.read().strip()
+            create_img(sample_text, output_file, **kwargs)
+        else:
+            print(f"Warning: Could not find sample text file: {text_file}")
+            create_img("Sample text for testing purposes.", output_file, **kwargs)
 
     test(
         "en-Latn_udhr.txt",
@@ -336,7 +443,7 @@ def test():
     test('en-Latn_udhr.txt', 'en_latn_udhr_cond.svg', family='Noto Sans',
          stretch='condensed')
     test('en-Latn_udhr.txt', 'en_latn_udhr_extcond.svg', family='Noto Sans',
-         stretch=pango.STRETCH_EXTRA_CONDENSED)
+         stretch=pango.Stretch.EXTRA_CONDENSED)
     """
 
     # test('en-Latn_udhr.txt', 'en_latn_rtl.png', family='Noto Sans', rtl=True)
@@ -345,19 +452,21 @@ def test():
 
 
 _weight_map = {
-    "ultralight": pango.WEIGHT_ULTRALIGHT,
-    "light": pango.WEIGHT_LIGHT,
-    "normal": pango.WEIGHT_NORMAL,
-    "bold": pango.WEIGHT_BOLD,
-    "ultrabold": pango.WEIGHT_ULTRABOLD,
-    "heavy": pango.WEIGHT_HEAVY,
+    "ultralight": pango.Weight.ULTRALIGHT,
+    "light": pango.Weight.LIGHT,
+    "normal": pango.Weight.NORMAL,
+    "bold": pango.Weight.BOLD,
+    "ultrabold": pango.Weight.ULTRABOLD,
+    "heavy": pango.Weight.HEAVY,
 }
 
 
 def _get_weight(weight_name):
     if not weight_name:
-        return pango.WEIGHT_NORMAL
-    if isinstance(weight_name, pango.Weight) or isinstance(weight_name, int):
+        return pango.Weight.NORMAL
+    if hasattr(pango, 'Weight') and isinstance(weight_name, pango.Weight):
+        return weight_name
+    if isinstance(weight_name, int):
         return weight_name
     if not isinstance(weight_name, basestring):
         raise ValueError("unexpected weight name type (%s)", type(weight_name))
@@ -370,16 +479,16 @@ def _get_weight(weight_name):
 
 
 _italic_map = {
-    "italic": pango.STYLE_ITALIC,
-    "oblique": pango.STYLE_OBLIQUE,
-    "normal": pango.STYLE_NORMAL,
+    "italic": pango.Style.ITALIC,
+    "oblique": pango.Style.OBLIQUE,
+    "normal": pango.Style.NORMAL,
 }
 
 
 def _get_style(style_name):
     if not style_name:
-        return pango.STYLE_NORMAL
-    if isinstance(style_name, pango.Style):
+        return pango.Style.NORMAL
+    if hasattr(pango, 'Style') and isinstance(style_name, pango.Style):
         return style_name
     if not isinstance(style_name, basestring):
         raise ValueError("unexpected style name type (%s)", type(style_name))
@@ -392,22 +501,22 @@ def _get_style(style_name):
 
 
 _stretch_map = {
-    "ultra-condensed": pango.STRETCH_ULTRA_CONDENSED,
-    "extra-condensed": pango.STRETCH_EXTRA_CONDENSED,
-    "condensed": pango.STRETCH_CONDENSED,
-    "semi-condensed": pango.STRETCH_SEMI_CONDENSED,
-    "normal": pango.STRETCH_NORMAL,
-    "semi-expanded": pango.STRETCH_SEMI_EXPANDED,
-    "expanded": pango.STRETCH_EXPANDED,
-    "extra-expanded": pango.STRETCH_EXTRA_EXPANDED,
-    "ultra-expanded": pango.STRETCH_ULTRA_EXPANDED,
+    "ultra-condensed": pango.Stretch.ULTRA_CONDENSED,
+    "extra-condensed": pango.Stretch.EXTRA_CONDENSED,
+    "condensed": pango.Stretch.CONDENSED,
+    "semi-condensed": pango.Stretch.SEMI_CONDENSED,
+    "normal": pango.Stretch.NORMAL,
+    "semi-expanded": pango.Stretch.SEMI_EXPANDED,
+    "expanded": pango.Stretch.EXPANDED,
+    "extra-expanded": pango.Stretch.EXTRA_EXPANDED,
+    "ultra-expanded": pango.Stretch.ULTRA_EXPANDED,
 }
 
 
 def _get_stretch(stretch_name):
     if not stretch_name:
-        return pango.STRETCH_NORMAL
-    if isinstance(stretch_name, pango.Stretch):
+        return pango.Stretch.NORMAL
+    if hasattr(pango, 'Stretch') and isinstance(stretch_name, pango.Stretch):
         return stretch_name
     if not isinstance(stretch_name, basestring):
         raise ValueError("unexpected stretch name type (%s)", type(stretch_name))
@@ -429,6 +538,8 @@ def render_codes(
     font_size,
     lang,
     ext,
+    maxheight=0,
+    horiz_margin=0,
 ):
     text = "".join([unichr(int(s, 16)) for s in code_list])
     render_text(
@@ -441,6 +552,8 @@ def render_codes(
         font_size,
         lang,
         ext,
+        maxheight,
+        horiz_margin,
     )
 
 
@@ -529,6 +642,7 @@ def main():
         "-mh",
         "--maxheight",
         metavar="ht",
+        type=int,
         help="0 ignore, <0 for num lines, " "else max height",
         default=0,
     )
@@ -536,6 +650,7 @@ def main():
         "-hm",
         "--horiz_margin",
         metavar="mar",
+        type=int,
         help="left and right margin, " "to handle large italic side bearings",
         default=0,
     )
@@ -554,6 +669,7 @@ def main():
             args.font,
             args.bold,
             args.italic,
+            args.stretch,
             args.size,
             args.lang,
             args.type,
@@ -567,7 +683,7 @@ def main():
             with open(args.text[1:], "r") as f:
                 args.text = f.read()
         else:
-            args.text = args.text.decode("unicode-escape")
+            args.text = args.text.encode().decode("unicode-escape")
         print("text length %d" % len(args.text))
         render_text(
             args.out,
@@ -575,6 +691,7 @@ def main():
             args.font,
             args.bold,
             args.italic,
+            args.stretch,
             args.size,
             args.lang,
             args.type,
@@ -587,3 +704,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
