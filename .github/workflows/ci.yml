@@ -7,13 +7,18 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
+      with:
+        persist-credentials: false
     - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@e9aba2c848f5ebd159c070c61ea2c4e2b122355e # v2
       with:
         # pytype currently doesn't work with python >= 3.9
         python-version: 3.8
@@ -24,9 +29,11 @@ jobs:
         python-version: [3.9]
         platform: [ubuntu-latest]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
+      with:
+        persist-credentials: false
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@e9aba2c848f5ebd159c070c61ea2c4e2b122355e # v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Requirements
@@ -49,12 +56,13 @@ jobs:
       contents: write
       id-token: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       with:
+        persist-credentials: false
         # setuptools_scm requires the git clone to not be 'shallow'
         fetch-depth: 0
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
       with:
         python-version: "3.x"
     - name: Install dependencies
@@ -74,7 +82,7 @@ jobs:
         TAG_NAME="${GITHUB_REF##*/}"
         # Dump tag message to temporary .md file (excluding the PGP signature at the bottom)
         TAG_MESSAGE=$(git tag -l --format='%(contents)' $TAG_NAME | sed -n '/-----BEGIN PGP SIGNATURE-----/q;p')
-        echo "$TAG_MESSAGE" > "${{ runner.temp }}/release_notes.md"
+        echo "$TAG_MESSAGE" > "${RUNNER_TEMP}/release_notes.md"
         # if the tag has a pre-release suffix mark the Github Release accordingly
         if egrep -q "$PRERELEASE_TAG_PATTERN" <<< "$TAG_NAME"; then
           echo "Tag contains a pre-release suffix"
@@ -85,7 +93,7 @@ jobs:
         fi
     - name: Create GitHub release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1
       env:
         # This token is provided by Actions, you do not need to create your own token
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
