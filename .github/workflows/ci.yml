@@ -93,16 +93,18 @@ jobs:
         fi
     - name: Create GitHub release
       id: create_release
-      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1
       env:
         # This token is provided by Actions, you do not need to create your own token
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
-        body_path: "${{ runner.temp }}/release_notes.md"
-        draft: false
-        prerelease: ${{ env.IS_PRERELEASE }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PRERELEASE_FLAG=()
+        if [ "${IS_PRERELEASE:-false}" = "true" ]; then
+          PRERELEASE_FLAG=(--prerelease)
+        fi
+        gh release create "${GITHUB_REF_NAME}" \
+          --title "${GITHUB_REF_NAME}" \
+          --notes-file "${RUNNER_TEMP}/release_notes.md" \
+          "${PRERELEASE_FLAG[@]}"
     - name: Build distributions
       run: |
         if [ "$IS_PRERELEASE" == true ]; then
